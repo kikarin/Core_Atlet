@@ -113,7 +113,6 @@ class AtletRepository
         try {
             DB::beginTransaction();
 
-            // Debug logging
             Log::info('AtletRepository: Starting file upload process', [
                 'method' => $method,
                 'has_file' => isset($data['file']),

@@ -10,12 +10,13 @@ interface Props {
     labelText?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
     alt: 'Image',
     size: 'md',
     showLabel: true,
     labelText: 'Klik untuk melihat lebih besar',
 });
+
 
 const showModal = ref(false);
 
