@@ -72,7 +72,7 @@ const actionFields = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div class="space-y-4 -mt-6">
     <div>
       <h3 class="font-semibold text-base mb-4 text-muted-foreground uppercase tracking-wide">Data Ibu Kandung</h3>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

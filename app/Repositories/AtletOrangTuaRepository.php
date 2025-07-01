@@ -41,6 +41,21 @@ class AtletOrangTuaRepository
         return null;
     }
 
+    public function delete($id)
+    {
+        Log::info('AtletOrangTuaRepository: delete method called (hard delete)', ['id' => $id]);
+        $record = $this->model->withTrashed()->find($id);
+
+        if ($record) {
+            $record->forceDelete(); 
+            Log::info('AtletOrangTuaRepository: record successfully hard-deleted', ['id' => $id]);
+            return true;
+        }
+
+        Log::warning('AtletOrangTuaRepository: record not found for deletion', ['id' => $id]);
+        return false;
+    }
+
     public function customDataCreateUpdate($data, $record = null)
     {
         Log::info('AtletOrangTuaRepository: customDataCreateUpdate method called', ['data_before_processing' => $data]);

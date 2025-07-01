@@ -33,7 +33,14 @@ const props = defineProps<{
             id: number;
             name: string;
         } | null;
-        atlet_orang_tua?: any; 
+        atlet_orang_tua?: {
+            id: number;
+            atlet_id: number;
+            created_at: string;
+            updated_at: string;
+            created_by_user: { name: string } | null;
+            updated_by_user: { name: string } | null;
+        } | null; 
     };
 }>();
 
@@ -104,23 +111,23 @@ const actionFields = computed(() => [
 ]);
 
 const orangTuaActionFields = computed(() => {
-  const o = props.item.atlet_orang_tua || {};
+  const o = props.item.atlet_orang_tua;
   return [
     {
       label: 'Created At',
-      value: o.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+      value: o?.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
     },
     {
       label: 'Created By',
-      value: o.created_by_user?.name || '-',
+      value: o?.created_by_user?.name || '-',
     },
     {
       label: 'Updated At',
-      value: o.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+      value: o?.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
     },
     {
       label: 'Updated By',
-      value: o.updated_by_user?.name || '-',
+      value: o?.updated_by_user?.name || '-',
     },
   ];
 });
@@ -135,6 +142,64 @@ const tabsConfig = [
         label: 'Data Orang Tua/Wali',
     },
 ];
+
+const handleEditAtlet = () => {
+    router.visit(`/atlet/${props.item.id}/edit`);
+};
+
+const handleDeleteAtlet = () => {
+    router.delete(`/atlet/${props.item.id}`, {
+        onSuccess: () => {
+            toast({ title: 'Atlet berhasil dihapus', variant: 'success' });
+            router.visit('/atlet');
+        },
+        onError: () => {
+            toast({ title: 'Gagal menghapus atlet', variant: 'destructive' });
+        },
+    });
+};
+
+const handleEditOrangTua = () => {
+    if (props.item.atlet_orang_tua) {
+        router.visit(`/atlet/${props.item.id}/edit?tab=orang-tua-data`);
+    }
+};
+
+const handleDeleteOrangTua = () => {
+    if (props.item.atlet_orang_tua) {
+        router.delete(`/atlet/${props.item.id}/orang-tua/${props.item.atlet_orang_tua.id}`, {
+            onSuccess: () => {
+                toast({ title: 'Data orang tua/wali berhasil dihapus', variant: 'success' });
+                router.visit(`/atlet/${props.item.id}`, {
+                    data: { tab: 'atlet-data' },
+                    preserveState: true,
+                    preserveScroll: true
+                });
+            },
+            onError: () => {
+                toast({ title: 'Gagal menghapus data orang tua/wali', variant: 'destructive' });
+            },
+        });
+    }
+};
+
+const currentOnEditHandler = computed(() => {
+    if (activeTab.value === 'atlet-data') {
+        return handleEditAtlet;
+    } else if (activeTab.value === 'orang-tua-data') {
+        return props.item.atlet_orang_tua ? handleEditOrangTua : undefined;
+    }
+    return undefined;
+});
+
+const currentOnDeleteHandler = computed(() => {
+    if (activeTab.value === 'atlet-data') {
+        return handleDeleteAtlet;
+    } else if (activeTab.value === 'orang-tua-data') {
+        return props.item.atlet_orang_tua ? handleDeleteOrangTua : undefined;
+    }
+    return undefined;
+});
 </script>
 
 <template>
@@ -144,18 +209,8 @@ const tabsConfig = [
         :fields="activeTab === 'atlet-data' ? fields : []"
         :actionFields="activeTab === 'atlet-data' ? actionFields : orangTuaActionFields"
         :back-url="'/atlet'"
-        :on-edit="() => router.visit(`/atlet/${props.item.id}/edit`)"
-        :on-delete="() => {
-            router.delete(`/atlet/${props.item.id}`, {
-                onSuccess: () => {
-                    toast({ title: 'Atlet berhasil dihapus', variant: 'success' });
-                    router.visit('/atlet');
-                },
-                onError: () => {
-                    toast({ title: 'Gagal menghapus atlet', variant: 'destructive' });
-                },
-            });
-        }"
+        :on-edit="currentOnEditHandler"
+        :on-delete="currentOnDeleteHandler"
     >
         <template #tabs>
             <AppTabs

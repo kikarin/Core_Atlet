@@ -43,7 +43,7 @@ const handleTabChange = (value: string) => {
                                 />
                             </div>
                             <div v-else>
-                                <slot />
+                            <slot />
                             </div>
                         </CardContent>
                     </Card>

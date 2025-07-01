@@ -110,13 +110,26 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
 
     public function getByAtletId($atletId)
     {
-        Log::info('AtletOrangTuaController: START getByAtletId method', ['atlet_id' => $atletId]);
-        $data = $this->repository->getByAtletId($atletId);
-        if (!$data) {
-            Log::info('AtletOrangTuaController: getByAtletId method - Data not found.');
-            return response()->json(null, 404);
+        $atletOrangTua = $this->repository->getByAtletId($atletId);
+
+        if (!$atletOrangTua) {
+            return response()->json(null, 200); 
         }
-        Log::info('AtletOrangTuaController: getByAtletId method - Data found.', $data->toArray());
-        return response()->json($data);
+
+        return response()->json($atletOrangTua);
+    }
+
+    public function destroy($atlet_id, $id) 
+    {
+        Log::info('AtletOrangTuaController: START destroy method', ['atlet_id_route' => $atlet_id, 'id_orang_tua' => $id]);
+
+        try {
+            $this->repository->delete($id);
+            Log::info('AtletOrangTuaController: destroy method - Data successfully deleted.', ['id' => $id]);
+            return redirect()->back()->with('success', 'Data orang tua/wali berhasil dihapus!');
+        } catch (\Exception $e) {
+            Log::error('Error deleting Atlet Orang Tua: ' . $e->getMessage(), ['id' => $id, 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'Gagal menghapus data orang tua/wali: ' . $e->getMessage());
+        }
     }
 } 
