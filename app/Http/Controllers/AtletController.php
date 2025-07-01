@@ -59,7 +59,7 @@ class AtletController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
-        return redirect()->route('atlet.index')->with('success', 'Atlet berhasil ditambahkan!');
+        return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil ditambahkan!');
     }
 
     public function update(AtletRequest $request, $id)
@@ -87,9 +87,7 @@ class AtletController extends Controller implements HasMiddleware
             // Update the record
             $model = $this->repository->update($id, $data);
             
-            return redirect()
-                ->route('atlet.index')
-                ->with('success', 'Atlet berhasil diperbarui!');
+            return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil diperbarui!');
                 
         } catch (\Exception $e) {
             Log::error('Error updating atlet: ' . $e->getMessage());

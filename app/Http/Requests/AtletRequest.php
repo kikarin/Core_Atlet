@@ -34,6 +34,27 @@ class AtletRequest extends FormRequest
             'email'          => 'nullable|email|max:200',
             'is_active'      => 'required|boolean',
             'is_delete_foto' => 'nullable|boolean',
+
+            // Rules for AtletOrangTua
+            'atlet_orang_tua_id'      => 'nullable|integer',
+            'nama_ibu_kandung'        => 'nullable|string|max:255',
+            'tempat_lahir_ibu'        => 'nullable|string|max:255',
+            'tanggal_lahir_ibu'       => 'nullable|date',
+            'alamat_ibu'              => 'nullable|string',
+            'no_hp_ibu'               => 'nullable|string|max:20',
+            'pekerjaan_ibu'           => 'nullable|string|max:255',
+            'nama_ayah_kandung'       => 'nullable|string|max:255',
+            'tempat_lahir_ayah'       => 'nullable|string|max:255',
+            'tanggal_lahir_ayah'      => 'nullable|date',
+            'alamat_ayah'             => 'nullable|string',
+            'no_hp_ayah'              => 'nullable|string|max:20',
+            'pekerjaan_ayah'          => 'nullable|string|max:255',
+            'nama_wali'               => 'nullable|string|max:255',
+            'tempat_lahir_wali'       => 'nullable|string|max:255',
+            'tanggal_lahir_wali'      => 'nullable|date',
+            'alamat_wali'             => 'nullable|string',
+            'no_hp_wali'              => 'nullable|string|max:20',
+            'pekerjaan_wali'          => 'nullable|string|max:255',
         ];
 
         // Only validate file if it's present in the request
@@ -60,6 +81,28 @@ class AtletRequest extends FormRequest
             'kecamatan_id' => $this->kecamatan_id ?: null,
             'kelurahan_id' => $this->kelurahan_id ?: null,
             'is_active' => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
+
+            // Prepare AtletOrangTua fields - convert empty strings to null
+            'nama_ibu_kandung'  => $this->nama_ibu_kandung ?: null,
+            'tempat_lahir_ibu'  => $this->tempat_lahir_ibu ?: null,
+            'tanggal_lahir_ibu' => $this->tanggal_lahir_ibu ?: null,
+            'alamat_ibu'        => $this->alamat_ibu ?: null,
+            'no_hp_ibu'         => $this->no_hp_ibu ?: null,
+            'pekerjaan_ibu'     => $this->pekerjaan_ibu ?: null,
+
+            'nama_ayah_kandung'  => $this->nama_ayah_kandung ?: null,
+            'tempat_lahir_ayah'  => $this->tempat_lahir_ayah ?: null,
+            'tanggal_lahir_ayah' => $this->tanggal_lahir_ayah ?: null,
+            'alamat_ayah'        => $this->alamat_ayah ?: null,
+            'no_hp_ayah'         => $this->no_hp_ayah ?: null,
+            'pekerjaan_ayah'     => $this->pekerjaan_ayah ?: null,
+
+            'nama_wali'          => $this->nama_wali ?: null,
+            'tempat_lahir_wali'  => $this->tempat_lahir_wali ?: null,
+            'tanggal_lahir_wali' => $this->tanggal_lahir_wali ?: null,
+            'alamat_wali'        => $this->alamat_wali ?: null,
+            'no_hp_wali'         => $this->no_hp_wali ?: null,
+            'pekerjaan_wali'     => $this->pekerjaan_wali ?: null,
         ]);
     }
 }

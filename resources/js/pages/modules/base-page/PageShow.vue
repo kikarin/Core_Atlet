@@ -48,7 +48,6 @@ const confirmDelete = () => {
         <div class="space-y-4 p-4">
             <!-- Header & Action Buttons -->
             <HeaderShow :title="`Detail ${title}`">
-                <!-- Only show if onEdit is provided -->
                 <button
                     v-if="onEdit"
                     class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
@@ -77,6 +76,9 @@ const confirmDelete = () => {
                     Back
                 </button>
             </HeaderShow>
+
+            <!-- Tambahkan slot tabs di sini -->
+            <slot name="tabs"></slot>
 
             <div class="grid grid-cols-12 gap-6">
                 <!-- Information Panel -->

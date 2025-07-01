@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/toast/useToast';
 import { useForm } from '@inertiajs/vue3';
 import * as LucideIcons from 'lucide-vue-next';
-import { Eye, EyeOff, X, CalendarIcon, Upload, XIcon } from 'lucide-vue-next';
+import { Eye, EyeOff, X, CalendarIcon, Upload, XIcon, AlertCircle } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { Alert, AlertDescription, AlertTitle } from '../../../components/ui/alert';
 import ButtonsForm from './ButtonsForm.vue';
@@ -16,7 +16,7 @@ const props = defineProps<{
     formInputs: {
         name: string;
         label: string;
-        type: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'multi-select' | 'number' | 'radio' | 'icon' | 'checkbox' | 'date' | 'file';
+        type: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'multi-select' | 'number' | 'radio' | 'icon' | 'checkbox' | 'date' | 'file' | 'title';
         placeholder?: string;
         required?: boolean;
         help?: string;
@@ -26,10 +26,31 @@ const props = defineProps<{
     initialData?: Record<string, any>;
 }>();
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'field-updated']);
 
 // Inisialisasi form menggunakan useForm dengan data awal
-const form = useForm(props.initialData || {});
+const form = useForm<Record<string, any>>(props.initialData || {});
+
+// Tambahkan watch untuk memperbarui form saat initialData berubah (ini penting untuk edit mode)
+watch(() => props.initialData, (newVal) => {
+    console.log('FormInput.vue: watch initialData triggered. newVal:', newVal);
+    if (newVal) {
+        // Perbarui setiap properti secara manual untuk memastikan reaktivitas
+        // dan agar form.isDirty bekerja dengan benar
+        for (const key in newVal) {
+            form[key] = newVal[key];
+        }
+        console.log('FormInput.vue: form after manual update:', form.data());
+        // Penting: Reset `form.defaults()` agar `form.isDirty` berfungsi dengan benar setelah data dimuat
+        // atau direset oleh parent. Ini juga membantu jika data awal null/kosong.
+        form.defaults(newVal);
+        form.reset(); // Reset form ke nilai default baru
+        console.log('FormInput.vue: form after defaults and reset:', form.data());
+    } else {
+        console.log('FormInput.vue: initialData is null/undefined, resetting form.');
+        form.reset(); // Reset jika initialData menjadi null/undefined
+    }
+}, { immediate: true, deep: true });
 
 // State untuk multi-select dropdown
 const multiSelectOpen = ref<Record<string, boolean>>({});
@@ -57,6 +78,9 @@ const handleSubmit = (e: Event) => {
     let isValid = true;
     const localErrors: Record<string, string> = {};
     props.formInputs.forEach((input) => {
+        if (input.type === 'title') { // Skip validation for title type
+            return;
+        }
         if (input.required) {
             const value = form[input.name];
             // Perbaikan: cek apakah nilai null, undefined, atau string kosong
@@ -91,7 +115,8 @@ const handleSubmit = (e: Event) => {
         return;
     }
 
-    emit('save', form, setFormErrors);
+    emit('save', form.data(), setFormErrors);
+    console.log('FormInput: Form data being emitted (from useForm):', form.data());
 };
 
 function setFormErrors(errors: Record<string, string>) {
@@ -206,53 +231,123 @@ const handleNIKInput = (event: Event) => {
                 </ul>
             </AlertDescription>
         </Alert>
-        <form @submit="handleSubmit" class="space-y-6">
-            <div v-for="input in formInputs" :key="input.name" class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4">
-                <label class="col-span-full text-sm font-medium md:col-span-4 md:pt-2">{{ input.label }}</label>
-                <div class="col-span-full md:col-span-8">
-                    <!-- MULTI-SELECT -->
-                    <div v-if="input.type === 'multi-select'" class="relative">
-                        <div
-                            @click="toggleMultiSelect(input.name)"
-                            class="border-input bg-background flex min-h-[40px] w-full cursor-pointer flex-wrap items-center gap-1 rounded-md border px-3 py-2 text-sm"
-                            :class="{ 'border-ring ring-ring ring-2 ring-offset-2': multiSelectOpen[input.name] }"
-                        >
-                            <!-- Selected badges -->
-                            <div v-if="form[input.name] && form[input.name].length > 0" class="flex flex-wrap gap-1">
-                                <Badge
-                                    v-for="selected in getSelectedLabels(input.name, input.options || [])"
-                                    :key="selected.value"
-                                    variant="secondary"
-                                    class="flex items-center gap-1 text-xs"
-                                >
-                                    {{ selected.label }}
-                                    <X
-                                        class="hover:text-destructive h-3 w-3 cursor-pointer"
-                                        @click.stop="removeMultiOption(input.name, selected.value)"
-                                    />
-                                </Badge>
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+            <div v-for="input in formInputs" :key="input.name"
+                class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4">
+                <!-- TITLE TYPE (FOR SECTION HEADINGS) -->
+                <template v-if="input.type === 'title'">
+                    <h2 class="col-span-full text-lg font-bold mt-4 mb-2 border-b pb-2">
+                        {{ input.label }}
+                    </h2>
+                </template>
+                <template v-else>
+                    <label class="col-span-full text-sm font-medium md:col-span-4 md:pt-2">{{ input.label }}</label>
+                    <div class="col-span-full md:col-span-8">
+                        <!-- MULTI-SELECT -->
+                        <div v-if="input.type === 'multi-select'" class="relative">
+                            <div @click="toggleMultiSelect(input.name)"
+                                class="border-input bg-background flex min-h-[40px] w-full cursor-pointer flex-wrap items-center gap-1 rounded-md border px-3 py-2 text-sm"
+                                :class="{ 'border-ring ring-ring ring-2 ring-offset-2': multiSelectOpen[input.name] }">
+                                <!-- Selected badges -->
+                                <div v-if="form[input.name] && form[input.name].length > 0" class="flex flex-wrap gap-1">
+                                    <Badge v-for="selected in getSelectedLabels(input.name, input.options || [])"
+                                        :key="selected.value" variant="secondary" class="flex items-center gap-1 text-xs">
+                                        {{ selected.label }}
+                                        <X class="hover:text-destructive h-3 w-3 cursor-pointer"
+                                            @click.stop="removeMultiOption(input.name, selected.value)" />
+                                    </Badge>
+                                </div>
+                                <!-- Placeholder -->
+                                <div v-else class="text-muted-foreground">
+                                    {{ input.placeholder }}
+                                </div>
                             </div>
-                            <!-- Placeholder -->
-                            <div v-else class="text-muted-foreground">
-                                {{ input.placeholder }}
+
+                            <!-- Dropdown options -->
+                            <div v-if="multiSelectOpen[input.name]"
+                                class="bg-popover absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border p-1 shadow-lg">
+                                <div v-for="option in input.options" :key="option.value" @click="selectMultiOption(input.name, option.value)"
+                                    class="hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center space-x-2 rounded-sm px-2 py-1.5 text-sm">
+                                    <Checkbox :model-value="(form[input.name] || []).includes(option.value)"
+                                        @update:modelValue="
+                                            (checked) => {
+                                                const selected = form[input.name] || [];
+                                                if (checked) {
+                                                    form[input.name] = [...selected, option.value];
+                                                } else {
+                                                    form[input.name] = selected.filter((v: any) => v !== option.value);
+                                                }
+                                            }
+                                        " />
+                                    <span>{{ option.label }}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Dropdown options -->
-                        <div
-                            v-if="multiSelectOpen[input.name]"
-                            class="bg-popover absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border p-1 shadow-lg"
-                        >
-                            <div
-                                v-for="option in input.options"
-                                :key="option.value"
-                                @click="selectMultiOption(input.name, option.value)"
-                                class="hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center space-x-2 rounded-sm px-2 py-1.5 text-sm"
-                            >
-                                <Checkbox
-                                    :model-value="(form[input.name] || []).includes(option.value)"
-                                    @update:modelValue="
-                                        (checked) => {
+                        <!-- ICON SELECT -->
+                        <Select v-else-if="input.type === 'icon'" :required="input.required" :model-value="form[input.name]"
+                            @update:modelValue="(val) => (form[input.name] = val)">
+                            <SelectTrigger class="w-full">
+                                <SelectValue :placeholder="input.placeholder">
+                                    <template v-if="form[input.name]">
+                                        <component :is="(LucideIcons[form[input.name] as keyof typeof LucideIcons] as any)"
+                                            class="mr-2 inline-block h-4 w-4" />
+                                        {{ form[input.name] }}
+                                    </template>
+                                </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent class="max-h-[300px]">
+                                <div class="grid grid-cols-4 gap-2 p-2">
+                                    <SelectItem v-for="option in iconOptions" :key="option.value" :value="option.value"
+                                        class="hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md p-2">
+                                        <component :is="(LucideIcons[option.icon as keyof typeof LucideIcons] as any)"
+                                            class="h-4 w-4" />
+                                        <span class="text-sm">{{ option.label }}</span>
+                                    </SelectItem>
+                                </div>
+                            </SelectContent>
+                        </Select>
+
+                        <!-- TEXTAREA -->
+                        <textarea v-else-if="input.type === 'textarea'" v-model="form[input.name]"
+                            :placeholder="input.placeholder" :required="input.required"
+                            class="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring min-h-[100px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50" />
+
+                        <!-- SELECT -->
+                        <Select v-else-if="input.type === 'select'" :required="input.required"
+                            :model-value="form[input.name]" @update:modelValue="(val) => {
+                                form[input.name] = val;
+                                emit('field-updated', { field: input.name, value: val });
+                            }">
+                            <SelectTrigger class="w-full">
+                                <SelectValue :placeholder="input.placeholder" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem v-for="option in input.options" :key="option.value" :value="option.value">
+                                    {{ option.label }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <!-- RADIO -->
+                        <div v-else-if="input.type === 'radio'" class="flex gap-4">
+                            <label v-for="option in input.options" :key="option.value"
+                                class="inline-flex cursor-pointer items-center space-x-2">
+                                <input type="radio" :name="input.name" :value="option.value" v-model="form[input.name]"
+                                    :required="input.required"
+                                    class="form-radio text-primary border-input focus:ring-ring" />
+                                <span class="text-sm">{{ option.label }}</span>
+                            </label>
+                        </div>
+
+                        <!-- CHECKBOX GROUP -->
+                        <div v-else-if="input.type === 'checkbox' && Array.isArray(input.options)"
+                            class="flex flex-col gap-2">
+                            <div v-for="option in input.options" :key="option.value" class="flex items-center space-x-2">
+                                <Checkbox :id="`${input.name}-${option.value}`" :value="option.value"
+                                    :checked="Array.isArray(form[input.name]) && form[input.name].includes(option.value)"
+                                    @update:checked="
+                                        (checked: boolean) => {
                                             const selected = form[input.name] || [];
                                             if (checked) {
                                                 form[input.name] = [...selected, option.value];
@@ -260,204 +355,75 @@ const handleNIKInput = (event: Event) => {
                                                 form[input.name] = selected.filter((v: any) => v !== option.value);
                                             }
                                         }
-                                    "
-                                />
-                                <span>{{ option.label }}</span>
+                                    " />
+                                <label :for="`${input.name}-${option.value}`" class="text-sm">
+                                    {{ option.label }}
+                                </label>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- ICON SELECT -->
-                    <Select
-                        v-else-if="input.type === 'icon'"
-                        :required="input.required"
-                        :model-value="form[input.name]"
-                        @update:modelValue="(val) => (form[input.name] = val)"
-                    >
-                        <SelectTrigger class="w-full">
-                            <SelectValue :placeholder="input.placeholder">
-                                <template v-if="form[input.name]">
-                                    <component :is="LucideIcons[form[input.name] as keyof typeof LucideIcons]" class="mr-2 inline-block h-4 w-4" />
-                                    {{ form[input.name] }}
-                                </template>
-                            </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent class="max-h-[300px]">
-                            <div class="grid grid-cols-4 gap-2 p-2">
-                                <SelectItem
-                                    v-for="option in iconOptions"
-                                    :key="option.value"
-                                    :value="option.value"
-                                    class="hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md p-2"
-                                >
-                                    <component :is="LucideIcons[option.icon as keyof typeof LucideIcons]" class="h-4 w-4" />
-                                    <span class="text-sm">{{ option.label }}</span>
-                                </SelectItem>
-                            </div>
-                        </SelectContent>
-                    </Select>
-
-                    <!-- TEXTAREA -->
-                    <textarea
-                        v-else-if="input.type === 'textarea'"
-                        v-model="form[input.name]"
-                        :placeholder="input.placeholder"
-                        :required="input.required"
-                        class="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring min-h-[100px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    />
-
-                    <!-- SELECT -->
-                    <Select
-                        v-else-if="input.type === 'select'"
-                        :required="input.required"
-                        :model-value="form[input.name]"
-                        @update:modelValue="(val) => (form[input.name] = val)"
-                    >
-                        <SelectTrigger class="w-full">
-                            <SelectValue :placeholder="input.placeholder" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem v-for="option in input.options" :key="option.value" :value="option.value">
-                                {{ option.label }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-
-                    <!-- RADIO -->
-                    <div v-else-if="input.type === 'radio'" class="flex gap-4">
-                        <label v-for="option in input.options" :key="option.value" class="inline-flex cursor-pointer items-center space-x-2">
-                            <input
-                                type="radio"
-                                :name="input.name"
-                                :value="option.value"
-                                v-model="form[input.name]"
-                                :required="input.required"
-                                class="form-radio text-primary border-input focus:ring-ring"
-                            />
-                            <span class="text-sm">{{ option.label }}</span>
-                        </label>
-                    </div>
-
-                    <!-- CHECKBOX GROUP -->
-                    <div v-else-if="input.type === 'checkbox' && Array.isArray(input.options)" class="flex flex-col gap-2">
-                        <div v-for="option in input.options" :key="option.value" class="flex items-center space-x-2">
-                            <Checkbox
-                                :id="`${input.name}-${option.value}`"
-                                :value="option.value"
-                                :checked="Array.isArray(form[input.name]) && form[input.name].includes(option.value)"
-                                @update:checked="
-                                    (checked: boolean) => {
-                                        const selected = form[input.name] || [];
-                                        if (checked) {
-                                            form[input.name] = [...selected, option.value];
-                                        } else {
-                                            form[input.name] = selected.filter((v: any) => v !== option.value);
-                                        }
-                                    }
-                                "
-                            />
-                            <label :for="`${input.name}-${option.value}`" class="text-sm">
-                                {{ option.label }}
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- PASSWORD WITH TOGGLE -->
-                    <div v-else-if="input.type === 'password'" class="relative">
-                        <Input
-                            v-model="form[input.name]"
-                            :type="input.showPassword?.value ? 'text' : 'password'"
-                            :placeholder="input.placeholder"
-                            :required="input.required"
-                        />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            class="absolute top-1/2 right-2 -translate-y-1/2"
-                            @click="togglePassword(input.showPassword!)"
-                        >
-                            <Eye v-if="!input.showPassword?.value" class="h-4 w-4" />
-                            <EyeOff v-else class="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <!-- DATE PICKER -->
-                    <div v-else-if="input.type === 'date'" class="relative">
-                        <div class="relative">
-                            <Input
-                                :id="`${input.name}-date-input`"
-                                v-model="form[input.name]"
-                                type="date"
-                                :placeholder="input.placeholder"
-                                :required="input.required"
-                                class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                            />
-                            <div 
-                                class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                                @click="() => triggerDatePicker(input.name)"
-                            >
-                                <CalendarIcon class="h-4 w-4 text-muted-foreground" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- FILE UPLOAD -->
-                    <div v-else-if="input.type === 'file'" class="space-y-2">
-                        <div class="flex items-center gap-2">
-                            <Input
-                                :id="`${input.name}-input`"
-                                ref="el => fileInputRefs.value[input.name] = el"
-                                type="file"
-                                accept="image/*"
-                                @change="handleFileChange(input.name, $event)"
-                                class="hidden"
-                            />
-                            <Button
-                                type="button"
-                                variant="outline"
-                                @click="triggerFileInput(input.name)"
-                                class="flex items-center gap-2"
-                            >
-                                <Upload class="h-4 w-4" />
-                                {{ form[input.name] ? 'Change File' : 'Upload File' }}
-                            </Button>
-                            <Button
-                                v-if="form[input.name] || filePreview"
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                @click="removeFile(input.name)"
-                                class="flex items-center gap-2"
-                            >
-                                <XIcon class="h-4 w-4" />
-                                Remove
+                        <!-- PASSWORD WITH TOGGLE -->
+                        <div v-else-if="input.type === 'password'" class="relative">
+                            <Input v-model="form[input.name]" :type="input.showPassword?.value ? 'text' : 'password'"
+                                :placeholder="input.placeholder" :required="input.required" />
+                            <Button type="button" variant="ghost" size="sm"
+                                class="absolute top-1/2 right-2 -translate-y-1/2"
+                                @click="togglePassword(input.showPassword!)">
+                                <Eye v-if="!input.showPassword?.value" class="h-4 w-4" />
+                                <EyeOff v-else class="h-4 w-4" />
                             </Button>
                         </div>
-                        <div v-if="form[input.name]" class="text-sm text-muted-foreground">
-                            Selected: {{ form[input.name]?.name || 'File selected' }}
-                        </div>
-                        <div v-if="filePreview" class="mt-2">
-                            <img :src="filePreview" alt="Preview" class="w-32 h-32 object-cover rounded border" />
-                        </div>
-                    </div>
 
-                    <!-- DEFAULT INPUT (text, email, number) -->
-                    <Input 
-                        v-else 
-                        v-model="form[input.name]" 
-                        :type="input.type" 
-                        :placeholder="input.placeholder" 
-                        :required="input.required"
-                        @input="input.name === 'nik' ? handleNIKInput($event) : undefined"
-                        :maxlength="input.name === 'nik' ? 16 : undefined"
-                    />
+                        <!-- DATE PICKER -->
+                        <div v-else-if="input.type === 'date'" class="relative">
+                            <div class="relative">
+                                <Input :id="`${input.name}-date-input`" v-model="form[input.name]" type="date"
+                                    :placeholder="input.placeholder" :required="input.required"
+                                    class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden" />
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                                    @click="() => triggerDatePicker(input.name)">
+                                    <CalendarIcon class="h-4 w-4 text-muted-foreground" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FILE UPLOAD -->
+                        <div v-else-if="input.type === 'file'" class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <Input :id="`${input.name}-input`" ref="el => fileInputRefs.value[input.name] = el"
+                                    type="file" accept="image/*" @change="handleFileChange(input.name, $event)"
+                                    class="hidden" />
+                                <Button type="button" variant="outline" @click="triggerFileInput(input.name)"
+                                    class="flex items-center gap-2">
+                                    <Upload class="h-4 w-4" />
+                                    {{ form[input.name] ? 'Change File' : 'Upload File' }}
+                                </Button>
+                                <Button v-if="form[input.name] || filePreview" type="button" variant="outline" size="sm"
+                                    @click="removeFile(input.name)" class="flex items-center gap-2">
+                                    <XIcon class="h-4 w-4" />
+                                    Remove
+                                </Button>
+                            </div>
+                            <div v-if="form[input.name]" class="text-sm text-muted-foreground">
+                                Selected: {{ form[input.name]?.name || 'File selected' }}
+                            </div>
+                            <div v-if="filePreview" class="mt-2">
+                                <img :src="filePreview" alt="Preview" class="w-32 h-32 object-cover rounded border" />
+                            </div>
+                        </div>
+
+                        <!-- DEFAULT INPUT (text, email, number) -->
+                        <Input v-else v-model="form[input.name]" :type="input.type"
+                            :placeholder="input.placeholder" :required="input.required"
+                            @input="input.name === 'nik' ? handleNIKInput($event) : (console.log(`Field ${input.name} updated:`, form[input.name]), undefined)"
+                            :maxlength="input.name === 'nik' ? 16 : undefined" />
+                    </div>
 
                     <!-- Help text -->
                     <p v-if="input.help" class="text-muted-foreground mt-1 text-sm">
                         {{ input.help }}
                     </p>
-                </div>
+                </template>
             </div>
 
             <!-- BUTTONS -->
@@ -471,5 +437,6 @@ const handleNIKInput = (event: Event) => {
     </div>
 
     <!-- Overlay untuk menutup multi-select dropdown -->
-    <div v-if="Object.values(multiSelectOpen).some(Boolean)" @click="multiSelectOpen = {}" class="fixed inset-0 z-40"></div>
+    <div v-if="Object.values(multiSelectOpen).some(Boolean)" @click="multiSelectOpen = {}" class="fixed inset-0 z-40">
+    </div>
 </template>

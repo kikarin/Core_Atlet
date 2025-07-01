@@ -44,6 +44,10 @@ class CategoryPermissionSeeder extends Seeder
                 'name'       => 'Atlet',
                 'permission' => 'CRUD',
             ],
+            [
+                'name'       => 'Atlet Orang Tua',
+                'permission' => 'CRUD',
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

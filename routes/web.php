@@ -9,6 +9,9 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CategoryPermissionController;
 use App\Http\Controllers\AtletController;
+use App\Http\Controllers\AtletOrangTuaController;
+use App\Models\MstKecamatan;
+use App\Models\MstDesa;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -75,6 +78,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/atlet', AtletController::class)->names('atlet');
     Route::get('/api/atlet', [AtletController::class, 'apiIndex']);
     Route::post('/atlet/destroy-selected', [AtletController::class, 'destroy_selected'])->name('atlet.destroy_selected');
+
+    // START - Atlet Orang Tua Routes (Nested under Atlet)
+    Route::prefix('atlet/{atlet_id}')->group(function () {
+        Route::get('orang-tua', [AtletOrangTuaController::class, 'getByAtletId'])->name('atlet.orang-tua.show');
+        Route::post('orang-tua', [AtletOrangTuaController::class, 'store'])->name('atlet.orang-tua.store');
+        Route::put('orang-tua/{id}', [AtletOrangTuaController::class, 'update'])->name('atlet.orang-tua.update');
+        Route::delete('orang-tua/{id}', [AtletOrangTuaController::class, 'destroy'])->name('atlet.orang-tua.destroy');
+    });
+    // END - Atlet Orang Tua Routes
+});
+
+// API Kecamatan & Kelurahan 
+Route::get('/api/kecamatan', function() {
+    return MstKecamatan::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan) {
+    return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
 });
 
 require __DIR__ . '/settings.php';

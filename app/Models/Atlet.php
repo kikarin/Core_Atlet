@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\AtletOrangTua;
 
 class Atlet extends Model implements HasMedia
 {
@@ -77,5 +78,10 @@ class Atlet extends Model implements HasMedia
             return $media->getUrl('webp');
         }
         return null;
+    }
+
+    public function atletOrangTua()
+    {
+        return $this->hasOne(AtletOrangTua::class, 'atlet_id');
     }
 }
