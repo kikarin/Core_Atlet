@@ -217,6 +217,18 @@ const handleNIKInput = (event: Event) => {
     form.nik = formattedValue;
     target.value = formattedValue;
 };
+
+// State untuk search query per select field
+const selectSearchQuery = ref<Record<string, string>>({});
+
+// Method untuk filter options berdasarkan search query
+const getFilteredOptions = (input: any) => {
+    const query = selectSearchQuery.value[input.name] || '';
+    if (!query) return input.options;
+    return (input.options || []).filter((opt: any) =>
+        (opt.label || '').toLowerCase().includes(query.toLowerCase())
+    );
+};
 </script>
 
 <template>
@@ -314,16 +326,32 @@ const handleNIKInput = (event: Event) => {
                             class="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring min-h-[100px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50" />
 
                     <!-- SELECT -->
-                        <Select v-else-if="input.type === 'select'" :required="input.required"
-                            :model-value="form[input.name]" @update:modelValue="(val) => {
-                                form[input.name] = val;
-                                emit('field-updated', { field: input.name, value: val });
-                            }">
+                    <Select v-else-if="input.type === 'select'" :required="input.required"
+                        :model-value="form[input.name]" @update:modelValue="(val) => {
+                            form[input.name] = val;
+                            emit('field-updated', { field: input.name, value: val });
+                        }">
                         <SelectTrigger class="w-full">
                             <SelectValue :placeholder="input.placeholder" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem v-for="option in input.options" :key="option.value" :value="option.value">
+                            <!-- Search input -->
+                            <div class="p-2">
+                                <input
+                                    v-model="selectSearchQuery[input.name]"
+                                    type="text"
+                                    placeholder="Cari..."
+                                    class="w-full border rounded px-2 py-1 text-sm"
+                                    @click.stop
+                                    @keydown.stop
+                                />
+                            </div>
+                            <!-- Filtered options -->
+                            <SelectItem
+                                v-for="option in getFilteredOptions(input)"
+                                :key="option.value"
+                                :value="option.value"
+                            >
                                 {{ option.label }}
                             </SelectItem>
                         </SelectContent>
@@ -417,12 +445,11 @@ const handleNIKInput = (event: Event) => {
                             :placeholder="input.placeholder" :required="input.required"
                             @input="input.name === 'nik' ? handleNIKInput($event) : (console.log(`Field ${input.name} updated:`, form[input.name]), undefined)"
                             :maxlength="input.name === 'nik' ? 16 : undefined" />
-                    </div>
-
                     <!-- Help text -->
                     <p v-if="input.help" class="text-muted-foreground mt-1 text-sm">
                         {{ input.help }}
                     </p>
+                </div>
                 </template>
             </div>
 

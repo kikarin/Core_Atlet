@@ -34,13 +34,13 @@ const breadcrumbs = computed(() => [
 const tabsConfig = computed(() => [
     {
         value: 'atlet-data',
-        label: 'Data Atlet',
+        label: 'Atlet',
         component: Form,
         props: { mode: 'edit', initialData: props.item },
     },
     {
         value: 'orang-tua-data',
-        label: 'Data Orang Tua/Wali',
+        label: 'Orang Tua/Wali',
         component: FormOrangTua,
         props: { atletId: atletId.value, mode: 'edit' },
     },

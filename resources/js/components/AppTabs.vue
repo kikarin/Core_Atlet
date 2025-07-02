@@ -42,30 +42,19 @@ const handleTabChange = (tabValue: string) => {
 
 <template>
   <Tabs :model-value="activeTab" @update:model-value="handleTabChange" class="w-full">
-    <!-- Tabs List -->
-    <TabsList
-      class="flex w-full rounded-md border bg-muted overflow-x-auto flex-nowrap"
-    >
+<TabsList
+  class="inline-flex max-w-full rounded-md border bg-muted overflow-x-auto"
+>
       <TabsTrigger
         v-for="tab in tabs"
         :key="tab.value"
         :value="tab.value"
         :disabled="tab.disabled"
-        class="flex-shrink-0" 
+        class="flex-shrink-0"
       >
         {{ tab.label }}
       </TabsTrigger>
     </TabsList>
-
-    <!-- Tabs Content -->
-    <TabsContent
-      v-for="tab in tabs"
-      :key="tab.value"
-      :value="tab.value"
-    >
-      <div class="mt-4 border-t pt-4">
-        <component :is="tab.component" v-bind="tab.props" @save="tab.onSave" />
-      </div>
-    </TabsContent>
   </Tabs>
 </template>
+

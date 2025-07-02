@@ -15,6 +15,7 @@ const props = defineProps<{
         component: any;
         props?: Record<string, any>;
         disabled?: boolean;
+        onSave?: (form: any, setFormErrors: (errors: Record<string, string>) => void) => Promise<any>;
     }[];
     activeTabValue?: string;
 }>();
@@ -27,28 +28,43 @@ const handleTabChange = (value: string) => {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-4">
-            <div class="grid grid-cols-1 lg:grid-cols-12">
-                <div class="col-span-1 lg:col-span-7 lg:col-start-1">
-                    <Card class="w-full">
-                        <HeaderForm :title="props.title" :back-url="props.backUrl" :is-edit="true" />
-                        <CardContent>
-                            <div v-if="tabsConfig && tabsConfig.length > 0">
-                                <AppTabs
-                                    :tabs="tabsConfig"
-                                    :model-value="activeTabValue"
-                                    @update:model-value="handleTabChange"
-                                    :default-value="tabsConfig[0]?.value"
-                                />
-                            </div>
-                            <div v-else>
-                            <slot />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="space-y-4 p-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12">
+        <div class="col-span-1 lg:col-span-7 lg:col-start-1">
+
+          <div v-if="tabsConfig?.length" class="mb-4">
+            <AppTabs
+              :tabs="tabsConfig"
+              :model-value="activeTabValue"
+              @update:model-value="handleTabChange"
+              :default-value="tabsConfig[0]?.value"
+            />
+          </div>
+
+          <Card class="w-full">
+            <HeaderForm
+              :title="props.title"
+              :back-url="props.backUrl"
+              :is-edit="true"
+            />
+            <CardContent>
+              <template v-if="tabsConfig && tabsConfig.length">
+                <component
+                  :is="tabsConfig.find(tab => tab.value === activeTabValue)?.component"
+                  v-bind="tabsConfig.find(tab => tab.value === activeTabValue)?.props"
+                  @save="tabsConfig.find(tab => tab.value === activeTabValue)?.onSave"
+                />
+              </template>
+              <template v-else>
+                <slot />
+              </template>
+            </CardContent>
+          </Card>
+
         </div>
-    </AppLayout>
+      </div>
+    </div>
+  </AppLayout>
 </template>
+

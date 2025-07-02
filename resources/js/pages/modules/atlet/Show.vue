@@ -40,7 +40,7 @@ const props = defineProps<{
             updated_at: string;
             created_by_user: { name: string } | null;
             updated_by_user: { name: string } | null;
-        } | null; 
+        } | null;
     };
 }>();
 
@@ -217,7 +217,7 @@ const currentOnDeleteHandler = computed(() => {
                 :tabs="tabsConfig"
                 :default-value="'atlet-data'"
                 v-model="activeTab"
-            />
+    />
         </template>
         <template #custom>
             <div v-if="activeTab === 'orang-tua-data'">

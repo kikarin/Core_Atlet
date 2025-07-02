@@ -31,20 +31,29 @@ const handleTabChange = (value: string) => {
         <div class="space-y-4 p-4">
             <div class="grid grid-cols-1 lg:grid-cols-12">
                 <div class="col-span-1 lg:col-span-7 lg:col-start-1">
+
+                    <!-- Navigasi Tabs di luar Card -->
+                    <div v-if="tabsConfig && tabsConfig.length > 0" class="mb-4">
+                        <AppTabs
+                            :tabs="tabsConfig"
+                            :model-value="activeTabValue"
+                            @update:model-value="handleTabChange"
+                            :default-value="tabsConfig[0]?.value"
+                        />
+                    </div>
+
                     <Card class="w-full">
                         <HeaderForm :title="props.title" :back-url="props.backUrl" />
                         <CardContent>
-                            <div v-if="tabsConfig && tabsConfig.length > 0">
-                                <AppTabs
-                                    :tabs="tabsConfig"
-                                    :model-value="activeTabValue"
-                                    @update:model-value="handleTabChange"
-                                    :default-value="tabsConfig[0]?.value"
+                            <template v-if="tabsConfig && tabsConfig.length">
+                                <component
+                                    :is="tabsConfig.find(tab => tab.value === activeTabValue)?.component"
+                                    v-bind="tabsConfig.find(tab => tab.value === activeTabValue)?.props"
                                 />
-                            </div>
-                            <div v-else>
+                            </template>
+                            <template v-else>
                                 <slot />
-                            </div>
+                            </template>
                         </CardContent>
                     </Card>
                 </div>
