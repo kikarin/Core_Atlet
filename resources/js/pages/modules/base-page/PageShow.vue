@@ -26,6 +26,8 @@ const props = defineProps<{
     backUrl?: string;
     onDelete?: () => void;
     onEdit?: () => void;
+    onEditLabel?: string;
+    onEditIcon?: any;
 }>();
 
 const showDeleteDialog = ref(false);
@@ -48,16 +50,16 @@ const confirmDelete = () => {
         <div class="space-y-4 p-4">
             <!-- Header & Action Buttons -->
             <HeaderShow :title="`Detail ${title}`">
+                                <!-- Tambahkan slot custom-action -->
+                <slot name="custom-action" />
                 <button
                     v-if="onEdit"
                     class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
                     @click="onEdit"
                 >
-                    <Pencil class="h-4 w-4" />
-                    Edit
+                    <component :is="onEditIcon || Pencil" class="h-4 w-4" />
+                    {{ onEditLabel || 'Edit' }}
                 </button>
-
-                <!-- Always show Delete -->
                 <button
                     v-if="onDelete"
                     class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
@@ -66,8 +68,6 @@ const confirmDelete = () => {
                     <Trash2 class="h-4 w-4 text-red-500" />
                     Delete
                 </button>
-
-                <!-- Back -->
                 <button
                     class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
                     @click="() => router.visit(backUrl || '#')"
@@ -75,6 +75,7 @@ const confirmDelete = () => {
                     <ArrowLeft class="h-4 w-4" />
                     Back
                 </button>
+
             </HeaderShow>
 
             <!-- Tambahkan slot tabs di sini -->
@@ -126,7 +127,7 @@ const confirmDelete = () => {
                 </div>
 
                 <!-- Action Time Panel -->
-                <div class="col-span-12 md:col-span-4">
+                <div v-if="actionFields && actionFields.length > 0" class="col-span-12 md:col-span-4">
                     <div class="bg-card border-border rounded-2xl border shadow-sm">
                         <div class="border-border flex items-center gap-2 border-b px-6 py-4">
                             <Clock class="text-muted-foreground h-4 w-4" />

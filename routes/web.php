@@ -12,6 +12,7 @@ use App\Http\Controllers\AtletController;
 use App\Http\Controllers\AtletOrangTuaController;
 use App\Models\MstKecamatan;
 use App\Models\MstDesa;
+use App\Http\Controllers\AtletSertifikatController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -85,6 +86,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('orang-tua', [AtletOrangTuaController::class, 'store'])->name('atlet.orang-tua.store');
         Route::put('orang-tua/{id}', [AtletOrangTuaController::class, 'update'])->name('atlet.orang-tua.update');
         Route::delete('orang-tua/{id}', [AtletOrangTuaController::class, 'destroy'])->name('atlet.orang-tua.destroy');
+
+        // Atlet Sertifikat Routes (Nested under Atlet)
+        Route::get('sertifikat', [AtletSertifikatController::class, 'getByAtletId'])->name('atlet.sertifikat.index');
+        Route::post('sertifikat', [AtletSertifikatController::class, 'store'])->name('atlet.sertifikat.store');
+        Route::put('sertifikat/{id}', [AtletSertifikatController::class, 'update'])->name('atlet.sertifikat.update');
+        Route::delete('sertifikat/{id}', [AtletSertifikatController::class, 'destroy'])->name('atlet.sertifikat.destroy');
     });
     // END - Atlet Orang Tua Routes
 });

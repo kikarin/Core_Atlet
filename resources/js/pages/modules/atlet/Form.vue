@@ -3,10 +3,8 @@ import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const { save } = useHandleFormSave();
-const { toast } = useToast();
 
 const props = defineProps<{
     mode: 'create' | 'edit';

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import Tabs from "../components/ui/tabs/Tabs.vue";
 import TabsContent from "../components/ui/tabs/TabsContent.vue";
 import TabsList from "../components/ui/tabs/TabsList.vue";
@@ -20,31 +19,17 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'tab-change']);
 
-const activeTab = ref(props.modelValue || props.defaultValue);
-
-watch(() => props.modelValue, (newVal) => {
-    if (newVal && newVal !== activeTab.value) {
-        activeTab.value = newVal;
-    }
-});
-
-watch(activeTab, (newVal) => {
-    emit('update:modelValue', newVal);
-    emit('tab-change', newVal);
-});
-
 const handleTabChange = (tabValue: string) => {
     if (!props.tabs.find(t => t.value === tabValue)?.disabled) {
-        activeTab.value = tabValue;
+        emit('update:modelValue', tabValue);
+        emit('tab-change', tabValue);
     }
 };
 </script>
 
 <template>
-  <Tabs :model-value="activeTab" @update:model-value="handleTabChange" class="w-full">
-<TabsList
-  class="inline-flex max-w-full rounded-md border bg-muted overflow-x-auto"
->
+  <Tabs :model-value="props.modelValue || props.defaultValue" @update:model-value="handleTabChange" class="w-full">
+    <TabsList class="inline-flex max-w-full rounded-md border bg-muted overflow-x-auto">
       <TabsTrigger
         v-for="tab in tabs"
         :key="tab.value"

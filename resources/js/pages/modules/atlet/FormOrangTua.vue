@@ -134,7 +134,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: `/atlet/${props.atletId}/edit`, 
+        redirectUrl: `/atlet/${props.atletId}/edit?tab=orang-tua-data`, 
     });
 };
 </script>

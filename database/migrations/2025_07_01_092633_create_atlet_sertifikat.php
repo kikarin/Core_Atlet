@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('atlet_sertifikat', function (Blueprint $table) {
             $table->id();
-            $table->string("nama")->nullable();
-
+            $table->unsignedBigInteger('atlet_id');
+            $table->string('nama_sertifikat')->nullable();
+            $table->string('penyelenggara')->nullable();
+            $table->date('tanggal_terbit')->nullable();
+            $table->string('file', 255)->nullable();
             $table->timestamps();
             $table->softDeletes();
-
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
+
+            $table->foreign('atlet_id')->references('id')->on('atlets')->onDelete('cascade');
         });
     }
 

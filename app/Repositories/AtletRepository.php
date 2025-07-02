@@ -20,7 +20,14 @@ class AtletRepository
     {
         $this->model            = $model;
         $this->atletOrangTuaRepository = $atletOrangTuaRepository;
-        $this->with = ['media', 'created_by_user', 'updated_by_user', 'atletOrangTua.created_by_user', 'atletOrangTua.updated_by_user'];
+        $this->with = [
+            'media',
+            'created_by_user',
+            'updated_by_user',
+            'atletOrangTua.created_by_user',
+            'atletOrangTua.updated_by_user',
+            'sertifikat.media',
+        ];
     }
 
     public function customIndex($data)
@@ -190,5 +197,10 @@ class AtletRepository
         $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
         return $request->validate($rules, $messages);
+    }
+
+    public function getDetailWithRelations($id)
+    {
+        return $this->model->with($this->with)->findOrFail($id);
     }
 }

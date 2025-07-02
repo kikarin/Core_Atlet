@@ -11,6 +11,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Models\AtletOrangTua;
+use App\Models\AtletSertifikat;
 
 class Atlet extends Model implements HasMedia
 {
@@ -83,5 +84,11 @@ class Atlet extends Model implements HasMedia
     public function atletOrangTua()
     {
         return $this->hasOne(AtletOrangTua::class, 'atlet_id');
+    }
+
+    public function sertifikat()
+    {
+        return $this->hasMany(AtletSertifikat::class, 'atlet_id')
+            ->with(['created_by_user', 'updated_by_user']);
     }
 }

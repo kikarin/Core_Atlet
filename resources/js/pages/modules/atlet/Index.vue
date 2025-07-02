@@ -61,7 +61,7 @@ const actions = (row: any) => [
         onClick: () => router.visit(`/atlet/${row.id}`),
     },
     {
-        label: 'Edit',
+        label: 'Lihat',
         onClick: () => router.visit(`/atlet/${row.id}/edit`),
     },
     {

@@ -5,20 +5,24 @@ import AppTabs from '@/components/AppTabs.vue';
 import HeaderForm from './HeaderForm.vue';
 import { type BreadcrumbItem } from '@/types';
 
-const props = defineProps<{
-    title: string;
-    breadcrumbs: BreadcrumbItem[];
-    backUrl?: string;
-    tabsConfig?: {
-        value: string;
-        label: string;
-        component: any;
-        props?: Record<string, any>;
-        disabled?: boolean;
-        onSave?: (form: any, setFormErrors: (errors: Record<string, string>) => void) => Promise<any>;
-    }[];
-    activeTabValue?: string;
-}>();
+const props = withDefaults(defineProps<{
+  title: string;
+  breadcrumbs: BreadcrumbItem[];
+  backUrl?: string;
+  showEditPrefix?: boolean; 
+  tabsConfig?: {
+    value: string;
+    label: string;
+    component: any;
+    props?: Record<string, any>;
+    disabled?: boolean;
+    onSave?: (form: any, setFormErrors: (errors: Record<string, string>) => void) => Promise<any>;
+  }[];
+  activeTabValue?: string;
+}>(), {
+  showEditPrefix: true,
+});
+
 
 const emit = defineEmits(['cancel', 'update:activeTabValue']);
 
@@ -47,6 +51,7 @@ const handleTabChange = (value: string) => {
               :title="props.title"
               :back-url="props.backUrl"
               :is-edit="true"
+              :show-edit-prefix="props.showEditPrefix"
             />
             <CardContent>
               <template v-if="tabsConfig && tabsConfig.length">

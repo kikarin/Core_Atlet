@@ -3,11 +3,15 @@ import { Button } from '@/components/ui/button';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { router } from '@inertiajs/vue3';
 
-const props = defineProps<{
-    title: string;
-    backUrl?: string;
-    isEdit?: boolean; 
-}>();
+const props = withDefaults(defineProps<{
+  title: string;
+  backUrl?: string;
+  isEdit?: boolean;
+  showEditPrefix?: boolean;
+}>(), {
+  showEditPrefix: true
+});
+
 
 const handleBack = () => {
     if (props.backUrl) {
@@ -21,7 +25,7 @@ const handleBack = () => {
 <template>
     <CardHeader class="flex items-center justify-between">
         <CardTitle class="text-xl">
-            <span v-if="isEdit">Edit </span>{{ title }}
+<span v-if="isEdit && showEditPrefix !== false">Edit </span>{{ title }}
         </CardTitle>
         <Button variant="secondary" @click="handleBack"> ← Kembali </Button>
     </CardHeader>

@@ -3,6 +3,7 @@ import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
+import FormSertifikat from './FormSertifikat.vue';
 import { ref, watch, computed } from 'vue';
 
 const activeTab = ref('atlet-data');
@@ -35,6 +36,13 @@ const tabsConfig = computed(() => [
         value: 'orang-tua-data',
         label: 'Data Orang Tua/Wali',
         component: FormOrangTua,
+        props: { atletId: null, mode: 'create' },
+        disabled: true,
+    },
+    {
+        value: 'sertifikat-data',
+        label: 'Sertifikat',
+        component: FormSertifikat,
         props: { atletId: null, mode: 'create' },
         disabled: true,
     },
