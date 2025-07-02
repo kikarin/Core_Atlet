@@ -93,7 +93,7 @@ function handleFieldUpdate({ field, value }: { field: string, value: any }) {
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
     const formFields = { ...formData.value, ...dataFromFormInput }; 
     
-    let url = '/atlet';
+    const url = '/atlet';
     
     console.log('Atlet/Form.vue: Form fields to send:', formFields);
     console.log('Atlet/Form.vue: Determined base URL:', url);

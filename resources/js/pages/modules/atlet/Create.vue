@@ -4,7 +4,7 @@ import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
 import FormSertifikat from './FormSertifikat.vue';
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 
 const activeTab = ref('atlet-data');
 

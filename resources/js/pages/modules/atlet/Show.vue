@@ -7,8 +7,7 @@ import AppTabs from '@/components/AppTabs.vue';
 import ShowOrangTua from './ShowOrangTua.vue';
 import ShowSertifikat from './ShowSertifikat.vue';
 import EditSertifikatModal from './EditSertifikatModal.vue';
-import { useSertifikatEdit } from './useSertifikatEdit';
-import { PropType } from 'vue';
+import { useShowAtlet } from './useShowAtlet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Pencil, Plus } from 'lucide-vue-next';
@@ -249,76 +248,23 @@ const currentOnDeleteHandler = computed(() => {
 const {
   showEditModal,
   sertifikatToEdit,
-  openEditSertifikat,
   closeEditModal,
-  onSavedSertifikat,
-} = useSertifikatEdit();
-
-function handleEditSertifikat(sertifikat: any) {
-  openEditSertifikat(sertifikat);
-}
-
-function handleSertifikatSaved() {
-  onSavedSertifikat();
-  router.reload();
-}
-
-// State untuk modal konfirmasi delete
-const showDeleteModal = ref(false);
-const sertifikatToDelete = ref<any | null>(null);
-const showDeleteSelectedModal = ref(false);
-const idsToDelete = ref<number[]>([]);
-const selectedSertifikat = ref<number[]>([]);
-
-function handleDeleteSertifikat(sertifikat: any) {
-  sertifikatToDelete.value = sertifikat;
-  showDeleteModal.value = true;
-}
-
-function confirmDeleteSertifikat() {
-  if (!sertifikatToDelete.value) return;
-  router.delete(`/atlet/${props.item.id}/sertifikat/${sertifikatToDelete.value.id}`, {
-    onSuccess: () => {
-      toast({ title: 'Sertifikat berhasil dihapus', variant: 'success' });
-      router.reload();
-    },
-    onError: () => {
-      toast({ title: 'Gagal menghapus sertifikat', variant: 'destructive' });
-    },
-  });
-  showDeleteModal.value = false;
-  sertifikatToDelete.value = null;
-}
-
-function handleDeleteSelectedSertifikat(ids: number[]) {
-  idsToDelete.value = ids;
-  showDeleteSelectedModal.value = true;
-}
-
-function handleUpdateSelectedSertifikat(val: number[]) {
-  selectedSertifikat.value = val;
-}
-
-function confirmDeleteSelectedSertifikat() {
-  if (!idsToDelete.value.length) return;
-  Promise.all(idsToDelete.value.map(id => router.delete(`/atlet/${props.item.id}/sertifikat/${id}`)))
-    .then(() => {
-      toast({ title: 'Sertifikat terpilih berhasil dihapus', variant: 'success' });
-      router.reload();
-    })
-    .catch(() => {
-      toast({ title: 'Gagal menghapus beberapa sertifikat', variant: 'destructive' });
-    });
-  showDeleteSelectedModal.value = false;
-  idsToDelete.value = [];
-}
-
-const showCreatorModal = ref(false);
-const sertifikatCreator = ref<any | null>(null);
-function handleShowCreator(sertifikat: any) {
-  sertifikatCreator.value = sertifikat;
-  showCreatorModal.value = true;
-}
+  showDeleteModal,
+  sertifikatToDelete,
+  showDeleteSelectedModal,
+  idsToDelete,
+  selectedSertifikat,
+  showCreatorModal,
+  sertifikatCreator,
+  handleEditSertifikat,
+  handleDeleteSertifikat,
+  confirmDeleteSertifikat,
+  handleDeleteSelectedSertifikat,
+  handleUpdateSelectedSertifikat,
+  confirmDeleteSelectedSertifikat,
+  handleShowCreator,
+  handleSertifikatSaved
+} = useShowAtlet(props.item);
 </script>
 
 <template>

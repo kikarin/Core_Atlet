@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, onMounted, computed, watch } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
+import { ref, computed, watch } from 'vue';
 
 const { save } = useHandleFormSave();
-const { toast } = useToast();
 
 const props = defineProps<{
     atletId: number | null;

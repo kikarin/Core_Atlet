@@ -47,28 +47,6 @@ const waliFields = computed(() => {
 
   ];
 });
-
-const actionFields = computed(() => {
-  const o = props.orangTua || {};
-  return [
-    {
-      label: 'Created At',
-      value: o.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
-    },
-    {
-      label: 'Created By',
-      value: o.created_by_user?.name || '-',
-    },
-    {
-      label: 'Updated At',
-      value: o.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
-    },
-    {
-      label: 'Updated By',
-      value: o.updated_by_user?.name || '-',
-    },
-  ];
-});
 </script>
 
 <template>

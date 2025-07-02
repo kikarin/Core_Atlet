@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Tabs from "../components/ui/tabs/Tabs.vue";
-import TabsContent from "../components/ui/tabs/TabsContent.vue";
 import TabsList from "../components/ui/tabs/TabsList.vue";
 import TabsTrigger from "../components/ui/tabs/TabsTrigger.vue";
 

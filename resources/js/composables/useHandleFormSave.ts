@@ -84,7 +84,7 @@ export function useHandleFormSave() {
 
         console.log('RequestData (final):', requestData);
         if (requestData instanceof FormData) {
-            for (let pair of requestData.entries()) {
+            for (const pair of requestData.entries()) {
                 console.log(pair[0]+ ': ' + pair[1]);
             }
         }

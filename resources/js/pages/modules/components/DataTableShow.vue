@@ -27,7 +27,7 @@ const { visibleColumns, toggleSelect, toggleSelectAll } = useDataTable({
   page: 1,
   perPage: props.rows.length || 10,
   hidePagination: true,
-}, emit);
+}, (event: string, ...args: any[]) => emit(event, ...args));
 
 const selectedLocal = ref<number[]>([...props.selected]);
 
@@ -65,12 +65,6 @@ onBeforeUnmount(() => {
 
 function handleDeleteSelected() {
   emit('deleteSelected', [...selectedLocal.value]);
-}
-function handleEdit(row: any) {
-  emit('edit', row);
-}
-function handleDelete(row: any) {
-  emit('delete', row);
 }
 </script>
 

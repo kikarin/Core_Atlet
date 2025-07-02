@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import FormSertifikat from './FormSertifikat.vue';
 
 const props = defineProps<{
@@ -21,7 +20,7 @@ function handleSaved() {
 }
 </script>
 <template>
-  <Dialog v-model:open="props.visible" @update:open="(val) => { if (!val) props.onClose(); }">
+  <Dialog :open="props.visible" @update:open="(val) => { if (!val) props.onClose(); }">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Edit Sertifikat</DialogTitle>
