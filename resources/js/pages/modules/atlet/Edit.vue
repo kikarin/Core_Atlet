@@ -3,9 +3,11 @@ import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import FormSertifikat from './sertifikat/FormSertifikat.vue';
+import ShowDokumen from './dokumen/ShowDokumen.vue';
+import FormKesehatan from './FormKesehatan.vue';
 import { ref, computed, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
+import { useToast } from '@/components/ui/toast/useToast';
 
 const props = defineProps<{ item: Record<string, any> }>();
 
@@ -46,6 +48,12 @@ const dynamicTitle = computed(() => {
         return `Orang Tua/Wali : ${props.item.nama || '-'}`;
     } else if (activeTab.value === 'sertifikat-data') {
         return `Sertifikat : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'prestasi-data') {
+        return `Prestasi : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'dokumen-data') {
+        return `Dokumen : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'kesehatan-data') {
+        return `Kesehatan : ${props.item.nama || '-'}`;
     }
     return 'Edit Atlet';
 });
@@ -76,8 +84,30 @@ const tabsConfig = computed(() => [
         isRedirectTab: true,
         onClick: () => router.visit(`/atlet/${props.item.id}/sertifikat`),
     },
+    {
+        value: 'prestasi-data',
+        label: 'Prestasi',
+        isRedirectTab: true,
+        onClick: () => router.visit(`/atlet/${props.item.id}/prestasi`),
+    },
+    {
+        value: 'dokumen-data',
+        label: 'Dokumen',
+        isRedirectTab: true,
+        onClick: () => router.visit(`/atlet/${props.item.id}/dokumen`),
+    },
+    {
+        value: 'kesehatan-data',
+        label: 'Kesehatan',
+        component: FormKesehatan,
+        props: { atletId: atletId.value, mode: 'edit' },
+    },
 ]);
 
+const { toast } = useToast();
+
+interface Sertifikat {
+}
 
 </script>
 
@@ -96,6 +126,21 @@ const tabsConfig = computed(() => [
             class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
             @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)">
             Lihat Sertifikat
+          </button>
+          <button
+            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+            @click="() => router.visit(`/atlet/${props.item.id}/prestasi`)">
+            Lihat Prestasi
+          </button>
+          <button
+            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+            @click="() => router.visit(`/atlet/${props.item.id}/dokumen`)">
+            Lihat Dokumen
+          </button>
+          <button
+            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+            @click="() => router.visit(`/atlet/${props.item.id}/kesehatan`)">
+            Lihat Kesehatan
           </button>
         </div>
       </template>

@@ -6,6 +6,9 @@ import { computed, ref, watch } from 'vue';
 import AppTabs from '@/components/AppTabs.vue';
 import ShowOrangTua from './ShowOrangTua.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
+import ShowPrestasi from './prestasi/ShowPrestasi.vue';
+import ShowDokumen from './dokumen/ShowDokumen.vue';
+import ShowKesehatan from './ShowKesehatan.vue';
 import { Pencil, Plus } from 'lucide-vue-next';
 
 const { toast } = useToast();
@@ -17,6 +20,47 @@ interface Sertifikat {
   penyelenggara?: string;
   tanggal_terbit?: string;
   file_url?: string;
+  created_at: string;
+  updated_at: string;
+  created_by_user?: { name: string } | null;
+  updated_by_user?: { name: string } | null;
+}
+
+interface Prestasi {
+  id: number;
+  atlet_id: number;
+  nama_event: string;
+  tingkat_id?: number;
+  tanggal?: string;
+  peringkat?: string;
+  keterangan?: string;
+  created_at: string;
+  updated_at: string;
+  created_by_user?: { name: string } | null;
+  updated_by_user?: { name: string } | null;
+}
+
+interface Dokumen {
+  id: number;
+  atlet_id: number;
+  jenis_dokumen_id?: number;
+  nomor?: string;
+  file_url?: string;
+  created_at: string;
+  updated_at: string;
+  created_by_user?: { name: string } | null;
+  updated_by_user?: { name: string } | null;
+}
+
+interface Kesehatan {
+  id: number;
+  atlet_id: number;
+  tinggi_badan?: string;
+  berat_badan?: string;
+  penglihatan?: string;
+  pendengaran?: string;
+  riwayat_penyakit?: string;
+  alergi?: string;
   created_at: string;
   updated_at: string;
   created_by_user?: { name: string } | null;
@@ -51,6 +95,9 @@ const props = defineProps<{
             updated_by_user: { name: string } | null;
         } | null;
         sertifikat?: Sertifikat[];
+        prestasi?: Prestasi[];
+        dokumen?: Dokumen[];
+        kesehatan?: Kesehatan | null;
         kecamatan?: { nama: string } | null;
         kelurahan?: { nama: string } | null;
     };
@@ -90,6 +137,12 @@ const dynamicTitle = computed(() => {
     return `Orang Tua/Wali : ${props.item.nama}`;
   } else if (activeTab.value === 'sertifikat-data') {
     return `Sertifikat : ${props.item.nama}`;
+  } else if (activeTab.value === 'prestasi-data') {
+    return `Prestasi : ${props.item.nama}`;
+  } else if (activeTab.value === 'dokumen-data') {
+    return `Dokumen : ${props.item.nama}`;
+  } else if (activeTab.value === 'kesehatan-data') {
+    return `Kesehatan : ${props.item.nama}`;
   }
   return `Atlet: ${props.item.nama}`;
 });
@@ -171,6 +224,28 @@ const orangTuaActionFields = computed(() => {
   ];
 });
 
+const kesehatanActionFields = computed(() => {
+  const o = props.item.kesehatan;
+  return [
+    {
+      label: 'Created At',
+      value: o?.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+    },
+    {
+      label: 'Created By',
+      value: o?.created_by_user?.name || '-',
+    },
+    {
+      label: 'Updated At',
+      value: o?.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+    },
+    {
+      label: 'Updated By',
+      value: o?.updated_by_user?.name || '-',
+    },
+  ];
+});
+
 const tabsConfig = [
     {
         value: 'atlet-data',
@@ -183,6 +258,18 @@ const tabsConfig = [
     {
         value: 'sertifikat-data',
         label: 'Sertifikat',
+    },
+    {
+        value: 'prestasi-data',
+        label: 'Prestasi',
+    },
+    {
+        value: 'dokumen-data',
+        label: 'Dokumen',
+    },
+    {
+        value: 'kesehatan-data',
+        label: 'Kesehatan',
     },
 ];
 
@@ -220,6 +307,24 @@ const handleDeleteOrangTua = () => {
     }
 };
 
+const handleEditKesehatan = () => {
+        router.visit(`/atlet/${props.item.id}/edit?tab=kesehatan-data`);
+};
+
+const handleDeleteKesehatan = () => {
+    if (props.item.kesehatan) {
+        router.delete(`/atlet/${props.item.id}/kesehatan/${props.item.kesehatan.id}`, {
+            onSuccess: () => {
+                toast({ title: 'Data kesehatan atlet berhasil dihapus', variant: 'success' });
+                router.visit(`/atlet/${props.item.id}?tab=kesehatan-data`, { replace: true, preserveState: true, preserveScroll: true, only: [] });
+            },
+            onError: () => {
+                toast({ title: 'Gagal menghapus data kesehatan atlet', variant: 'destructive' });
+            },
+        });
+    }
+};
+
 const currentOnEditHandler = computed(() => {
     if (activeTab.value === 'atlet-data') {
         return handleEditAtlet;
@@ -227,6 +332,12 @@ const currentOnEditHandler = computed(() => {
         return handleEditOrangTua;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
+    } else if (activeTab.value === 'prestasi-data') {
+        return undefined;
+    } else if (activeTab.value === 'dokumen-data') {
+        return undefined;
+    } else if (activeTab.value === 'kesehatan-data') {
+        return handleEditKesehatan;
     }
     return undefined;
 });
@@ -238,6 +349,12 @@ const currentOnDeleteHandler = computed(() => {
         return props.item.atlet_orang_tua ? handleDeleteOrangTua : undefined;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
+    } else if (activeTab.value === 'prestasi-data') {
+        return undefined;
+    } else if (activeTab.value === 'dokumen-data') {
+        return undefined;
+    } else if (activeTab.value === 'kesehatan-data') {
+        return props.item.kesehatan ? handleDeleteKesehatan : undefined;
     }
     return undefined;
 });
@@ -250,12 +367,12 @@ const currentOnDeleteHandler = computed(() => {
         :title="dynamicTitle"
         :breadcrumbs="breadcrumbs"
         :fields="activeTab === 'atlet-data' ? fields : []"
-        :actionFields="activeTab === 'sertifikat-data' ? [] : (activeTab === 'atlet-data' ? actionFields : orangTuaActionFields)"
+        :actionFields="activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data' ? [] : (activeTab === 'atlet-data' ? actionFields : (activeTab === 'kesehatan-data' ? kesehatanActionFields : orangTuaActionFields))"
         :back-url="'/atlet'"
         :on-edit="currentOnEditHandler"
         :on-delete="currentOnDeleteHandler"
-        :on-edit-label="activeTab === 'orang-tua-data' && !props.item.atlet_orang_tua ? 'Create' : 'Edit'"
-        :on-edit-icon="activeTab === 'orang-tua-data' && !props.item.atlet_orang_tua ? Plus : Pencil"
+        :on-edit-label="activeTab === 'orang-tua-data' && !props.item.atlet_orang_tua || activeTab === 'kesehatan-data' && !props.item.kesehatan ? 'Create' : 'Edit'"
+        :on-edit-icon="activeTab === 'orang-tua-data' && !props.item.atlet_orang_tua || activeTab === 'kesehatan-data' && !props.item.kesehatan ? Plus : Pencil"
     >
         <template #tabs>
             <AppTabs
@@ -273,6 +390,24 @@ const currentOnDeleteHandler = computed(() => {
                   Kelola Sertifikat
                 </button>
             </div>
+            <div v-if="activeTab === 'prestasi-data'">
+                <button
+                  class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                  @click="() => router.visit(`/atlet/${props.item.id}/prestasi`)"
+                >
+                  Kelola Prestasi
+                </button>
+            </div>
+            <div v-if="activeTab === 'dokumen-data'">
+                <button
+                  class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                  @click="() => router.visit(`/atlet/${props.item.id}/dokumen`)"
+                >
+                  Kelola Dokumen
+                </button>
+            </div>
+            <div v-if="activeTab === 'kesehatan-data'">
+            </div>
         </template>
         <template #custom>
             <div v-if="activeTab === 'orang-tua-data'">
@@ -283,6 +418,21 @@ const currentOnDeleteHandler = computed(() => {
                   :sertifikat-list="props.item.sertifikat || []"
                   :atlet-id="props.item.id"
                 />
+            </div>
+            <div v-if="activeTab === 'prestasi-data'">
+                <ShowPrestasi
+                  :prestasi-list="props.item.prestasi || []"
+                  :atlet-id="props.item.id"
+                />
+            </div>
+            <div v-if="activeTab === 'dokumen-data'">
+                <ShowDokumen
+                  :dokumen-list="props.item.dokumen || []"
+                  :atlet-id="props.item.id"
+                />
+            </div>
+            <div v-if="activeTab === 'kesehatan-data'">
+                <ShowKesehatan :kesehatan="props.item.kesehatan || null" />
             </div>
         </template>
     </PageShow>

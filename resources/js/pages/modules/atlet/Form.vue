@@ -107,7 +107,22 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: '/atlet', 
+        onSuccess: (page: any) => {
+            const id = page?.props?.item?.id || page?.props?.item?.data?.id;
+            if (props.mode === 'create') {
+                if (id) {
+                    window.location.href = `/atlet/${id}/edit`;
+                } else {
+                    window.location.href = '/atlet';
+                }
+            } else if (props.mode === 'edit') {
+                if (id) {
+                    window.location.href = `/atlet/${id}/edit`;
+                } else {
+                    window.location.href = '/atlet';
+                }
+            }
+        },
     });
 };
 </script>

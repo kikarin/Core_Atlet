@@ -12,6 +12,9 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Models\AtletOrangTua;
 use App\Models\AtletSertifikat;
+use App\Models\AtletPrestasi;
+use App\Models\AtletDokumen;
+use App\Models\AtletKesehatan;
 
 class Atlet extends Model implements HasMedia
 {
@@ -92,6 +95,18 @@ class Atlet extends Model implements HasMedia
             ->with(['created_by_user', 'updated_by_user']);
     }
 
+    public function prestasi()
+    {
+        return $this->hasMany(AtletPrestasi::class, 'atlet_id')
+            ->with(['created_by_user', 'updated_by_user']);
+    }
+
+    public function dokumen()
+    {
+        return $this->hasMany(AtletDokumen::class, 'atlet_id')
+            ->with(['created_by_user', 'updated_by_user']);
+    }
+
     public function kecamatan()
     {
         return $this->belongsTo(MstKecamatan::class, 'kecamatan_id')->select(['id', 'nama']);
@@ -100,5 +115,10 @@ class Atlet extends Model implements HasMedia
     public function kelurahan()
     {
         return $this->belongsTo(MstDesa::class, 'kelurahan_id')->select(['id', 'nama']);
+    }
+
+    public function kesehatan()
+    {
+        return $this->hasOne(AtletKesehatan::class, 'atlet_id');
     }
 }

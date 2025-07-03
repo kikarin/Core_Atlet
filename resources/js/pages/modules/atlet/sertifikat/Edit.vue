@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
-import FormSertifikat from './FormSertifikat.vue';
+import FormSertifikat from './Form.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{ 

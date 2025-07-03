@@ -16,20 +16,12 @@ const { toast } = useToast();
 
 const breadcrumbs = computed(() => [
   { title: 'Atlet', href: '/atlet' },
-  { title: 'Sertifikat', href: `/atlet/${props.atletId}/sertifikat` },
+  { title: 'Dokumen', href: `/atlet/${props.atletId}/dokumen` },
 ]);
 
 const columns = [
-  { key: 'nama_sertifikat', label: 'Nama Sertifikat' },
-  { key: 'penyelenggara', label: 'Penyelenggara' },
-  {
-    key: 'tanggal_terbit',
-    label: 'Tanggal Terbit',
-    format: (row: any) =>
-      row.tanggal_terbit
-        ? new Date(row.tanggal_terbit).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' })
-        : '-',
-  },
+  { key: 'jenis_dokumen_id', label: 'Jenis Dokumen' },
+  { key: 'nomor', label: 'Nomor Dokumen' },
   {
     key: 'file_url',
     label: 'File',
@@ -71,7 +63,7 @@ const handleSearch = (params: { search?: string; sortKey?: string; sortOrder?: '
 const fetchData = async () => {
   loading.value = true;
   try {
-    const response = await axios.get(`/api/atlet/${props.atletId}/sertifikat`, {
+    const response = await axios.get(`/api/atlet/${props.atletId}/dokumen`, {
       params: {
         search: search.value,
         page: page.value,
@@ -104,11 +96,11 @@ watch([page, perPage, () => sort.value.key, () => sort.value.order], (vals, oldV
 const actions = (row: any) => [
   {
     label: 'Detail',
-    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}`),
+    onClick: () => router.visit(`/atlet/${props.atletId}/dokumen/${row.id}`),
   },
   {
     label: 'Edit',
-    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}/edit`),
+    onClick: () => router.visit(`/atlet/${props.atletId}/dokumen/${row.id}/edit`),
   },
   {
     label: 'Delete',
@@ -124,13 +116,13 @@ const handleDeleteRow = async (row: any) => {
 const confirmDeleteRow = async () => {
   if (!rowToDelete.value) return;
 
-  await router.delete(`/atlet/${props.atletId}/sertifikat/${rowToDelete.value.id}`, {
+  await router.delete(`/atlet/${props.atletId}/dokumen/${rowToDelete.value.id}`, {
     onSuccess: () => {
-      toast({ title: 'Sertifikat berhasil dihapus', variant: 'success' });
+      toast({ title: 'Dokumen berhasil dihapus', variant: 'success' });
       fetchData();
     },
     onError: () => {
-      toast({ title: 'Gagal menghapus sertifikat.', variant: 'destructive' });
+      toast({ title: 'Gagal menghapus dokumen.', variant: 'destructive' });
     },
   });
   showDeleteDialog.value = false;
@@ -147,12 +139,12 @@ const deleteSelected = async () => {
 
 const confirmDeleteSelected = async () => {
   try {
-    const response = await axios.post(`/atlet/${props.atletId}/sertifikat/destroy-selected`, { ids: idsToDelete.value });
+    const response = await axios.post(`/atlet/${props.atletId}/dokumen/destroy-selected`, { ids: idsToDelete.value });
     selected.value = [];
     fetchData();
-    toast({ title: response.data?.message || 'Sertifikat terpilih berhasil dihapus', variant: 'success' });
+    toast({ title: response.data?.message || 'Dokumen terpilih berhasil dihapus', variant: 'success' });
   } catch (error: any) {
-    toast({ title: error.response?.data?.message || 'Gagal menghapus sertifikat terpilih', variant: 'destructive' });
+    toast({ title: error.response?.data?.message || 'Gagal menghapus dokumen terpilih', variant: 'destructive' });
   }
   showDeleteSelectedDialog.value = false;
   idsToDelete.value = [];
@@ -173,7 +165,7 @@ const tabsConfig = [
   {
     value: 'sertifikat-data',
     label: 'Sertifikat',
-    // Aktif
+    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat`),
   },
   {
     value: 'prestasi-data',
@@ -183,18 +175,18 @@ const tabsConfig = [
   {
     value: 'dokumen-data',
     label: 'Dokumen',
-    onClick: () => router.visit(`/atlet/${props.atletId}/dokumen`),
+    // Aktif
   },
   {
     value: 'kesehatan-data',
     label: 'Kesehatan',
     onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=kesehatan-data`),
-  }
+  },
 ];
-const activeTab = ref('sertifikat-data');
+const activeTab = ref('dokumen-data');
 
 function handleTabChange(val: string) {
-  if (val === 'sertifikat-data') return;
+  if (val === 'dokumen-data') return;
   const tab = tabsConfig.find(t => t.value === val);
   if (tab && tab.onClick) tab.onClick();
 }
@@ -209,8 +201,8 @@ const idsToDelete = ref<number[]>([]);
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-4 space-y-4">
       <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange"
-        :default-value="'sertifikat-data'" />
-      <HeaderActions title="Sertifikat" :create-url="`/atlet/${props.atletId}/sertifikat/create`" :selected="selected"
+        :default-value="'dokumen-data'" />
+      <HeaderActions title="Dokumen" :create-url="`/atlet/${props.atletId}/dokumen/create`" :selected="selected"
         :on-delete-selected="deleteSelected" />
       <DataTable :columns="columns" :rows="rows" v-model:selected="selected" :total="total" :search="search"
         :sort="sort" :page="page" :per-page="perPage" :loading="loading" :actions="actions"
@@ -252,4 +244,4 @@ const idsToDelete = ref<number[]>([]);
       </DialogContent>
     </Dialog>
   </AppLayout>
-</template>
+</template> 

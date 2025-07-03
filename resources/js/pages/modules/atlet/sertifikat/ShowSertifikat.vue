@@ -56,11 +56,6 @@ const columns = [
   <DataTableShow
     :columns="columns"
     :rows="props.sertifikatList"
-    :selected="selected"
-    :showCheckbox="false"
-    @update:selected="val => emit('update:selected', val)"
-    @edit="sertifikat => props.onEditSertifikat ? props.onEditSertifikat(sertifikat) : emit('edit', sertifikat)"
-    @delete="sertifikat => props.onDeleteSertifikat ? props.onDeleteSertifikat(sertifikat) : emit('delete', sertifikat)"
   >
     <template #title>
       <h3 class="font-semibold text-base text-muted-foreground uppercase tracking-wide">

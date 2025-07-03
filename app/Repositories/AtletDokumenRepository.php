@@ -2,23 +2,22 @@
 
 namespace App\Repositories;
 
-use App\Models\AtletSertifikat;
+use App\Models\AtletDokumen;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class AtletSertifikatRepository
+class AtletDokumenRepository
 {
     use RepositoryTrait;
 
     protected $model;
 
-    public function __construct(AtletSertifikat $model)
+    public function __construct(AtletDokumen $model)
     {
         $this->model = $model;
         $this->with = [
-            'media',
             'created_by_user',
             'updated_by_user',
         ];
@@ -26,20 +25,20 @@ class AtletSertifikatRepository
 
     public function create(array $data)
     {
-        Log::info('AtletSertifikatRepository: create', $data);
+        Log::info('AtletDokumenRepository: create', $data);
         $file = $data['file'] ?? null;
         unset($data['file']);
         $data = $this->customDataCreateUpdate($data);
         $model = $this->model->create($data);
         if ($file) {
-            $model->addMedia($file)->usingName($data['nama_sertifikat'] ?? 'Sertifikat')->toMediaCollection('sertifikat_file');
+            $model->addMedia($file)->usingName($data['nomor'] ?? 'Dokumen')->toMediaCollection('dokumen_file');
         }
         return $model;
     }
 
     public function update($id, array $data)
     {
-        Log::info('AtletSertifikatRepository: update', ['id' => $id, 'data' => $data]);
+        Log::info('AtletDokumenRepository: update', ['id' => $id, 'data' => $data]);
         $record = $this->model->find($id);
         if ($record) {
             $file = $data['file'] ?? null;
@@ -47,26 +46,26 @@ class AtletSertifikatRepository
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             if ($file) {
-                $record->clearMediaCollection('sertifikat_file');
-                $record->addMedia($file)->usingName($data['nama_sertifikat'] ?? 'Sertifikat')->toMediaCollection('sertifikat_file');
+                $record->clearMediaCollection('dokumen_file');
+                $record->addMedia($file)->usingName($data['nomor'] ?? 'Dokumen')->toMediaCollection('dokumen_file');
             }
-            Log::info('AtletSertifikatRepository: updated', $record->toArray());
+            Log::info('AtletDokumenRepository: updated', $record->toArray());
             return $record;
         }
-        Log::warning('AtletSertifikatRepository: not found for update', ['id' => $id]);
+        Log::warning('AtletDokumenRepository: not found for update', ['id' => $id]);
         return null;
     }
 
     public function delete($id)
     {
-        Log::info('AtletSertifikatRepository: delete', ['id' => $id]);
+        Log::info('AtletDokumenRepository: delete', ['id' => $id]);
         $record = $this->model->withTrashed()->find($id);
         if ($record) {
             $record->forceDelete();
-            Log::info('AtletSertifikatRepository: deleted', ['id' => $id]);
+            Log::info('AtletDokumenRepository: deleted', ['id' => $id]);
             return true;
         }
-        Log::warning('AtletSertifikatRepository: not found for delete', ['id' => $id]);
+        Log::warning('AtletDokumenRepository: not found for delete', ['id' => $id]);
         return false;
     }
 
@@ -98,9 +97,8 @@ class AtletSertifikatRepository
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nama_sertifikat', 'like', "%$search%")
-                  ->orWhere('penyelenggara', 'like', "%$search%")
-                  ->orWhere('tanggal_terbit', 'like', "%$search%")
+                $q->where('nomor', 'like', "%$search%")
+                  ->orWhere('jenis_dokumen_id', 'like', "%$search%")
                   ;
             });
         }
@@ -108,7 +106,7 @@ class AtletSertifikatRepository
         if (request('sort')) {
             $order = request('order', 'asc');
             $sortField = request('sort');
-            $validColumns = ['id', 'nama_sertifikat', 'penyelenggara', 'tanggal_terbit', 'created_at', 'updated_at'];
+            $validColumns = ['id', 'jenis_dokumen_id', 'nomor', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
             } else {
@@ -124,9 +122,8 @@ class AtletSertifikatRepository
             $transformed = collect($all)->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nama_sertifikat' => $item->nama_sertifikat,
-                    'penyelenggara' => $item->penyelenggara,
-                    'tanggal_terbit' => $item->tanggal_terbit,
+                    'jenis_dokumen_id' => $item->jenis_dokumen_id,
+                    'nomor' => $item->nomor,
                     'file_url' => $item->file_url,
                 ];
             });
@@ -147,9 +144,8 @@ class AtletSertifikatRepository
         $transformed = collect($items->items())->map(function ($item) {
             return [
                 'id' => $item->id,
-                'nama_sertifikat' => $item->nama_sertifikat,
-                'penyelenggara' => $item->penyelenggara,
-                'tanggal_terbit' => $item->tanggal_terbit,
+                'jenis_dokumen_id' => $item->jenis_dokumen_id,
+                'nomor' => $item->nomor,
                 'file_url' => $item->file_url,
             ];
         });
@@ -168,21 +164,21 @@ class AtletSertifikatRepository
 
     public function handleCreate($atletId)
     {
-        return Inertia::render('modules/atlet/sertifikat/Create', [
+        return Inertia::render('modules/atlet/dokumen/Create', [
             'atletId' => (int) $atletId,
         ]);
     }
 
     public function handleEdit($atletId, $id)
     {
-        $sertifikat = $this->getById($id);
-        if (!$sertifikat) {
-            return redirect()->back()->with('error', 'Sertifikat tidak ditemukan');
+        $dokumen = $this->getById($id);
+        if (!$dokumen) {
+            return redirect()->back()->with('error', 'Dokumen tidak ditemukan');
         }
         
-        return Inertia::render('modules/atlet/sertifikat/Edit', [
+        return Inertia::render('modules/atlet/dokumen/Edit', [
             'atletId' => (int) $atletId,
-            'item' => $sertifikat,
+            'item' => $dokumen,
         ]);
     }
 

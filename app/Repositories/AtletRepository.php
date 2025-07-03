@@ -27,6 +27,9 @@ class AtletRepository
             'atletOrangTua.created_by_user',
             'atletOrangTua.updated_by_user',
             'sertifikat.media',
+            'prestasi',
+            'dokumen',
+            'kesehatan',
         ];
     }
 

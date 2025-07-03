@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
-import FormSertifikat from './FormSertifikat.vue';
+import FormSertifikat from './Form.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{ atletId: number }>();

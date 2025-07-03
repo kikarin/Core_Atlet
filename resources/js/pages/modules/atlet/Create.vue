@@ -3,7 +3,11 @@ import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import FormSertifikat from './sertifikat/FormSertifikat.vue';
+import FormSertifikat from './sertifikat/Form.vue';
+import FormPrestasi from './prestasi/Form.vue';
+import FormDokumen from './dokumen/Form.vue';
+import FormKesehatan from './FormKesehatan.vue';
+
 import { ref, computed } from 'vue';
 
 const activeTab = ref('atlet-data');
@@ -28,13 +32,13 @@ const breadcrumbs = computed(() => [
 const tabsConfig = computed(() => [
     {
         value: 'atlet-data',
-        label: 'Data Atlet',
+        label: 'Atlet',
         component: Form,
         props: { mode: 'create', initialData: {} },
     },
     {
         value: 'orang-tua-data',
-        label: 'Data Orang Tua/Wali',
+        label: 'Orang Tua/Wali',
         component: FormOrangTua,
         props: { atletId: null, mode: 'create' },
         disabled: true,
@@ -46,16 +50,32 @@ const tabsConfig = computed(() => [
         props: { atletId: null, mode: 'create' },
         disabled: true,
     },
+    {
+        value: 'prestasi-data',
+        label: 'Prestasi',
+        component: FormPrestasi,
+        props: { atletId: null, mode: 'create' },
+        disabled: true,
+    },
+    {
+        value: 'dokumen-data',
+        label: 'Dokumen',
+        component: FormDokumen, 
+        props: { atletId: null, mode: 'create' },
+        disabled: true,
+    },
+    {
+        value: 'kesehatan-data',
+        label: 'Kesehatan',
+        component: FormKesehatan, 
+        props: { atletId: null, mode: 'create' },
+        disabled: true,
+    },
 ]);
 
 </script>
 
 <template>
-    <PageCreate 
-        :title="dynamicTitle" 
-        :breadcrumbs="breadcrumbs" 
-        back-url="/atlet"
-        :tabs-config="tabsConfig"
-        v-model:activeTabValue="activeTab"
-    />
-</template> 
+    <PageCreate :title="dynamicTitle" :breadcrumbs="breadcrumbs" back-url="/atlet" :tabs-config="tabsConfig"
+        v-model:activeTabValue="activeTab" />
+</template>
