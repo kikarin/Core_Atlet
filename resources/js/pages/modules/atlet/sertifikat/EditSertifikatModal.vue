@@ -11,7 +11,7 @@ const props = defineProps<{
   onSaved: () => void;
 }>();
 
-const formKey = ref(0); // force remount form on sertifikat change
+const formKey = ref(0); 
 watch(() => props.sertifikat, () => { formKey.value++; });
 
 function handleSaved() {
@@ -31,6 +31,7 @@ function handleSaved() {
         :mode="'edit'"
         :atlet-id="props.atletId"
         :initial-data="props.sertifikat"
+        :redirect-url="`/atlet/${props.atletId}?tab=sertifikat-data`"
         @saved="handleSaved"
         @cancel="props.onClose"
       />

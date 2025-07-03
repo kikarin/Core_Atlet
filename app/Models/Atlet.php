@@ -91,4 +91,14 @@ class Atlet extends Model implements HasMedia
         return $this->hasMany(AtletSertifikat::class, 'atlet_id')
             ->with(['created_by_user', 'updated_by_user']);
     }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(MstKecamatan::class, 'kecamatan_id')->select(['id', 'nama']);
+    }
+
+    public function kelurahan()
+    {
+        return $this->belongsTo(MstDesa::class, 'kelurahan_id')->select(['id', 'nama']);
+    }
 }

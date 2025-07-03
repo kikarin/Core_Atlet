@@ -9,6 +9,7 @@ const props = defineProps<{
     atletId: number | null;
     mode: 'create' | 'edit';
     initialData?: any;
+    redirectUrl?: string;
 }>();
 
 const formData = ref<Record<string, any>>({
@@ -53,7 +54,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: `/atlet/${props.atletId}/sertifikat`,
+        redirectUrl: props.redirectUrl ?? `/atlet/${props.atletId}/sertifikat`
     });
 };
 </script>

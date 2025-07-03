@@ -201,6 +201,7 @@ class AtletRepository
 
     public function getDetailWithRelations($id)
     {
-        return $this->model->with($this->with)->findOrFail($id);
+        $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
+        return $this->model->with($with)->findOrFail($id);
     }
 }

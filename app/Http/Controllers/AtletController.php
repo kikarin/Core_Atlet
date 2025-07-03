@@ -10,6 +10,7 @@ use App\Traits\BaseTrait;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AtletController extends Controller implements HasMiddleware
 {
@@ -97,4 +98,12 @@ class AtletController extends Controller implements HasMiddleware
                 ->with('error', 'Terjadi kesalahan saat memperbarui data atlet.');
         }
     }
+
+    public function show($id)
+{
+    $item = $this->repository->getDetailWithRelations($id);
+    return Inertia::render('modules/atlet/Show', [
+        'item' => $item,
+    ]);
+}
 }

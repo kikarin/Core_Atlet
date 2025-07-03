@@ -28,7 +28,7 @@ const activeTab = ref('sertifikat-data');
     title="Create Sertifikat" 
     :breadcrumbs="breadcrumbs" 
     :back-url="`/atlet/${props.atletId}/sertifikat`"
-    :tabs-config="tabsConfig"
-    v-model:activeTabValue="activeTab"
-  />
+  >
+    <FormSertifikat :atlet-id="props.atletId" mode="create" :initial-data="{}" />
+  </PageCreate>
 </template> 

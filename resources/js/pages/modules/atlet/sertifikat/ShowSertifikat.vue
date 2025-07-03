@@ -49,28 +49,7 @@ const columns = [
   },
 ];
 
-const actions = (row: Sertifikat) => [
-  {
-    label: 'Edit',
-    onClick: () => emit('edit', row),
-  },
-  {
-    label: 'Delete',
-    onClick: () => emit('delete', row),
-  },
-  {
-    label: 'Lihat Pembuat',
-    onClick: () => emit('showCreator', row),
-  },
-];
 
-function handleDeleteSelected(ids: number[]) {
-  if (props.onDeleteSelectedSertifikat) {
-    props.onDeleteSelectedSertifikat(ids);
-  } else {
-    emit('deleteSelected', ids);
-  }
-}
 </script>
 
 <template>
@@ -78,18 +57,14 @@ function handleDeleteSelected(ids: number[]) {
     :columns="columns"
     :rows="props.sertifikatList"
     :selected="selected"
-    :actions="actions"
+    :showCheckbox="false"
     @update:selected="val => emit('update:selected', val)"
     @edit="sertifikat => props.onEditSertifikat ? props.onEditSertifikat(sertifikat) : emit('edit', sertifikat)"
     @delete="sertifikat => props.onDeleteSertifikat ? props.onDeleteSertifikat(sertifikat) : emit('delete', sertifikat)"
-    @deleteSelected="handleDeleteSelected"
   >
     <template #title>
       <h3 class="font-semibold text-base text-muted-foreground uppercase tracking-wide">
         Informasi Semua Sertifikat
-        <span class="block mt-1 text-xs font-normal text-muted-foreground">
-          (Shortcut: <kbd class="px-1 py-0.5 bg-muted rounded">Ctrl+A</kbd> / <kbd class="px-1 py-0.5 bg-muted rounded">Cmd+A</kbd> untuk Select All)
-        </span>
       </h3>
     </template>
   </DataTableShow>

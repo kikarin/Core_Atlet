@@ -118,4 +118,16 @@ class AtletSertifikatController extends Controller implements HasMiddleware
 
         return response()->json(['message' => 'Sertifikat terpilih berhasil dihapus!']);
     }
+
+    public function show($atlet_id, $id)
+    {
+        $sertifikat = $this->repository->getById($id);
+        if (!$sertifikat) {
+            return redirect()->back()->with('error', 'Sertifikat tidak ditemukan');
+        }
+        return Inertia::render('modules/atlet/sertifikat/Show', [
+            'atletId' => (int) $atlet_id,
+            'item' => $sertifikat,
+        ]);
+    }
 } 

@@ -8,6 +8,7 @@ import { ArrowLeft, Clock, Info, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import HeaderShow from './HeaderShow.vue';
 import ImagePreview from '@/components/ImagePreview.vue';
+import FilePreview from '@/components/FilePreview.vue';
 
 const props = defineProps<{
     title: string;
@@ -16,7 +17,7 @@ const props = defineProps<{
         label: string; 
         value: string; 
         className?: string;
-        type?: 'text' | 'image';
+        type?: 'text' | 'image' | 'file';
         imageConfig?: {
             size?: 'sm' | 'md' | 'lg';
             labelText?: string;
@@ -50,7 +51,6 @@ const confirmDelete = () => {
         <div class="space-y-4 p-4">
             <!-- Header & Action Buttons -->
             <HeaderShow :title="`Detail ${title}`">
-                                <!-- Tambahkan slot custom-action -->
                 <slot name="custom-action" />
                 <button
                     v-if="onEdit"
@@ -75,25 +75,21 @@ const confirmDelete = () => {
                     <ArrowLeft class="h-4 w-4" />
                     Back
                 </button>
-
             </HeaderShow>
 
-            <!-- Tambahkan slot tabs di sini -->
             <slot name="tabs"></slot>
 
             <div class="grid grid-cols-12 gap-6">
                 <!-- Information Panel -->
-                <div class="col-span-12 md:col-span-8">
+                <div :class="(actionFields && actionFields.length > 0) ? 'col-span-12 md:col-span-8' : 'col-span-12'">
                     <div class="bg-card border-border rounded-2xl border shadow-sm">
                         <div class="border-border flex items-center gap-2 border-b px-6 py-4">
                             <Info class="text-muted-foreground h-4 w-4" />
                             <h2 class="text-muted-foreground text-sm font-semibold tracking-wide uppercase">Information</h2>
                         </div>
-
                         <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
                             <div v-for="field in fields" :key="field.label" class="space-y-1" :class="field.label === 'Data' ? 'sm:col-span-2' : ''">
                                 <div class="text-muted-foreground text-xs">{{ field.label }}</div>
-                                
                                 <!-- Image Field -->
                                 <div v-if="field.type === 'image'" class="mt-2">
                                     <div v-if="field.value">
@@ -106,26 +102,26 @@ const confirmDelete = () => {
                                     </div>
                                     <div v-else class="text-muted-foreground">Tidak ada foto</div>
                                 </div>
-                                
+                                <!-- File Field -->
+                                <div v-else-if="field.type === 'file'">
+                                    <FilePreview :file-url="field.value" />
+                                </div>
                                 <!-- Text Field with HTML support -->
                                 <div v-else-if="field.value && field.value.startsWith && field.value.startsWith('<div')"
                                     :class="['text-foreground text-sm font-semibold break-words whitespace-pre-wrap', field.className]"
                                     v-html="field.value">
                                 </div>
-                                
                                 <!-- Regular Text Field -->
                                 <div v-else :class="['text-foreground text-sm font-semibold break-words whitespace-pre-wrap', field.className]">
                                     {{ field.value }}
                                 </div>
                             </div>
                         </div>
-
                         <div class="px-6 pb-6">
                             <slot name="custom" />
                         </div>
                     </div>
                 </div>
-
                 <!-- Action Time Panel -->
                 <div v-if="actionFields && actionFields.length > 0" class="col-span-12 md:col-span-4">
                     <div class="bg-card border-border rounded-2xl border shadow-sm">
@@ -133,7 +129,6 @@ const confirmDelete = () => {
                             <Clock class="text-muted-foreground h-4 w-4" />
                             <h2 class="text-muted-foreground text-sm font-semibold tracking-wide uppercase">Action Time</h2>
                         </div>
-
                         <div class="grid grid-cols-1 gap-3 p-6">
                             <div v-for="field in actionFields" :key="field.label" class="space-y-1">
                                 <div class="text-muted-foreground text-xs">{{ field.label }}</div>
@@ -146,8 +141,6 @@ const confirmDelete = () => {
                 </div>
             </div>
         </div>
-
-        <!-- Delete Confirmation Dialog -->
         <Dialog v-model:open="showDeleteDialog">
             <DialogContent>
                 <DialogHeader>

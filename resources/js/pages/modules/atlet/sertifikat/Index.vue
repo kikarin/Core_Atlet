@@ -103,6 +103,10 @@ watch([page, perPage, () => sort.value.key, () => sort.value.order], (vals, oldV
 
 const actions = (row: any) => [
   {
+    label: 'Detail',
+    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}`),
+  },
+  {
     label: 'Edit',
     onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}/edit`),
   },

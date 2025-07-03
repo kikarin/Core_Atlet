@@ -28,10 +28,10 @@ const activeTab = ref('sertifikat-data');
 
 <template>
   <PageEdit 
-    title="Edit Sertifikat" 
+    title="Sertifikat" 
     :breadcrumbs="breadcrumbs" 
     :back-url="`/atlet/${props.atletId}/sertifikat`"
-    :tabs-config="tabsConfig"
-    v-model:activeTabValue="activeTab"
-  />
+  >
+    <FormSertifikat :atlet-id="props.atletId" mode="edit" :initial-data="props.item" />
+  </PageEdit>
 </template> 

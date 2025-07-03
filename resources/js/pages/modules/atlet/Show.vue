@@ -6,10 +6,6 @@ import { computed, ref, watch } from 'vue';
 import AppTabs from '@/components/AppTabs.vue';
 import ShowOrangTua from './ShowOrangTua.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
-import EditSertifikatModal from './sertifikat/EditSertifikatModal.vue';
-import { useShowAtlet } from './useShowAtlet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Pencil, Plus } from 'lucide-vue-next';
 
 const { toast } = useToast();
@@ -55,6 +51,8 @@ const props = defineProps<{
             updated_by_user: { name: string } | null;
         } | null;
         sertifikat?: Sertifikat[];
+        kecamatan?: { nama: string } | null;
+        kelurahan?: { nama: string } | null;
     };
 }>();
 
@@ -122,8 +120,8 @@ const fields = computed(() => {
                 : '-',
         },
         { label: 'Alamat', value: props.item?.alamat || '-', className: 'sm:col-span-2' },
-        { label: 'Kecamatan', value: props.item?.kecamatan_id ? `ID: ${props.item.kecamatan_id}` : '-' },
-        { label: 'Kelurahan', value: props.item?.kelurahan_id ? `ID: ${props.item.kelurahan_id}` : '-' },
+        { label: 'Kecamatan', value: props.item?.kecamatan?.nama || '-' },
+        { label: 'Kelurahan', value: props.item?.kelurahan?.nama || '-' },
         { label: 'No HP', value: props.item?.no_hp || '-' },
         { label: 'Email', value: props.item?.email || '-' },
         {
@@ -244,27 +242,7 @@ const currentOnDeleteHandler = computed(() => {
     return undefined;
 });
 
-// Sertifikat edit modal logic
-const {
-  showEditModal,
-  sertifikatToEdit,
-  closeEditModal,
-  showDeleteModal,
-  sertifikatToDelete,
-  showDeleteSelectedModal,
-  idsToDelete,
-  selectedSertifikat,
-  showCreatorModal,
-  sertifikatCreator,
-  handleEditSertifikat,
-  handleDeleteSertifikat,
-  confirmDeleteSertifikat,
-  handleDeleteSelectedSertifikat,
-  handleUpdateSelectedSertifikat,
-  confirmDeleteSelectedSertifikat,
-  handleShowCreator,
-  handleSertifikatSaved
-} = useShowAtlet(props.item);
+
 </script>
 
 <template>
@@ -292,8 +270,7 @@ const {
                   class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
                   @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)"
                 >
-                  <Plus class="h-4 w-4" />
-                  Create Sertifikat
+                  Kelola Sertifikat
                 </button>
             </div>
         </template>
@@ -305,63 +282,7 @@ const {
                 <ShowSertifikat
                   :sertifikat-list="props.item.sertifikat || []"
                   :atlet-id="props.item.id"
-                  :selected-ids="selectedSertifikat"
-                  @edit="handleEditSertifikat"
-                  @delete="handleDeleteSertifikat"
-                  @deleteSelected="handleDeleteSelectedSertifikat"
-                  @update:selected="handleUpdateSelectedSertifikat"
-                  @showCreator="handleShowCreator"
                 />
-                <EditSertifikatModal
-                  :visible="showEditModal"
-                  :sertifikat="sertifikatToEdit"
-                  :atlet-id="props.item.id"
-                  :onClose="closeEditModal"
-                  :onSaved="handleSertifikatSaved"
-                />
-                <!-- Modal konfirmasi delete single -->
-                <Dialog v-model:open="showDeleteModal">
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Hapus Sertifikat</DialogTitle>
-                    </DialogHeader>
-                    <div>Yakin ingin menghapus sertifikat <b>{{ sertifikatToDelete?.nama_sertifikat }}</b>?</div>
-                    <DialogFooter>
-                      <Button variant="outline" @click="showDeleteModal = false">Batal</Button>
-                      <Button variant="destructive" @click="confirmDeleteSertifikat">Hapus</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                <!-- Modal konfirmasi delete selected -->
-                <Dialog v-model:open="showDeleteSelectedModal">
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Hapus Sertifikat Terpilih</DialogTitle>
-                    </DialogHeader>
-                    <div>Yakin ingin menghapus <b>{{ idsToDelete.length }}</b> sertifikat terpilih?</div>
-                    <DialogFooter>
-                      <Button variant="outline" @click="showDeleteSelectedModal = false">Batal</Button>
-                      <Button variant="destructive" @click="confirmDeleteSelectedSertifikat">Hapus</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                <!-- Modal info pembuat sertifikat -->
-                <Dialog v-model:open="showCreatorModal">
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Info Pembuat Sertifikat</DialogTitle>
-                    </DialogHeader>
-                    <div v-if="sertifikatCreator">
-                      <div class="mb-2"><b>Dibuat:</b> {{ sertifikatCreator.created_at ? new Date(sertifikatCreator.created_at).toLocaleString('id-ID') : '-' }}</div>
-                      <div class="mb-2"><b>Oleh:</b> {{ sertifikatCreator.created_by_user?.name || '-' }}</div>
-                      <div class="mb-2"><b>Diupdate:</b> {{ sertifikatCreator.updated_at ? new Date(sertifikatCreator.updated_at).toLocaleString('id-ID') : '-' }}</div>
-                      <div class="mb-2"><b>Oleh:</b> {{ sertifikatCreator.updated_by_user?.name || '-' }}</div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" @click="showCreatorModal = false">Tutup</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
             </div>
         </template>
     </PageShow>

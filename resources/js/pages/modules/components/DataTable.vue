@@ -68,7 +68,7 @@ const selectLabel = computed(() => {
         <div class="rounded-md border shadow-sm">
             <div class="w-full overflow-x-auto">
                 <Table class="min-w-max">
-                    <TableHeader>
+                    <TableHeader class="bg-muted">
                         <TableRow>
                             <TableHead class="w-12 text-center">No</TableHead>
                             <TableHead class="w-10 text-center">
