@@ -180,4 +180,9 @@ class AtletSertifikatRepository
             'item' => $sertifikat,
         ]);
     }
+
+    public function delete_selected(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->forceDelete();
+    }
 } 

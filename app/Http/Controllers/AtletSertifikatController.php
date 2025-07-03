@@ -47,29 +47,39 @@ class AtletSertifikatController extends Controller implements HasMiddleware
     public function store(AtletSertifikatRequest $request, $atlet_id)
     {
         $data = $request->validated();
-         $model = $this->repository->create($data);
-        if ($model) {
+        $model = $this->repository->create($data);
+
+        if ($request->expectsJson() || $request->wantsJson()) {
             return response()->json(['message' => 'Sertifikat berhasil ditambahkan!', 'sertifikatId' => $model->id]);
-        } else {
-            return response()->json(['message' => 'Gagal menambah sertifikat.'], 500);
         }
+
+        return redirect()->route('atlet.sertifikat.index', $atlet_id)
+            ->with('success', 'Sertifikat berhasil ditambahkan!');
     }
 
     public function update(AtletSertifikatRequest $request, $atlet_id, $id)
     {
         $data = $request->validated();
         $model = $this->repository->update($id, $data);
-        if ($model) {
+
+        if ($request->expectsJson() || $request->wantsJson()) {
             return response()->json(['message' => 'Sertifikat berhasil diperbarui!', 'sertifikatId' => $model->id]);
-        } else {
-            return response()->json(['message' => 'Gagal memperbarui sertifikat.'], 500);
         }
+
+        return redirect()->route('atlet.sertifikat.index', $atlet_id)
+            ->with('success', 'Sertifikat berhasil diperbarui!');
     }
 
     public function destroy($atlet_id, $id)
     {
         $this->repository->delete($id);
-        return response()->json(['message' => 'Sertifikat berhasil dihapus!']);
+
+        if (request()->expectsJson() || request()->wantsJson()) {
+            return response()->json(['message' => 'Sertifikat berhasil dihapus!']);
+        }
+
+        return redirect()->route('atlet.sertifikat.index', $atlet_id)
+            ->with('success', 'Sertifikat berhasil dihapus!');
     }
 
     public function apiIndex($atletId)
