@@ -11,6 +11,8 @@ const props = defineProps<{
         props?: Record<string, any>;
         disabled?: boolean;
         onSave?: (form: any, setFormErrors: (errors: Record<string, string>) => void) => Promise<any>;
+        isRedirectTab?: boolean;
+        onClick?: () => void;
     }[];
     defaultValue: string;
     modelValue?: string; 
@@ -19,7 +21,12 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue', 'tab-change']);
 
 const handleTabChange = (tabValue: string) => {
-    if (!props.tabs.find(t => t.value === tabValue)?.disabled) {
+    const tab = props.tabs.find(t => t.value === tabValue);
+    if (tab?.disabled) return;
+
+    if (tab?.isRedirectTab && tab.onClick) {
+        tab.onClick();
+    } else {
         emit('update:modelValue', tabValue);
         emit('tab-change', tabValue);
     }

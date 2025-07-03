@@ -53,7 +53,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: `/atlet/${props.atletId}/edit?tab=sertifikat-data`,
+        redirectUrl: `/atlet/${props.atletId}/sertifikat`,
     });
 };
 </script>

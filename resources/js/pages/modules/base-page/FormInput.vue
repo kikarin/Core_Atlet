@@ -152,14 +152,14 @@ const getSelectedLabels = (fieldName: string, options: { value: string | number;
 };
 
 // State untuk preview file
-const filePreview = ref<string | null>(props.initialData?.foto || null);
+const filePreview = ref<string | null>(props.initialData?.foto || props.initialData?.file_url || null);
 
-// Watch jika initialData.foto berubah (misal saat edit)
+// Watch jika initialData.foto atau initialData.file_url berubah (misal saat edit)
 watch(
-    () => props.initialData?.foto,
-    (val) => {
+    () => [props.initialData?.foto, props.initialData?.file_url],
+    ([foto, file_url]) => {
         if (!form.file) {
-            filePreview.value = val || null;
+            filePreview.value = foto || file_url || null;
         }
     },
     { immediate: true }
@@ -229,6 +229,15 @@ const getFilteredOptions = (input: any) => {
         (opt.label || '').toLowerCase().includes(query.toLowerCase())
     );
 };
+
+// Helper untuk deteksi tipe file dari url
+function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
+    if (!url) return 'other';
+    const ext = url.split('.').pop()?.toLowerCase() || '';
+    if (["jpg","jpeg","png","gif","webp","bmp"].includes(ext)) return 'image';
+    if (ext === 'pdf') return 'pdf';
+    return 'other';
+}
 </script>
 
 <template>
@@ -419,7 +428,7 @@ const getFilteredOptions = (input: any) => {
                     <div v-else-if="input.type === 'file'" class="space-y-2">
                         <div class="flex items-center gap-2">
                                 <Input :id="`${input.name}-input`" ref="el => fileInputRefs.value[input.name] = el"
-                                    type="file" accept="image/*" @change="handleFileChange(input.name, $event)"
+                                    type="file" accept="image/*,application/pdf" @change="handleFileChange(input.name, $event)"
                                     class="hidden" />
                                 <Button type="button" variant="outline" @click="triggerFileInput(input.name)"
                                     class="flex items-center gap-2">
@@ -436,7 +445,15 @@ const getFilteredOptions = (input: any) => {
                             Selected: {{ form[input.name]?.name || 'File selected' }}
                         </div>
                         <div v-if="filePreview" class="mt-2">
-                            <img :src="filePreview" alt="Preview" class="w-32 h-32 object-cover rounded border" />
+                            <a v-if="getFileType(filePreview) === 'pdf'" :href="filePreview" target="_blank" class="text-blue-600 underline flex items-center gap-2">
+                                <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-red-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 4v16m8-8H4'/></svg>
+                                Lihat File PDF
+                            </a>
+                            <img v-else-if="getFileType(filePreview) === 'image'" :src="filePreview" alt="Preview" class="w-32 h-32 object-cover rounded border" />
+                            <a v-else :href="filePreview" target="_blank" class="text-blue-600 underline flex items-center gap-2">
+                                <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-gray-500' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10V6a5 5 0 0110 0v4M12 16v-4m0 0V6m0 6h4m-4 0H8'/></svg>
+                                Download File
+                            </a>
                         </div>
                     </div>
 

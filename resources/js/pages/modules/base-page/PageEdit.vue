@@ -13,10 +13,11 @@ const props = withDefaults(defineProps<{
   tabsConfig?: {
     value: string;
     label: string;
-    component: any;
+    component?: any;
     props?: Record<string, any>;
     disabled?: boolean;
     onSave?: (form: any, setFormErrors: (errors: Record<string, string>) => void) => Promise<any>;
+    isRedirectTab?: boolean;
   }[];
   activeTabValue?: string;
 }>(), {
@@ -53,7 +54,7 @@ const handleTabChange = (value: string) => {
               :is-edit="true"
               :show-edit-prefix="props.showEditPrefix"
             />
-            <CardContent>
+            <CardContent v-if="!tabsConfig?.find(tab => tab.value === activeTabValue)?.isRedirectTab">
               <template v-if="tabsConfig && tabsConfig.length">
                 <component
                   :is="tabsConfig.find(tab => tab.value === activeTabValue)?.component"

@@ -3,7 +3,7 @@ import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import FormSertifikat from './FormSertifikat.vue';
+import FormSertifikat from './sertifikat/FormSertifikat.vue';
 import { ref, computed, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 
@@ -24,8 +24,9 @@ const initialActiveTab = getTabFromUrl(page.url);
 const activeTab = ref(initialActiveTab);
 
 watch(activeTab, (val) => {
-  const url = `/atlet/${props.item.id}/edit?tab=${val}`;
-  router.visit(url, { replace: true, preserveState: true, preserveScroll: true, only: [] });});
+    const url = `/atlet/${props.item.id}/edit?tab=${val}`;
+    router.visit(url, { replace: true, preserveState: true, preserveScroll: true, only: [] });
+});
 
 watch(
   () => page.url,
@@ -43,8 +44,7 @@ const dynamicTitle = computed(() => {
         return `Atlet : ${props.item.nama || '-'}`;
     } else if (activeTab.value === 'orang-tua-data') {
         return `Orang Tua/Wali : ${props.item.nama || '-'}`;
-    }
-    else if (activeTab.value === 'sertifikat-data') {
+    } else if (activeTab.value === 'sertifikat-data') {
         return `Sertifikat : ${props.item.nama || '-'}`;
     }
     return 'Edit Atlet';
@@ -72,8 +72,9 @@ const tabsConfig = computed(() => [
     {
         value: 'sertifikat-data',
         label: 'Sertifikat',
-        component: FormSertifikat,
-        props: { atletId: atletId.value, mode: 'edit' },
+        // Ini adalah tab redirect, tidak perlu komponen atau props di sini
+        isRedirectTab: true,
+        onClick: () => router.visit(`/atlet/${props.item.id}/sertifikat`),
     },
 ]);
 
@@ -88,5 +89,15 @@ const tabsConfig = computed(() => [
         :tabs-config="tabsConfig"
         v-model:activeTabValue="activeTab"
         :show-edit-prefix="false"
-    />
+    >
+      <template #default>
+        <div class="mt-4 flex justify-end">
+          <button
+            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+            @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)">
+            Lihat Sertifikat
+          </button>
+        </div>
+      </template>
+    </PageEdit>
 </template> 

@@ -88,10 +88,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('orang-tua/{id}', [AtletOrangTuaController::class, 'destroy'])->name('atlet.orang-tua.destroy');
 
         // Atlet Sertifikat Routes (Nested under Atlet)
-        Route::get('sertifikat', [AtletSertifikatController::class, 'getByAtletId'])->name('atlet.sertifikat.index');
+        Route::get('sertifikat', [AtletSertifikatController::class, 'index'])->name('atlet.sertifikat.index');
+        Route::get('sertifikat/create', [AtletSertifikatController::class, 'create'])->name('atlet.sertifikat.create');
         Route::post('sertifikat', [AtletSertifikatController::class, 'store'])->name('atlet.sertifikat.store');
+        Route::get('sertifikat/{id}/edit', [AtletSertifikatController::class, 'edit'])->name('atlet.sertifikat.edit');
         Route::put('sertifikat/{id}', [AtletSertifikatController::class, 'update'])->name('atlet.sertifikat.update');
         Route::delete('sertifikat/{id}', [AtletSertifikatController::class, 'destroy'])->name('atlet.sertifikat.destroy');
+        Route::post('sertifikat/destroy-selected', [AtletSertifikatController::class, 'destroy_selected'])->name('atlet.sertifikat.destroy_selected');
     });
     // END - Atlet Orang Tua Routes
 });
@@ -103,6 +106,9 @@ Route::get('/api/kecamatan', function() {
 Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan) {
     return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
 });
+
+// API untuk Sertifikat per Atlet
+Route::get('/api/atlet/{atlet_id}/sertifikat', [App\Http\Controllers\AtletSertifikatController::class, 'apiIndex']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

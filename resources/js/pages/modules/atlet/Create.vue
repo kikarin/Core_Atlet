@@ -3,7 +3,7 @@ import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import FormSertifikat from './FormSertifikat.vue';
+import FormSertifikat from './sertifikat/FormSertifikat.vue';
 import { ref, computed } from 'vue';
 
 const activeTab = ref('atlet-data');

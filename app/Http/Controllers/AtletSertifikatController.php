@@ -8,7 +8,7 @@ use App\Repositories\AtletSertifikatRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AtletSertifikatController extends Controller implements HasMiddleware
 {
@@ -31,10 +31,10 @@ class AtletSertifikatController extends Controller implements HasMiddleware
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
         return [
-            new Middleware("can:$permission Add", only: ['store']),
+            new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['getByAtletId']),
-            new Middleware("can:$permission Edit", only: ['update']),
-            new Middleware("can:$permission Delete", only: ['destroy']),
+            new Middleware("can:$permission Edit", only: ['edit', 'update']),
+            new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
         ];
     }
 
@@ -47,30 +47,65 @@ class AtletSertifikatController extends Controller implements HasMiddleware
     public function store(AtletSertifikatRequest $request, $atlet_id)
     {
         $data = $request->validated();
-        $data['atlet_id'] = $atlet_id;
-        $model = $this->repository->create($data);
+         $model = $this->repository->create($data);
         if ($model) {
-            return redirect()->back()->with('success', 'Sertifikat berhasil ditambahkan!')->with('sertifikatId', $model->id);
+            return response()->json(['message' => 'Sertifikat berhasil ditambahkan!', 'sertifikatId' => $model->id]);
         } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal menambah sertifikat.');
+            return response()->json(['message' => 'Gagal menambah sertifikat.'], 500);
         }
     }
 
     public function update(AtletSertifikatRequest $request, $atlet_id, $id)
     {
         $data = $request->validated();
-        $data['atlet_id'] = $atlet_id;
         $model = $this->repository->update($id, $data);
         if ($model) {
-            return redirect()->back()->with('success', 'Sertifikat berhasil diperbarui!')->with('sertifikatId', $model->id);
+            return response()->json(['message' => 'Sertifikat berhasil diperbarui!', 'sertifikatId' => $model->id]);
         } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui sertifikat.');
+            return response()->json(['message' => 'Gagal memperbarui sertifikat.'], 500);
         }
     }
 
     public function destroy($atlet_id, $id)
     {
         $this->repository->delete($id);
-        return redirect()->back()->with('success', 'Sertifikat berhasil dihapus!');
+        return response()->json(['message' => 'Sertifikat berhasil dihapus!']);
+    }
+
+    public function apiIndex($atletId)
+    {
+        return response()->json($this->repository->apiIndex($atletId));
+    }
+
+    public function index($atlet_id)
+    {
+        // Render Inertia page untuk Sertifikat Index
+        return Inertia::render('modules/atlet/sertifikat/Index', [
+            'atletId' => (int) $atlet_id,
+        ]);
+    }
+
+    public function create($atlet_id)
+    {
+        // Panggil metode handleCreate dari repository
+        return $this->repository->handleCreate($atlet_id);
+    }
+
+    public function edit($atlet_id, $id)
+    {
+        // Panggil metode handleEdit dari repository
+        return $this->repository->handleEdit($atlet_id, $id);
+    }
+
+    public function destroy_selected(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:atlet_sertifikat,id',
+        ]);
+
+        $this->repository->delete_selected($request->ids);
+
+        return response()->json(['message' => 'Sertifikat terpilih berhasil dihapus!']);
     }
 } 

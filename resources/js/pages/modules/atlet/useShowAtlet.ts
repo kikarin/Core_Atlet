@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import { router } from '@inertiajs/vue3';
-import { useSertifikatEdit } from './useSertifikatEdit';
+import { useSertifikatEdit } from './sertifikat/useSertifikatEdit';
 
 export function useShowAtlet(item: any) {
   const { toast } = useToast();

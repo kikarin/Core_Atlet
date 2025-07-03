@@ -5,8 +5,8 @@ import { router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import AppTabs from '@/components/AppTabs.vue';
 import ShowOrangTua from './ShowOrangTua.vue';
-import ShowSertifikat from './ShowSertifikat.vue';
-import EditSertifikatModal from './EditSertifikatModal.vue';
+import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
+import EditSertifikatModal from './sertifikat/EditSertifikatModal.vue';
 import { useShowAtlet } from './useShowAtlet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -205,7 +205,7 @@ const handleDeleteAtlet = () => {
 };
 
 const handleEditOrangTua = () => {
-    router.visit(`/atlet/${props.item.id}/edit?tab=orang-tua-data`);
+        router.visit(`/atlet/${props.item.id}/edit?tab=orang-tua-data`);
 };
 
 const handleDeleteOrangTua = () => {
@@ -284,13 +284,13 @@ const {
                 :tabs="tabsConfig"
                 :default-value="'atlet-data'"
                 v-model="activeTab"
-            />
+    />
         </template>
         <template #custom-action>
             <div v-if="activeTab === 'sertifikat-data'">
                 <button
                   class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-                  @click="() => router.visit(`/atlet/${props.item.id}/edit?tab=sertifikat-data`)"
+                  @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)"
                 >
                   <Plus class="h-4 w-4" />
                   Create Sertifikat
