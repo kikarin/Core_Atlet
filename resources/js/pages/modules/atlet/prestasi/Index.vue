@@ -21,7 +21,7 @@ const breadcrumbs = computed(() => [
 
 const columns = [
   { key: 'nama_event', label: 'Nama Event' },
-  { key: 'tingkat_id', label: 'Tingkat' },
+  { key: 'tingkat', label: 'Tingkat', format: (row: any) => row.tingkat?.nama || '-' },
   {
     key: 'tanggal',
     label: 'Tanggal',

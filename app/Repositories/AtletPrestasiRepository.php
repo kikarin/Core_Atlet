@@ -110,12 +110,12 @@ class AtletPrestasiRepository
         $perPage = (int) request('per_page', 10);
         $page = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all = $query->with($this->with)->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'nama_event' => $item->nama_event,
-                    'tingkat_id' => $item->tingkat_id,
+                    'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
                     'tanggal' => $item->tanggal,
                     'peringkat' => $item->peringkat,
                     'keterangan' => $item->keterangan,
@@ -134,12 +134,12 @@ class AtletPrestasiRepository
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return [
                 'id' => $item->id,
                 'nama_event' => $item->nama_event,
-                'tingkat_id' => $item->tingkat_id,
+                'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
                 'tanggal' => $item->tanggal,
                 'peringkat' => $item->peringkat,
                 'keterangan' => $item->keterangan,

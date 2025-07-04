@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import axios from 'axios';
+import { useToast } from '@/components/ui/toast/useToast';
 
 const { save } = useHandleFormSave();
+const { toast } = useToast();
 
 const props = defineProps<{
     atletId: number | null;
@@ -15,12 +18,14 @@ const props = defineProps<{
 const formData = ref<Record<string, any>>({
     id: props.initialData?.id || undefined,
     atlet_id: props.atletId,
-    jenis_dokumen_id: props.initialData?.jenis_dokumen_id || '',
+    jenis_dokumen_id: props.initialData?.jenis_dokumen_id || null,
     nomor: props.initialData?.nomor || '',
     file: null,
 });
 
 const formInputInitialData = computed(() => ({ ...formData.value }));
+
+const jenisDokumenOptions = ref<{ value: number; label: string; }[]>([]);
 
 watch(() => props.initialData, (newVal) => {
     if (newVal) {
@@ -31,9 +36,20 @@ watch(() => props.initialData, (newVal) => {
     }
 }, { immediate: true, deep: true });
 
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/jenis-dokumen');
+        jenisDokumenOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+    } catch (e) {
+        console.error("Gagal mengambil data jenis dokumen", e);
+        toast({ title: "Gagal memuat daftar jenis dokumen", variant: "destructive" });
+        jenisDokumenOptions.value = [];
+    }
+});
+
 const formInputs = computed(() => [
-    { name: 'jenis_dokumen_id', label: 'Jenis Dokumen', type: 'number' as const, placeholder: 'Masukkan jenis dokumen' }, // Temporary as text, will be select
-    { name: 'nomor', label: 'Nomor Dokumen', type: 'number' as const, placeholder: 'Masukkan nomor dokumen' },
+    { name: 'jenis_dokumen_id', label: 'Jenis Dokumen', type: 'select' as const, placeholder: 'Pilih Jenis Dokumen', options: jenisDokumenOptions.value },
+    { name: 'nomor', label: 'Nomor Dokumen', type: 'text' as const, placeholder: 'Masukkan nomor dokumen' },
     { name: 'file', label: 'File Dokumen', type: 'file' as const, placeholder: 'Upload file dokumen (pdf/gambar)' },
 ]);
 

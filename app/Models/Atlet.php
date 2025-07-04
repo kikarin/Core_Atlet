@@ -98,13 +98,13 @@ class Atlet extends Model implements HasMedia
     public function prestasi()
     {
         return $this->hasMany(AtletPrestasi::class, 'atlet_id')
-            ->with(['created_by_user', 'updated_by_user']);
+            ->with(['created_by_user', 'updated_by_user', 'tingkat']);
     }
 
     public function dokumen()
     {
         return $this->hasMany(AtletDokumen::class, 'atlet_id')
-            ->with(['created_by_user', 'updated_by_user']);
+            ->with(['created_by_user', 'updated_by_user', 'jenis_dokumen']);
     }
 
     public function kecamatan()

@@ -1,23 +1,33 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 
 interface Prestasi {
   id: number;
   nama_event: string;
-  tingkat_id?: number;
+  tingkat?: { nama: string };
   tanggal?: string;
   peringkat?: string;
   keterangan?: string;
+  file_url?: string;
 }
 
 const props = defineProps<{
   prestasiList: Prestasi[];
   atletId?: number;
+  selectedIds?: number[];
 }>();
+const selected = ref<number[]>(props.selectedIds ? [...props.selectedIds] : []);
+
+watch(() => props.selectedIds, (val) => {
+  if (val && JSON.stringify(val) !== JSON.stringify(selected.value)) {
+    selected.value = [...val];
+  }
+});
 
 const columns = [
   { key: 'nama_event', label: 'Nama Event' },
-  { key: 'tingkat_id', label: 'Tingkat' },
+  { key: 'tingkat', label: 'Tingkat', format: (row: Prestasi) => row.tingkat?.nama || '-' },
   {
     key: 'tanggal',
     label: 'Tanggal',

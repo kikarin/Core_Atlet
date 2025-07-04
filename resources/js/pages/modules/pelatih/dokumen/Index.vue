@@ -20,8 +20,8 @@ const breadcrumbs = computed(() => [
 ]);
 
 const columns = [
-  { key: 'jenis_dokumen', label: 'Jenis Dokumen' },
-  { key: 'nomor', label: 'Nomor Dokumen' },
+  { key: 'jenis_dokumen', label: 'Jenis Dokumen', format: (row: any) => row.jenis_dokumen?.nama || '-' },
+  { key: 'nomor', label: 'Nomor' },
   {
     key: 'file_url',
     label: 'File',

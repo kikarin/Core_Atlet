@@ -18,7 +18,7 @@ const props = defineProps<{
 const formData = ref({
     pelatih_id: props.pelatihId || null,
     nama_event: props.initialData?.nama_event || '',
-    tingkat_id: props.initialData?.tingkat_id || '',
+    tingkat_id: props.initialData?.tingkat_id || null,
     tanggal: props.initialData?.tanggal || '',
     peringkat: props.initialData?.peringkat || '',
     keterangan: props.initialData?.keterangan || '',
@@ -29,17 +29,18 @@ const tingkatOptions = ref<{ value: number; label: string; }[]>([]);
 
 onMounted(async () => {
     try {
-        const res = await axios.get('/api/tingkat'); // Assuming this API exists for MstTingkat
+        const res = await axios.get('/api/tingkat');
         tingkatOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
         console.error("Gagal mengambil data tingkat", e);
-        toast({ title: "Gagal memuat data tingkat", variant: "destructive" });
+        toast({ title: "Gagal memuat daftar tingkat", variant: "destructive" });
+        tingkatOptions.value = [];
     }
 });
 
 const formInputs = computed(() => [
     { name: 'nama_event', label: 'Nama Event', type: 'text' as const, placeholder: 'Masukkan nama event', required: true },
-    { name: 'tingkat_id', label: 'Tingkat', type: 'select' as const, placeholder: 'Pilih tingkat', options: tingkatOptions.value },
+    { name: 'tingkat_id', label: 'Tingkat', type: 'select' as const, placeholder: 'Pilih Tingkat', options: tingkatOptions.value },
     { name: 'tanggal', label: 'Tanggal', type: 'date' as const, placeholder: 'Pilih tanggal', required: false },
     { name: 'peringkat', label: 'Peringkat', type: 'text' as const, placeholder: 'Masukkan peringkat' },
     { name: 'keterangan', label: 'Keterangan', type: 'textarea' as const, placeholder: 'Masukkan keterangan' },

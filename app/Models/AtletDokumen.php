@@ -43,6 +43,11 @@ class AtletDokumen extends Model implements HasMedia
         return $this->belongsTo(Atlet::class, 'atlet_id');
     }
 
+    public function jenis_dokumen()
+    {
+        return $this->belongsTo(MstJenisDokumen::class, 'jenis_dokumen_id')->select(['id', 'nama']);
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('dokumen_file')

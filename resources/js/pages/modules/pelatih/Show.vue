@@ -30,6 +30,7 @@ interface Prestasi {
   pelatih_id: number;
   nama_event: string;
   tingkat_id?: number;
+  tingkat?: { nama: string } | null;
   tanggal?: string;
   peringkat?: string;
   keterangan?: string;
@@ -43,6 +44,7 @@ interface Dokumen {
   id: number;
   pelatih_id: number;
   jenis_dokumen_id?: number;
+  jenis_dokumen?: { nama: string } | null;
   nomor?: string;
   file_url?: string;
   created_at: string;
@@ -300,6 +302,18 @@ const currentOnDeleteHandler = computed(() => {
     return undefined;
 });
 
+const mappedPrestasi = computed(() =>
+  (props.item.prestasi || []).map((p) => ({
+    ...p,
+    tingkat: p.tingkat || (p.tingkat_id ? { nama: '-' } : undefined),
+  }))
+);
+const mappedDokumen = computed(() =>
+  (props.item.dokumen || []).map((d) => ({
+    ...d,
+    jenis_dokumen: d.jenis_dokumen || (d.jenis_dokumen_id ? { nama: '-' } : undefined),
+  }))
+);
 
 </script>
 
@@ -359,7 +373,7 @@ const currentOnDeleteHandler = computed(() => {
             </div>
             <div v-if="activeTab === 'prestasi-data'">
                 <ShowPrestasi
-                  :prestasi-list="props.item.prestasi || []"
+                  :prestasi-list="mappedPrestasi"
                   :pelatih-id="props.item.id"
                 />
             </div>
@@ -368,7 +382,7 @@ const currentOnDeleteHandler = computed(() => {
             </div>
             <div v-if="activeTab === 'dokumen-data'">
                 <ShowDokumen
-                  :dokumen-list="props.item.dokumen || []"
+                  :dokumen-list="mappedDokumen"
                   :pelatih-id="props.item.id"
                 />
             </div>

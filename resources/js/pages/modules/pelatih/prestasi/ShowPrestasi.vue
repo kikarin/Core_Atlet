@@ -5,10 +5,11 @@ import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 interface Prestasi {
   id: number;
   nama_event: string;
-  tingkat_id?: number;
+  tingkat?: { nama: string };
   tanggal?: string;
   peringkat?: string;
   keterangan?: string;
+  file_url?: string;
 }
 
 const props = defineProps<{
@@ -27,7 +28,7 @@ watch(() => props.selectedIds, (val) => {
 
 const columns = [
   { key: 'nama_event', label: 'Nama Event' },
-  { key: 'tingkat_id', label: 'Tingkat' },
+  { key: 'tingkat', label: 'Tingkat', format: (row: Prestasi) => row.tingkat?.nama || '-' },
   {
     key: 'tanggal',
     label: 'Tanggal',

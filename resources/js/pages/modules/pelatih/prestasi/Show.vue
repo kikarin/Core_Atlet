@@ -30,7 +30,7 @@ const breadcrumbs = [
 
 const fields = computed(() => [
   { label: 'Nama Event', value: props.item?.nama_event || '-' },
-  { label: 'Tingkat', value: props.item?.tingkat_id || '-' },
+  { label: 'Tingkat', value: props.item?.tingkat?.nama || '-' },
   {
     label: 'Tanggal',
     value: props.item?.tanggal

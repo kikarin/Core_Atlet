@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 
 interface Dokumen {
   id: number;
-  jenis_dokumen_id?: number;
+  jenis_dokumen?: { nama: string };
   nomor?: string;
   file_url?: string;
 }
@@ -13,10 +14,17 @@ const props = defineProps<{
   atletId?: number;
   selectedIds?: number[];
 }>();
+const selected = ref<number[]>(props.selectedIds ? [...props.selectedIds] : []);
+
+watch(() => props.selectedIds, (val) => {
+  if (val && JSON.stringify(val) !== JSON.stringify(selected.value)) {
+    selected.value = [...val];
+  }
+});
 
 const columns = [
-  { key: 'jenis_dokumen_id', label: 'Jenis Dokumen' },
-  { key: 'nomor', label: 'Nomor Dokumen' },
+  { key: 'jenis_dokumen', label: 'Jenis Dokumen', format: (row: Dokumen) => row.jenis_dokumen?.nama || '-' },
+  { key: 'nomor', label: 'Nomor' },
   {
     key: 'file_url',
     label: 'File',

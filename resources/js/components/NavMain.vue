@@ -72,7 +72,7 @@ watch(
 </script>
 
 <template>
-    <div class="border-border border-t px-2 py-2">
+    <div class="px-2 py-2">
         <p v-if="sectionTitle" class="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wide uppercase">
             {{ sectionTitle }}
         </p>

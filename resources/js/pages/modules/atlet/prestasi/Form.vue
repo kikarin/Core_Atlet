@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import axios from 'axios';
+import { useToast } from '@/components/ui/toast/useToast';
 
 const { save } = useHandleFormSave();
+const { toast } = useToast();
 
 const props = defineProps<{
     atletId: number | null;
@@ -24,6 +27,8 @@ const formData = ref<Record<string, any>>({
 
 const formInputInitialData = computed(() => ({ ...formData.value }));
 
+const tingkatOptions = ref<{ value: number; label: string; }[]>([]);
+
 watch(() => props.initialData, (newVal) => {
     if (newVal) {
         Object.assign(formData.value, newVal);
@@ -33,9 +38,20 @@ watch(() => props.initialData, (newVal) => {
     }
 }, { immediate: true, deep: true });
 
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/tingkat');
+        tingkatOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+    } catch (e) {
+        console.error("Gagal mengambil data tingkat", e);
+        toast({ title: "Gagal memuat daftar tingkat", variant: "destructive" });
+        tingkatOptions.value = [];
+    }
+});
+
 const formInputs = computed(() => [
     { name: 'nama_event', label: 'Nama Event', type: 'text' as const, placeholder: 'Masukkan nama event', required: true },
-    { name: 'tingkat_id', label: 'Tingkat', type: 'number' as const, placeholder: 'Masukkan tingkat (opsional)' }, // Menggunakan type number, nanti bisa diganti select jika ada data master tingkat
+    { name: 'tingkat_id', label: 'Tingkat', type: 'select' as const, placeholder: 'Pilih Tingkat', options: tingkatOptions.value },
     { name: 'tanggal', label: 'Tanggal', type: 'date' as const, placeholder: 'Pilih tanggal' },
     { name: 'peringkat', label: 'Peringkat', type: 'text' as const, placeholder: 'Masukkan peringkat (misal: Juara 1, Finalis)' },
     { name: 'keterangan', label: 'Keterangan', type: 'textarea' as const, placeholder: 'Masukkan keterangan tambahan (opsional)' },

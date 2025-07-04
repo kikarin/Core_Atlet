@@ -24,7 +24,7 @@ class PelatihDokumenRequest extends FormRequest
         $rules = [
             'pelatih_id'       => 'required|exists:pelatihs,id',
             'jenis_dokumen_id' => 'nullable|integer',
-            'nomor'            => 'nullable|numeric',
+            'nomor'            => 'nullable|string|max:255',
             'file'             => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 

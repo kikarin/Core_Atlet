@@ -18,7 +18,7 @@ const props = defineProps<{
 const formData = ref<Record<string, any>>({
     id: props.initialData?.id || undefined,
     pelatih_id: props.pelatihId,
-    jenis_dokumen_id: props.initialData?.jenis_dokumen_id || '',
+    jenis_dokumen_id: props.initialData?.jenis_dokumen_id || null,
     nomor: props.initialData?.nomor || '',
     file: null,
 });
@@ -38,18 +38,20 @@ watch(() => props.initialData, (newVal) => {
 
 onMounted(async () => {
     try {
-        const res = await axios.get('/api/jenis-dokumen'); // Asumsi ada API untuk ini
+        const res = await axios.get('/api/jenis-dokumen');
         jenisDokumenOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
         console.error("Gagal mengambil data jenis dokumen", e);
-        toast({ title: "Gagal memuat daftar jenis dokumen", variant: "destructive" });
+        if (toast.title) {
+             toast({ title: "Gagal memuat daftar jenis dokumen", variant: "destructive" });
+        }
         jenisDokumenOptions.value = [];
     }
 });
 
 const formInputs = computed(() => [
-    { name: 'jenis_dokumen_id', label: 'Jenis Dokumen', type: 'number' as const, placeholder: 'Masukkan jenis dokumen' }, // Temporary as text, will be select
-    { name: 'nomor', label: 'Nomor Dokumen', type: 'number' as const, placeholder: 'Masukkan nomor dokumen' },
+    { name: 'jenis_dokumen_id', label: 'Jenis Dokumen', type: 'select' as const, placeholder: 'Pilih Jenis Dokumen', options: jenisDokumenOptions.value },
+    { name: 'nomor', label: 'Nomor Dokumen', type: 'text' as const, placeholder: 'Masukkan nomor dokumen' },
     { name: 'file', label: 'File Dokumen', type: 'file' as const, placeholder: 'Upload file dokumen (pdf/gambar)' },
 ]);
 

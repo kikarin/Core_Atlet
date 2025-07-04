@@ -4,7 +4,7 @@ import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 
 interface Dokumen {
   id: number;
-  jenis_dokumen?: string;
+  jenis_dokumen?: { nama: string };
   nomor?: string;
   file_url?: string;
 }
@@ -23,7 +23,7 @@ watch(() => props.selectedIds, (val) => {
 });
 
 const columns = [
-  { key: 'jenis_dokumen', label: 'Jenis Dokumen' },
+  { key: 'jenis_dokumen', label: 'Jenis Dokumen', format: (row: Dokumen) => row.jenis_dokumen?.nama || '-' },
   { key: 'nomor', label: 'Nomor' },
   {
     key: 'file_url',

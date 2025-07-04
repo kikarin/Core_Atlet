@@ -125,11 +125,11 @@ class PelatihDokumenRepository
         $perPage = (int) request('per_page', 10);
         $page = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all = $query->with($this->with)->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'jenis_dokumen' => $item->jenis_dokumen->nama ?? '-',
+                    'jenis_dokumen' => $item->jenis_dokumen ? ['id' => $item->jenis_dokumen->id, 'nama' => $item->jenis_dokumen->nama] : null,
                     'nomor' => $item->nomor,
                     'file_url' => $item->file_url,
                 ];
@@ -147,11 +147,11 @@ class PelatihDokumenRepository
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return [
                 'id' => $item->id,
-                'jenis_dokumen' => $item->jenis_dokumen->nama ?? '-',
+                'jenis_dokumen' => $item->jenis_dokumen ? ['id' => $item->jenis_dokumen->id, 'nama' => $item->jenis_dokumen->nama] : null,
                 'nomor' => $item->nomor,
                 'file_url' => $item->file_url,
             ];

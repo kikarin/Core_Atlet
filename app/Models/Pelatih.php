@@ -94,7 +94,7 @@ class Pelatih extends Model implements HasMedia
     public function prestasi()
     {
         return $this->hasMany(PelatihPrestasi::class, 'pelatih_id')
-            ->with(['created_by_user', 'updated_by_user']);
+            ->with(['created_by_user', 'updated_by_user', 'tingkat']);
     }
 
     public function dokumen()

@@ -27,7 +27,7 @@ const breadcrumbs = [
 ];
 
 const fields = computed(() => [
-  { label: 'Jenis Dokumen', value: props.item?.jenis_dokumen_id || '-' },
+  { label: 'Jenis Dokumen', value: props.item?.jenis_dokumen?.nama || '-' },
   { label: 'Nomor Dokumen', value: props.item?.nomor || '-' },
   props.item?.file_url
     ? {
