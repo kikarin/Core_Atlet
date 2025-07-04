@@ -80,7 +80,7 @@ const fetchData = async () => {
     search.value = meta.search || '';
     sort.value.key = meta.sort || '';
     sort.value.order = meta.order || 'asc';
-  } catch (error) {
+  } catch {
     toast({ title: 'Gagal memuat data', variant: 'destructive' });
   } finally {
     loading.value = false;
@@ -89,7 +89,7 @@ const fetchData = async () => {
 
 onMounted(fetchData);
 
-watch([page, perPage, () => sort.value.key, () => sort.value.order], (vals, oldVals) => {
+watch([page, perPage, () => sort.value.key, () => sort.value.order], () => {
   fetchData();
 });
 
@@ -116,7 +116,7 @@ const handleDeleteRow = async (row: any) => {
 const confirmDeleteRow = async () => {
   if (!rowToDelete.value) return;
 
-  await router.delete(`/atlet/${props.atletId}/dokumen/${rowToDelete.value.id}`, {
+  router.delete(`/atlet/${props.atletId}/dokumen/${rowToDelete.value.id}`, {
     onSuccess: () => {
       toast({ title: 'Dokumen berhasil dihapus', variant: 'success' });
       fetchData();

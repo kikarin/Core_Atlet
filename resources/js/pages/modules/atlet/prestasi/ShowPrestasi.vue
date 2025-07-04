@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 
 interface Prestasi {

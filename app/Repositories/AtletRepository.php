@@ -26,10 +26,19 @@ class AtletRepository
             'updated_by_user',
             'atletOrangTua.created_by_user',
             'atletOrangTua.updated_by_user',
+            'sertifikat',
             'sertifikat.media',
+            'sertifikat.created_by_user',
+            'sertifikat.updated_by_user',
             'prestasi',
+            'prestasi.created_by_user',
+            'prestasi.updated_by_user',
             'dokumen',
+            'dokumen.created_by_user',
+            'dokumen.updated_by_user',
             'kesehatan',
+            'kesehatan.created_by_user',
+            'kesehatan.updated_by_user',
         ];
     }
 

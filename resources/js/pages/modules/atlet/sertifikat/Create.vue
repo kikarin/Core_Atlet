@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 import FormSertifikat from './Form.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{ atletId: number }>();
 
@@ -10,17 +10,6 @@ const breadcrumbs = computed(() => [
   { title: 'Sertifikat', href: `/atlet/${props.atletId}/sertifikat` },
   { title: 'Create Sertifikat', href: `/atlet/${props.atletId}/sertifikat/create` },
 ]);
-
-const tabsConfig = computed(() => [
-  {
-    value: 'sertifikat-data',
-    label: 'Data Sertifikat',
-    component: FormSertifikat,
-    props: { atletId: props.atletId, mode: 'create', initialData: {} },
-  },
-]);
-
-const activeTab = ref('sertifikat-data');
 </script>
 
 <template>

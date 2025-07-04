@@ -49,10 +49,6 @@ const fields = computed(() => [
       },
 ]);
 
-function isImage(url: string) {
-  return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-}
-
 const actionFields = [
   { label: 'Created At', value: new Date(props.item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },
   { label: 'Created By', value: props.item.created_by_user?.name || '-' },

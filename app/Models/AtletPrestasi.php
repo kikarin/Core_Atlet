@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Models\MstTingkat;
 
 class AtletPrestasi extends Model
 {
@@ -38,5 +39,10 @@ class AtletPrestasi extends Model
     public function atlet()
     {
         return $this->belongsTo(Atlet::class, 'atlet_id');
+    }
+
+    public function tingkat()
+    {
+        return $this->belongsTo(MstTingkat::class, 'tingkat_id');
     }
 } 

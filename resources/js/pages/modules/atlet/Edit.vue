@@ -3,11 +3,9 @@ import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
 import Form from './Form.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import ShowDokumen from './dokumen/ShowDokumen.vue';
 import FormKesehatan from './FormKesehatan.vue';
 import { ref, computed, watch } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const props = defineProps<{ item: Record<string, any> }>();
 
@@ -104,10 +102,6 @@ const tabsConfig = computed(() => [
     },
 ]);
 
-const { toast } = useToast();
-
-interface Sertifikat {
-}
 
 </script>
 

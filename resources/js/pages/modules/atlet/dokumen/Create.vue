@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 import FormDokumen from './Form.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{ atletId: number }>();
 
@@ -11,16 +11,6 @@ const breadcrumbs = computed(() => [
   { title: 'Create Dokumen', href: `/atlet/${props.atletId}/dokumen/create` },
 ]);
 
-const tabsConfig = computed(() => [
-  {
-    value: 'dokumen-data',
-    label: 'Data Dokumen',
-    component: FormDokumen,
-    props: { atletId: props.atletId, mode: 'create', initialData: {} },
-  },
-]);
-
-const activeTab = ref('dokumen-data');
 </script>
 
 <template>

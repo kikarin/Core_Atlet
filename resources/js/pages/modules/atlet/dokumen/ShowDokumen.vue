@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, type PropType } from 'vue';
 import DataTableShow from '@/pages/modules/components/DataTableShow.vue';
 
 interface Dokumen {

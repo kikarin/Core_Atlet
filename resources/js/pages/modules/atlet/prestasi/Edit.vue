@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 import FormPrestasi from './Form.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
   atletId: number;
@@ -14,16 +14,6 @@ const breadcrumbs = computed(() => [
   { title: 'Edit Prestasi', href: `/atlet/${props.atletId}/prestasi/${props.item.id}/edit` },
 ]);
 
-const tabsConfig = computed(() => [
-  {
-    value: 'prestasi-data',
-    label: 'Data Prestasi',
-    component: FormPrestasi,
-    props: { atletId: props.atletId, mode: 'edit', initialData: props.item },
-  },
-]);
-
-const activeTab = ref('prestasi-data');
 </script>
 
 <template>

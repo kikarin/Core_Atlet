@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 import FormDokumen from './Form.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
   atletId: number;
@@ -14,16 +14,7 @@ const breadcrumbs = computed(() => [
   { title: 'Edit Dokumen', href: `/atlet/${props.atletId}/dokumen/${props.item.id}/edit` },
 ]);
 
-const tabsConfig = computed(() => [
-  {
-    value: 'dokumen-data',
-    label: 'Data Dokumen',
-    component: FormDokumen,
-    props: { atletId: props.atletId, mode: 'edit', initialData: props.item },
-  },
-]);
 
-const activeTab = ref('dokumen-data');
 </script>
 
 <template>

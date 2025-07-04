@@ -87,7 +87,7 @@ class AtletSertifikatRepository
 
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with($this->with)->find($id);
     }
 
     public function apiIndex($atletId)

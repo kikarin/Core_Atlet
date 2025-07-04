@@ -18,8 +18,6 @@ const props = defineProps<{
   onDeleteSertifikat?: (sertifikat: Sertifikat) => void;
   onDeleteSelectedSertifikat?: (ids: number[]) => void;
 }>();
-const emit = defineEmits(['edit', 'delete', 'deleteSelected', 'update:selected', 'showCreator']);
-
 const selected = ref<number[]>(props.selectedIds ? [...props.selectedIds] : []);
 
 watch(() => props.selectedIds, (val) => {
