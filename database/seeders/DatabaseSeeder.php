@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 0);
 
-        // Biarkan Laravel kelola transaksi internal seeder-nya sendiri
         $this->call(CategoryIdentitySeeder::class);
         $this->call(IdentitySeeder::class);
         $this->call(CategoryPermissionSeeder::class);
@@ -27,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(UsersSeeder::class);
         $this->call(SetRolePermissionSeeder::class);
+        $this->call(ImportSqlSeeder::class);
         $this->call(MstJenisDokumenSeeder::class);
         $this->call(MstTingkatSeeder::class);
         $this->call(AtletSeeder::class);
@@ -40,7 +40,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PelatihPrestasiSeeder::class);
         $this->call(PelatihKesehatanSeeder::class);
         $this->call(PelatihDokumenSeeder::class);
-        // $this->call(ImportSqlSeeder::class);
     }
 
 }
