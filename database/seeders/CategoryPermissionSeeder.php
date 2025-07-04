@@ -63,7 +63,29 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name' => 'Atlet Kesehatan',
                 'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Pelatih',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Pelatih Sertifikat',
+                'permission' => 'CRUD',
             ]
+            ,
+            [
+                'name' => 'Pelatih Prestasi',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Pelatih Dokumen',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Pelatih Kesehatan',
+                'permission' => 'CRUD',
+            ],
+            
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

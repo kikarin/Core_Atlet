@@ -11,12 +11,12 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
 
-const props = defineProps<{ atletId: number }>();
+const props = defineProps<{ pelatihId: number }>();
 const { toast } = useToast();
 
 const breadcrumbs = computed(() => [
-  { title: 'Atlet', href: '/atlet' },
-  { title: 'Sertifikat', href: `/atlet/${props.atletId}/sertifikat` },
+  { title: 'Pelatih', href: '/pelatih' },
+  { title: 'Sertifikat', href: `/pelatih/${props.pelatihId}/sertifikat` },
 ]);
 
 const columns = [
@@ -71,7 +71,7 @@ const handleSearch = (params: { search?: string; sortKey?: string; sortOrder?: '
 const fetchData = async () => {
   loading.value = true;
   try {
-    const response = await axios.get(`/api/atlet/${props.atletId}/sertifikat`, {
+    const response = await axios.get(`/api/pelatih/${props.pelatihId}/sertifikat`, {
       params: {
         search: search.value,
         page: page.value,
@@ -104,11 +104,11 @@ watch([page, perPage, () => sort.value.key, () => sort.value.order], () => {
 const actions = (row: any) => [
   {
     label: 'Detail',
-    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}`),
+    onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat/${row.id}`),
   },
   {
     label: 'Edit',
-    onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}/edit`),
+    onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat/${row.id}/edit`),
   },
   {
     label: 'Delete',
@@ -124,7 +124,7 @@ const handleDeleteRow = async (row: any) => {
 const confirmDeleteRow = async () => {
   if (!rowToDelete.value) return;
 
-  router.delete(`/atlet/${props.atletId}/sertifikat/${rowToDelete.value.id}`, {
+  router.delete(`/pelatih/${props.pelatihId}/sertifikat/${rowToDelete.value.id}`, {
     onSuccess: () => {
       toast({ title: 'Sertifikat berhasil dihapus', variant: 'success' });
       fetchData();
@@ -147,7 +147,7 @@ const deleteSelected = async () => {
 
 const confirmDeleteSelected = async () => {
   try {
-    const response = await axios.post(`/atlet/${props.atletId}/sertifikat/destroy-selected`, { ids: idsToDelete.value });
+    const response = await axios.post(`/pelatih/${props.pelatihId}/sertifikat/destroy-selected`, { ids: idsToDelete.value });
     selected.value = [];
     fetchData();
     toast({ title: response.data?.message || 'Sertifikat terpilih berhasil dihapus', variant: 'success' });
@@ -161,14 +161,9 @@ const confirmDeleteSelected = async () => {
 // Tabs config
 const tabsConfig = [
   {
-    value: 'atlet-data',
-    label: 'Atlet',
-    onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=atlet-data`),
-  },
-  {
-    value: 'orang-tua-data',
-    label: 'Orang Tua/Wali',
-    onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=orang-tua-data`),
+    value: 'pelatih-data',
+    label: 'Pelatih',
+    onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=pelatih-data`),
   },
   {
     value: 'sertifikat-data',
@@ -178,12 +173,17 @@ const tabsConfig = [
   {
     value: 'prestasi-data',
     label: 'Prestasi',
-    onClick: () => router.visit(`/atlet/${props.atletId}/prestasi`),
+    onClick: () => router.visit(`/pelatih/${props.pelatihId}/prestasi`),
+  },
+  {
+    value: 'kesehatan-data',
+    label: 'Kesehatan',
+    onclick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=kesehatan-data`),
   },
   {
     value: 'dokumen-data',
     label: 'Dokumen',
-    onClick: () => router.visit(`/atlet/${props.atletId}/dokumen`),
+    onClick: () => router.visit(`/pelatih/${props.pelatihId}/dokumen`),
   },
 ];
 const activeTab = ref('sertifikat-data');
@@ -205,8 +205,8 @@ const idsToDelete = ref<number[]>([]);
     <div class="p-4 space-y-4">
       <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange"
         :default-value="'sertifikat-data'" />
-      <HeaderActions title="Sertifikat" :create-url="`/atlet/${props.atletId}/sertifikat/create`" :selected="selected"
-        :on-delete-selected="deleteSelected" />
+      <HeaderActions title="Sertifikat" :create-url="`/pelatih/${props.pelatihId}/sertifikat/create`"
+        :selected="selected" :on-delete-selected="deleteSelected" />
       <DataTable :columns="columns" :rows="rows" v-model:selected="selected" :total="total" :search="search"
         :sort="sort" :page="page" :per-page="perPage" :loading="loading" :actions="actions"
         @update:search="handleSearchDebounced" @update:sort="handleSort"

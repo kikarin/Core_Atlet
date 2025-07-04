@@ -11,6 +11,7 @@ import AppLogo from './AppLogo.vue';
 
 const mainNavItems = ref<NavItem[]>([]);
 const atletNavItems = ref<NavItem[]>([]);
+const pelatihNavItems = ref<NavItem[]>([]);
 const settingNavItems = ref<NavItem[]>([]);
 const isLoading = ref(false);
 const iconMap: Record<string, any> = {
@@ -37,6 +38,8 @@ const iconMap: Record<string, any> = {
     PieChart: LucideIcons.PieChart,
     Calendar: LucideIcons.Calendar,
     ShieldCheck: LucideIcons.ShieldCheck,
+    ClipboardList: LucideIcons.ClipboardList,
+    UserCircle2: LucideIcons.UserCircle2,
 };
 
 const fetchMenus = async () => {
@@ -86,7 +89,10 @@ const fetchMenus = async () => {
             const urutan = menu.urutan || 0;
             return urutan > 10 && urutan <= 20;
         });
-
+        const pelatihMenus = menus.filter((menu: any) => {
+            const urutan = menu.urutan || 0;
+            return urutan > 20 && urutan <= 30;
+        });
         const settingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan >= 100;
@@ -94,6 +100,7 @@ const fetchMenus = async () => {
 
         mainNavItems.value = mainMenus.map(transformMenuToNavItem);
         atletNavItems.value = atletMenus.map(transformMenuToNavItem);
+        pelatihNavItems.value = pelatihMenus.map(transformMenuToNavItem);
         settingNavItems.value = settingMenus.map(transformMenuToNavItem);
 
         console.log('Main Menus:', mainNavItems.value);
@@ -147,6 +154,8 @@ onUnmounted(() => {
             <NavMain v-if="mainNavItems.length > 0" :items="mainNavItems" section-title="Menu" section-id="main" />
 
             <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Atlet" section-id="atlet" />
+
+            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih" section-id="pelatih" />
 
             <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings"
                 section-id="setting" />

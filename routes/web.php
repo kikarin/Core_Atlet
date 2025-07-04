@@ -16,6 +16,11 @@ use App\Http\Controllers\AtletSertifikatController;
 use App\Http\Controllers\AtletPrestasiController;
 use App\Http\Controllers\AtletDokumenController;
 use App\Http\Controllers\AtletKesehatanController;
+use App\Http\Controllers\PelatihController;
+use App\Http\Controllers\PelatihSertifikatController;
+use App\Http\Controllers\PelatihPrestasiController;
+use App\Http\Controllers\PelatihKesehatanController;
+use App\Http\Controllers\PelatihDokumenController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -127,6 +132,50 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('kesehatan/{id}', [AtletKesehatanController::class, 'destroy'])->name('atlet.kesehatan.destroy');
     });
     // END - Atlet Orang Tua Routes
+
+    // START - Pelatih Routes
+    Route::resource('/pelatih', PelatihController::class)->names('pelatih');
+    Route::get('/api/pelatih', [PelatihController::class, 'apiIndex']);
+    Route::post('/pelatih/destroy-selected', [PelatihController::class, 'destroy_selected'])->name('pelatih.destroy_selected');
+
+    // Pelatih Sertifikat Routes (Nested under Pelatih)
+    Route::prefix('pelatih/{pelatih_id}')->group(function () {
+        Route::get('sertifikat', [PelatihSertifikatController::class, 'index'])->name('pelatih.sertifikat.index');
+        Route::get('sertifikat/create', [PelatihSertifikatController::class, 'create'])->name('pelatih.sertifikat.create');
+        Route::post('sertifikat', [PelatihSertifikatController::class, 'store'])->name('pelatih.sertifikat.store');
+        Route::get('sertifikat/{id}/edit', [PelatihSertifikatController::class, 'edit'])->name('pelatih.sertifikat.edit');
+        Route::put('sertifikat/{id}', [PelatihSertifikatController::class, 'update'])->name('pelatih.sertifikat.update');
+        Route::delete('sertifikat/{id}', [PelatihSertifikatController::class, 'destroy'])->name('pelatih.sertifikat.destroy');
+        Route::post('sertifikat/destroy-selected', [PelatihSertifikatController::class, 'destroy_selected'])->name('pelatih.sertifikat.destroy_selected');
+        Route::get('sertifikat/{id}', [PelatihSertifikatController::class, 'show'])->name('pelatih.sertifikat.show');
+
+    // Pelatih Prestasi Routes (Nested under Pelatih)
+        Route::get('prestasi', [PelatihPrestasiController::class, 'index'])->name('pelatih.prestasi.index');
+        Route::get('prestasi/create', [PelatihPrestasiController::class, 'create'])->name('pelatih.prestasi.create');
+        Route::post('prestasi', [PelatihPrestasiController::class, 'store'])->name('pelatih.prestasi.store');
+        Route::get('prestasi/{id}/edit', [PelatihPrestasiController::class, 'edit'])->name('pelatih.prestasi.edit');
+        Route::put('prestasi/{id}', [PelatihPrestasiController::class, 'update'])->name('pelatih.prestasi.update');
+        Route::delete('prestasi/{id}', [PelatihPrestasiController::class, 'destroy'])->name('pelatih.prestasi.destroy');
+        Route::post('prestasi/destroy-selected', [PelatihPrestasiController::class, 'destroy_selected'])->name('pelatih.prestasi.destroy_selected');
+        Route::get('prestasi/{id}', [PelatihPrestasiController::class, 'show'])->name('pelatih.prestasi.show');
+
+    // Pelatih Kesehatan Routes (Nested under Pelatih)
+        Route::get('kesehatan', [PelatihKesehatanController::class, 'getByPelatihId'])->name('pelatih.kesehatan.show');
+        Route::post('kesehatan', [PelatihKesehatanController::class, 'store'])->name('pelatih.kesehatan.store');
+        Route::put('kesehatan/{id}', [PelatihKesehatanController::class, 'update'])->name('pelatih.kesehatan.update');
+        Route::delete('kesehatan/{id}', [PelatihKesehatanController::class, 'destroy'])->name('pelatih.kesehatan.destroy');
+
+    // Pelatih Dokumen Routes (Nested under Pelatih)
+        Route::get('dokumen', [PelatihDokumenController::class, 'index'])->name('pelatih.dokumen.index');
+        Route::get('dokumen/create', [PelatihDokumenController::class, 'create'])->name('pelatih.dokumen.create');
+        Route::post('dokumen', [PelatihDokumenController::class, 'store'])->name('pelatih.dokumen.store');
+        Route::get('dokumen/{id}/edit', [PelatihDokumenController::class, 'edit'])->name('pelatih.dokumen.edit');
+        Route::put('dokumen/{id}', [PelatihDokumenController::class, 'update'])->name('pelatih.dokumen.update');
+        Route::delete('dokumen/{id}', [PelatihDokumenController::class, 'destroy'])->name('pelatih.dokumen.destroy');
+        Route::post('dokumen/destroy-selected', [PelatihDokumenController::class, 'destroy_selected'])->name('pelatih.dokumen.destroy_selected');
+        Route::get('dokumen/{id}', [PelatihDokumenController::class, 'show'])->name('pelatih.dokumen.show');
+    });
+    // END - Pelatih Routes
 });
 
 // API Kecamatan & Kelurahan 
@@ -137,14 +186,37 @@ Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan)
     return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
 });
 
+// API ATLET
 // API untuk Sertifikat per Atlet
-Route::get('/api/atlet/{atlet_id}/sertifikat', [App\Http\Controllers\AtletSertifikatController::class, 'apiIndex']);
+Route::get('/api/atlet/{atlet_id}/sertifikat', [AtletSertifikatController::class, 'apiIndex']);
 
 // API untuk Prestasi per Atlet
-Route::get('/api/atlet/{atlet_id}/prestasi', [App\Http\Controllers\AtletPrestasiController::class, 'apiIndex']);
+Route::get('/api/atlet/{atlet_id}/prestasi', [AtletPrestasiController::class, 'apiIndex']);
 
 // API untuk Dokumen per Atlet
-Route::get('/api/atlet/{atlet_id}/dokumen', [App\Http\Controllers\AtletDokumenController::class, 'apiIndex']);
+Route::get('/api/atlet/{atlet_id}/dokumen', [AtletDokumenController::class, 'apiIndex']);
+
+// API PELATIH
+// API untuk Sertifikat per Pelatih
+Route::get('/api/pelatih/{pelatih_id}/sertifikat', [PelatihSertifikatController::class, 'apiIndex']);
+
+// API untuk Prestasi per Pelatih
+Route::get('/api/pelatih/{pelatih_id}/prestasi', [PelatihPrestasiController::class, 'apiIndex']);
+
+// API untuk Dokumen per Pelatih
+Route::get('/api/pelatih/{pelatih_id}/dokumen', [PelatihDokumenController::class, 'apiIndex']);
+
+
+
+// API untuk Master Tingkat
+Route::get('/api/tingkat', function() {
+    return App\Models\MstTingkat::select('id', 'nama')->orderBy('nama')->get();
+});
+
+// API untuk Master Jenis Dokumen
+Route::get('/api/jenis-dokumen', function() {
+    return App\Models\MstJenisDokumen::select('id', 'nama')->orderBy('nama')->get();
+});
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

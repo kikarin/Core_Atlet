@@ -26,7 +26,7 @@ const formData = ref({
     foto: props.initialData?.foto || '',
     id: props.initialData?.id || undefined,
     file: null,
-    is_delete_foto: 0, 
+    is_delete_foto: 0,
 });
 
 const kecamatanOptions = ref<{ value: number; label: string; }[]>([]);
@@ -64,11 +64,11 @@ watch(() => formData.value.kecamatan_id, async (newVal, oldVal) => {
 });
 
 const formInputs = computed(() => [
-    { 
-        name: 'nik', 
-        label: 'NIK', 
-        type: 'text' as const, 
-        placeholder: 'Masukkan NIK (16 digit)', 
+    {
+        name: 'nik',
+        label: 'NIK',
+        type: 'text' as const,
+        placeholder: 'Masukkan NIK (16 digit)',
         required: true,
     },
     { name: 'nama', label: 'Nama', type: 'text' as const, placeholder: 'Masukkan nama', required: true },
@@ -93,17 +93,17 @@ function handleFieldUpdate({ field, value }: { field: string, value: any }) {
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
     const formFields = { ...formData.value, ...dataFromFormInput }; 
     
-    const url = '/atlet';
+    const url = '/pelatih';
     
-    console.log('Atlet/Form.vue: Form fields to send:', formFields);
-    console.log('Atlet/Form.vue: Determined base URL:', url);
+    console.log('Pelatih/Form.vue: Form fields to send:', formFields);
+    console.log('Pelatih/Form.vue: Determined base URL:', url);
     
     save(formFields, {
         url: url,
         mode: props.mode,
-        id: props.initialData?.id, 
-        successMessage: props.mode === 'create' ? 'Atlet berhasil ditambahkan!' : 'Atlet berhasil diperbarui!',
-        errorMessage: props.mode === 'create' ? 'Gagal menyimpan atlet.' : 'Gagal memperbarui atlet.',
+        id: props.initialData?.id,
+        successMessage: props.mode === 'create' ? 'Pelatih berhasil ditambahkan!' : 'Pelatih berhasil diperbarui!',
+        errorMessage: props.mode === 'create' ? 'Gagal menyimpan pelatih.' : 'Gagal memperbarui pelatih.',
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
@@ -111,15 +111,15 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
             const id = page?.props?.item?.id || page?.props?.item?.data?.id;
             if (props.mode === 'create') {
                 if (id) {
-                    window.location.href = `/atlet/${id}/edit`;
+                    window.location.href = `/pelatih/${id}/edit`;
                 } else {
-                    window.location.href =('/atlet');
+                    window.location.href = '/pelatih';
                 }
             } else if (props.mode === 'edit') {
                 if (id) {
-                    window.location.href =(`/atlet/${id}/edit`);
+                    window.location.href = `/pelatih/${id}/edit`;
                 } else {
-                    window.location.href =('/atlet');
+                    window.location.href = '/pelatih';
                 }
             }
         },
