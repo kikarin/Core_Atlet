@@ -4,6 +4,8 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const breadcrumbs = [{ title: 'Pelatih', href: '/pelatih' }];
 
@@ -97,6 +99,71 @@ const deletePelatih = async (row: any) => {
         },
     });
 };
+
+const showImportModal = ref(false);
+const importFile = ref<File|null>(null);
+const importLoading = ref(false);
+const fileName = ref<string>('');
+const fileInput = ref<HTMLInputElement>();
+
+function openImportModal() {
+    showImportModal.value = true;
+    importFile.value = null;
+    fileName.value = '';
+}
+function closeImportModal() {
+    showImportModal.value = false;
+    importFile.value = null;
+    fileName.value = '';
+}
+function handleFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (file) {
+        const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+        if (!validTypes.includes(file.type)) {
+            toast({ title: 'File harus berformat Excel (.xlsx atau .xls)', variant: 'destructive' });
+            target.value = '';
+            return;
+        }
+        importFile.value = file;
+        fileName.value = file.name;
+    }
+}
+
+async function handleImport() {
+    if (!importFile.value) return toast({ title: 'Pilih file Excel terlebih dahulu', variant: 'destructive' });
+    importLoading.value = true;
+    const formData = new FormData();
+    formData.append('file', importFile.value);
+    try {
+        const response = await axios.post('/pelatih/import', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        if (response.data.success) {
+            const data = response.data.data;
+            let message = response.data.message;
+            if (data.error_count > 0) {
+                const errorGroups: Record<string, number[]> = {};
+                data.errors.forEach((err: any) => {
+                    if (!errorGroups[err.error]) errorGroups[err.error] = [];
+                    errorGroups[err.error].push(err.row);
+                });
+                message += '\n\nError yang ditemukan:';
+                Object.entries(errorGroups).forEach(([err, rows]) => {
+                    message += `\n• Baris ${rows.join(', ')}: ${err}`;
+                });
+            }
+            toast({ title: message, variant: data.error_count > 0 ? 'destructive' : 'success' });
+            closeImportModal();
+            pageIndex.value.fetchData();
+        } else {
+            toast({ title: response.data.message || 'Gagal import', variant: 'destructive' });
+        }
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Gagal import', variant: 'destructive' });
+    } finally {
+        importLoading.value = false;
+    }
+}
 </script>
 
 <template>
@@ -114,6 +181,53 @@ const deletePelatih = async (row: any) => {
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row="deletePelatih"
+            @import="openImportModal"
+            :showImport="true"
         />
+        <Dialog v-model:open="showImportModal">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Import Data Pelatih</DialogTitle>
+                    <DialogDescription>
+                        Upload file Excel (.xlsx atau .xls) yang berisi data pelatih.
+                    </DialogDescription>
+                </DialogHeader>
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">File Excel</label>
+                        <div class="flex items-center gap-2">
+                            <input 
+                                ref="fileInput"
+                                type="file" 
+                                accept=".xlsx,.xls" 
+                                @change="handleFileChange"
+                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+                        <div v-if="fileName" class="text-sm text-muted-foreground">
+                            File: {{ fileName }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg border bg-muted p-3">
+                        <div class="text-sm font-medium mb-2">Format kolom yang didukung:</div>
+                        <div class="text-xs text-muted-foreground space-y-1">
+                            <div><strong>Pelatih:</strong> nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, kecamatan_id, kelurahan_id, no_hp, email, is_active</div>
+                            <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
+                        </div>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" @click="closeImportModal" :disabled="importLoading">
+                        Batal
+                    </Button>
+                    <Button 
+                        @click="handleImport" 
+                        :disabled="importLoading || !importFile"
+                    >
+                        {{ importLoading ? 'Mengimpor...' : 'Import' }}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
 </template> 

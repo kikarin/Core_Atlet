@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/atlet', AtletController::class)->names('atlet');
     Route::get('/api/atlet', [AtletController::class, 'apiIndex']);
     Route::post('/atlet/destroy-selected', [AtletController::class, 'destroy_selected'])->name('atlet.destroy_selected');
+    Route::post('/atlet/import', [AtletController::class, 'import'])->name('atlet.import');
 
     // START - Atlet Orang Tua Routes (Nested under Atlet)
     Route::prefix('atlet/{atlet_id}')->group(function () {
@@ -137,6 +138,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/pelatih', PelatihController::class)->names('pelatih');
     Route::get('/api/pelatih', [PelatihController::class, 'apiIndex']);
     Route::post('/pelatih/destroy-selected', [PelatihController::class, 'destroy_selected'])->name('pelatih.destroy_selected');
+    Route::post('/pelatih/import', [PelatihController::class, 'import'])->name('pelatih.import');
 
     // Pelatih Sertifikat Routes (Nested under Pelatih)
     Route::prefix('pelatih/{pelatih_id}')->group(function () {

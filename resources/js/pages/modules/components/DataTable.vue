@@ -41,7 +41,7 @@ const selectLabel = computed(() => {
         <!-- Search dan Length -->
         <div class="flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
             <!-- Length -->
-            <div v-if="!props.disableLength" class="flex items-center gap-2">
+            <div v-if="!props.disableLength" class="ml-2 flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Show</span>
                 <Select :model-value="props.perPage" @update:model-value="(val) => emit('update:perPage', val === 'all' ? -1 : Number(val))">
                     <SelectTrigger class="w-24">
@@ -65,7 +65,7 @@ const selectLabel = computed(() => {
             </div>
         </div>
         <!-- Table -->
-        <div class="rounded-md border shadow-sm">
+        <div class="rounded-md shadow-sm">
             <div class="w-full overflow-x-auto">
                 <Table class="min-w-max">
                     <TableHeader class="bg-muted">

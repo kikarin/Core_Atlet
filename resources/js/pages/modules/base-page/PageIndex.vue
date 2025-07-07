@@ -74,9 +74,10 @@ const props = defineProps<{
     limit?: number;
     disableLength?: boolean;
     hideSearch?: boolean;
+    showImport: boolean;
 }>();
 
-const emit = defineEmits(['search', 'update:selected']);
+const emit = defineEmits(['search', 'update:selected', 'import']);
 
 const localSelected = ref<number[]>([]);
 
@@ -175,35 +176,42 @@ defineExpose({ fetchData });
 <template>
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-4">
-            <HeaderActions
-                :title="title"
-                :selected="localSelected"
-                :on-delete-selected="() => (showConfirm = true)"
-                v-bind="createUrl ? { createUrl } : {}"
-            />
-            <DataTable
-                :columns="columns"
-                :rows="tableRows"
-                :actions="localActions"
-                :total="total"
-                :loading="loading"
-                v-model:selected="localSelected"
-                :search="search"
-                :sort="sort"
-                :page="page"
-                :per-page="props.limit !== undefined ? props.limit : localLimit"
-                @update:search="handleSearchDebounced"
-                @update:sort="handleSort"
-                @update:page="(val) => handleSearch({ page: val })"
-                @update:perPage="(val) => handleSearch({ limit: Number(val), page: 1 })"
-                @deleted="fetchData()"
-                :on-delete-row="handleDeleteRow"
-                :hide-pagination="props.hidePagination"
-                :disable-length="props.disableLength"
-                :hide-search="props.hideSearch"
-            />
-
+        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950 py-4">
+            <div class="max-w-5xl mx-auto">
+                <div class="mx-auto p-2 py-4">
+                    <HeaderActions
+                        :title="title"
+                        :selected="localSelected"
+                        :on-delete-selected="() => (showConfirm = true)"
+                        v-bind="createUrl ? { createUrl } : {}"
+                        :showImport="props.showImport"
+                        @import="$emit('import')"
+                    />
+                </div>
+                <div class="bg-white dark:bg-neutral-900 rounded-xl shadow p-2 py-4">
+                    <DataTable
+                        :columns="columns"
+                        :rows="tableRows"
+                        :actions="localActions"
+                        :total="total"
+                        :loading="loading"
+                        v-model:selected="localSelected"
+                        :search="search"
+                        :sort="sort"
+                        :page="page"
+                        :per-page="props.limit !== undefined ? props.limit : localLimit"
+                        @update:search="handleSearchDebounced"
+                        @update:sort="handleSort"
+                        @update:page="(val) => handleSearch({ page: val })"
+                        @update:perPage="(val) => handleSearch({ limit: Number(val), page: 1 })"
+                        @deleted="fetchData()"
+                        :on-delete-row="handleDeleteRow"
+                        :hide-pagination="props.hidePagination"
+                        :disable-length="props.disableLength"
+                        :hide-search="props.hideSearch"
+                    />
+                </div>
+            </div>
             <Dialog v-model:open="showConfirm">
                 <DialogContent>
                     <DialogHeader>
@@ -218,7 +226,6 @@ defineExpose({ fetchData });
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
             <Dialog v-model:open="showDeleteDialog">
                 <DialogContent>
                     <DialogHeader>
