@@ -38,7 +38,7 @@ watch(() => props.initialData, (newVal) => {
 
 onMounted(async () => {
     try {
-        const res = await axios.get('/api/jenis-dokumen');
+        const res = await axios.get('/api/jenis-dokumen-list');
         jenisDokumenOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
         console.error("Gagal mengambil data jenis dokumen", e);

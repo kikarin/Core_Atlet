@@ -40,7 +40,7 @@ watch(() => props.initialData, (newVal) => {
 
 onMounted(async () => {
     try {
-        const res = await axios.get('/api/tingkat');
+        const res = await axios.get('/api/tingkat-list');
         tingkatOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
         console.error("Gagal mengambil data tingkat", e);

@@ -2,18 +2,22 @@
 
 namespace App\Repositories;
 
-use App\Models\MstKecamatan;
+use App\Models\MstTingkat;
 use App\Traits\RepositoryTrait;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\MstTingkatRequest;
 
-class KecamatanRepository
+class MstTingkatRepository
 {
     use RepositoryTrait;
-
     protected $model;
+    protected $request;
 
-    public function __construct(MstKecamatan $model)
+    public function __construct(MstTingkat $model)
     {
-        $this->model            = $model;
+        $this->model   = $model;
+        $this->request = MstTingkatRequest::createFromBase(request());
+        $this->with    = ['created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -52,7 +56,7 @@ class KecamatanRepository
                 ];
             });
             $data += [
-                'kecamatans'    => $transformedData,
+                'tingkats'    => $transformedData,
                 'total'       => $transformedData->count(),
                 'currentPage' => 1,
                 'perPage'     => -1,
@@ -74,7 +78,7 @@ class KecamatanRepository
         });
 
         $data += [
-            'kecamatans'    => $transformedData,
+            'tingkats'    => $transformedData,
             'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
             'perPage'     => $items->perPage(),
@@ -85,4 +89,51 @@ class KecamatanRepository
 
         return $data;
     }
-}
+
+    public function customDataCreateUpdate($data, $record = null)
+    {
+        $userId = Auth::id();
+
+        if (is_null($record)) {
+            $data['created_by'] = $userId;
+        }
+        $data['updated_by'] = $userId;
+
+        return $data;
+    }
+
+    public function delete_selected(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
+
+    public function getDetailWithUserTrack($id)
+    {
+        return $this->model
+            ->with(['created_by_user', 'updated_by_user'])
+            ->where('id', $id)
+            ->first();
+    }
+
+    public function handleShow($id)
+    {
+        $item = $this->getDetailWithUserTrack($id);
+
+        if (!$item) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
+        }
+
+        $itemArray = $item->toArray();
+
+        return \Inertia\Inertia::render('modules/data-master/tingkat/Show', [
+            'item' => $itemArray,
+        ]);
+    }
+
+    public function validateRequest($request)
+    {
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
+        $messages = method_exists($request, 'messages') ? $request->messages() : [];
+        return $request->validate($rules, $messages);
+    }
+} 

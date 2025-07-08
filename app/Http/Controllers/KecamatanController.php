@@ -26,14 +26,49 @@ class KecamatanController extends Controller implements HasMiddleware
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
-        $permission = str_replace('Controller', '', $className);
-        $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+        $prefix = 'Mst Kecamatan';
         return [
-            new Middleware("can:$permission Add", only: ['create', 'store']),
-            new Middleware("can:$permission Detail", only: ['show']),
-            new Middleware("can:$permission Edit", only: ['edit', 'update']),
-            new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
+            new Middleware("can:$prefix Add", only: ['create', 'store']),
+            new Middleware("can:$prefix Detail", only: ['show']),
+            new Middleware("can:$prefix Edit", only: ['edit', 'update']),
+            new Middleware("can:$prefix Delete", only: ['destroy', 'destroy_selected']),
+            new Middleware("can:$prefix Show", only: ['index', 'apiIndex']),
         ];
+    }
+
+    public function apiIndex()
+    {
+        $data = $this->repository->customIndex([]);
+        return response()->json([
+            'data' => $data['kecamatans'] ?? $data['data'] ?? $data,
+            'meta' => [
+                'total'        => $data['total'] ?? 0,
+                'current_page' => $data['currentPage'] ?? 1,
+                'per_page'     => $data['perPage'] ?? 10,
+                'search'       => $data['search'] ?? '',
+                'sort'         => $data['sort'] ?? '',
+                'order'        => $data['order'] ?? 'asc',
+            ],
+        ]);
+    }
+
+    public function index()
+    {
+        $this->repository->customProperty(__FUNCTION__);
+        $data = $this->commonData + [];
+        if ($this->check_permission == true) {
+            $data = array_merge($data, $this->getPermission());
+        }
+        $data = $this->repository->customIndex($data);
+        return inertia('modules/data-master/kecamatan/Index', $data);
+    }
+
+    public function show($id)
+    {
+        $item = $this->repository->getById($id);
+        $itemArray = $item->toArray();
+        return inertia('modules/data-master/kecamatan/Show', [
+            'item' => $itemArray,
+        ]);
     }
 }

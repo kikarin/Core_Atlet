@@ -136,6 +136,7 @@ const deleteUser = async (row: any) => {
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row="deleteUser"
+            :show-import="false"
         />
     </div>
 </template>

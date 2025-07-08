@@ -34,8 +34,8 @@ const kelurahanOptions = ref<{ value: number; label: string; }[]>([]);
 
 onMounted(async () => {
     try {
-        const res = await axios.get('/api/kecamatan');
-        kecamatanOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+        const res = await axios.get('/api/kecamatan-list');
+        kecamatanOptions.value = (res.data || []).map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
 
         if (props.mode === 'edit' && formData.value.kecamatan_id) {
             const kelurahanRes = await axios.get(`/api/kelurahan-by-kecamatan/${formData.value.kecamatan_id}`);

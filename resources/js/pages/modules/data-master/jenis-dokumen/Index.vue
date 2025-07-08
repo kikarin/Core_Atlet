@@ -6,18 +6,12 @@ import axios from 'axios';
 import { ref } from 'vue';
 
 const breadcrumbs = [
-    { title: 'Menu & Permissions', href: '#' },
-    { title: 'Activity Logs', href: '/menu-permissions/logs' },
+    { title: 'Data Master', href: '/data-master' },
+    { title: 'Jenis Dokumen', href: '/data-master/jenis-dokumen' },
 ];
 
 const columns = [
-    { key: 'event', label: 'Event', searchable: true, orderable: true, visible: true },
-    { key: 'subject_type', label: 'Subject Type', searchable: true, orderable: true, visible: true },
-    { key: 'subject_id', label: 'Subject ID', searchable: true, orderable: true, visible: true },
-    { key: 'data', label: 'Data', searchable: true, orderable: true, visible: true },
-    { key: 'causer_name', label: 'Causer', searchable: false, orderable: false, visible: true },
-    { key: 'causer_role', label: 'Causer Role', searchable: false, orderable: false, visible: true },
-    { key: 'created_at', label: 'Created At', searchable: false, orderable: true, visible: true },
+    { key: 'nama', label: 'Nama Jenis Dokumen' },
 ];
 
 const selected = ref<number[]>([]);
@@ -29,7 +23,11 @@ const { toast } = useToast();
 const actions = (row: any) => [
     {
         label: 'Detail',
-        onClick: () => router.visit(`/menu-permissions/logs/${row.id}`),
+        onClick: () => router.visit(`/data-master/jenis-dokumen/${row.id}`),
+    },
+    {
+        label: 'Edit',
+        onClick: () => router.visit(`/data-master/jenis-dokumen/${row.id}/edit`),
     },
     {
         label: 'Delete',
@@ -43,7 +41,7 @@ const deleteSelected = async () => {
     }
 
     try {
-        const response = await axios.post('/menu-permissions/logs/destroy-selected', {
+        const response = await axios.post('/data-master/jenis-dokumen/destroy-selected', {
             ids: selected.value,
         });
 
@@ -65,8 +63,8 @@ const deleteSelected = async () => {
     }
 };
 
-const deleteLog = async (row: any) => {
-    await router.delete(`/menu-permissions/logs/${row.id}`, {
+const deleteRow = async (row: any) => {
+    await router.delete(`/data-master/jenis-dokumen/${row.id}`, {
         onSuccess: () => {
             toast({ title: 'Data berhasil dihapus', variant: 'success' });
             pageIndex.value.fetchData();
@@ -79,16 +77,21 @@ const deleteLog = async (row: any) => {
 </script>
 
 <template>
-    <PageIndex
-        title="Activity Logs"
-        :breadcrumbs="breadcrumbs"
-        :columns="columns"
-        :actions="actions"
-        api-endpoint="/api/activity-logs"
-        ref="pageIndex"
-        :selected="selected"
-        @update:selected="(val) => (selected = val)"
-        :on-delete-selected="deleteSelected"
-        :on-delete-row-confirm="deleteLog"
-    />
-</template>
+    <div class="space-y-4">
+        <PageIndex
+            title="Jenis Dokumen"
+            :breadcrumbs="breadcrumbs"
+            :columns="columns"
+            :create-url="'/data-master/jenis-dokumen/create'"
+            :actions="actions"
+            :selected="selected"
+            @update:selected="(val) => (selected = val)"
+            :on-delete-selected="deleteSelected"
+            api-endpoint="/api/jenis-dokumen"
+            ref="pageIndex"
+            :on-toast="toast"
+            :on-delete-row-confirm="deleteRow"
+            :show-import="false"
+        />
+    </div>
+</template> 

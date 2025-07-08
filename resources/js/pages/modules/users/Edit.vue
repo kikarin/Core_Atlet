@@ -5,7 +5,7 @@ import Form from './Form.vue';
 const props = defineProps<{
     item: Record<string, any>;
     get_Roles: Record<number, string>;
-    selected_roles?: number[]; // Dari backend
+    selected_roles?: number[];
 }>();
 
 const breadcrumbs = [

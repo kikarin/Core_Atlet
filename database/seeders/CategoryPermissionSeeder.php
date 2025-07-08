@@ -85,7 +85,22 @@ class CategoryPermissionSeeder extends Seeder
                 'name' => 'Pelatih Kesehatan',
                 'permission' => 'CRUD',
             ],
-            
+            [
+                'name' => 'Mst Tingkat',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Mst Jenis Dokumen',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Mst Kecamatan',
+                'permission' => ['Mst Kecamatan Show', 'Mst Kecamatan Detail'],
+            ],
+            [
+                'name' => 'Mst Desa',
+                'permission' => ['Mst Desa Show', 'Mst Desa Detail'],
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

@@ -51,6 +51,34 @@ class UsersMenuSeeder extends Seeder
                 'urutan'        => 101,
                 'permission_id' => '',
                 'children'      => [
+                    [
+                        'nama'          => 'Tingkat',
+                        'kode'          => 'DATA-MASTER-TINGKAT',
+                        'url'           => '/data-master/tingkat',
+                        'urutan'        => 1,
+                        'permission_id' => 'Master Tingkat Show',
+                    ],
+                    [
+                        'nama'          => 'Jenis Dokumen',
+                        'kode'          => 'DATA-MASTER-JENIS-DOKUMEN',
+                        'url'           => '/data-master/jenis-dokumen',
+                        'urutan'        => 2,
+                        'permission_id' => 'Master Jenis Dokumen Show',
+                    ],
+                    [
+                        'nama'          => 'Kecamatan',
+                        'kode'          => 'DATA-MASTER-KECAMATAN',
+                        'url'           => '/data-master/kecamatan',
+                        'urutan'        => 3,
+                        'permission_id' => 'Mst Kecamatan Show',
+                    ],
+                    [
+                        'nama'          => 'Desa/Kelurahan',
+                        'kode'          => 'DATA-MASTER-DESA',
+                        'url'           => '/data-master/desa',
+                        'urutan'        => 4,
+                        'permission_id' => 'Mst Desa Show',
+                    ],
                 ],
             ],
             [
