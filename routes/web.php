@@ -14,6 +14,8 @@ use App\Models\MstKecamatan;
 use App\Models\MstDesa;
 use App\Models\MstTingkat;
 use App\Models\MstJenisDokumen;
+use App\Models\MstJenisPelatih;
+use App\Models\Cabor;
 use App\Http\Controllers\AtletSertifikatController;
 use App\Http\Controllers\AtletPrestasiController;
 use App\Http\Controllers\AtletDokumenController;
@@ -27,6 +29,9 @@ use App\Http\Controllers\MstTingkatController;
 use App\Http\Controllers\MstJenisDokumenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\DesaController;
+use App\Http\Controllers\MstJenisPelatihController;
+use App\Http\Controllers\CaborController;
+use App\Http\Controllers\CaborKategoriController;
 
 // =====================
 // ROUTE UTAMA
@@ -42,10 +47,13 @@ Route::get('dashboard', function () {
 // =====================
 // API MASTER (untuk datatable & select)
 // =====================
+// datatable
 Route::get('/api/tingkat', [MstTingkatController::class, 'apiIndex']);
 Route::get('/api/jenis-dokumen', [MstJenisDokumenController::class, 'apiIndex']);
 Route::get('/api/kecamatan', [KecamatanController::class, 'apiIndex']);
 Route::get('/api/desa', [DesaController::class, 'apiIndex']);
+Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex']);
+// select
 Route::get('/api/tingkat-list', function() {
     return MstTingkat::select('id', 'nama')->orderBy('nama')->get();
 });
@@ -57,6 +65,9 @@ Route::get('/api/kecamatan-list', function() {
 });
 Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan) {
     return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/jenis-pelatih-list', function() {
+    return MstJenisPelatih::select('id', 'nama')->orderBy('nama')->get();
 });
 
 
@@ -179,6 +190,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('dokumen/destroy-selected', [PelatihDokumenController::class, 'destroy_selected'])->name('pelatih.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [PelatihDokumenController::class, 'show'])->name('pelatih.dokumen.show');
     });
+    // CABOR
+    Route::resource('/cabor', CaborController::class)->names('cabor');
+    Route::get('/api/cabor', [CaborController::class, 'apiIndex']);
+    Route::post('/cabor/destroy-selected', [CaborController::class, 'destroy_selected'])->name('cabor.destroy_selected');
+    // KATEGORI (CaborKategori)
+    Route::resource('/cabor-kategori', CaborKategoriController::class)->names('cabor-kategori');
+    Route::get('/api/cabor-kategori', [CaborKategoriController::class, 'apiIndex']);
+    Route::post('/cabor-kategori/destroy-selected', [CaborKategoriController::class, 'destroy_selected'])->name('cabor-kategori.destroy_selected');
+    // API select option
+    Route::get('/api/cabor-list', function() {
+        return Cabor::select('id', 'nama')->orderBy('nama')->get();
+    });
+    Route::get('/api/cabor-kategori-list', [CaborKategoriController::class, 'list']);
+    Route::get('/api/cabor-kategori-by-cabor/{cabor_id}', [CaborKategoriController::class, 'listByCabor']);
 });
 
 // API untuk sertifikat, prestasi, dokumen per atlet/pelatih
@@ -206,6 +231,9 @@ Route::prefix('data-master')->group(function () {
     // Master Desa (hanya index & show)
     Route::get('/desa', [DesaController::class, 'index'])->name('desa.index');
     Route::get('/desa/{id}', [DesaController::class, 'show'])->name('desa.show');
+    // Master Jenis Pelatih
+    Route::resource('/jenis-pelatih', MstJenisPelatihController::class)->names('jenis-pelatih');
+    Route::post('/jenis-pelatih/destroy-selected', [MstJenisPelatihController::class, 'destroy_selected'])->name('jenis-pelatih.destroy_selected');
 });
 
 

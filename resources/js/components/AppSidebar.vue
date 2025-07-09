@@ -12,10 +12,12 @@ import AppLogo from './AppLogo.vue';
 const mainNavItems = ref<NavItem[]>([]);
 const atletNavItems = ref<NavItem[]>([]);
 const pelatihNavItems = ref<NavItem[]>([]);
+const caborNavItems = ref<NavItem[]>([]);
 const settingNavItems = ref<NavItem[]>([]);
 const isLoading = ref(false);
 const iconMap: Record<string, any> = {
     LayoutGrid: LucideIcons.LayoutGrid,
+    Flag: LucideIcons.Flag,
     FolderKanban: LucideIcons.FolderKanban,
     FileStack: LucideIcons.FileStack,
     Users: LucideIcons.Users,
@@ -93,6 +95,10 @@ const fetchMenus = async () => {
             const urutan = menu.urutan || 0;
             return urutan > 20 && urutan <= 30;
         });
+        const caborMenus = menus.filter((menu: any) => {
+            const urutan = menu.urutan || 0;
+            return urutan > 30 && urutan <= 40;
+        });
         const settingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan >= 100;
@@ -101,6 +107,7 @@ const fetchMenus = async () => {
         mainNavItems.value = mainMenus.map(transformMenuToNavItem);
         atletNavItems.value = atletMenus.map(transformMenuToNavItem);
         pelatihNavItems.value = pelatihMenus.map(transformMenuToNavItem);
+        caborNavItems.value = caborMenus.map(transformMenuToNavItem);
         settingNavItems.value = settingMenus.map(transformMenuToNavItem);
 
         console.log('Main Menus:', mainNavItems.value);
@@ -155,7 +162,10 @@ onUnmounted(() => {
 
             <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Atlet" section-id="atlet" />
 
-            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih" section-id="pelatih" />
+            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih"
+                section-id="pelatih" />
+
+            <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
 
             <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings"
                 section-id="setting" />

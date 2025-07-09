@@ -8,7 +8,7 @@ use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use App\Models\MstTingkat;
+use Inertia\Inertia;
 
 class MstTingkatController extends Controller implements HasMiddleware
 {
@@ -87,7 +87,7 @@ class MstTingkatController extends Controller implements HasMiddleware
     {
         $item = $this->repository->getById($id);
         $itemArray = $item->toArray();
-        return \Inertia\Inertia::render('modules/data-master/tingkat/Show', [
+        return Inertia::render('modules/data-master/tingkat/Show', [
             'item' => $itemArray,
         ]);
     }

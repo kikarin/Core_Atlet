@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MstJenisDokumenRequest;
-use App\Repositories\MstJenisDokumenRepository;
+use App\Http\Requests\MstJenisPelatihRequest;
+use App\Repositories\MstJenisPelatihRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 
-class MstJenisDokumenController extends Controller implements HasMiddleware
+class MstJenisPelatihController extends Controller implements HasMiddleware
 {
     use BaseTrait;
-    private $request;
     private $repository;
+    private $request;
 
-    public function __construct(Request $request, MstJenisDokumenRepository $repository)
+    public function __construct(Request $request, MstJenisPelatihRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = MstJenisDokumenRequest::createFromBase($request);
+        $this->request    = MstJenisPelatihRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'jenis-dokumen'; // Sesuaikan dengan nama route resource
+        $this->route                          = 'jenis-pelatih';
         $this->commonData['kode_first_menu']  = 'DATA-MASTER';
-        $this->commonData['kode_second_menu'] = 'DATA-MASTER-JENIS-DOKUMEN';
+        $this->commonData['kode_second_menu'] = 'DATA-MASTER-JENIS-PELATIH';
     }
 
     public static function middleware(): array
@@ -43,7 +43,7 @@ class MstJenisDokumenController extends Controller implements HasMiddleware
     {
         $data = $this->repository->customIndex([]);
         return response()->json([
-            'data' => $data['jenisDokumens'],
+            'data' => $data['jenisPelatihs'],
             'meta' => [
                 'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
@@ -59,35 +59,32 @@ class MstJenisDokumenController extends Controller implements HasMiddleware
     {
         $this->repository->customProperty(__FUNCTION__);
         $data = $this->commonData + [];
-
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
-
         $data = $this->repository->customIndex($data);
-
-        return inertia('modules/data-master/jenis-dokumen/Index', $data);
+        return inertia('modules/data-master/jenis-pelatih/Index', $data);
     }
 
-    public function store(MstJenisDokumenRequest $request)
+    public function store(MstJenisPelatihRequest $request)
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
-        return redirect()->route('jenis-dokumen.index')->with('success', 'Data jenis dokumen berhasil ditambahkan!');
+        return redirect()->route('jenis-pelatih.index')->with('success', 'Data jenis pelatih berhasil ditambahkan!');
     }
 
-    public function update(MstJenisDokumenRequest $request, $id)
+    public function update(MstJenisPelatihRequest $request, $id)
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
-        return redirect()->route('jenis-dokumen.index')->with('success', 'Data jenis dokumen berhasil diperbarui!');
+        return redirect()->route('jenis-pelatih.index')->with('success', 'Data jenis pelatih berhasil diperbarui!');
     }
 
     public function show($id)
     {
         $item = $this->repository->getById($id);
         $itemArray = $item->toArray();
-        return Inertia::render('modules/data-master/jenis-dokumen/Show', [
+        return Inertia::render('modules/data-master/jenis-pelatih/Show', [
             'item' => $itemArray,
         ]);
     }
@@ -95,18 +92,17 @@ class MstJenisDokumenController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
-        return redirect()->route('jenis-dokumen.index')->with('success', 'Data jenis dokumen berhasil dihapus!');
+        return redirect()->route('jenis-pelatih.index')->with('success', 'Data jenis pelatih berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'required|numeric|exists:mst_jenis_dokumen,id',
+            'ids.*' => 'required|numeric|exists:mst_jenis_pelatih,id',
         ]);
-
         $this->repository->delete_selected($request->ids);
-        return response()->json(['message' => 'Data jenis dokumen berhasil dihapus!']);
+        return response()->json(['message' => 'Data jenis pelatih berhasil dihapus!']);
     }
 
     public function create()
@@ -122,7 +118,7 @@ class MstJenisDokumenController extends Controller implements HasMiddleware
         if (!is_array($data)) {
             return $data;
         }
-        return inertia('modules/data-master/jenis-dokumen/Create', $data);
+        return inertia('modules/data-master/jenis-pelatih/Create', $data);
     }
 
     public function edit($id = '')
@@ -139,6 +135,6 @@ class MstJenisDokumenController extends Controller implements HasMiddleware
         if (!is_array($data)) {
             return $data;
         }
-        return inertia('modules/data-master/jenis-dokumen/Edit', $data);
+        return inertia('modules/data-master/jenis-pelatih/Edit', $data);
     }
 } 

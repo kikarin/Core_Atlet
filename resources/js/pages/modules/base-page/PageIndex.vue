@@ -168,7 +168,7 @@ const handleSort = debounce((val: { key: string; order: 'asc' | 'desc' }) => {
     sort.value.order = val.order;
     page.value = 1;
     fetchData();
-}, 200);
+}, 300);
 
 defineExpose({ fetchData });
 </script>

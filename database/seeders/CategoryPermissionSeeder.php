@@ -101,6 +101,18 @@ class CategoryPermissionSeeder extends Seeder
                 'name' => 'Mst Desa',
                 'permission' => ['Mst Desa Show', 'Mst Desa Detail'],
             ],
+            [
+                'name' => 'Mst Jenis Pelatih',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Cabor',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Cabor Kategori',
+                'permission' => 'CRUD',
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];
