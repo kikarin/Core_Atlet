@@ -164,11 +164,11 @@ const handleSave = async () => {
                 toast({ title: 'Atlet berhasil ditambahkan ke kategori', variant: 'success' });
                 router.visit(`/cabor-kategori/${props.caborKategori.id}/atlet`);
             },
-            onError: (errors) => {
+            onError: () => {
                 toast({ title: 'Gagal menambahkan atlet ke kategori', variant: 'destructive' });
             }
         });
-    } catch (error) {
+    } catch  {
         toast({ title: 'Gagal menambahkan atlet', variant: 'destructive' });
     }
 };
@@ -184,7 +184,7 @@ const getPageNumbers = () => {
     const pages = [];
     const maxPages = 5;
     let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2));
-    let end = Math.min(totalPages.value, start + maxPages - 1);
+    const end = Math.min(totalPages.value, start + maxPages - 1);
     
     if (end - start + 1 < maxPages) {
         start = Math.max(1, end - maxPages + 1);

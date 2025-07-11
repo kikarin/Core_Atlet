@@ -91,7 +91,7 @@ const deletePelatih = async (row: any) => {
         await axios.delete(`/cabor-kategori-pelatih/${row.id}`);
         toast({ title: 'Data berhasil dihapus', variant: 'success' });
         pageIndex.value.fetchData();
-    } catch (error) {
+    } catch  {
         toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
     }
     showConfirmDelete.value = false;
