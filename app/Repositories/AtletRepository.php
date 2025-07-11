@@ -5,8 +5,9 @@ namespace App\Repositories;
 use App\Models\Atlet;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\AtletRequest;
 use App\Repositories\AtletOrangTuaRepository;
 
 class AtletRepository
@@ -45,6 +46,19 @@ class AtletRepository
     public function customIndex($data)
     {
         $query = $this->model->query();
+        
+        // Filter untuk exclude atlet yang sudah ada di kategori tertentu
+        if (request('exclude_cabor_kategori_id')) {
+            $excludeKategoriId = request('exclude_cabor_kategori_id');
+            $query->whereNotExists(function ($subQuery) use ($excludeKategoriId) {
+                $subQuery->select(DB::raw(1))
+                    ->from('cabor_kategori_atlet')
+                    ->whereColumn('cabor_kategori_atlet.atlet_id', 'atlets.id')
+                    ->where('cabor_kategori_atlet.cabor_kategori_id', $excludeKategoriId)
+                    ->whereNull('cabor_kategori_atlet.deleted_at'); // hanya relasi aktif
+            });
+        }
+        
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {

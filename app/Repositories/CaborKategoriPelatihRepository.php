@@ -1,0 +1,231 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\CaborKategoriPelatih;
+use App\Traits\RepositoryTrait;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class CaborKategoriPelatihRepository
+{
+    use RepositoryTrait;
+
+    protected $model;
+
+    public function __construct(CaborKategoriPelatih $model)
+    {
+        $this->model = $model;
+        $this->with = ['cabor', 'caborKategori', 'pelatih', 'jenisPelatih', 'created_by_user', 'updated_by_user'];
+    }
+
+    public function customIndex($data)
+    {
+        $query = $this->model
+            ->with(['cabor', 'caborKategori', 'pelatih', 'jenisPelatih'])
+            ->select('cabor_kategori_pelatih.id', 'cabor_kategori_pelatih.cabor_id', 'cabor_kategori_pelatih.cabor_kategori_id', 'cabor_kategori_pelatih.pelatih_id', 'cabor_kategori_pelatih.jenis_pelatih_id', 'cabor_kategori_pelatih.created_at');
+
+        // Filter by cabor_kategori_id jika ada
+        if (request('cabor_kategori_id')) {
+            $query->where('cabor_kategori_pelatih.cabor_kategori_id', request('cabor_kategori_id'));
+        }
+
+        // Search
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('pelatih', function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                    ->orWhere('nik', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Sort
+        if (request('sort')) {
+            $order = request('order', 'asc');
+            $sortField = request('sort');
+            
+            if ($sortField === 'pelatih_nama') {
+                $query->join('pelatihs', 'cabor_kategori_pelatih.pelatih_id', '=', 'pelatihs.id')
+                    ->orderBy('pelatihs.nama', $order);
+            } else {
+                $validColumns = ['id', 'cabor_id', 'cabor_kategori_id', 'pelatih_id', 'jenis_pelatih_id', 'created_at'];
+                if (in_array($sortField, $validColumns)) {
+                    $query->orderBy('cabor_kategori_pelatih.' . $sortField, $order);
+                } else {
+                    $query->orderBy('cabor_kategori_pelatih.id', 'desc');
+                }
+            }
+        } else {
+            $query->orderBy('cabor_kategori_pelatih.id', 'desc');
+        }
+
+        // Pagination
+        $perPage = (int) request('per_page', 10);
+        $page = (int) request('page', 1);
+        
+        if ($perPage === -1) {
+            $allRecords = $query->get();
+            $transformedRecords = collect($allRecords)->map(function ($record) {
+                return [
+                    'id' => $record->id,
+                    'cabor_id' => $record->cabor_id,
+                    'cabor_nama' => $record->cabor->nama ?? '-',
+                    'cabor_kategori_id' => $record->cabor_kategori_id,
+                    'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
+                    'pelatih_id' => $record->pelatih_id,
+                    'pelatih_nama' => $record->pelatih->nama ?? '-',
+                    'pelatih_nik' => $record->pelatih->nik ?? '-',
+                    'jenis_pelatih_id' => $record->jenis_pelatih_id,
+                    'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
+                    'created_at' => $record->created_at,
+                ];
+            });
+            
+            $data += [
+                'records' => $transformedRecords,
+                'total' => $transformedRecords->count(),
+                'currentPage' => 1,
+                'perPage' => -1,
+                'search' => request('search', ''),
+                'sort' => request('sort', ''),
+                'order' => request('order', 'asc'),
+            ];
+            return $data;
+        }
+
+        $pageForPaginate = $page < 1 ? 1 : $page;
+        $records = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+
+        $transformedRecords = collect($records->items())->map(function ($record) {
+            return [
+                'id' => $record->id,
+                'cabor_id' => $record->cabor_id,
+                'cabor_nama' => $record->cabor->nama ?? '-',
+                'cabor_kategori_id' => $record->cabor_kategori_id,
+                'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
+                'pelatih_id' => $record->pelatih_id,
+                'pelatih_nama' => $record->pelatih->nama ?? '-',
+                'pelatih_nik' => $record->pelatih->nik ?? '-',
+                'jenis_pelatih_id' => $record->jenis_pelatih_id,
+                'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
+                'created_at' => $record->created_at,
+            ];
+        });
+
+        $data += [
+            'records' => $transformedRecords,
+            'total' => $records->total(),
+            'currentPage' => $records->currentPage(),
+            'perPage' => $records->perPage(),
+            'search' => request('search', ''),
+            'sort' => request('sort', ''),
+            'order' => request('order', 'asc'),
+        ];
+
+        return $data;
+    }
+
+    public function customDataCreateUpdate($data, $record = null)
+    {
+        $userId = Auth::id();
+
+        if (is_null($record)) {
+            $data['created_by'] = $userId;
+        }
+        $data['updated_by'] = $userId;
+
+        return $data;
+    }
+
+    public function batchInsert($data)
+    {
+        $userId = Auth::id();
+        $insertData = [];
+
+        // Restore data yang sudah soft deleted
+        if (!empty($data['pelatih_ids'])) {
+            foreach ($data['pelatih_ids'] as $pelatihId) {
+                $restore = $this->model->withTrashed()
+                    ->where('cabor_id', $data['cabor_id'])
+                    ->where('cabor_kategori_id', $data['cabor_kategori_id'])
+                    ->where('pelatih_id', $pelatihId)
+                    ->where('jenis_pelatih_id', $data['jenis_pelatih_id'])
+                    ->whereNotNull('deleted_at')
+                    ->first();
+                if ($restore) {
+                    $restore->restore();
+                }
+            }
+        }
+
+        foreach ($data['pelatih_ids'] as $pelatihId) {
+            $insertData[] = [
+                'cabor_id' => $data['cabor_id'],
+                'cabor_kategori_id' => $data['cabor_kategori_id'],
+                'pelatih_id' => $pelatihId,
+                'jenis_pelatih_id' => $data['jenis_pelatih_id'],
+                'created_by' => $userId,
+                'updated_by' => $userId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        try {
+            DB::beginTransaction();
+            // Insert batch dengan ignore untuk menghindari duplicate entry
+            DB::table('cabor_kategori_pelatih')->insertOrIgnore($insertData);
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
+    }
+
+    public function getByCaborKategoriId($caborKategoriId)
+    {
+        return $this->model
+            ->with(['cabor', 'caborKategori', 'pelatih', 'jenisPelatih'])
+            ->where('cabor_kategori_id', $caborKategoriId)
+            ->get();
+    }
+
+    public function deleteByCaborKategoriId($caborKategoriId, $pelatihIds = [])
+    {
+        $query = $this->model->where('cabor_kategori_id', $caborKategoriId);
+        
+        if (!empty($pelatihIds)) {
+            $query->whereIn('pelatih_id', $pelatihIds);
+        }
+        
+        return $query->delete();
+    }
+
+    public function validateRequest($request)
+    {
+        $rules = [
+            'cabor_id' => 'required|exists:cabor,id',
+            'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
+            'pelatih_ids' => 'required|array|min:1',
+            'pelatih_ids.*' => 'required|exists:pelatihs,id',
+            'jenis_pelatih_id' => 'required|exists:mst_jenis_pelatih,id',
+        ];
+
+        $messages = [
+            'cabor_id.required' => 'Cabor harus dipilih.',
+            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
+            'cabor_kategori_id.required' => 'Kategori harus dipilih.',
+            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
+            'pelatih_ids.required' => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.array' => 'Pelatih harus berupa array.',
+            'pelatih_ids.min' => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.*.required' => 'Pelatih tidak boleh kosong.',
+            'pelatih_ids.*.exists' => 'Pelatih yang dipilih tidak valid.',
+            'jenis_pelatih_id.required' => 'Jenis pelatih harus dipilih.',
+            'jenis_pelatih_id.exists' => 'Jenis pelatih yang dipilih tidak valid.',
+        ];
+
+        return $request->validate($rules, $messages);
+    }
+} 

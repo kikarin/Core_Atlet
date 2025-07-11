@@ -75,6 +75,8 @@ const props = defineProps<{
     disableLength?: boolean;
     hideSearch?: boolean;
     showImport: boolean;
+    showMultipleButton?: boolean;
+    createMultipleUrl?: string;
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import']);
@@ -185,6 +187,8 @@ defineExpose({ fetchData });
                         :on-delete-selected="() => (showConfirm = true)"
                         v-bind="createUrl ? { createUrl } : {}"
                         :showImport="props.showImport"
+                        :showMultipleButton="props.showMultipleButton"
+                        :createMultipleUrl="props.createMultipleUrl"
                         @import="$emit('import')"
                     />
                 </div>

@@ -70,8 +70,10 @@ const formErrors = ref<Record<string, string>>({});
 
 const { toast } = useToast();
 
-const handleSubmit = (e: Event) => {
-    e.preventDefault();
+const handleSubmit = (e?: Event) => {
+    if (e && typeof e.preventDefault === 'function') {
+        e.preventDefault();
+    }
     formErrors.value = {}; // reset error sebelum submit
 
     // Cek required field
@@ -474,7 +476,12 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
             <div class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>
                 <div class="col-span-full md:col-span-9">
-                    <ButtonsForm @save="handleSubmit" @cancel="emit('cancel')" />
+                    <ButtonsForm 
+                        :showSave="true" 
+                        :showCancel="true" 
+                        @save="handleSubmit" 
+                        @cancel="emit('cancel')" 
+                    />
                 </div>
             </div>
         </form>

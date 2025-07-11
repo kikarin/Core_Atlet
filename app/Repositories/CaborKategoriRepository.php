@@ -6,6 +6,7 @@ use App\Models\CaborKategori;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CaborKategoriRequest;
+use Inertia\Inertia;    
 
 class CaborKategoriRepository
 {
@@ -60,6 +61,8 @@ class CaborKategoriRepository
                     'cabor_nama' => $item->cabor?->nama,
                     'nama' => $item->nama,
                     'deskripsi' => $item->deskripsi,
+                    'jumlah_atlet' => $item->jumlah_atlet,
+                    'jumlah_pelatih' => $item->jumlah_pelatih,
                 ];
             });
             $data += [
@@ -84,6 +87,8 @@ class CaborKategoriRepository
                 'cabor_nama' => $item->cabor?->nama,
                 'nama' => $item->nama,
                 'deskripsi' => $item->deskripsi,
+                'jumlah_atlet' => $item->jumlah_atlet,
+                'jumlah_pelatih' => $item->jumlah_pelatih,
             ];
         });
 
@@ -136,7 +141,7 @@ class CaborKategoriRepository
         $itemArray = $item->toArray();
         $itemArray['cabor_nama'] = $item->cabor?->nama ?? '-';
 
-        return \Inertia\Inertia::render('modules/cabor-kategori/Show', [
+        return Inertia::render('modules/cabor-kategori/Show', [
             'item' => $itemArray,
         ]);
     }

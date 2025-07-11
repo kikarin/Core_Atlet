@@ -113,6 +113,14 @@ class CategoryPermissionSeeder extends Seeder
                 'name' => 'Cabor Kategori',
                 'permission' => 'CRUD',
             ],
+            [
+                'name' => 'Cabor Kategori Atlet',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Cabor Kategori Pelatih',
+                'permission' => 'CRUD',
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

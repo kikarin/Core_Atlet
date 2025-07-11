@@ -28,11 +28,32 @@ class CaborKategori extends Model
         return $this->belongsTo(Cabor::class, 'cabor_id');
     }
 
+    public function caborKategoriAtlet()
+    {
+        return $this->hasMany(CaborKategoriAtlet::class, 'cabor_kategori_id');
+    }
+
+    public function caborKategoriPelatih()
+    {
+        return $this->hasMany(CaborKategoriPelatih::class, 'cabor_kategori_id');
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn (string $eventName) => "Cabor Kategori");
+    }
+
+    // Attributes untuk menghitung jumlah
+    public function getJumlahAtletAttribute()
+    {
+        return $this->caborKategoriAtlet()->count();
+    }
+
+    public function getJumlahPelatihAttribute()
+    {
+        return $this->caborKategoriPelatih()->count();
     }
 } 

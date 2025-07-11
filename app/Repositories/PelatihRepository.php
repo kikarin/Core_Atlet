@@ -44,6 +44,19 @@ class PelatihRepository
     public function customIndex($data)
     {
         $query = $this->model->query();
+        
+        // Filter untuk exclude pelatih yang sudah ada di kategori tertentu
+        if (request('exclude_cabor_kategori_id')) {
+            $excludeKategoriId = request('exclude_cabor_kategori_id');
+            $query->whereNotExists(function ($subQuery) use ($excludeKategoriId) {
+                $subQuery->select(DB::raw(1))
+                    ->from('cabor_kategori_pelatih')
+                    ->whereColumn('cabor_kategori_pelatih.pelatih_id', 'pelatihs.id')
+                    ->where('cabor_kategori_pelatih.cabor_kategori_id', $excludeKategoriId)
+                    ->whereNull('cabor_kategori_pelatih.deleted_at'); // hanya relasi aktif
+            });
+        }
+        
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {

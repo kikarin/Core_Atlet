@@ -14,7 +14,7 @@ class UsersMenuSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         UsersMenu::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        $usersMenus = [
+    $usersMenus = [
             [
                 'nama' => 'Dashboard',
                 'kode' => 'DASHBOARD',

@@ -5,6 +5,8 @@ import { Link } from '@inertiajs/vue3';
 const props = defineProps<{
     title: string;
     createUrl?: string; // ubah ke opsional
+    createMultipleUrl?: string; // tambah untuk multiple button
+    showMultipleButton?: boolean; // tambah untuk kontrol visibility
     selected: number[];
     onDeleteSelected: () => void;
     showImport: boolean;
@@ -21,6 +23,12 @@ const props = defineProps<{
             <Button v-if="props.showImport" variant="secondary" size="sm" @click="$emit('import')">
                 Import Excel
             </Button>
+            
+            <!-- Button Tambah Multiple -->
+            <Link v-if="props.showMultipleButton && props.createMultipleUrl" :href="props.createMultipleUrl">
+                <Button variant="outline" size="sm">+ Tambah Multiple</Button>
+            </Link>
+            
             <Link v-if="props.createUrl" :href="props.createUrl">
                 <Button variant="outline" size="sm">+ Create</Button>
             </Link>
