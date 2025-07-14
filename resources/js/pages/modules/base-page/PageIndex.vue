@@ -28,7 +28,7 @@ const fetchData = async () => {
         const response = await axios.get(props.apiEndpoint, {
             params: {
                 search: search.value,
-                page: localLimit.value === -1 ? undefined : page.value > 1 ? page.value - 1 : 0,
+                page: localLimit.value === -1 ? undefined : (page.value < 1 ? 1 : page.value),
                 per_page: props.limit !== undefined ? props.limit : localLimit.value,
                 sort: sort.value.key,
                 order: sort.value.order,
@@ -172,6 +172,10 @@ const handleSort = debounce((val: { key: string; order: 'asc' | 'desc' }) => {
     fetchData();
 }, 300);
 
+const handlePageChange = debounce((val) => {
+    handleSearch({ page: val });
+}, 300);
+
 defineExpose({ fetchData });
 </script>
 
@@ -181,6 +185,7 @@ defineExpose({ fetchData });
         <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950 py-4">
             <div class="max-w-5xl mx-auto">
                 <div class="mx-auto p-2 py-4">
+                    <slot name="header-extra"></slot>
                     <HeaderActions
                         :title="title"
                         :selected="localSelected"
@@ -206,7 +211,7 @@ defineExpose({ fetchData });
                         :per-page="props.limit !== undefined ? props.limit : localLimit"
                         @update:search="handleSearchDebounced"
                         @update:sort="handleSort"
-                        @update:page="(val) => handleSearch({ page: val })"
+                        @update:page="handlePageChange"
                         @update:perPage="(val) => handleSearch({ limit: Number(val), page: 1 })"
                         @deleted="fetchData()"
                         :on-delete-row="handleDeleteRow"

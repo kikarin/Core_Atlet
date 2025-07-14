@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('cabor_kategori_id');
             $table->unsignedBigInteger('pelatih_id');
             $table->unsignedBigInteger('jenis_pelatih_id');
+            $table->tinyInteger('is_active')->default(1)->comment('1=Aktif, 0=Nonaktif');
             $table->timestamps();
             $table->softDeletes();
             

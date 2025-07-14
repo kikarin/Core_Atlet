@@ -19,6 +19,28 @@ class CaborKategoriPelatih extends Model
     protected $table = 'cabor_kategori_pelatih';
     protected $guarded = [];
 
+    protected $fillable = [
+        'cabor_id',
+        'cabor_kategori_id',
+        'pelatih_id',
+        'jenis_pelatih_id',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'deleted_by',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function getIsActiveBadgeAttribute()
+    {
+        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
+        return "<span class='badge $badge'>$text</span>";
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logOnly(['*'])->logOnlyDirty()->setDescriptionForEvent(fn (string $eventName) => 'CaborKategoriPelatih');

@@ -9,6 +9,13 @@ class ActivityLogRepository
 {
     use RepositoryTrait;
 
+    /**
+     * The ActivityLog model instance.
+     *
+     * @var ActivityLog
+     */
+    protected $model;
+
     public function __construct(ActivityLog $model)
     {
         $this->model = $model;
@@ -96,8 +103,8 @@ class ActivityLogRepository
         }
 
         // Apply pagination
-        $page           = (int) request('page', 0);
-        $pageForLaravel = $page < 1 ? 1 : $page + 1;
+        $page           = (int) request('page', 1);
+        $pageForLaravel = $page < 1 ? 1 : $page;
 
         $logs = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
 

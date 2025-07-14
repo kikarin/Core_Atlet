@@ -210,6 +210,8 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
 
             $validatedData = $this->repository->validateRequest($request);
 
+            // Pastikan is_active selalu integer (1/0)
+            $validatedData['is_active'] = (int) $request->input('is_active', 1);
             Log::info('Validated data', $validatedData);
 
             $this->repository->batchInsert($validatedData);

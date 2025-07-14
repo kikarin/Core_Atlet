@@ -6,6 +6,7 @@ use App\Models\CaborKategoriPelatih;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CaborKategoriPelatihRepository
 {
@@ -23,11 +24,15 @@ class CaborKategoriPelatihRepository
     {
         $query = $this->model
             ->with(['cabor', 'caborKategori', 'pelatih', 'jenisPelatih'])
-            ->select('cabor_kategori_pelatih.id', 'cabor_kategori_pelatih.cabor_id', 'cabor_kategori_pelatih.cabor_kategori_id', 'cabor_kategori_pelatih.pelatih_id', 'cabor_kategori_pelatih.jenis_pelatih_id', 'cabor_kategori_pelatih.created_at');
+            ->select('cabor_kategori_pelatih.id', 'cabor_kategori_pelatih.cabor_id', 'cabor_kategori_pelatih.cabor_kategori_id', 'cabor_kategori_pelatih.pelatih_id', 'cabor_kategori_pelatih.jenis_pelatih_id', 'cabor_kategori_pelatih.is_active', 'cabor_kategori_pelatih.created_at');
 
         // Filter by cabor_kategori_id jika ada
         if (request('cabor_kategori_id')) {
             $query->where('cabor_kategori_pelatih.cabor_kategori_id', request('cabor_kategori_id'));
+        }
+        // Filter by is_active jika ada
+        if (request('is_active') !== null) {
+            $query->where('cabor_kategori_pelatih.is_active', request('is_active'));
         }
 
         // Search
@@ -77,6 +82,8 @@ class CaborKategoriPelatihRepository
                     'pelatih_nik' => $record->pelatih->nik ?? '-',
                     'jenis_pelatih_id' => $record->jenis_pelatih_id,
                     'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
+                    'is_active' => $record->is_active,
+                    'is_active_badge' => $record->is_active_badge,
                     'created_at' => $record->created_at,
                 ];
             });
@@ -99,16 +106,17 @@ class CaborKategoriPelatihRepository
         $transformedRecords = collect($records->items())->map(function ($record) {
             return [
                 'id' => $record->id,
-                'cabor_id' => $record->cabor_id,
-                'cabor_nama' => $record->cabor->nama ?? '-',
-                'cabor_kategori_id' => $record->cabor_kategori_id,
-                'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
                 'pelatih_id' => $record->pelatih_id,
                 'pelatih_nama' => $record->pelatih->nama ?? '-',
-                'pelatih_nik' => $record->pelatih->nik ?? '-',
                 'jenis_pelatih_id' => $record->jenis_pelatih_id,
                 'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
+                'is_active' => $record->is_active,
+                'is_active_badge' => $record->is_active_badge,
                 'created_at' => $record->created_at,
+                'jenis_kelamin' => $record->pelatih->jenis_kelamin ?? '-',
+                'tempat_lahir' => $record->pelatih->tempat_lahir ?? '-',
+                'tanggal_lahir' => $record->pelatih->tanggal_lahir ?? '-',
+                'foto' => $record->pelatih->foto ?? null,
             ];
         });
 
@@ -142,39 +150,60 @@ class CaborKategoriPelatihRepository
         $userId = Auth::id();
         $insertData = [];
 
-        // Restore data yang sudah soft deleted
-        if (!empty($data['pelatih_ids'])) {
-            foreach ($data['pelatih_ids'] as $pelatihId) {
-                $restore = $this->model->withTrashed()
-                    ->where('cabor_id', $data['cabor_id'])
-                    ->where('cabor_kategori_id', $data['cabor_kategori_id'])
-                    ->where('pelatih_id', $pelatihId)
-                    ->where('jenis_pelatih_id', $data['jenis_pelatih_id'])
-                    ->whereNotNull('deleted_at')
-                    ->first();
-                if ($restore) {
-                    $restore->restore();
+        foreach ($data['pelatih_ids'] as $pelatihId) {
+            // Cek apakah sudah ada (termasuk soft deleted) - sesuai unique constraint
+            $existing = $this->model->withTrashed()
+                ->where('cabor_kategori_id', $data['cabor_kategori_id'])
+                ->where('pelatih_id', $pelatihId)
+                ->first();
+
+            if ($existing) {
+                // Jika soft deleted, restore
+                if ($existing->trashed()) {
+                    $existing->restore();
                 }
+                // Update status aktif/nonaktif dan jenis pelatih
+                $existing->is_active = (int) $data['is_active'];
+                $existing->jenis_pelatih_id = $data['jenis_pelatih_id'];
+                $existing->cabor_id = $data['cabor_id'];
+                $existing->updated_by = $userId;
+                $existing->updated_at = now();
+                $existing->save();
+                
+                Log::info("Updated existing pelatih", [
+                    'pelatih_id' => $pelatihId,
+                    'is_active' => $data['is_active'],
+                    'jenis_pelatih_id' => $data['jenis_pelatih_id']
+                ]);
+            } else {
+                // Insert baru
+                $insertData[] = [
+                    'cabor_id' => $data['cabor_id'],
+                    'cabor_kategori_id' => $data['cabor_kategori_id'],
+                    'pelatih_id' => $pelatihId,
+                    'jenis_pelatih_id' => $data['jenis_pelatih_id'],
+                    'is_active' => (int) $data['is_active'],
+                    'created_by' => $userId,
+                    'updated_by' => $userId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+                
+                Log::info("Will insert new pelatih", [
+                    'pelatih_id' => $pelatihId,
+                    'is_active' => $data['is_active'],
+                    'jenis_pelatih_id' => $data['jenis_pelatih_id']
+                ]);
             }
         }
 
-        foreach ($data['pelatih_ids'] as $pelatihId) {
-            $insertData[] = [
-                'cabor_id' => $data['cabor_id'],
-                'cabor_kategori_id' => $data['cabor_kategori_id'],
-                'pelatih_id' => $pelatihId,
-                'jenis_pelatih_id' => $data['jenis_pelatih_id'],
-                'created_by' => $userId,
-                'updated_by' => $userId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
+        Log::info("Total data to insert", ['count' => count($insertData)]);
 
         try {
             DB::beginTransaction();
-            // Insert batch dengan ignore untuk menghindari duplicate entry
-            DB::table('cabor_kategori_pelatih')->insertOrIgnore($insertData);
+            if (!empty($insertData)) {
+                DB::table('cabor_kategori_pelatih')->insert($insertData);
+            }
             DB::commit();
             return true;
         } catch (\Exception $e) {

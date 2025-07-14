@@ -27,6 +27,7 @@ class CaborKategoriPelatihRequest extends FormRequest
             'pelatih_ids' => 'required|array|min:1',
             'pelatih_ids.*' => 'required|exists:pelatihs,id',
             'jenis_pelatih_id' => 'required|exists:mst_jenis_pelatih,id',
+            'is_active' => 'required|boolean',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {

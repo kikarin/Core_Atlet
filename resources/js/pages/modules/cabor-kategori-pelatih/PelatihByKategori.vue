@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
+import { Badge } from '@/components/ui/badge';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
@@ -26,11 +27,48 @@ const showConfirmDelete = ref(false);
 const rowToDelete = ref<any>(null);
 
 const columns = [
-    { key: 'pelatih_nama', label: 'Nama Pelatih' },
-    { key: 'pelatih_nik', label: 'NIK' },
+    { key: 'pelatih_nama', label: 'Nama' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) => {
+            if (row.foto) {
+                return `<div class="cursor-pointer" onclick="window.open('${row.foto}', '_blank')">
+                    <img src="${row.foto}" alt="Foto ${row.nama}" class="w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow" />
+                </div>`;
+            }
+            return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
+        },
+    },
+    {
+        key: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        format: (row: any) => {
+            return row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-';
+        },
+    },
+    { key: 'tempat_lahir', label: 'Tempat Lahir' },
+    {
+        key: 'tanggal_lahir',
+        label: 'Tanggal Lahir',
+        format: (row: any) => {
+            return row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            }) : '-';
+        },
+    },
     { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
-    { key: 'cabor_nama', label: 'Cabor' },
-    { key: 'cabor_kategori_nama', label: 'Kategori' },
+    {
+        key: 'is_active',
+        label: 'Status',
+        format: (row: any) => {
+            return row.is_active
+                ? '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aktif</span>'
+                : '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Nonaktif</span>';
+        },
+    },
     {
         key: 'created_at',
         label: 'Tanggal Ditambahkan',
@@ -100,7 +138,7 @@ const deletePelatih = async (row: any) => {
 </script>
 
 <template>
-
+    <div class="space-y-4">
         <PageIndex
             title="Daftar Pelatih"
             :breadcrumbs="breadcrumbs"
@@ -118,7 +156,23 @@ const deletePelatih = async (row: any) => {
             :show-multiple-button="true"
             :create-multiple-url="`/cabor-kategori/${caborKategori.id}/pelatih/create-multiple`"
             create-url=""
-        />
+        >
+            <template #header-extra>
+                <div class="bg-card border rounded-lg p-4 mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Informasi Kategori</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-muted-foreground">Nama Kategori:</span>
+                            <Badge variant="secondary">{{ caborKategori.nama }}</Badge>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-muted-foreground">Cabor:</span>
+                            <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </PageIndex>
     <ConfirmDialog
         :show="showConfirmDelete"
         title="Konfirmasi Hapus"
@@ -126,4 +180,5 @@ const deletePelatih = async (row: any) => {
         @confirm="() => deletePelatih(rowToDelete)"
         @cancel="() => { showConfirmDelete = false; rowToDelete = null; }"
     />
+    </div>
 </template> 

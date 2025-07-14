@@ -163,11 +163,10 @@ const handlePerPageChange = (value: number) => {
     fetchAvailablePelatih();
 };
 
+const selectedStatus = ref(1); // 1 = aktif, 0 = nonaktif
+
 // Handle save
 const handleSave = async () => {
-    console.log('handleSave called, selectedPelatihIds:', selectedPelatihIds.value);
-    console.log('selectedJenisPelatihId:', selectedJenisPelatihId.value);
-    
     if (selectedPelatihIds.value.length === 0) {
         toast({ title: 'Pilih minimal 1 pelatih', variant: 'destructive' });
         return;
@@ -179,27 +178,22 @@ const handleSave = async () => {
     }
 
     try {
-        console.log('Sending request to:', `/cabor-kategori/${props.caborKategori.id}/pelatih/store-multiple`);
-        console.log('Data being sent:', { 
-            pelatih_ids: selectedPelatihIds.value,
-            jenis_pelatih_id: selectedJenisPelatihId.value
-        });
-        
-        const response = await router.post(`/cabor-kategori/${props.caborKategori.id}/pelatih/store-multiple`, {
+        await router.post(`/cabor-kategori/${props.caborKategori.id}/pelatih/store-multiple`, {
             pelatih_ids: selectedPelatihIds.value,
             jenis_pelatih_id: selectedJenisPelatihId.value,
+            is_active: selectedStatus.value,
+        }, {
+            onSuccess: () => {
+                toast({ title: 'Pelatih berhasil ditambahkan ke kategori', variant: 'success' });
+                router.visit(`/cabor-kategori/${props.caborKategori.id}/pelatih`);
+            },
+            onError: () => {
+                toast({ title: 'Gagal menambahkan pelatih ke kategori', variant: 'destructive' });
+            }
         });
-        
-        console.log('Response received:', response);
-        toast({ title: 'Pelatih berhasil ditambahkan ke kategori', variant: 'success' });
-        router.visit(`/cabor-kategori/${props.caborKategori.id}/pelatih`);
     } catch (error: any) {
         console.error('Gagal menambahkan pelatih:', error);
-        console.error('Error details:', error.response?.data);
-        toast({ 
-            title: error.response?.data?.message || 'Gagal menambahkan pelatih ke kategori', 
-            variant: 'destructive' 
-        });
+        toast({ title: 'Gagal menambahkan pelatih', variant: 'destructive' });
     }
 };
 
@@ -255,7 +249,7 @@ fetchJenisPelatih();
                 <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Jenis Pelatih *
                 </label>
-                <Select :model-value="selectedJenisPelatihId" @update:model-value="(val) => selectedJenisPelatihId = val">
+                <Select :model-value="selectedJenisPelatihId" @update:model-value="(val: any) => selectedJenisPelatihId = val as number | null">
                     <SelectTrigger class="w-full">
                         <SelectValue placeholder="Pilih Jenis Pelatih" />
                     </SelectTrigger>
@@ -270,9 +264,20 @@ fetchJenisPelatih();
             <!-- Selection Counter -->
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold">Pilih Pelatih</h3>
-                <Badge variant="secondary">
-                    {{ selectedPelatihIds.length }} pelatih dipilih
-                </Badge>
+                <div class="flex items-center gap-4">
+                    <Select v-model="selectedStatus" class="w-32">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem :value="1">Aktif</SelectItem>
+                            <SelectItem :value="0">Nonaktif</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Badge variant="secondary">
+                        {{ selectedPelatihIds.length }} pelatih dipilih
+                    </Badge>
+                </div>
             </div>
 
             <!-- Search dan Length -->
@@ -280,9 +285,9 @@ fetchJenisPelatih();
                 <!-- Length -->
                 <div class="ml-2 flex items-center gap-2">
                     <span class="text-muted-foreground text-sm">Show</span>
-                    <Select :model-value="perPage" @update:model-value="handlePerPageChange">
+                    <Select :model-value="perPage" @update:model-value="(val: any) => handlePerPageChange(val as number)">
                         <SelectTrigger class="w-24">
-                            <SelectValue :placeholder="perPage" />
+                            <SelectValue :placeholder="String(perPage)" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem :value="10">10</SelectItem>
@@ -298,7 +303,7 @@ fetchJenisPelatih();
                 <div class="w-full sm:w-64">
                     <Input 
                         :model-value="searchQuery" 
-                        @update:model-value="handleSearch" 
+                        @update:model-value="(val: any) => handleSearch(val as string)" 
                         placeholder="Search..." 
                         class="w-full" 
                     />

@@ -23,11 +23,15 @@ class CaborKategoriAtletRepository
     {
         $query = $this->model
             ->with(['cabor', 'caborKategori', 'atlet'])
-            ->select('cabor_kategori_atlet.id', 'cabor_kategori_atlet.cabor_id', 'cabor_kategori_atlet.cabor_kategori_id', 'cabor_kategori_atlet.atlet_id', 'cabor_kategori_atlet.created_at');
+            ->select('cabor_kategori_atlet.id', 'cabor_kategori_atlet.cabor_id', 'cabor_kategori_atlet.cabor_kategori_id', 'cabor_kategori_atlet.atlet_id', 'cabor_kategori_atlet.is_active', 'cabor_kategori_atlet.created_at');
 
         // Filter by cabor_kategori_id jika ada
         if (request('cabor_kategori_id')) {
             $query->where('cabor_kategori_atlet.cabor_kategori_id', request('cabor_kategori_id'));
+        }
+        // Filter by is_active jika ada
+        if (request('is_active') !== null) {
+            $query->where('cabor_kategori_atlet.is_active', request('is_active'));
         }
 
         // Search
@@ -75,6 +79,8 @@ class CaborKategoriAtletRepository
                     'atlet_id' => $record->atlet_id,
                     'atlet_nama' => $record->atlet->nama ?? '-',
                     'atlet_nik' => $record->atlet->nik ?? '-',
+                    'is_active' => $record->is_active,
+                    'is_active_badge' => $record->is_active_badge,
                     'created_at' => $record->created_at,
                 ];
             });
@@ -97,14 +103,15 @@ class CaborKategoriAtletRepository
         $transformedRecords = collect($records->items())->map(function ($record) {
             return [
                 'id' => $record->id,
-                'cabor_id' => $record->cabor_id,
-                'cabor_nama' => $record->cabor->nama ?? '-',
-                'cabor_kategori_id' => $record->cabor_kategori_id,
-                'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
                 'atlet_id' => $record->atlet_id,
                 'atlet_nama' => $record->atlet->nama ?? '-',
-                'atlet_nik' => $record->atlet->nik ?? '-',
+                'is_active' => $record->is_active,
+                'is_active_badge' => $record->is_active_badge,
                 'created_at' => $record->created_at,
+                'jenis_kelamin' => $record->atlet->jenis_kelamin ?? '-',
+                'tempat_lahir' => $record->atlet->tempat_lahir ?? '-',
+                'tanggal_lahir' => $record->atlet->tanggal_lahir ?? '-',
+                'foto' => $record->atlet->foto ?? null,
             ];
         });
 
@@ -154,15 +161,39 @@ class CaborKategoriAtletRepository
         }
 
         foreach ($data['atlet_ids'] as $atletId) {
-            $insertData[] = [
-                'cabor_id' => $data['cabor_id'],
-                'cabor_kategori_id' => $data['cabor_kategori_id'],
-                'atlet_id' => $atletId,
-                'created_by' => $userId,
-                'updated_by' => $userId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            // Cek apakah sudah ada (termasuk soft deleted)
+            $existing = $this->model->withTrashed()
+                ->where('cabor_id', $data['cabor_id'])
+                ->where('cabor_kategori_id', $data['cabor_kategori_id'])
+                ->where('atlet_id', $atletId)
+                ->first();
+
+            if ($existing) {
+                // Jika soft deleted, restore
+                if ($existing->trashed()) {
+                    $existing->restore();
+                }
+                // Update status aktif/nonaktif
+                $existing->is_active = (int) $data['is_active'];
+                $existing->updated_by = $userId;
+                $existing->updated_at = now();
+                $existing->save();
+            } else {
+                // Insert baru
+                $insertData[] = [
+                    'cabor_id' => $data['cabor_id'],
+                    'cabor_kategori_id' => $data['cabor_kategori_id'],
+                    'atlet_id' => $atletId,
+                    'is_active' => (int) $data['is_active'],
+                    'created_by' => $userId,
+                    'updated_by' => $userId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        if (!empty($insertData)) {
+            DB::table('cabor_kategori_atlet')->insert($insertData);
         }
 
         try {
@@ -203,6 +234,7 @@ class CaborKategoriAtletRepository
             'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
             'atlet_ids' => 'required|array|min:1',
             'atlet_ids.*' => 'required|exists:atlets,id',
+            'is_active' => 'nullable|in:0,1',
         ];
 
         $messages = [

@@ -26,6 +26,7 @@ class CaborKategoriAtletRequest extends FormRequest
             'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
             'atlet_ids' => 'required|array|min:1',
             'atlet_ids.*' => 'required|exists:atlets,id',
+            'is_active' => 'required|boolean',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
