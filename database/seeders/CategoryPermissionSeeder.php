@@ -86,6 +86,18 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name' => 'Tenaga Pendukung',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name'=> 'Tenaga Pendukung Sertifikat',
+                'permission'=> 'CRUD',
+            ],
+            [
+                'name'=> 'Tenaga Pendukung Prestasi',
+                'permission'=> 'CRUD',
+            ],
+            [
                 'name' => 'Mst Tingkat',
                 'permission' => 'CRUD',
             ],

@@ -43,12 +43,21 @@ class UsersMenuSeeder extends Seeder
                 'permission_id' => 'Pelatih Show',
             ],
             [
+                'nama' => 'Tenaga Pendukung',
+                'kode' => 'TENAGA-PENDUKUNG',
+                'url' => '/tenaga-pendukung',
+                'icon' => 'UserCircle2',
+                'rel' => 0,
+                'urutan' => 31,
+                'permission_id' => 'Tenaga Pendukung Show',
+            ],
+            [
                 'nama' => 'Cabor',
                 'kode' => '',
                 'url' => '/cabor',
                 'icon' => 'Flag',
                 'rel' => 0,
-                'urutan' => 31,
+                'urutan' => 41,
                 'permission_id' => '',
                 'children' => [
                     [

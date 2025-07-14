@@ -43,6 +43,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MstJenisPelatihSeeder::class);
         $this->call(CaborSeeder::class);
         $this->call(CaborKategoriSeeder::class);
+        $this->call(TenagaPendukungSeeder::class);
+        $this->call(TenagaPendukungSertifikatSeeder::class);
+        $this->call(TenagaPendukungPrestasiSeeder::class);
     }
 
 }

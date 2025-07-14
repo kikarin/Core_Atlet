@@ -34,6 +34,9 @@ use App\Http\Controllers\CaborController;
 use App\Http\Controllers\CaborKategoriController;
 use App\Http\Controllers\CaborKategoriAtletController;
 use App\Http\Controllers\CaborKategoriPelatihController;
+use App\Http\Controllers\TenagaPendukungController;
+use App\Http\Controllers\TenagaPendukungSertifikatController;
+use App\Http\Controllers\TenagaPendukungPrestasiController;
 
 // =====================
 // ROUTE UTAMA
@@ -192,6 +195,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('dokumen/destroy-selected', [PelatihDokumenController::class, 'destroy_selected'])->name('pelatih.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [PelatihDokumenController::class, 'show'])->name('pelatih.dokumen.show');
     });
+    // TENAGA PENDUKUNG
+    Route::resource('/tenaga-pendukung', TenagaPendukungController::class)->names('tenaga-pendukung');
+    Route::get('/api/tenaga-pendukung', [TenagaPendukungController::class, 'apiIndex']);
+    Route::post('/tenaga-pendukung/destroy-selected', [TenagaPendukungController::class, 'destroy_selected'])->name('tenaga-pendukung.destroy_selected');
+    Route::post('/tenaga-pendukung/import', [TenagaPendukungController::class, 'import'])->name('tenaga-pendukung.import');
+    Route::prefix('tenaga-pendukung/{tenaga_pendukung_id}')->group(function () {
+        Route::get('sertifikat', [TenagaPendukungSertifikatController::class, 'index'])->name('tenaga-pendukung.sertifikat.index');
+        Route::get('sertifikat/create', [TenagaPendukungSertifikatController::class, 'create'])->name('tenaga-pendukung.sertifikat.create');
+        Route::post('sertifikat', [TenagaPendukungSertifikatController::class, 'store'])->name('tenaga-pendukung.sertifikat.store');
+        Route::get('sertifikat/{id}/edit', [TenagaPendukungSertifikatController::class, 'edit'])->name('tenaga-pendukung.sertifikat.edit');
+        Route::put('sertifikat/{id}', [TenagaPendukungSertifikatController::class, 'update'])->name('tenaga-pendukung.sertifikat.update');
+        Route::delete('sertifikat/{id}', [TenagaPendukungSertifikatController::class, 'destroy'])->name('tenaga-pendukung.sertifikat.destroy');
+        Route::post('sertifikat/destroy-selected', [TenagaPendukungSertifikatController::class, 'destroy_selected'])->name('tenaga-pendukung.sertifikat.destroy_selected');
+        Route::get('sertifikat/{id}', [TenagaPendukungSertifikatController::class, 'show'])->name('tenaga-pendukung.sertifikat.show');
+
+        // PRESTASI
+        Route::get('prestasi', [TenagaPendukungPrestasiController::class, 'index'])->name('tenaga-pendukung.prestasi.index');
+        Route::get('prestasi/create', [TenagaPendukungPrestasiController::class, 'create'])->name('tenaga-pendukung.prestasi.create');
+        Route::post('prestasi', [TenagaPendukungPrestasiController::class, 'store'])->name('tenaga-pendukung.prestasi.store');
+        Route::get('prestasi/{id}/edit', [TenagaPendukungPrestasiController::class, 'edit'])->name('tenaga-pendukung.prestasi.edit');
+        Route::put('prestasi/{id}', [TenagaPendukungPrestasiController::class, 'update'])->name('tenaga-pendukung.prestasi.update');
+        Route::delete('prestasi/{id}', [TenagaPendukungPrestasiController::class, 'destroy'])->name('tenaga-pendukung.prestasi.destroy');
+        Route::post('prestasi/destroy-selected', [TenagaPendukungPrestasiController::class, 'destroy_selected'])->name('tenaga-pendukung.prestasi.destroy_selected');
+        Route::get('prestasi/{id}', [TenagaPendukungPrestasiController::class, 'show'])->name('tenaga-pendukung.prestasi.show');
+    });
     // CABOR
     Route::resource('/cabor', CaborController::class)->names('cabor');
     Route::get('/api/cabor', [CaborController::class, 'apiIndex']);
@@ -234,6 +262,12 @@ Route::get('/api/atlet/{atlet_id}/dokumen', [AtletDokumenController::class, 'api
 Route::get('/api/pelatih/{pelatih_id}/sertifikat', [PelatihSertifikatController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/prestasi', [PelatihPrestasiController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/dokumen', [PelatihDokumenController::class, 'apiIndex']);
+
+// API endpoint untuk sertifikat tenaga pendukung
+Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/sertifikat', [TenagaPendukungSertifikatController::class, 'apiIndex']);
+
+// API endpoint untuk prestasi tenaga pendukung
+Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/prestasi', [TenagaPendukungPrestasiController::class, 'apiIndex']);
 
 
 // =====================

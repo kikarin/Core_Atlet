@@ -12,6 +12,7 @@ import AppLogo from './AppLogo.vue';
 const mainNavItems = ref<NavItem[]>([]);
 const atletNavItems = ref<NavItem[]>([]);
 const pelatihNavItems = ref<NavItem[]>([]);
+const tenaga_pendukungNavItems = ref<NavItem[]>([]);
 const caborNavItems = ref<NavItem[]>([]);
 const settingNavItems = ref<NavItem[]>([]);
 const isLoading = ref(false);
@@ -95,9 +96,13 @@ const fetchMenus = async () => {
             const urutan = menu.urutan || 0;
             return urutan > 20 && urutan <= 30;
         });
-        const caborMenus = menus.filter((menu: any) => {
+        const tenaga_pendukungMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan > 30 && urutan <= 40;
+        });
+        const caborMenus = menus.filter((menu: any) => {
+            const urutan = menu.urutan || 0;
+            return urutan > 40 && urutan <= 50;
         });
         const settingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
@@ -107,6 +112,7 @@ const fetchMenus = async () => {
         mainNavItems.value = mainMenus.map(transformMenuToNavItem);
         atletNavItems.value = atletMenus.map(transformMenuToNavItem);
         pelatihNavItems.value = pelatihMenus.map(transformMenuToNavItem);
+        tenaga_pendukungNavItems.value = tenaga_pendukungMenus.map(transformMenuToNavItem);
         caborNavItems.value = caborMenus.map(transformMenuToNavItem);
         settingNavItems.value = settingMenus.map(transformMenuToNavItem);
 
@@ -164,6 +170,9 @@ onUnmounted(() => {
 
             <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih"
                 section-id="pelatih" />
+
+            <NavMain v-if="tenaga_pendukungNavItems.length > 0" :items="tenaga_pendukungNavItems" section-title="Tenaga Pendukung"
+                section-id="Tenaga" />
 
             <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
 
