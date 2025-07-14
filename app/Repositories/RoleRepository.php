@@ -127,8 +127,8 @@ class RoleRepository
             ];
             return $data;
         }
-        $page           = (int) request('page', 0);
-        $pageForLaravel = $page < 1 ? 1 : $page + 1;
+        $page           = (int) request('page', 1);
+        $pageForLaravel = $page < 1 ? 1 : $page;
         $roles          = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
 
         // Transform data
