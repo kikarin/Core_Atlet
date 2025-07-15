@@ -15,6 +15,7 @@ use App\Models\MstDesa;
 use App\Models\MstTingkat;
 use App\Models\MstJenisDokumen;
 use App\Models\MstJenisPelatih;
+use App\Models\MstJenisTenagaPendukung;
 use App\Models\Cabor;
 use App\Http\Controllers\AtletSertifikatController;
 use App\Http\Controllers\AtletPrestasiController;
@@ -30,7 +31,6 @@ use App\Http\Controllers\MstJenisDokumenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\DesaController;
 use App\Http\Controllers\MstJenisPelatihController;
-use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\CaborController;
 use App\Http\Controllers\CaborKategoriController;
 use App\Http\Controllers\CaborKategoriAtletController;
@@ -40,6 +40,8 @@ use App\Http\Controllers\TenagaPendukungSertifikatController;
 use App\Http\Controllers\TenagaPendukungPrestasiController;
 use App\Http\Controllers\TenagaPendukungKesehatanController;
 use App\Http\Controllers\TenagaPendukungDokumenController;
+use App\Http\Controllers\MstJenisTenagaPendukungController;
+use App\Http\Controllers\CaborKategoriTenagaPendukungController;
 
 // =====================
 // ROUTE UTAMA
@@ -82,7 +84,6 @@ Route::get('/api/jenis-pelatih-list', function() {
 Route::get('/api/jenis-tenaga-pendukung-list', function() {
     return MstJenisTenagaPendukung::select('id', 'nama')->orderBy('nama')->get();
 });
-
 
 // =====================
 // USERS, MENU, ROLES, PERMISSIONS, LOGS
@@ -258,7 +259,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/cabor-kategori-list', [CaborKategoriController::class, 'list']);
     Route::get('/api/cabor-kategori-by-cabor/{cabor_id}', [CaborKategoriController::class, 'listByCabor']);
     
-    // CABOR KATEGORI ATLET & PELATIH
+    // CABOR KATEGORI ATLET
     Route::resource('/cabor-kategori-atlet', CaborKategoriAtletController::class)->names('cabor-kategori-atlet');
     Route::get('/api/cabor-kategori-atlet', [CaborKategoriAtletController::class, 'apiIndex']);
     Route::post('/cabor-kategori-atlet/destroy-selected', [CaborKategoriAtletController::class, 'destroy_selected'])->name('cabor-kategori-atlet.destroy_selected');
@@ -268,6 +269,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cabor-kategori/{cabor_kategori_id}/atlet/create-multiple', [CaborKategoriAtletController::class, 'createMultiple'])->name('cabor-kategori-atlet.create-multiple');
     Route::post('/cabor-kategori/{cabor_kategori_id}/atlet/store-multiple', [CaborKategoriAtletController::class, 'storeMultiple'])->name('cabor-kategori-atlet.store-multiple');
     
+    // CABOR KATEGORI PELATIH
     Route::resource('/cabor-kategori-pelatih', CaborKategoriPelatihController::class)->names('cabor-kategori-pelatih');
     Route::get('/api/cabor-kategori-pelatih', [CaborKategoriPelatihController::class, 'apiIndex']);
     Route::post('/cabor-kategori-pelatih/destroy-selected', [CaborKategoriPelatihController::class, 'destroy_selected'])->name('cabor-kategori-pelatih.destroy_selected');
@@ -276,6 +278,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cabor-kategori/{cabor_kategori_id}/pelatih', [CaborKategoriPelatihController::class, 'pelatihByKategori'])->name('cabor-kategori-pelatih.pelatih-by-kategori');
     Route::get('/cabor-kategori/{cabor_kategori_id}/pelatih/create-multiple', [CaborKategoriPelatihController::class, 'createMultiple'])->name('cabor-kategori-pelatih.create-multiple');
     Route::post('/cabor-kategori/{cabor_kategori_id}/pelatih/store-multiple', [CaborKategoriPelatihController::class, 'storeMultiple'])->name('cabor-kategori-pelatih.store-multiple');
+
+    // CABOR KATEGORI TENAGA PENDUKUNG
+    Route::resource('/cabor-kategori-tenaga-pendukung', CaborKategoriTenagaPendukungController::class)->names('cabor-kategori-tenaga-pendukung');
+    Route::get('/api/cabor-kategori-tenaga-pendukung', [CaborKategoriTenagaPendukungController::class, 'apiIndex']);
+    Route::post('/cabor-kategori-tenaga-pendukung/destroy-selected', [CaborKategoriTenagaPendukungController::class, 'destroy_selected'])->name('cabor-kategori-tenaga-pendukung.destroy_selected');
+
+    // Routes untuk daftar tenaga pendukung per kategori
+    Route::get('/cabor-kategori/{cabor_kategori_id}/tenaga-pendukung', [CaborKategoriTenagaPendukungController::class, 'tenagaPendukungByKategori'])->name('cabor-kategori-tenaga-pendukung.tenaga-by-kategori');
+    Route::get('/cabor-kategori/{cabor_kategori_id}/tenaga-pendukung/create-multiple', [CaborKategoriTenagaPendukungController::class, 'createMultiple'])->name('cabor-kategori-tenaga-pendukung.create-multiple');
+    Route::post('/cabor-kategori/{cabor_kategori_id}/tenaga-pendukung/store-multiple', [CaborKategoriTenagaPendukungController::class, 'storeMultiple'])->name('cabor-kategori-tenaga-pendukung.store-multiple');
 });
 
 // API untuk sertifikat, prestasi, dokumen per atlet/pelatih

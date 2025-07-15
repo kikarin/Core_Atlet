@@ -38,6 +38,12 @@ class CaborKategori extends Model
         return $this->hasMany(CaborKategoriPelatih::class, 'cabor_kategori_id');
     }
 
+    public function tenagaPendukung()
+    {
+        return $this->hasMany(\App\Models\CaborKategoriTenagaPendukung::class, 'cabor_kategori_id')
+            ->with(['tenagaPendukung', 'jenisTenagaPendukung', 'created_by_user', 'updated_by_user']);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

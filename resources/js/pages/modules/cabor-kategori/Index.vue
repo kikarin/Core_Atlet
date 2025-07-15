@@ -26,6 +26,15 @@ const columns = [
             return `<button class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 cursor-pointer" onclick="window.location.href='/cabor-kategori/${row.id}/pelatih'">${count} Pelatih</button>`;
         },
     },
+    {
+        key: 'jumlah_tenaga_pendukung',
+        label: 'Jumlah Tenaga Pendukung',
+        sortable: false,
+        format: (row: any) => {
+            const count = row.jumlah_tenaga_pendukung || 0;
+            return `<button class="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200 cursor-pointer" onclick="window.location.href='/cabor-kategori/${row.id}/tenaga-pendukung'">${count} Tenaga Pendukung</button>`;
+        },
+    },
 
     { key: 'cabor_nama', label: 'Cabor' },
     { key: 'nama', label: 'Nama' },
@@ -58,6 +67,10 @@ const actions = (row: any) => [
     {
         label: 'Daftar Pelatih',
         onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`),
+    },
+    {
+        label: 'Daftar Tenaga Pendukung',
+        onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`),
     },
 ];
 
