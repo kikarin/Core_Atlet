@@ -20,13 +20,13 @@ function getTenagaPendukungId() {
   if (match) return Number(match[1]);
   return undefined;
 }
-const tenagaPendukungId = getTenagaPendukungId();
+const resolvedTenagaPendukungId  = getTenagaPendukungId();
 
 const { toast } = useToast();
 
 const breadcrumbs = computed(() => [
   { title: 'Tenaga Pendukung', href: '/tenaga-pendukung' },
-  { title: 'Dokumen', href: `/tenaga-pendukung/${tenagaPendukungId}/dokumen` },
+  { title: 'Dokumen', href: `/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen` },
 ]);
 
 const columns = [
@@ -71,13 +71,13 @@ const handleSearch = (params: { search?: string; sortKey?: string; sortOrder?: '
 };
 
 const fetchData = async () => {
-  if (!tenagaPendukungId) {
+  if (!resolvedTenagaPendukungId) {
     toast({ title: 'ID Tenaga Pendukung tidak ditemukan. Tidak bisa memuat dokumen.', variant: 'destructive' });
     return;
   }
   loading.value = true;
   try {
-    const response = await axios.get(`/api/tenaga-pendukung/${tenagaPendukungId}/dokumen`, {
+    const response = await axios.get(`/api/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen`, {
       params: {
         search: search.value,
         page: page.value,
@@ -110,11 +110,11 @@ watch([page, perPage, () => sort.value.key, () => sort.value.order], () => {
 const actions = (row: any) => [
   {
     label: 'Detail',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${row.id}`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/${row.id}`),
   },
   {
     label: 'Edit',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${row.id}/edit`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/${row.id}/edit`),
   },
   {
     label: 'Delete',
@@ -130,7 +130,7 @@ const handleDeleteRow = async (row: any) => {
 const confirmDeleteRow = async () => {
   if (!rowToDelete.value) return;
 
-  router.delete(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${rowToDelete.value.id}`, {
+  router.delete(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/${rowToDelete.value.id}`, {
     onSuccess: () => {
       toast({ title: 'Dokumen berhasil dihapus', variant: 'success' });
       fetchData();
@@ -153,7 +153,7 @@ const deleteSelected = async () => {
 
 const confirmDeleteSelected = async () => {
   try {
-    const response = await axios.post(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/destroy-selected`, { ids: idsToDelete.value });
+    const response = await axios.post(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/destroy-selected`, { ids: idsToDelete.value });
     selected.value = [];
     fetchData();
     toast({ title: response.data?.message || 'Dokumen terpilih berhasil dihapus', variant: 'success' });
@@ -169,22 +169,22 @@ const tabsConfig = [
   {
     value: 'tenaga-pendukung-data',
     label: 'tenaga-pendukung',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/edit?tab=tenaga-pendukung-data`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=tenaga-pendukung-data`),
   },
   {
     value: 'sertifikat-data',
     label: 'Sertifikat',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/sertifikat`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/sertifikat`),
   },
   {
     value: 'prestasi-data',
     label: 'Prestasi',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/prestasi`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/prestasi`),
   },
   {
     value: 'kesehatan-data',
     label: 'Kesehatan',
-    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/edit?tab=kesehatan-data`),
+    onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=kesehatan-data`),
   },
   {
     value: 'dokumen-data',
