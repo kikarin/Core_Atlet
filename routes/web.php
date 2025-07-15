@@ -331,6 +331,6 @@ Route::prefix('data-master')->group(function () {
     Route::post('/jenis-tenaga-pendukung/destroy-selected', [MstJenisTenagaPendukungController::class, 'destroy_selected'])->name('jenis-tenaga-pendukung.destroy_selected');
 });
 
-
+//push
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
