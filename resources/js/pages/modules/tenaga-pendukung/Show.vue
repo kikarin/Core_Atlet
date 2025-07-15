@@ -14,7 +14,7 @@ const { toast } = useToast();
 
 interface Sertifikat {
   id: number;
-  pelatih_id: number;
+  tenaga_pendukung_id: number;
   nama_sertifikat: string;
   penyelenggara?: string;
   tanggal_terbit?: string;
@@ -27,7 +27,7 @@ interface Sertifikat {
 
 interface Prestasi {
   id: number;
-  pelatih_id: number;
+  tenaga_pendukung_id: number;
   nama_event: string;
   tingkat_id?: number;
   tingkat?: { nama: string } | null;
@@ -42,7 +42,7 @@ interface Prestasi {
 
 interface Dokumen {
   id: number;
-  pelatih_id: number;
+  tenaga_pendukung_id: number;
   jenis_dokumen_id?: number;
   jenis_dokumen?: { nama: string } | null;
   nomor?: string;
@@ -55,7 +55,7 @@ interface Dokumen {
 
 interface Kesehatan {
   id: number;
-  pelatih_id: number;
+  tenaga_pendukung_id: number;
   tinggi_badan?: string;
   berat_badan?: string;
   penglihatan?: string;
@@ -367,13 +367,13 @@ const mappedDokumen = computed(() =>
             <div v-if="activeTab === 'sertifikat-data'">
                 <ShowSertifikat
                   :sertifikat-list="props.item.sertifikat || []"
-                  :pelatih-id="props.item.id"
+                  :tenaga_pendukung-id="props.item.id"
                 />
             </div>
             <div v-if="activeTab === 'prestasi-data'">
                 <ShowPrestasi
                   :prestasi-list="mappedPrestasi"
-                  :pelatih-id="props.item.id"
+                  :tenaga_pendukung-id="props.item.id"
                 />
             </div>
             <div v-if="activeTab === 'kesehatan-data'">
@@ -382,7 +382,7 @@ const mappedDokumen = computed(() =>
             <div v-if="activeTab === 'dokumen-data'">
                 <ShowDokumen
                   :dokumen-list="mappedDokumen"
-                  :pelatih-id="props.item.id"
+                  :tenaga_pendukung-id="props.item.id"
                 />
             </div>
         </template>

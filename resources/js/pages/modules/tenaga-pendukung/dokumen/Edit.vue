@@ -4,14 +4,14 @@ import FormDokumen from './Form.vue';
 import { computed } from 'vue';
 
 const props = defineProps<{ 
-  pelatihId: number;
+  tenagaPendukungId: number;
   item: Record<string, any>;
 }>();
 
 const breadcrumbs = computed(() => [
-  { title: 'Pelatih', href: '/pelatih' },
-  { title: 'Dokumen', href: `/pelatih/${props.pelatihId}/dokumen` },
-  { title: 'Edit Dokumen', href: `/pelatih/${props.pelatihId}/dokumen/${props.item.id}/edit` },
+  { title: 'Tenaga Pendukung', href: '/tenaga-pendukung' },
+  { title: 'Dokumen', href: `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen` },
+  { title: 'Edit Dokumen', href: `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen/${props.item.id}/edit` },
 ]);
 </script>
 
@@ -19,8 +19,8 @@ const breadcrumbs = computed(() => [
   <PageEdit 
     title="Dokumen" 
     :breadcrumbs="breadcrumbs" 
-    :back-url="`/pelatih/${props.pelatihId}/dokumen`"
+    :back-url="`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`"
   >
-    <FormDokumen :pelatih-id="props.pelatihId" mode="edit" :initial-data="props.item" />
+    <FormDokumen :tenaga-pendukung-id="props.tenagaPendukungId" mode="edit" :initial-data="props.item" />
   </PageEdit>
 </template> 

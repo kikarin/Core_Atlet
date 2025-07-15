@@ -9,7 +9,7 @@ const { save } = useHandleFormSave();
 const { toast } = useToast();
 
 const props = defineProps<{
-    pelatihId: number | null;
+    tenagaPendukungId: number | null;
     mode: 'create' | 'edit';
     initialData?: any;
     redirectUrl?: string;
@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const formData = ref<Record<string, any>>({
     id: props.initialData?.id || undefined,
-    pelatih_id: props.pelatihId,
+    tenaga_pendukung_id: props.tenagaPendukungId,
     jenis_dokumen_id: props.initialData?.jenis_dokumen_id || null,
     nomor: props.initialData?.nomor || '',
     file: null,
@@ -30,8 +30,8 @@ const jenisDokumenOptions = ref<{ value: number; label: string; }[]>([]);
 watch(() => props.initialData, (newVal) => {
     if (newVal) {
         Object.assign(formData.value, newVal);
-        if (props.pelatihId) {
-            formData.value.pelatih_id = props.pelatihId;
+        if (props.tenagaPendukungId) {
+            formData.value.tenaga_pendukung_id = props.tenagaPendukungId;
         }
     }
 }, { immediate: true, deep: true });
@@ -55,10 +55,10 @@ const formInputs = computed(() => [
 
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
     const formFields = { ...formData.value, ...dataFromFormInput };
-    if (props.pelatihId && !formFields.pelatih_id) {
-        formFields.pelatih_id = props.pelatihId;
+    if (props.tenagaPendukungId && !formFields.tenaga_pendukung_id) {
+        formFields.tenaga_pendukung_id = props.tenagaPendukungId;
     }
-    const baseUrl = `/pelatih/${props.pelatihId}/dokumen`;
+    const baseUrl = `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`;
     save(formFields, {
         url: baseUrl,
         mode: formData.value.id ? 'edit' : 'create',
@@ -68,7 +68,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: props.redirectUrl ?? `/pelatih/${props.pelatihId}/dokumen`
+        redirectUrl: props.redirectUrl ?? `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`
     });
 };
 </script>

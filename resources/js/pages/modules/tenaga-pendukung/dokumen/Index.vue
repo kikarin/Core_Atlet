@@ -6,17 +6,27 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import debounce from 'lodash.debounce';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
 
-const props = defineProps<{ pelatihId: number }>();
+const props = defineProps<{ tenagaPendukungId?: number }>();
+const inertiaPage = usePage();
+
+function getTenagaPendukungId() {
+  if (props.tenagaPendukungId) return props.tenagaPendukungId;
+  const match = inertiaPage.url.match(/tenaga-pendukung\/(\d+)/);
+  if (match) return Number(match[1]);
+  return undefined;
+}
+const tenagaPendukungId = getTenagaPendukungId();
+
 const { toast } = useToast();
 
 const breadcrumbs = computed(() => [
-  { title: 'Pelatih', href: '/pelatih' },
-  { title: 'Dokumen', href: `/pelatih/${props.pelatihId}/dokumen` },
+  { title: 'Tenaga Pendukung', href: '/tenaga-pendukung' },
+  { title: 'Dokumen', href: `/tenaga-pendukung/${tenagaPendukungId}/dokumen` },
 ]);
 
 const columns = [
@@ -61,9 +71,13 @@ const handleSearch = (params: { search?: string; sortKey?: string; sortOrder?: '
 };
 
 const fetchData = async () => {
+  if (!tenagaPendukungId) {
+    toast({ title: 'ID Tenaga Pendukung tidak ditemukan. Tidak bisa memuat dokumen.', variant: 'destructive' });
+    return;
+  }
   loading.value = true;
   try {
-    const response = await axios.get(`/api/pelatih/${props.pelatihId}/dokumen`, {
+    const response = await axios.get(`/api/tenaga-pendukung/${tenagaPendukungId}/dokumen`, {
       params: {
         search: search.value,
         page: page.value,
@@ -96,11 +110,11 @@ watch([page, perPage, () => sort.value.key, () => sort.value.order], () => {
 const actions = (row: any) => [
   {
     label: 'Detail',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/dokumen/${row.id}`),
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${row.id}`),
   },
   {
     label: 'Edit',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/dokumen/${row.id}/edit`),
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${row.id}/edit`),
   },
   {
     label: 'Delete',
@@ -116,7 +130,7 @@ const handleDeleteRow = async (row: any) => {
 const confirmDeleteRow = async () => {
   if (!rowToDelete.value) return;
 
-  router.delete(`/pelatih/${props.pelatihId}/dokumen/${rowToDelete.value.id}`, {
+  router.delete(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/${rowToDelete.value.id}`, {
     onSuccess: () => {
       toast({ title: 'Dokumen berhasil dihapus', variant: 'success' });
       fetchData();
@@ -139,7 +153,7 @@ const deleteSelected = async () => {
 
 const confirmDeleteSelected = async () => {
   try {
-    const response = await axios.post(`/pelatih/${props.pelatihId}/dokumen/destroy-selected`, { ids: idsToDelete.value });
+    const response = await axios.post(`/tenaga-pendukung/${tenagaPendukungId}/dokumen/destroy-selected`, { ids: idsToDelete.value });
     selected.value = [];
     fetchData();
     toast({ title: response.data?.message || 'Dokumen terpilih berhasil dihapus', variant: 'success' });
@@ -153,24 +167,24 @@ const confirmDeleteSelected = async () => {
 // Tabs config
 const tabsConfig = [
   {
-    value: 'pelatih-data',
-    label: 'Pelatih',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=pelatih-data`),
+    value: 'tenaga-pendukung-data',
+    label: 'tenaga-pendukung',
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/edit?tab=tenaga-pendukung-data`),
   },
   {
     value: 'sertifikat-data',
     label: 'Sertifikat',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat`),
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/sertifikat`),
   },
   {
     value: 'prestasi-data',
     label: 'Prestasi',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/prestasi`),
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/prestasi`),
   },
   {
     value: 'kesehatan-data',
     label: 'Kesehatan',
-    onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=kesehatan-data`),
+    onClick: () => router.visit(`/tenaga-pendukung/${tenagaPendukungId}/edit?tab=kesehatan-data`),
   },
   {
     value: 'dokumen-data',
@@ -197,7 +211,7 @@ const idsToDelete = ref<number[]>([]);
     <div class="p-4 space-y-4">
       <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange"
         :default-value="'dokumen-data'" />
-      <HeaderActions title="Dokumen" :create-url="`/pelatih/${props.pelatihId}/dokumen/create`" :selected="selected"
+      <HeaderActions title="Dokumen" :create-url="`/tenaga-pendukung/${tenagaPendukungId}/dokumen/create`" :selected="selected"
         :on-delete-selected="deleteSelected" />
       <DataTable :columns="columns" :rows="rows" v-model:selected="selected" :total="total" :search="search"
         :sort="sort" :page="page" :per-page="perPage" :loading="loading" :actions="actions"

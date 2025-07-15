@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
         $this->call(TenagaPendukungSeeder::class);
         $this->call(TenagaPendukungSertifikatSeeder::class);
         $this->call(TenagaPendukungPrestasiSeeder::class);
+        $this->call(TenagaPendukungKesehatanSeeder::class);
+        $this->call(TenagaPendukungDokumenSeeder::class);
     }
 
 }

@@ -14,6 +14,8 @@ use App\Models\MstKecamatan;
 use App\Models\MstDesa;
 use App\Models\TenagaPendukungSertifikat;
 use App\Models\TenagaPendukungPrestasi;
+use App\Models\TenagaPendukungKesehatan;
+use App\Models\TenagaPendukungDokumen;
 
 class TenagaPendukung extends Model implements HasMedia
 {
@@ -102,5 +104,16 @@ class TenagaPendukung extends Model implements HasMedia
     {
         return $this->hasMany(TenagaPendukungPrestasi::class, 'tenaga_pendukung_id')
             ->with(['created_by_user', 'updated_by_user', 'tingkat']);
+    }
+
+    public function kesehatan()
+    {
+        return $this->hasOne(TenagaPendukungKesehatan::class, 'tenaga_pendukung_id');
+    }
+
+    public function dokumen()
+    {
+        return $this->hasMany(TenagaPendukungDokumen::class, 'tenaga_pendukung_id')
+            ->with(['created_by_user', 'updated_by_user', 'jenis_dokumen']);
     }
 } 

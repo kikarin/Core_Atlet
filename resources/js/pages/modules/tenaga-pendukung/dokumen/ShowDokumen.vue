@@ -11,7 +11,7 @@ interface Dokumen {
 
 const props = defineProps<{
   dokumenList: Dokumen[];
-  pelatihId?: number;
+  tenagaPendukungId?: number;
   selectedIds?: number[];
 }>();
 const selected = ref<number[]>(props.selectedIds ? [...props.selectedIds] : []);

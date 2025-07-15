@@ -98,6 +98,14 @@ class CategoryPermissionSeeder extends Seeder
                 'permission'=> 'CRUD',
             ],
             [
+                'name' => 'Tenaga Pendukung Kesehatan',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Tenaga Pendukung Dokumen',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name' => 'Mst Tingkat',
                 'permission' => 'CRUD',
             ],

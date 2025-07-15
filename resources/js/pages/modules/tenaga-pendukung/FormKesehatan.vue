@@ -17,14 +17,14 @@ interface FlashMessages {
 }
 
 const props = defineProps<{
-    pelatihId: number | null; 
+    tenagaPendukungId: number | null; 
     mode: 'create' | 'edit';
     initialData?: any; 
 }>();
 
 const formData = ref<Record<string, any>>({
     id: props.initialData?.id || undefined, 
-    pelatih_id: props.pelatihId, 
+    tenaga_pendukung_id: props.tenagaPendukungId, 
     tinggi_badan: props.initialData?.tinggi_badan || '',
     berat_badan: props.initialData?.berat_badan || '',
     penglihatan: props.initialData?.penglihatan || '',
@@ -41,8 +41,8 @@ const formInputInitialData = computed(() => {
 watch(() => props.initialData, (newVal) => {
     if (newVal) {
         Object.assign(formData.value, newVal);
-        if (props.pelatihId) {
-            formData.value.pelatih_id = props.pelatihId;
+        if (props.tenagaPendukungId) {
+            formData.value.tenaga_pendukung_id = props.tenagaPendukungId;
         }
     }
 }, { immediate: true, deep: true });
@@ -55,19 +55,19 @@ onMounted(async () => {
         formData.value.id = flashedKesehatanId;
     }
 
-    if (props.pelatihId) {
+    if (props.tenagaPendukungId) {
         try {
-            const res = await axios.get(`/pelatih/${props.pelatihId}/kesehatan`);
+            const res = await axios.get(`/tenaga-pendukung/${props.tenagaPendukungId}/kesehatan`);
             if (res.data) {
                 Object.assign(formData.value, res.data);
                 console.log("FormKesehatan.vue: Fetched existing kesehatan data and updated formData:", formData.value);
             } else {
-                console.log("FormKesehatan.vue: No existing kesehatan data found for pelatih_id:", props.pelatihId);
+                console.log("FormKesehatan.vue: No existing kesehatan data found for pelatih_id:", props.tenagaPendukungId);
             }
         } catch (e: any) {
             console.error("Gagal mengambil data pelatih kesehatan", e);
             if (e.response && e.response.status !== 404) {
-                toast({ title: "Terjadi kesalahan saat memuat data kesehatan pelatih", variant: "destructive" });
+                toast({ title: "Terjadi kesalahan saat memuat data kesehatan tenaga pendukung", variant: "destructive" });
             }
         }
     }
@@ -93,11 +93,11 @@ const formInputs = computed(() => [
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
     const formFields = { ...formData.value, ...dataFromFormInput };
 
-    if (props.pelatihId && !formFields.pelatih_id) {
-        formFields.pelatih_id = props.pelatihId;
+    if (props.tenagaPendukungId && !formFields.tenaga_pendukung_id) {
+        formFields.tenaga_pendukung_id = props.tenagaPendukungId;
     }
 
-    const baseUrl = `/pelatih/${props.pelatihId}/kesehatan`;
+    const baseUrl = `/tenaga-pendukung/${props.tenagaPendukungId}/kesehatan`;
 
     console.log('FormKesehatan.vue: Form fields to send (before save call):', formFields);
     console.log('FormKesehatan.vue: Determined base URL:', baseUrl);
@@ -108,12 +108,12 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         url: baseUrl,
         mode: formData.value.id ? 'edit' : 'create', 
         id: formData.value.id, 
-        successMessage: formData.value.id ? 'Data kesehatan pelatih berhasil diperbarui!' : 'Data kesehatan pelatih berhasil ditambahkan!',
-        errorMessage: formData.value.id ? 'Gagal memperbarui data kesehatan pelatih.' : 'Gagal menyimpan data kesehatan pelatih.',
+        successMessage: formData.value.id ? 'Data kesehatan tenaga pendukung berhasil diperbarui!' : 'Data kesehatan tenaga pendukung berhasil ditambahkan!',
+        errorMessage: formData.value.id ? 'Gagal memperbarui data kesehatan tenaga pendukung.' : 'Gagal menyimpan data kesehatan tenaga pendukung.',
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: `/pelatih/${props.pelatihId}/edit?tab=kesehatan-data`, 
+        redirectUrl: `/tenaga-pendukung/${props.tenagaPendukungId}/edit?tab=kesehatan-data`, 
     });
 };
 </script>

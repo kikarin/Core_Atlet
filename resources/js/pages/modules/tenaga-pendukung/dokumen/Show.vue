@@ -7,7 +7,7 @@ import { computed } from 'vue';
 const { toast } = useToast();
 
 const props = defineProps<{
-  pelatihId: number;
+  tenagaPendukungId: number;
   item: {
     id: number;
     jenis_dokumen?: { nama: string } | null;
@@ -21,9 +21,9 @@ const props = defineProps<{
 }>();
 
 const breadcrumbs = [
-  { title: 'Pelatih', href: '/pelatih' },
-  { title: 'Dokumen', href: `/pelatih/${props.pelatihId}/dokumen` },
-  { title: 'Detail Dokumen', href: `/pelatih/${props.pelatihId}/dokumen/${props.item.id}` },
+  { title: 'Tenaga Pendukung', href: '/tenaga-pendukung' },
+  { title: 'Dokumen', href: `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen` },
+  { title: 'Detail Dokumen', href: `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen/${props.item.id}` },
 ];
 
 const fields = computed(() => [
@@ -50,14 +50,14 @@ const actionFields = [
 ];
 
 const handleEdit = () => {
-  router.visit(`/pelatih/${props.pelatihId}/dokumen/${props.item.id}/edit`);
+  router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen/${props.item.id}/edit`);
 };
 
 const handleDelete = () => {
-  router.delete(`/pelatih/${props.pelatihId}/dokumen/${props.item.id}`, {
+  router.delete(`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen/${props.item.id}`, {
     onSuccess: () => {
       toast({ title: 'Dokumen berhasil dihapus', variant: 'success' });
-      router.visit(`/pelatih/${props.pelatihId}/dokumen`);
+      router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`);
     },
     onError: () => {
       toast({ title: 'Gagal menghapus dokumen', variant: 'destructive' });
@@ -72,7 +72,7 @@ const handleDelete = () => {
     :breadcrumbs="breadcrumbs"
     :fields="fields"
     :actionFields="actionFields"
-    :back-url="`/pelatih/${props.pelatihId}/dokumen`"
+    :back-url="`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`"
     :on-edit="handleEdit"
     :on-delete="handleDelete"
   >

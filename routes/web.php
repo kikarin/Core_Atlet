@@ -37,6 +37,8 @@ use App\Http\Controllers\CaborKategoriPelatihController;
 use App\Http\Controllers\TenagaPendukungController;
 use App\Http\Controllers\TenagaPendukungSertifikatController;
 use App\Http\Controllers\TenagaPendukungPrestasiController;
+use App\Http\Controllers\TenagaPendukungKesehatanController;
+use App\Http\Controllers\TenagaPendukungDokumenController;
 
 // =====================
 // ROUTE UTAMA
@@ -219,6 +221,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('prestasi/{id}', [TenagaPendukungPrestasiController::class, 'destroy'])->name('tenaga-pendukung.prestasi.destroy');
         Route::post('prestasi/destroy-selected', [TenagaPendukungPrestasiController::class, 'destroy_selected'])->name('tenaga-pendukung.prestasi.destroy_selected');
         Route::get('prestasi/{id}', [TenagaPendukungPrestasiController::class, 'show'])->name('tenaga-pendukung.prestasi.show');
+
+        // KESEHATAN
+        Route::get('kesehatan', [TenagaPendukungKesehatanController::class, 'getByTenagaPendukungId'])->name('tenaga-pendukung.kesehatan.show');
+        Route::post('kesehatan', [TenagaPendukungKesehatanController::class, 'store'])->name('tenaga-pendukung.kesehatan.store');
+        Route::put('kesehatan/{id}', [TenagaPendukungKesehatanController::class, 'update'])->name('tenaga-pendukung.kesehatan.update');
+        Route::delete('kesehatan/{id}', [TenagaPendukungKesehatanController::class, 'destroy'])->name('tenaga-pendukung.kesehatan.destroy');
+        // DOKUMEN TENAGA PENDUKUNG
+        Route::get('dokumen', [TenagaPendukungDokumenController::class, 'index'])->name('tenaga-pendukung.dokumen.index');
+        Route::get('dokumen/create', [TenagaPendukungDokumenController::class, 'create'])->name('tenaga-pendukung.dokumen.create');
+        Route::post('dokumen', [TenagaPendukungDokumenController::class, 'store'])->name('tenaga-pendukung.dokumen.store');
+        Route::get('dokumen/{id}/edit', [TenagaPendukungDokumenController::class, 'edit'])->name('tenaga-pendukung.dokumen.edit');
+        Route::put('dokumen/{id}', [TenagaPendukungDokumenController::class, 'update'])->name('tenaga-pendukung.dokumen.update');
+        Route::delete('dokumen/{id}', [TenagaPendukungDokumenController::class, 'destroy'])->name('tenaga-pendukung.dokumen.destroy');
+        Route::post('dokumen/destroy-selected', [TenagaPendukungDokumenController::class, 'destroy_selected'])->name('tenaga-pendukung.dokumen.destroy_selected');
+        Route::get('dokumen/{id}', [TenagaPendukungDokumenController::class, 'show'])->name('tenaga-pendukung.dokumen.show');
     });
     // CABOR
     Route::resource('/cabor', CaborController::class)->names('cabor');
@@ -269,6 +286,8 @@ Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/sertifikat', [TenagaPend
 // API endpoint untuk prestasi tenaga pendukung
 Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/prestasi', [TenagaPendukungPrestasiController::class, 'apiIndex']);
 
+// API endpoint untuk prestasi tenaga pendukung
+Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/dokumen', [TenagaPendukungDokumenController::class, 'apiIndex']);
 
 // =====================
 // DATA MASTER (CRUD)
