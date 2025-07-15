@@ -126,6 +126,10 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name' => 'Mst Jenis Tenaga Pendukung',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name' => 'Cabor',
                 'permission' => 'CRUD',
             ],

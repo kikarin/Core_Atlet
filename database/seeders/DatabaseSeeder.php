@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TenagaPendukungPrestasiSeeder::class);
         $this->call(TenagaPendukungKesehatanSeeder::class);
         $this->call(TenagaPendukungDokumenSeeder::class);
+        $this->call(MstJenisTenagaPendukungSeeder::class);
     }
 
 }

@@ -30,6 +30,7 @@ use App\Http\Controllers\MstJenisDokumenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\DesaController;
 use App\Http\Controllers\MstJenisPelatihController;
+use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\CaborController;
 use App\Http\Controllers\CaborKategoriController;
 use App\Http\Controllers\CaborKategoriAtletController;
@@ -60,6 +61,8 @@ Route::get('/api/jenis-dokumen', [MstJenisDokumenController::class, 'apiIndex'])
 Route::get('/api/kecamatan', [KecamatanController::class, 'apiIndex']);
 Route::get('/api/desa', [DesaController::class, 'apiIndex']);
 Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex']);
+Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
+
 // select
 Route::get('/api/tingkat-list', function() {
     return MstTingkat::select('id', 'nama')->orderBy('nama')->get();
@@ -75,6 +78,9 @@ Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan)
 });
 Route::get('/api/jenis-pelatih-list', function() {
     return MstJenisPelatih::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/jenis-tenaga-pendukung-list', function() {
+    return MstJenisTenagaPendukung::select('id', 'nama')->orderBy('nama')->get();
 });
 
 
@@ -308,6 +314,9 @@ Route::prefix('data-master')->group(function () {
     // Master Jenis Pelatih
     Route::resource('/jenis-pelatih', MstJenisPelatihController::class)->names('jenis-pelatih');
     Route::post('/jenis-pelatih/destroy-selected', [MstJenisPelatihController::class, 'destroy_selected'])->name('jenis-pelatih.destroy_selected');
+    // Master Jenis Tenaga Pendukung
+    Route::resource('/jenis-tenaga-pendukung', MstJenisTenagaPendukungController::class)->names('jenis-tenaga-pendukung');
+    Route::post('/jenis-tenaga-pendukung/destroy-selected', [MstJenisTenagaPendukungController::class, 'destroy_selected'])->name('jenis-tenaga-pendukung.destroy_selected');
 });
 
 
