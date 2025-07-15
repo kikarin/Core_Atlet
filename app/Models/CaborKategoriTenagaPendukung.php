@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class CaborKategoriTenagaPendukung extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes, Blameable;
 
     protected $table = 'cabor_kategori_tenaga_pendukung';
     protected $guarded = [];
@@ -25,14 +26,26 @@ class CaborKategoriTenagaPendukung extends Model
         'deleted_by',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function getIsActiveBadgeAttribute()
+    {
+        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
+        return "<span class='badge $badge'>$text</span>";
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Cabor Kategori Tenaga Pendukung");
+            ->setDescriptionForEvent(fn (string $eventName) => 'CaborKategoriTenagaPendukung');
     }
 
+    // Relations
     public function cabor()
     {
         return $this->belongsTo(Cabor::class, 'cabor_id');
@@ -57,10 +70,12 @@ class CaborKategoriTenagaPendukung extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
     public function updated_by_user()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
     public function deleted_by_user()
     {
         return $this->belongsTo(User::class, 'deleted_by');

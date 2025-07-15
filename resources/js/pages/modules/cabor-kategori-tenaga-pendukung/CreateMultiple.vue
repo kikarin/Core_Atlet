@@ -209,15 +209,12 @@ const getPageNumbers = () => {
     const maxPages = 5;
     let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2));
     const end = Math.min(totalPages.value, start + maxPages - 1);
-    
     if (end - start + 1 < maxPages) {
         start = Math.max(1, end - maxPages + 1);
     }
-    
     for (let i = start; i <= end; i++) {
         pages.push(i);
     }
-    
     return pages;
 };
 
@@ -226,6 +223,7 @@ fetchAvailableTenagaPendukung();
 fetchJenisTenagaPendukung();
 </script>
 
+<!-- Template tetap, hanya pastikan binding dan variabel konsisten dengan pelatih -->
 <template>
     <PageCreate title="Tambah Multiple Tenaga Pendukung" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori">
         <div class="space-y-6">

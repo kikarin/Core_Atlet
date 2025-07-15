@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -24,13 +25,14 @@ return new class extends Migration {
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
 
+            // Foreign keys
             $table->foreign('cabor_id')->references('id')->on('cabor')->onDelete('cascade');
             $table->foreign('cabor_kategori_id')->references('id')->on('cabor_kategori')->onDelete('cascade');
             $table->foreign('tenaga_pendukung_id')->references('id')->on('tenaga_pendukungs')->onDelete('cascade');
             $table->foreign('jenis_tenaga_pendukung_id', 'fk_jenis_tp_id')
                 ->references('id')->on('mst_jenis_tenaga_pendukung')->onDelete('cascade');
 
-            // Unique constraint to prevent duplication
+            // Unique constraint untuk mencegah duplikasi
             $table->unique(['cabor_kategori_id', 'tenaga_pendukung_id'], 'cabor_kategori_tenaga_pendukung_unique');
         });
     }

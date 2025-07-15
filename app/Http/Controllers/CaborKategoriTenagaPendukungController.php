@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\CaborKategoriTenagaPendukungRequest;
 use App\Repositories\CaborKategoriTenagaPendukungRepository;
 use App\Traits\BaseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Models\CaborKategori;
 
 class CaborKategoriTenagaPendukungController extends Controller implements HasMiddleware
 {
@@ -17,7 +17,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     private $repository;
     private $request;
 
-    public function __construct(CaborKategoriTenagaPendukungRepository $repository, Request $request)
+    public function __construct(Request $request, CaborKategoriTenagaPendukungRepository $repository)
     {
         $this->repository = $repository;
         $this->request = $request;
@@ -68,7 +68,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     public function store(CaborKategoriTenagaPendukungRequest $request)
     {
         $data = $this->repository->validateRequest($request);
-        $this->repository->create($data);
+        $this->repository->batchInsert($data);
         return redirect()->route('cabor-kategori-tenaga-pendukung.index')->with('success', 'Tenaga Pendukung berhasil ditambahkan ke kategori!');
     }
 
@@ -148,7 +148,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     public function tenagaPendukungByKategori($caborKategoriId)
     {
         $this->repository->customProperty(__FUNCTION__, ['cabor_kategori_id' => $caborKategoriId]);
-        $caborKategori = app(\App\Models\CaborKategori::class)->with('cabor')->find($caborKategoriId);
+        $caborKategori = app(CaborKategori::class)->with('cabor')->find($caborKategoriId);
         if (!$caborKategori) {
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
@@ -166,7 +166,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     public function createMultiple($caborKategoriId)
     {
         $this->repository->customProperty(__FUNCTION__, ['cabor_kategori_id' => $caborKategoriId]);
-        $caborKategori = app(\App\Models\CaborKategori::class)->with('cabor')->find($caborKategoriId);
+        $caborKategori = app(CaborKategori::class)->with('cabor')->find($caborKategoriId);
         if (!$caborKategori) {
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
@@ -181,7 +181,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     }
 
     // Untuk store multiple tenaga pendukung
-       public function storeMultiple(Request $request, $caborKategoriId)
+    public function storeMultiple(Request $request, $caborKategoriId)
     {
         try {
             Log::info('storeMultiple called', [
@@ -222,5 +222,4 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
             return redirect()->back()->with('error', 'Gagal menambahkan tenaga pendukung: ' . $e->getMessage());
         }
     }
-
 } 
