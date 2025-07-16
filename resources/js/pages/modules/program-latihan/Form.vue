@@ -44,18 +44,6 @@ watch(selectedCaborId, async (newVal, oldVal) => {
     }
 });
 
-const formData = computed(() => {
-    const base = {
-        nama_program: props.initialData?.nama_program || '',
-        cabor_kategori_id: props.initialData?.cabor_kategori_id || '',
-        periode_mulai: props.initialData?.periode_mulai || '',
-        periode_selesai: props.initialData?.periode_selesai || '',
-        keterangan: props.initialData?.keterangan || '',
-        id: props.initialData?.id || undefined,
-    };
-    return base;
-});
-
 const formInitialData = computed(() => ({
     nama_program: props.initialData?.nama_program || '',
     periode_mulai: props.initialData?.periode_mulai || '',
