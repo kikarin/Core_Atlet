@@ -42,6 +42,7 @@ use App\Http\Controllers\TenagaPendukungKesehatanController;
 use App\Http\Controllers\TenagaPendukungDokumenController;
 use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\CaborKategoriTenagaPendukungController;
+use App\Http\Controllers\ProgramLatihanController;
 
 // =====================
 // ROUTE UTAMA
@@ -306,6 +307,15 @@ Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/prestasi', [TenagaPenduk
 
 // API endpoint untuk prestasi tenaga pendukung
 Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/dokumen', [TenagaPendukungDokumenController::class, 'apiIndex']);
+
+// =====================
+// PROGRAM LATIHAN
+// =====================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('/program-latihan', ProgramLatihanController::class)->names('program-latihan');
+    Route::get('/api/program-latihan', [ProgramLatihanController::class, 'apiIndex']);
+    Route::post('/program-latihan/destroy-selected', [ProgramLatihanController::class, 'destroy_selected'])->name('program-latihan.destroy_selected');
+});
 
 // =====================
 // DATA MASTER (CRUD)

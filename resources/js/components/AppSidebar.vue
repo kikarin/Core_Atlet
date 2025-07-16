@@ -14,6 +14,7 @@ const atletNavItems = ref<NavItem[]>([]);
 const pelatihNavItems = ref<NavItem[]>([]);
 const tenaga_pendukungNavItems = ref<NavItem[]>([]);
 const caborNavItems = ref<NavItem[]>([]);
+const trainingNavItems = ref<NavItem[]>([]);
 const settingNavItems = ref<NavItem[]>([]);
 const isLoading = ref(false);
 const iconMap: Record<string, any> = {
@@ -43,6 +44,7 @@ const iconMap: Record<string, any> = {
     ShieldCheck: LucideIcons.ShieldCheck,
     ClipboardList: LucideIcons.ClipboardList,
     UserCircle2: LucideIcons.UserCircle2,
+    CalendarCheck: LucideIcons.CalendarCheck,
 };
 
 const fetchMenus = async () => {
@@ -104,6 +106,10 @@ const fetchMenus = async () => {
             const urutan = menu.urutan || 0;
             return urutan > 40 && urutan <= 50;
         });
+        const trainingMenus = menus.filter((menu: any) => {
+            const urutan = menu.urutan || 0;
+            return urutan > 50 && urutan <= 60;
+        });
         const settingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan >= 100;
@@ -114,6 +120,7 @@ const fetchMenus = async () => {
         pelatihNavItems.value = pelatihMenus.map(transformMenuToNavItem);
         tenaga_pendukungNavItems.value = tenaga_pendukungMenus.map(transformMenuToNavItem);
         caborNavItems.value = caborMenus.map(transformMenuToNavItem);
+        trainingNavItems.value = trainingMenus.map(transformMenuToNavItem);
         settingNavItems.value = settingMenus.map(transformMenuToNavItem);
 
         console.log('Main Menus:', mainNavItems.value);
@@ -175,6 +182,9 @@ onUnmounted(() => {
                 section-id="Tenaga" />
 
             <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
+
+            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Training"
+                section-id="training" />
 
             <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings"
                 section-id="setting" />

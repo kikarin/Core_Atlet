@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CaborKategoriRequest;
-use App\Repositories\CaborKategoriRepository;
+use App\Http\Requests\ProgramLatihanRequest;
+use App\Repositories\ProgramLatihanRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
-use App\Models\CaborKategori;
 
-class CaborKategoriController extends Controller implements HasMiddleware
+class ProgramLatihanController extends Controller implements HasMiddleware
 {
     use BaseTrait;
     private $repository;
     private $request;
 
-    public function __construct(Request $request, CaborKategoriRepository $repository)
+    public function __construct(Request $request, ProgramLatihanRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = CaborKategoriRequest::createFromBase($request);
+        $this->request    = ProgramLatihanRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'cabor-kategori';
-        $this->commonData['kode_first_menu']  = 'CABOR';
-        $this->commonData['kode_second_menu'] = 'KATEGORI';
+        $this->route = 'program-latihan';
+        $this->commonData['kode_first_menu']  = 'PROGRAM-LATIHAN';
+        $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
@@ -44,7 +43,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
     {
         $data = $this->repository->customIndex([]);
         return response()->json([
-            'data' => $data['kategori'],
+            'data' => $data['data'],
             'meta' => [
                 'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
@@ -64,42 +63,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customIndex($data);
-        return inertia('modules/cabor-kategori/Index', $data);
-    }
-
-    public function store(CaborKategoriRequest $request)
-    {
-        $data = $this->repository->validateRequest($request);
-        $this->repository->create($data);
-        return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil ditambahkan!');
-    }
-
-    public function update(CaborKategoriRequest $request, $id)
-    {
-        $data = $this->repository->validateRequest($request);
-        $this->repository->update($id, $data);
-        return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil diperbarui!');
-    }
-
-    public function show($id)
-    {
-        return $this->repository->handleShow($id);
-    }
-
-    public function destroy($id)
-    {
-        $this->repository->delete($id);
-        return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil dihapus!');
-    }
-
-    public function destroy_selected(Request $request)
-    {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'required|numeric|exists:cabor_kategori,id',
-        ]);
-        $this->repository->delete_selected($request->ids);
-        return response()->json(['message' => 'Data kategori berhasil dihapus!']);
+        return inertia('modules/program-latihan/Index', $data);
     }
 
     public function create()
@@ -112,10 +76,14 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data);
-        if (!is_array($data)) {
-            return $data;
-        }
-        return inertia('modules/cabor-kategori/Create', $data);
+        return inertia('modules/program-latihan/Create', $data);
+    }
+
+    public function store(ProgramLatihanRequest $request)
+    {
+        $data = $this->repository->validateRequest($request);
+        $this->repository->create($data);
+        return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil ditambahkan!');
     }
 
     public function edit($id = '')
@@ -129,24 +97,37 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data, $item);
-        if (!is_array($data)) {
-            return $data;
-        }
-        return inertia('modules/cabor-kategori/Edit', $data);
+        return inertia('modules/program-latihan/Edit', $data);
     }
 
-    public function list()
+    public function update(ProgramLatihanRequest $request, $id)
     {
-        $data = CaborKategori::select('id', 'nama')->orderBy('nama')->get();
-        return response()->json($data);
+        $data = $this->repository->validateRequest($request);
+        $this->repository->update($id, $data);
+        return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil diperbarui!');
     }
 
-    public function listByCabor($cabor_id)
+    public function show($id)
     {
-        $data = CaborKategori::where('cabor_id', $cabor_id)
-            ->select('id', 'nama')
-            ->orderBy('nama')
-            ->get();
-        return response()->json($data);
+        $item = $this->repository->getDetailWithRelations($id);
+        return Inertia::render('modules/program-latihan/Show', [
+            'item' => $item,
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $this->repository->delete($id);
+        return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil dihapus!');
+    }
+
+    public function destroy_selected(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'required|integer|exists:program_latihan,id',
+        ]);
+        $this->repository->delete_selected($request->ids);
+        return response()->json(['message' => 'Program latihan terpilih berhasil dihapus!']);
     }
 } 

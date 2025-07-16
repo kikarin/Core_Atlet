@@ -8,34 +8,38 @@ import { ref } from 'vue';
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];
 
 const columns = [
-        {
-        key: 'jumlah_atlet',
-        label: 'Jumlah Atlet',
-        sortable: false,
-        format: (row: any) => {
-            const count = row.jumlah_atlet || 0;
-            return `<button class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 cursor-pointer" onclick="window.location.href='/cabor-kategori/${row.id}/atlet'">${count} Atlet</button>`;
-        },
-    },
     {
-        key: 'jumlah_pelatih',
-        label: 'Jumlah Pelatih',
+        key: 'peserta',
+        label: 'Peserta',
         sortable: false,
         format: (row: any) => {
-            const count = row.jumlah_pelatih || 0;
-            return `<button class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 cursor-pointer" onclick="window.location.href='/cabor-kategori/${row.id}/pelatih'">${count} Pelatih</button>`;
+            const atlet = row.jumlah_atlet || 0;
+            const pelatih = row.jumlah_pelatih || 0;
+            const tenaga = row.jumlah_tenaga_pendukung || 0;
+            return `
+<div class="flex flex-col gap-1 items-start">
+            <button
+                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 cursor-pointer"
+                onclick="window.location.href='/cabor-kategori/${row.id}/atlet'"
+            >
+                <span class="font-semibold mr-1">${atlet}</span> Atlet
+            </button>
+            <button
+                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 cursor-pointer"
+                onclick="window.location.href='/cabor-kategori/${row.id}/pelatih'"
+            >
+                <span class="font-semibold mr-1">${pelatih}</span> Pelatih
+            </button>
+            <button
+                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200 cursor-pointer"
+                onclick="window.location.href='/cabor-kategori/${row.id}/tenaga-pendukung'"
+            >
+                <span class="font-semibold mr-1">${tenaga}</span> Tenaga Pendukung
+            </button>
+        </div>
+            `;
         },
     },
-    {
-        key: 'jumlah_tenaga_pendukung',
-        label: 'Jumlah Tenaga Pendukung',
-        sortable: false,
-        format: (row: any) => {
-            const count = row.jumlah_tenaga_pendukung || 0;
-            return `<button class="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200 cursor-pointer" onclick="window.location.href='/cabor-kategori/${row.id}/tenaga-pendukung'">${count} Tenaga Pendukung</button>`;
-        },
-    },
-
     { key: 'cabor_nama', label: 'Cabor' },
     { key: 'nama', label: 'Nama' },
     { key: 'deskripsi', label: 'Deskripsi' },

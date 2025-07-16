@@ -77,6 +77,15 @@ class UsersMenuSeeder extends Seeder
                 ],
             ],
             [
+                'nama' => 'Program Latihan',
+                'kode' => 'PROGRAM-LATIHAN',
+                'url' => '/program-latihan',
+                'icon' => 'CalendarCheck',
+                'rel' => 0,
+                'urutan' => 51,
+                'permission_id' => 'Program Latihan Show',
+            ],
+            [
                 'nama' => 'Data Master',
                 'kode' => 'DATA-MASTER',
                 'url' => '/data-master',
