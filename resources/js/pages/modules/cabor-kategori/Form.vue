@@ -47,6 +47,18 @@ const formInputs = computed(() => [
         required: true,
     },
     {
+        name: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        type: 'select' as const,
+        options: [
+            { value: 'L', label: 'Laki-laki' },
+            { value: 'P', label: 'Perempuan' },
+            { value: 'C', label: 'Campuran' },
+        ],
+        placeholder: 'Pilih Jenis Kelamin',
+        required: true,
+    },
+    {
         name: 'deskripsi',
         label: 'Deskripsi',
         type: 'textarea' as const,

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('cabor_id');
             $table->string('nama');
+            $table->enum('jenis_kelamin', ['L', 'P', 'C'])->default('C')->comment('L=Laki-laki, P=Perempuan, C=Campuran');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
             $table->softDeletes();

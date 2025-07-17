@@ -58,6 +58,10 @@ class AtletRepository
                     ->whereNull('cabor_kategori_atlet.deleted_at'); // hanya relasi aktif
             });
         }
+        // Filter jenis kelamin jika ada
+        if (request('jenis_kelamin') && in_array(request('jenis_kelamin'), ['L', 'P'])) {
+            $query->where('jenis_kelamin', request('jenis_kelamin'));
+        }
         
         if (request('search')) {
             $search = request('search');

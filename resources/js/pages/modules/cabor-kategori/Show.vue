@@ -19,6 +19,7 @@ const breadcrumbs = [
 const fields = computed(() => [
     { label: 'Cabor', value: dataItem.value?.cabor_nama || '-' },
     { label: 'Nama Kategori', value: dataItem.value?.nama || '-' },
+    { label: 'Gender', value: dataItem.value?.jenis_kelamin === 'L' ? 'Laki-laki' : dataItem.value?.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran' },
     { label: 'Deskripsi', value: dataItem.value?.deskripsi || '-' },
 ]);
 

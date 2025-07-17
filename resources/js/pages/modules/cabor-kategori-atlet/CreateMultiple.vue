@@ -94,6 +94,7 @@ const fetchAvailableAtlet = async () => {
                 per_page: perPage.value,
                 search: searchQuery.value,
                 exclude_cabor_kategori_id: props.caborKategori.id,
+                jenis_kelamin: props.caborKategori.jenis_kelamin !== 'C' ? props.caborKategori.jenis_kelamin : undefined,
             },
         });
         atletList.value = response.data.data || [];

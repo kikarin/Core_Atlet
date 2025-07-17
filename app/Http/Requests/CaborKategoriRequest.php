@@ -17,6 +17,7 @@ class CaborKategoriRequest extends FormRequest
             'cabor_id' => 'required|exists:cabor,id',
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'jenis_kelamin' => 'required|in:L,P,C',
         ];
     }
 
@@ -28,6 +29,8 @@ class CaborKategoriRequest extends FormRequest
             'nama.required'     => 'Nama kategori wajib diisi.',
             'nama.string'       => 'Nama kategori harus berupa teks.',
             'nama.max'          => 'Nama kategori tidak boleh lebih dari 255 karakter.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki), P (Perempuan), atau C (Campuran).',
         ];
     }
 } 

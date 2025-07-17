@@ -18,6 +18,7 @@ class CaborKategori extends Model
         'cabor_id',
         'nama',
         'deskripsi',
+        'jenis_kelamin',
         'created_by',
         'updated_by',
         'deleted_by',
