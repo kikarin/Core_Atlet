@@ -69,7 +69,7 @@ const props = defineProps<{
     selected?: number[];
     onDeleteSelected?: () => void;
     apiEndpoint: string;
-    onDeleteRowConfirm?: (row: any) => Promise<void>;
+    onDeleteRow?: (row: any) => Promise<void>;
     hidePagination?: boolean;
     limit?: number;
     disableLength?: boolean;
@@ -122,8 +122,8 @@ const handleDeleteRow = (row: any) => {
 const confirmDeleteRow = async () => {
     if (!rowToDelete.value) return;
 
-    if (props.onDeleteRowConfirm) {
-        await props.onDeleteRowConfirm(rowToDelete.value);
+    if (props.onDeleteRow) {
+        await props.onDeleteRow(rowToDelete.value);
         showDeleteDialog.value = false;
         rowToDelete.value = null;
         fetchData();

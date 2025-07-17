@@ -24,12 +24,18 @@ const props = defineProps<{
         showPassword?: { value: boolean };
     }[];
     initialData?: Record<string, any>;
+    modelValue?: Record<string, any>;
 }>();
 
-const emit = defineEmits(['save', 'cancel', 'field-updated']);
+const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
 
 // Inisialisasi form menggunakan useForm dengan data awal
 const form = useForm<Record<string, any>>(props.initialData || {});
+
+// Sinkronisasi form ke v-model parent
+watch(form, (val) => {
+    emit('update:modelValue', form.data());
+}, { deep: true });
 
 // Tambahkan watch untuk memperbarui form saat initialData berubah (ini penting untuk edit mode)
 watch(() => props.initialData, (newVal) => {
@@ -471,7 +477,7 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
                 </div>
                 </template>
             </div>
-
+            <slot name="custom-fields"></slot>
             <!-- BUTTONS -->
             <div class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>
