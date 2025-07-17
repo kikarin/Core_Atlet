@@ -1,0 +1,167 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useHandleFormSave } from '@/composables/useHandleFormSave';
+import FormInput from '@/pages/modules/base-page/FormInput.vue';
+import SelectTableMultiple from '../components/SelectTableMultiple.vue';
+
+const { save } = useHandleFormSave();
+
+const props = defineProps<{
+    mode: 'create' | 'edit';
+    initialData?: Record<string, any>;
+    infoHeader: any;
+}>();
+
+const formData = ref({
+    tanggal: props.initialData?.tanggal || '',
+    materi: props.initialData?.materi || '',
+    lokasi_latihan: props.initialData?.lokasi_latihan || '',
+    catatan: props.initialData?.catatan || '',
+    target_latihan_ids: props.initialData?.target_latihan?.map((t: any) => t.id) || [],
+    atlet_ids: props.initialData?.atlets?.map((a: any) => a.id) || [],
+    pelatih_ids: props.initialData?.pelatihs?.map((p: any) => p.id) || [],
+    tenaga_pendukung_ids: props.initialData?.tenaga_pendukung?.map((t: any) => t.id) || [],
+});
+
+let initialized = false;
+watch(() => props.initialData, (newVal) => {
+  if (!initialized && newVal) {
+    formData.value = {
+      tanggal: newVal.tanggal || '',
+      materi: newVal.materi || '',
+      lokasi_latihan: newVal.lokasi_latihan || '',
+      catatan: newVal.catatan || '',
+      target_latihan_ids: newVal.target_latihan?.map((t: any) => t.id) || [],
+      atlet_ids: newVal.atlets?.map((a: any) => a.id) || [],
+      pelatih_ids: newVal.pelatihs?.map((p: any) => p.id) || [],
+      tenaga_pendukung_ids: newVal.tenaga_pendukung?.map((t: any) => t.id) || [],
+    };
+    initialized = true;
+  }
+}, { immediate: true, deep: true });
+
+const handleSave = (form: any) => {
+    // Gunakan data dari parameter form (hasil emit dari FormInput)
+    const dataToSave: Record<string, any> = {
+        tanggal: form.tanggal,
+        materi: form.materi,
+        lokasi_latihan: form.lokasi_latihan,
+        catatan: form.catatan,
+        target_latihan_ids: form.target_latihan_ids,
+        atlet_ids: form.atlet_ids,
+        pelatih_ids: form.pelatih_ids,
+        tenaga_pendukung_ids: form.tenaga_pendukung_ids,
+        program_latihan_id: props.infoHeader?.program_latihan_id,
+    };
+    if (props.mode === 'edit' && props.initialData?.id) {
+        dataToSave.id = props.initialData.id;
+    }
+    save(dataToSave, {
+        url: `/program-latihan/${props.infoHeader?.program_latihan_id}/rencana-latihan`,
+        mode: props.mode,
+        id: props.initialData?.id,
+        successMessage: props.mode === 'create' ? 'Rencana latihan berhasil ditambahkan' : 'Rencana latihan berhasil diperbarui',
+        errorMessage: props.mode === 'create' ? 'Gagal menyimpan rencana latihan' : 'Gagal memperbarui rencana latihan',
+        redirectUrl: `/program-latihan/${props.infoHeader?.program_latihan_id}/rencana-latihan`,
+    });
+};
+
+const columnsAtlet = [
+  {
+    key: 'foto',
+    label: 'Foto',
+    format: (row: any) =>
+      row.foto
+        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+  },
+  { key: 'nama', label: 'Nama' },
+  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
+  { key: 'tempat_lahir', label: 'Tempat Lahir' },
+  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
+  { key: 'no_hp', label: 'No HP' },
+];
+const columnsPelatih = [
+  {
+    key: 'foto',
+    label: 'Foto',
+    format: (row: any) =>
+      row.foto
+        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+  },
+  { key: 'nama', label: 'Nama' },
+  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
+  { key: 'tempat_lahir', label: 'Tempat Lahir' },
+  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
+  { key: 'no_hp', label: 'No HP' },
+];
+const columnsTenagaPendukung = [
+  {
+    key: 'foto',
+    label: 'Foto',
+    format: (row: any) =>
+      row.foto
+        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+  },
+  { key: 'nama', label: 'Nama' },
+  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
+  { key: 'tempat_lahir', label: 'Tempat Lahir' },
+  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
+  { key: 'no_hp', label: 'No HP' },
+];
+</script>
+
+<template>
+    <div class="space-y-6">
+        <FormInput
+            :form-inputs="[
+                { name: 'tanggal', label: 'Tanggal', type: 'date', required: true },
+                { name: 'materi', label: 'Materi', type: 'textarea', required: true },
+                { name: 'lokasi_latihan', label: 'Lokasi Latihan', type: 'text', required: true },
+                { name: 'catatan', label: 'Catatan', type: 'textarea', required: false },
+            ]"
+            :initial-data="formData"
+            @save="handleSave"
+        >
+            <template #custom-fields>
+                <SelectTableMultiple
+                    v-model:selected-ids="formData.target_latihan_ids"
+                    label="Target Latihan"
+                    :endpoint="'/api/target-latihan?program_latihan_id=' + props.infoHeader?.program_latihan_id"
+                    :columns="[
+                        { key: 'deskripsi', label: 'Deskripsi' },
+                        { key: 'jenis_target', label: 'Jenis' }
+                    ]"
+                    id-key="id"
+                    name-key="deskripsi"
+                />
+                <SelectTableMultiple
+                    v-model:selected-ids="formData.atlet_ids"
+                    label="Atlet"
+                    endpoint="/api/atlet"
+                    :columns="columnsAtlet"
+                    id-key="id"
+                    name-key="nama"
+                />
+                <SelectTableMultiple
+                    v-model:selected-ids="formData.pelatih_ids"
+                    label="Pelatih"
+                    endpoint="/api/pelatih"
+                    :columns="columnsPelatih"
+                    id-key="id"
+                    name-key="nama"
+                />
+                <SelectTableMultiple
+                    v-model:selected-ids="formData.tenaga_pendukung_ids"
+                    label="Tenaga Pendukung"
+                    endpoint="/api/tenaga-pendukung"
+                    :columns="columnsTenagaPendukung"
+                    id-key="id"
+                    name-key="nama"
+                />
+            </template>
+        </FormInput>
+    </div>
+</template> 

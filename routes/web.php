@@ -43,6 +43,8 @@ use App\Http\Controllers\TenagaPendukungDokumenController;
 use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\CaborKategoriTenagaPendukungController;
 use App\Http\Controllers\ProgramLatihanController;
+use App\Http\Controllers\TargetLatihanController;
+use App\Http\Controllers\RencanaLatihanController;
 
 // =====================
 // ROUTE UTAMA
@@ -314,7 +316,49 @@ Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/dokumen', [TenagaPenduku
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/program-latihan', ProgramLatihanController::class)->names('program-latihan');
     Route::get('/api/program-latihan', [ProgramLatihanController::class, 'apiIndex']);
+    Route::get('/api/rencana-latihan', [RencanaLatihanController::class, 'apiIndex']);
     Route::post('/program-latihan/destroy-selected', [ProgramLatihanController::class, 'destroy_selected'])->name('program-latihan.destroy_selected');
+});
+
+// =====================
+// TARGET LATIHAN (NESTED MODULAR)
+// =====================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('program-latihan/{program_id}/target-latihan/{jenis_target}')->group(function () {
+        Route::get('/', [TargetLatihanController::class, 'nestedIndex'])->name('program-latihan.target-latihan.index');
+        Route::get('/create', [TargetLatihanController::class, 'nestedCreate'])->name('program-latihan.target-latihan.create');
+        Route::post('/', [TargetLatihanController::class, 'nestedStore'])->name('program-latihan.target-latihan.store');
+        Route::get('/{target_id}', [TargetLatihanController::class, 'nestedShow'])->name('program-latihan.target-latihan.show');
+        Route::get('/{target_id}/edit', [TargetLatihanController::class, 'nestedEdit'])->name('program-latihan.target-latihan.edit');
+        Route::put('/{target_id}', [TargetLatihanController::class, 'nestedUpdate'])->name('program-latihan.target-latihan.update');
+        Route::delete('/{target_id}', [TargetLatihanController::class, 'nestedDestroy'])->name('program-latihan.target-latihan.destroy');
+    });
+});
+
+// =====================
+// TARGET LATIHAN
+// =====================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('/target-latihan', TargetLatihanController::class)->names('target-latihan');
+    Route::get('/api/target-latihan', [TargetLatihanController::class, 'apiIndex']);
+    Route::post('/target-latihan/destroy-selected', [TargetLatihanController::class, 'destroy_selected'])->name('target-latihan.destroy_selected');
+    // Route index by program & jenis target (opsional, bisa pakai query param di index)
+});
+
+// =====================
+// RENCANA LATIHAN (NESTED MODULAR)
+// =====================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('program-latihan/{program_id}/rencana-latihan')->group(function () {
+        Route::get('/', [RencanaLatihanController::class, 'nestedIndex'])->name('program-latihan.rencana-latihan.index');
+        Route::get('/create', [RencanaLatihanController::class, 'nestedCreate'])->name('program-latihan.rencana-latihan.create');
+        Route::post('/', [RencanaLatihanController::class, 'nestedStore'])->name('program-latihan.rencana-latihan.store');
+        Route::get('/{rencana_id}', [RencanaLatihanController::class, 'nestedShow'])->name('program-latihan.rencana-latihan.show');
+        Route::get('/{rencana_id}/edit', [RencanaLatihanController::class, 'nestedEdit'])->name('program-latihan.rencana-latihan.edit');
+        Route::put('/{rencana_id}', [RencanaLatihanController::class, 'nestedUpdate'])->name('program-latihan.rencana-latihan.update');
+        Route::delete('/{rencana_id}', [RencanaLatihanController::class, 'nestedDestroy'])->name('program-latihan.rencana-latihan.destroy');
+        Route::post('/destroy-selected', [RencanaLatihanController::class, 'destroy_selected'])->name('program-latihan.rencana-latihan.destroy_selected');
+    });
 });
 
 // =====================

@@ -24,12 +24,18 @@ const props = defineProps<{
         showPassword?: { value: boolean };
     }[];
     initialData?: Record<string, any>;
+    modelValue?: Record<string, any>;
 }>();
 
-const emit = defineEmits(['save', 'cancel', 'field-updated']);
+const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
 
 // Inisialisasi form menggunakan useForm dengan data awal
 const form = useForm<Record<string, any>>(props.initialData || {});
+
+// Sinkronisasi form ke v-model parent
+watch(form, () => {
+    emit('update:modelValue', form.data());
+}, { deep: true });
 
 // Tambahkan watch untuk memperbarui form saat initialData berubah (ini penting untuk edit mode)
 watch(() => props.initialData, (newVal) => {
@@ -42,7 +48,6 @@ watch(() => props.initialData, (newVal) => {
         }
         console.log('FormInput.vue: form after manual update:', form.data());
         // Penting: Reset `form.defaults()` agar `form.isDirty` berfungsi dengan benar setelah data dimuat
-        // atau direset oleh parent. Ini juga membantu jika data awal null/kosong.
         form.defaults(newVal);
         form.reset(); // Reset form ke nilai default baru
         console.log('FormInput.vue: form after defaults and reset:', form.data());
@@ -471,7 +476,7 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
                 </div>
                 </template>
             </div>
-
+            <slot name="custom-fields"></slot>
             <!-- BUTTONS -->
             <div class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>

@@ -9,6 +9,13 @@ const breadcrumbs = [{ title: 'Program Latihan', href: '/program-latihan' }];
 
 const columns = [
     { key: 'nama_program', label: 'Nama Program' },
+    {
+        key: 'rencana_latihan',
+        label: 'Rencana Latihan',
+        format: (row: any) => {
+            return `<span class='inline-block px-2 py-1 rounded-full bg-purple-100 text-purple-800 cursor-pointer font-semibold' onclick=\"window.location.href='/program-latihan/${row.id}/rencana-latihan'\">${row.jumlah_rencana_latihan || 0}</span>`;
+        },
+    },
     { key: 'cabor_nama', label: 'Cabor' },
     {
         key: 'cabor_kategori_nama',
@@ -24,7 +31,20 @@ const columns = [
                 : '-';
         },
     },
-    { key: 'keterangan', label: 'Keterangan' },
+    {
+        key: 'target_individu',
+        label: 'Target Individu',
+        format: (row: any) => {
+            return `<span class='inline-block px-2 py-1 rounded-full bg-blue-100 text-blue-800 cursor-pointer font-semibold' onclick=\"window.location.href='/program-latihan/${row.id}/target-latihan/individu'\">${row.jumlah_target_individu || 0}</span>`;
+        },
+    },
+    {
+        key: 'target_kelompok',
+        label: 'Target Kelompok',
+        format: (row: any) => {
+            return `<span class='inline-block px-2 py-1 rounded-full bg-green-100 text-green-800 cursor-pointer font-semibold' onclick=\"window.location.href='/program-latihan/${row.id}/target-latihan/kelompok'\">${row.jumlah_target_kelompok || 0}</span>`;
+        },
+    },
 ];
 
 const selected = ref<number[]>([]);
@@ -75,20 +95,10 @@ const deleteProgram = async (row: any) => {
 
 <template>
     <div class="space-y-4">
-        <PageIndex
-            title="Program Latihan"
-            :breadcrumbs="breadcrumbs"
-            :columns="columns"
-            :create-url="'/program-latihan/create'"
-            :actions="actions"
-            :selected="selected"
-            @update:selected="(val) => (selected = val)"
-            :on-delete-selected="deleteSelected"
-            api-endpoint="/api/program-latihan"
-            ref="pageIndex"
-            :on-toast="toast"
-            :on-delete-row="deleteProgram"
-            :show-import="false"
-        />
+        <PageIndex title="Program Latihan" :breadcrumbs="breadcrumbs" :columns="columns"
+            :create-url="'/program-latihan/create'" :actions="actions" :selected="selected"
+            @update:selected="(val) => (selected = val)" :on-delete-selected="deleteSelected"
+            api-endpoint="/api/program-latihan" ref="pageIndex" :on-toast="toast" :on-delete-row="deleteProgram"
+            :show-import="false" />
     </div>
-</template> 
+</template>

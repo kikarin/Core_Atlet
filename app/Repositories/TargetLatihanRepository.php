@@ -2,42 +2,45 @@
 
 namespace App\Repositories;
 
-use App\Models\ProgramLatihan;
+use App\Models\TargetLatihan;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 
-class ProgramLatihanRepository
+class TargetLatihanRepository
 {
     use RepositoryTrait;
 
     protected $model;
 
-    public function __construct(ProgramLatihan $model)
+    public function __construct(TargetLatihan $model)
     {
         $this->model = $model;
-        $this->with = ['caborKategori', 'cabor','created_by_user', 'updated_by_user'];
+        $this->with = ['programLatihan', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
     {
-        $query = $this->model->with(['caborKategori', 'cabor'])
-            ->withCount(['rencanaLatihan']);
+        $query = $this->model->with($this->with);
 
+        if (request('program_latihan_id')) {
+            $query->where('program_latihan_id', request('program_latihan_id'));
+        }
+        if (request('jenis_target')) {
+            $query->where('jenis_target', request('jenis_target'));
+        }
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nama_program', 'like', "%$search%")
-                  ->orWhere('keterangan', 'like', "%$search%")
+                $q->where('deskripsi', 'like', "%$search%")
+                  ->orWhere('satuan', 'like', "%$search%")
+                  ->orWhere('nilai_target', 'like', "%$search%")
                   ;
             });
-        }
-        if (request('cabor_kategori_id')) {
-            $query->where('cabor_kategori_id', request('cabor_kategori_id'));
         }
         if (request('sort')) {
             $order = request('order', 'asc');
             $sortField = request('sort');
-            $validColumns = ['id', 'nama_program', 'periode_mulai', 'periode_selesai', 'created_at', 'updated_at'];
+            $validColumns = ['id', 'deskripsi', 'satuan', 'nilai_target', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
             } else {
@@ -53,13 +56,12 @@ class ProgramLatihanRepository
             $transformed = collect($all)->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'nama_program' => $item->nama_program,
-                    'cabor_kategori_id' => $item->cabor_kategori_id,
-                    'cabor_kategori_nama' => $item->caborKategori?->nama,
-                    'periode_mulai' => $item->periode_mulai,
-                    'periode_selesai' => $item->periode_selesai,
-                    'keterangan' => $item->keterangan,
-                    'jumlah_rencana_latihan' => $item->rencana_latihan_count,
+                    'program_latihan_id' => $item->program_latihan_id,
+                    'program_latihan_nama' => $item->programLatihan?->nama_program,
+                    'jenis_target' => $item->jenis_target,
+                    'deskripsi' => $item->deskripsi,
+                    'satuan' => $item->satuan,
+                    'nilai_target' => $item->nilai_target,
                 ];
             });
             $data += [
@@ -78,17 +80,12 @@ class ProgramLatihanRepository
         $transformed = collect($items->items())->map(function ($item) {
             return [
                 'id' => $item->id,
-                'cabor_id' => $item->cabor_id,
-                'cabor_nama' => $item->cabor?->nama,
-                'nama_program' => $item->nama_program,
-                'cabor_kategori_id' => $item->cabor_kategori_id,
-                'cabor_kategori_nama' => $item->caborKategori?->nama, 
-                'periode_mulai' => $item->periode_mulai,
-                'periode_selesai' => $item->periode_selesai,
-                'keterangan' => $item->keterangan,
-                'jumlah_target_individu' => $item->targetLatihan()->where('jenis_target', 'individu')->count(),
-                'jumlah_target_kelompok' => $item->targetLatihan()->where('jenis_target', 'kelompok')->count(),
-                'jumlah_rencana_latihan' => $item->rencana_latihan_count,
+                'program_latihan_id' => $item->program_latihan_id,
+                'program_latihan_nama' => $item->programLatihan?->nama_program,
+                'jenis_target' => $item->jenis_target,
+                'deskripsi' => $item->deskripsi,
+                'satuan' => $item->satuan,
+                'nilai_target' => $item->nilai_target,
             ];
         });
         $data += [
@@ -103,15 +100,9 @@ class ProgramLatihanRepository
         return $data;
     }
 
-    public function customCreateEdit($data, $item = null)
-    {
-        $data['item'] = $item;
-        return $data;
-    }
-
     public function customDataCreateUpdate($data, $record = null)
     {
-        $userId = Auth::check() ? Auth::id() : null;
+        $userId = Auth::id();
         if (is_null($record)) {
             $data['created_by'] = $userId;
         }
@@ -119,16 +110,20 @@ class ProgramLatihanRepository
         return $data;
     }
 
+    public function delete_selected(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
+
+    public function getDetailWithRelations($id)
+    {
+        return $this->model->with($this->with)->findOrFail($id);
+    }
+
     public function validateRequest($request)
     {
         $rules = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
         return $request->validate($rules, $messages);
-    }
-
-    public function getDetailWithRelations($id)
-    {
-        $with = array_merge($this->with, ['caborKategori', 'cabor']);
-        return $this->model->with($with)->findOrFail($id);
     }
 } 

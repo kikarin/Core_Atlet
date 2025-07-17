@@ -9,6 +9,8 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Models\Cabor;
 use App\Models\CaborKategori;
+use App\Models\TargetLatihan;
+use App\Models\RencanaLatihan;
 
 class ProgramLatihan extends Model
 {
@@ -36,6 +38,16 @@ class ProgramLatihan extends Model
     public function caborKategori()
     {
         return $this->belongsTo(CaborKategori::class, 'cabor_kategori_id');
+    }
+
+    public function targetLatihan()
+    {
+        return $this->hasMany(TargetLatihan::class, 'program_latihan_id');
+    }
+
+    public function rencanaLatihan()
+    {
+        return $this->hasMany(RencanaLatihan::class, 'program_latihan_id');
     }
 
     public function getActivitylogOptions(): LogOptions

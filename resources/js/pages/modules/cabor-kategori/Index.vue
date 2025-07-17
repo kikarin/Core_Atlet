@@ -42,6 +42,7 @@ const columns = [
     },
     { key: 'cabor_nama', label: 'Cabor' },
     { key: 'nama', label: 'Nama' },
+    { key: 'jenis_kelamin', label: 'Gender', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran' },
     { key: 'deskripsi', label: 'Deskripsi' },
 ];
 

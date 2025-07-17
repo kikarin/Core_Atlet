@@ -23,7 +23,7 @@ class CaborKategoriRepository
 
     public function customIndex($data)
     {
-        $query = $this->model->with('cabor')->select('id', 'cabor_id', 'nama', 'deskripsi');
+        $query = $this->model->with('cabor')->select('id', 'cabor_id', 'nama', 'deskripsi', 'jenis_kelamin');
 
         if (request('search')) {
             $search = request('search');
@@ -60,6 +60,7 @@ class CaborKategoriRepository
                     'cabor_id' => $item->cabor_id,
                     'cabor_nama' => $item->cabor?->nama,
                     'nama' => $item->nama,
+                    'jenis_kelamin' => $item->jenis_kelamin,
                     'deskripsi' => $item->deskripsi,
                     'jumlah_atlet' => $item->jumlah_atlet,
                     'jumlah_pelatih' => $item->jumlah_pelatih,
@@ -86,6 +87,7 @@ class CaborKategoriRepository
                 'cabor_id' => $item->cabor_id,
                 'cabor_nama' => $item->cabor?->nama,
                 'nama' => $item->nama,
+                'jenis_kelamin' => $item->jenis_kelamin,
                 'deskripsi' => $item->deskripsi,
                 'jumlah_atlet' => $item->jumlah_atlet,
                 'jumlah_pelatih' => $item->jumlah_pelatih,
@@ -140,6 +142,7 @@ class CaborKategoriRepository
 
         $itemArray = $item->toArray();
         $itemArray['cabor_nama'] = $item->cabor?->nama ?? '-';
+        $itemArray['jenis_kelamin'] = $item->jenis_kelamin;
 
         return Inertia::render('modules/cabor-kategori/Show', [
             'item' => $itemArray,
