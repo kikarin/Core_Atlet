@@ -9,7 +9,7 @@ const routeParams = computed(() => page.props.ziggy?.route_parameters || {});
 const programId = computed(() => routeParams.value.program_id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
 const jenisTarget = computed(() => routeParams.value.jenis_target || (typeof window !== 'undefined' ? window.location.pathname.split('/')[4] : ''));
 
-const props = defineProps<{ infoHeader?: any }>();
+defineProps<{ infoHeader?: any }>();
 
 const breadcrumbs = [
     { title: 'Program Latihan', href: '/program-latihan' },

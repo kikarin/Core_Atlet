@@ -2,7 +2,6 @@
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { Badge } from '@/components/ui/badge';
 
 const props = defineProps<{ infoHeader: any; item: any }>();
 

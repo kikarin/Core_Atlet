@@ -33,7 +33,7 @@ const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue'
 const form = useForm<Record<string, any>>(props.initialData || {});
 
 // Sinkronisasi form ke v-model parent
-watch(form, (val) => {
+watch(form, () => {
     emit('update:modelValue', form.data());
 }, { deep: true });
 
@@ -48,7 +48,6 @@ watch(() => props.initialData, (newVal) => {
         }
         console.log('FormInput.vue: form after manual update:', form.data());
         // Penting: Reset `form.defaults()` agar `form.isDirty` berfungsi dengan benar setelah data dimuat
-        // atau direset oleh parent. Ini juga membantu jika data awal null/kosong.
         form.defaults(newVal);
         form.reset(); // Reset form ke nilai default baru
         console.log('FormInput.vue: form after defaults and reset:', form.data());

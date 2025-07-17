@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import SelectTableMultiple from '../components/SelectTableMultiple.vue';
-import axios from 'axios';
 
 const { save } = useHandleFormSave();
 

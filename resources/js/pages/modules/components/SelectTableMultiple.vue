@@ -38,7 +38,7 @@ const fetchData = async () => {
         });
         items.value = response.data.data || [];
         total.value = response.data.meta?.total || 0;
-    } catch (error) {
+    } catch {
         items.value = [];
         total.value = 0;
     } finally {
