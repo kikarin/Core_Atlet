@@ -15,11 +15,11 @@ class PelatihPrestasiRequest extends FormRequest
     {
         $rules = [
             'pelatih_id'        => 'required|exists:pelatihs,id',
-            'nama_event'      => 'required|string|max:255',
-            'tingkat_id'      => 'nullable|integer',
-            'tanggal'         => 'nullable|date',
-            'peringkat'       => 'nullable|string|max:255',
-            'keterangan'      => 'nullable|string',
+            'nama_event'        => 'required|string|max:255',
+            'tingkat_id'        => 'nullable|integer',
+            'tanggal'           => 'nullable|date',
+            'peringkat'         => 'nullable|string|max:255',
+            'keterangan'        => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -52,4 +52,4 @@ class PelatihPrestasiRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

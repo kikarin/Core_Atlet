@@ -9,17 +9,19 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstKecamatan extends Model
 {
-    use HasFactory, Blameable, LogsActivity;
-    protected $table = 'mst_kecamatan';
+    use HasFactory;
+    use Blameable;
+    use LogsActivity;
+    protected $table    = 'mst_kecamatan';
     protected $fillable = [
         'nama',
         'longitude',
-        'latitude'
+        'latitude',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logOnly(['*'])->logOnlyDirty()->setDescriptionForEvent(fn(string $eventName) => "Master Kecamatan");
+        return LogOptions::defaults()->logOnly(['*'])->logOnlyDirty()->setDescriptionForEvent(fn (string $eventName) => 'Master Kecamatan');
     }
 
     public function desa()

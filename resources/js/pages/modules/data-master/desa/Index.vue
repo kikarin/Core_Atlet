@@ -8,9 +8,7 @@ const breadcrumbs = [
     { title: 'Desa/Kelurahan', href: '/data-master/desa' },
 ];
 
-const columns = [
-    { key: 'nama', label: 'Nama Desa/Kelurahan', orderable: true },
-];
+const columns = [{ key: 'nama', label: 'Nama Desa/Kelurahan', orderable: true }];
 
 const pageIndex = ref();
 const selected = ref<number[]>([]);

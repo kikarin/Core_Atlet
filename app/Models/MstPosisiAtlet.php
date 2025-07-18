@@ -10,10 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstPosisiAtlet extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'mst_posisi_atlet';
-    protected $guarded = [];
+    protected $table    = 'mst_posisi_atlet';
+    protected $guarded  = [];
     protected $fillable = [
         'nama',
         'created_by',
@@ -26,6 +29,6 @@ class MstPosisiAtlet extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Master Posisi Atlet");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Posisi Atlet');
     }
-} 
+}

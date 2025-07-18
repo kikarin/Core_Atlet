@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
-import { Badge } from '@/components/ui/badge';
+import ConfirmDialog from '@/pages/modules/components/ConfirmDialog.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import ConfirmDialog from '@/pages/modules/components/ConfirmDialog.vue';
 
 const props = defineProps<{
     caborKategori: {
@@ -52,11 +52,13 @@ const columns = [
         key: 'tanggal_lahir',
         label: 'Tanggal Lahir',
         format: (row: any) => {
-            return row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            }) : '-';
+            return row.tanggal_lahir
+                ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                  })
+                : '-';
         },
     },
     { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
@@ -75,7 +77,16 @@ const columns = [
         format: (row: any) => {
             if (!row.created_at) return '-';
             const date = new Date(row.created_at);
-            return date.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
+            return (
+                date.toLocaleString('id-ID', {
+                    timeZone: 'Asia/Jakarta',
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                }) + ' WIB'
+            );
         },
     },
 ];
@@ -129,7 +140,7 @@ const deletePelatih = async (row: any) => {
         await axios.delete(`/cabor-kategori-pelatih/${row.id}`);
         toast({ title: 'Data berhasil dihapus', variant: 'success' });
         pageIndex.value.fetchData();
-    } catch  {
+    } catch {
         toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
     }
     showConfirmDelete.value = false;
@@ -158,27 +169,32 @@ const deletePelatih = async (row: any) => {
             create-url=""
         >
             <template #header-extra>
-                <div class="bg-card border rounded-lg p-4 mb-4">
-                    <h3 class="text-lg font-semibold mb-2">Informasi Kategori</h3>
+                <div class="bg-card mb-4 rounded-lg border p-4">
+                    <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-muted-foreground">Nama Kategori:</span>
+                            <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
                             <Badge variant="secondary">{{ caborKategori.nama }}</Badge>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-muted-foreground">Cabor:</span>
+                            <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                             <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
                         </div>
                     </div>
                 </div>
             </template>
         </PageIndex>
-    <ConfirmDialog
-        :show="showConfirmDelete"
-        title="Konfirmasi Hapus"
-        description="Yakin ingin menghapus pelatih ini dari kategori?"
-        @confirm="() => deletePelatih(rowToDelete)"
-        @cancel="() => { showConfirmDelete = false; rowToDelete = null; }"
-    />
+        <ConfirmDialog
+            :show="showConfirmDelete"
+            title="Konfirmasi Hapus"
+            description="Yakin ingin menghapus pelatih ini dari kategori?"
+            @confirm="() => deletePelatih(rowToDelete)"
+            @cancel="
+                () => {
+                    showConfirmDelete = false;
+                    rowToDelete = null;
+                }
+            "
+        />
     </div>
-</template> 
+</template>

@@ -14,4 +14,4 @@ const breadcrumbs = [
     <PageEdit title="Program Latihan" :breadcrumbs="breadcrumbs" back-url="/program-latihan">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
-</template> 
+</template>

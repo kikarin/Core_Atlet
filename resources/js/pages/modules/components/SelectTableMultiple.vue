@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import axios from 'axios';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     label: string;
@@ -59,11 +59,14 @@ watch(() => props.endpoint, fetchData);
 watch(localSelected, (val) => {
     emit('update:selectedIds', [...val]);
 });
-watch(() => props.selectedIds, (val) => {
-    if (val && JSON.stringify(val) !== JSON.stringify(localSelected.value)) {
-        localSelected.value = [...val];
-    }
-});
+watch(
+    () => props.selectedIds,
+    (val) => {
+        if (val && JSON.stringify(val) !== JSON.stringify(localSelected.value)) {
+            localSelected.value = [...val];
+        }
+    },
+);
 
 const toggleSelect = (id: number) => {
     const idx = localSelected.value.indexOf(id);
@@ -81,24 +84,23 @@ const toggleSelectAll = (checked: boolean) => {
     }
 };
 const isSelected = (id: number) => localSelected.value.includes(id);
-
 </script>
 <template>
     <div class="space-y-6">
-        <div class="flex items-center gap-2 mb-1">
+        <div class="mb-1 flex items-center gap-2">
             <span class="font-semibold">{{ label }}</span>
             <Badge variant="secondary">{{ localSelected.length }} dipilih</Badge>
         </div>
-        <div class="flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between mb-2">
+        <div class="mb-2 flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
             <div class="w-full sm:w-64">
                 <Input v-model="searchQuery" placeholder="Search..." class="w-full" />
             </div>
         </div>
         <div v-if="loading" class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span class="ml-2 text-sm text-muted-foreground">Memuat data...</span>
+            <div class="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+            <span class="text-muted-foreground ml-2 text-sm">Memuat data...</span>
         </div>
-        <div v-else-if="items.length === 0" class="text-center py-8">
+        <div v-else-if="items.length === 0" class="py-8 text-center">
             <p class="text-muted-foreground">Tidak ada data tersedia</p>
         </div>
         <div v-else class="rounded-md shadow-sm">
@@ -108,7 +110,9 @@ const isSelected = (id: number) => localSelected.value.includes(id);
                         <TableRow>
                             <TableHead class="w-12 text-center">No</TableHead>
                             <TableHead class="w-10 text-center">
-                                <label class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500">
+                                <label
+                                    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+                                >
                                     <input
                                         type="checkbox"
                                         class="peer sr-only"
@@ -125,11 +129,13 @@ const isSelected = (id: number) => localSelected.value.includes(id);
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="(item, index) in items" :key="item[props.idKey]" class="hover:bg-muted/40 border-t transition">
-                            <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
+                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 {{ (currentPage - 1) * perPage + index + 1 }}
                             </TableCell>
-                            <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
-                                <label class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500">
+                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
+                                <label
+                                    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+                                >
                                     <input
                                         type="checkbox"
                                         class="peer sr-only"
@@ -157,4 +163,4 @@ const isSelected = (id: number) => localSelected.value.includes(id);
             </div>
         </div>
     </div>
-</template> 
+</template>

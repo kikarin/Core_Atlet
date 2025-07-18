@@ -10,18 +10,17 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Models\AtletOrangTua;
-use App\Models\AtletSertifikat;
-use App\Models\AtletPrestasi;
-use App\Models\AtletDokumen;
-use App\Models\AtletKesehatan;
 
 class Atlet extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
-    
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
+
     protected $guarded = [];
-    protected $table = "atlets";
+    protected $table   = 'atlets';
 
     protected $fillable = [
         'nik',
@@ -46,7 +45,7 @@ class Atlet extends Model implements HasMedia
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Atlet");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet');
     }
 
     public function registerMediaCollections(): void

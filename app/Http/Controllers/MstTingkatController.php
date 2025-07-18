@@ -85,7 +85,7 @@ class MstTingkatController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
         return Inertia::render('modules/data-master/tingkat/Show', [
             'item' => $itemArray,
@@ -101,7 +101,7 @@ class MstTingkatController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_tingkat,id',
         ]);
 
@@ -141,4 +141,4 @@ class MstTingkatController extends Controller implements HasMiddleware
         }
         return inertia('modules/data-master/tingkat/Edit', $data);
     }
-} 
+}

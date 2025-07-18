@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
+import { router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import Form from './Form.vue';
-import FormOrangTua from './FormOrangTua.vue';
 import FormKesehatan from './FormKesehatan.vue';
-import { ref, computed, watch } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
+import FormOrangTua from './FormOrangTua.vue';
 
 const props = defineProps<{ item: Record<string, any> }>();
 
@@ -13,10 +13,10 @@ const atletId = ref<number | null>(props.item.id || null);
 
 // Ambil tab dari query string
 function getTabFromUrl(url: string, fallback = 'atlet-data') {
-  if (url.includes('tab=')) {
-    return new URLSearchParams(url.split('?')[1]).get('tab') || fallback;
-  }
-  return fallback;
+    if (url.includes('tab=')) {
+        return new URLSearchParams(url.split('?')[1]).get('tab') || fallback;
+    }
+    return fallback;
 }
 
 const page = usePage();
@@ -29,13 +29,13 @@ watch(activeTab, (val) => {
 });
 
 watch(
-  () => page.url,
-  (newUrl) => {
-    const tab = getTabFromUrl(newUrl);
-    if (tab !== activeTab.value) {
-      activeTab.value = tab;
-    }
-  }
+    () => page.url,
+    (newUrl) => {
+        const tab = getTabFromUrl(newUrl);
+        if (tab !== activeTab.value) {
+            activeTab.value = tab;
+        }
+    },
 );
 
 // Computed property untuk judul dinamis
@@ -101,42 +101,44 @@ const tabsConfig = computed(() => [
         props: { atletId: atletId.value, mode: 'edit' },
     },
 ]);
-
-
 </script>
 
 <template>
-    <PageEdit 
-        :title="dynamicTitle" 
-        :breadcrumbs="breadcrumbs" 
+    <PageEdit
+        :title="dynamicTitle"
+        :breadcrumbs="breadcrumbs"
         back-url="/atlet"
         :tabs-config="tabsConfig"
         v-model:activeTabValue="activeTab"
         :show-edit-prefix="false"
     >
-      <template #default>
-        <div class="mt-4 flex justify-end">
-          <button
-            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-            @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)">
-            Lihat Sertifikat
-          </button>
-          <button
-            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-            @click="() => router.visit(`/atlet/${props.item.id}/prestasi`)">
-            Lihat Prestasi
-          </button>
-          <button
-            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-            @click="() => router.visit(`/atlet/${props.item.id}/dokumen`)">
-            Lihat Dokumen
-          </button>
-          <button
-            class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-            @click="() => router.visit(`/atlet/${props.item.id}/kesehatan`)">
-            Lihat Kesehatan
-          </button>
-        </div>
-      </template>
+        <template #default>
+            <div class="mt-4 flex justify-end">
+                <button
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/atlet/${props.item.id}/sertifikat`)"
+                >
+                    Lihat Sertifikat
+                </button>
+                <button
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/atlet/${props.item.id}/prestasi`)"
+                >
+                    Lihat Prestasi
+                </button>
+                <button
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/atlet/${props.item.id}/dokumen`)"
+                >
+                    Lihat Dokumen
+                </button>
+                <button
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/atlet/${props.item.id}/kesehatan`)"
+                >
+                    Lihat Kesehatan
+                </button>
+            </div>
+        </template>
     </PageEdit>
-</template> 
+</template>

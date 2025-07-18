@@ -13,4 +13,4 @@ const breadcrumbs = [
     <PageCreate title="Create Posisi Atlet" :breadcrumbs="breadcrumbs" back-url="/data-master/posisi-atlet">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

@@ -216,12 +216,7 @@ async function handleImport() {
                             <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
                         </div>
                         <div class="mt-2">
-                            <a
-                                href="/template-import/template_import.xlsx"
-                                target="_blank"
-                                class="text-sm text-blue-600 hover:underline"
-                                download
-                            >
+                            <a href="/template-import/template_import.xlsx" target="_blank" class="text-sm text-blue-600 hover:underline" download>
                                 Unduh Format Excel Pelatih
                             </a>
                         </div>

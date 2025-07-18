@@ -19,7 +19,13 @@ const fields = computed(() => [
     { label: 'Nama Program', value: dataItem.value?.nama_program || '-' },
     { label: 'Cabor', value: dataItem.value?.cabor?.nama || '-' },
     { label: 'Kategori', value: dataItem.value?.cabor_kategori?.nama || '-' },
-    { label: 'Periode', value: dataItem.value?.periode_mulai && dataItem.value?.periode_selesai ? `${dataItem.value.periode_mulai} s/d ${dataItem.value.periode_selesai}` : '-' },
+    {
+        label: 'Periode',
+        value:
+            dataItem.value?.periode_mulai && dataItem.value?.periode_selesai
+                ? `${dataItem.value.periode_mulai} s/d ${dataItem.value.periode_selesai}`
+                : '-',
+    },
     { label: 'Keterangan', value: dataItem.value?.keterangan || '-' },
 ]);
 
@@ -57,4 +63,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

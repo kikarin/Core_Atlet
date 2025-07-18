@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 
@@ -21,7 +21,7 @@ const fetchCaborOptions = async () => {
     caborOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
 };
 
-const fetchCaborKategoriOptions = async (caborId: number|string) => {
+const fetchCaborKategoriOptions = async (caborId: number | string) => {
     if (!caborId) {
         caborKategoriOptions.value = [];
         return;
@@ -124,7 +124,7 @@ const handleSave = (form: any) => {
 };
 
 // Tambahkan handler untuk event field-updated dari FormInput
-function handleFieldUpdate({ field, value }: { field: string, value: any }) {
+function handleFieldUpdate({ field, value }: { field: string; value: any }) {
     if (field === 'cabor_id') {
         selectedCaborId.value = value;
         selectedKategoriId.value = '';
@@ -137,10 +137,5 @@ function handleFieldUpdate({ field, value }: { field: string, value: any }) {
 </script>
 
 <template>
-    <FormInput 
-        :form-inputs="formInputs" 
-        :initial-data="formInitialData" 
-        @save="handleSave" 
-        @field-updated="handleFieldUpdate"
-    />
-</template> 
+    <FormInput :form-inputs="formInputs" :initial-data="formInitialData" @save="handleSave" @field-updated="handleFieldUpdate" />
+</template>

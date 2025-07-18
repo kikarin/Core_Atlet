@@ -17,7 +17,6 @@ withDefaults(defineProps<Props>(), {
     labelText: 'Klik untuk melihat lebih besar',
 });
 
-
 const showModal = ref(false);
 
 const sizeClasses = {
@@ -43,22 +42,14 @@ const closeModal = () => {
             <img
                 :src="imageUrl"
                 :alt="alt"
-                :class="[
-                    sizeClasses[size],
-                    'object-cover rounded-lg border shadow-sm hover:shadow-md transition-shadow'
-                ]"
+                :class="[sizeClasses[size], 'rounded-lg border object-cover shadow-sm transition-shadow hover:shadow-md']"
             />
-            <p v-if="showLabel" class="text-xs text-muted-foreground mt-1">
+            <p v-if="showLabel" class="text-muted-foreground mt-1 text-xs">
                 {{ labelText }}
             </p>
         </div>
 
         <!-- Image Modal -->
-        <ImageModal
-            :is-open="showModal"
-            :image-url="imageUrl"
-            :alt="alt"
-            @close="closeModal"
-        />
+        <ImageModal :is-open="showModal" :image-url="imageUrl" :alt="alt" @close="closeModal" />
     </div>
-</template> 
+</template>

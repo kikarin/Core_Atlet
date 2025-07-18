@@ -13,4 +13,4 @@ const breadcrumbs = [
     <PageCreate title="Create Kategori" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

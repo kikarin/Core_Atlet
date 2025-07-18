@@ -13,4 +13,4 @@ const breadcrumbs = [
     <PageCreate title="Create Tingkat" :breadcrumbs="breadcrumbs" back-url="/data-master/tingkat">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

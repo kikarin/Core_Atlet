@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import FilePreview from '@/components/FilePreview.vue';
+import ImagePreview from '@/components/ImagePreview.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -7,15 +9,13 @@ import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Clock, Info, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import HeaderShow from './HeaderShow.vue';
-import ImagePreview from '@/components/ImagePreview.vue';
-import FilePreview from '@/components/FilePreview.vue';
 
 const props = defineProps<{
     title: string;
     breadcrumbs: BreadcrumbItem[];
-    fields: { 
-        label: string; 
-        value: string; 
+    fields: {
+        label: string;
+        value: string;
         className?: string;
         type?: 'text' | 'image' | 'file';
         imageConfig?: {
@@ -81,7 +81,7 @@ const confirmDelete = () => {
 
             <div class="grid grid-cols-12 gap-6">
                 <!-- Information Panel -->
-                <div :class="(actionFields && actionFields.length > 0) ? 'col-span-12 md:col-span-8' : 'col-span-12'">
+                <div :class="actionFields && actionFields.length > 0 ? 'col-span-12 md:col-span-8' : 'col-span-12'">
                     <div class="bg-card border-border rounded-2xl border shadow-sm">
                         <div class="border-border flex items-center gap-2 border-b px-6 py-4">
                             <Info class="text-muted-foreground h-4 w-4" />
@@ -93,8 +93,8 @@ const confirmDelete = () => {
                                 <!-- Image Field -->
                                 <div v-if="field.type === 'image'" class="mt-2">
                                     <div v-if="field.value">
-                                        <ImagePreview 
-                                            :image-url="field.value" 
+                                        <ImagePreview
+                                            :image-url="field.value"
                                             :alt="`Foto ${field.label}`"
                                             :size="field.imageConfig?.size || 'md'"
                                             :label-text="field.imageConfig?.labelText || 'Klik untuk melihat lebih besar'"
@@ -107,10 +107,11 @@ const confirmDelete = () => {
                                     <FilePreview :file-url="field.value" />
                                 </div>
                                 <!-- Text Field with HTML support -->
-                                <div v-else-if="field.value && field.value.startsWith && field.value.startsWith('<div')"
+                                <div
+                                    v-else-if="field.value && field.value.startsWith && field.value.startsWith('<div')"
                                     :class="['text-foreground text-sm font-semibold break-words whitespace-pre-wrap', field.className]"
-                                    v-html="field.value">
-                                </div>
+                                    v-html="field.value"
+                                ></div>
                                 <!-- Regular Text Field -->
                                 <div v-else :class="['text-foreground text-sm font-semibold break-words whitespace-pre-wrap', field.className]">
                                     {{ field.value }}

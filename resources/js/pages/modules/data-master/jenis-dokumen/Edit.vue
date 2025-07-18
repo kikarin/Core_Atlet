@@ -18,4 +18,3 @@ const breadcrumbs = [
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
 </template>
- 

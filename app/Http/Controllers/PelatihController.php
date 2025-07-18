@@ -59,7 +59,7 @@ class PelatihController extends Controller implements HasMiddleware
 
     public function store(PelatihRequest $request)
     {
-        $data = $this->repository->validateRequest($request);
+        $data  = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
         return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil ditambahkan!');
     }
@@ -69,28 +69,28 @@ class PelatihController extends Controller implements HasMiddleware
         try {
             // Debug logging
             Log::info('PelatihController: update method called', [
-                'id' => $id,
-                'all_data' => $request->all(),
-                'validated_data' => $request->validated()
+                'id'             => $id,
+                'all_data'       => $request->all(),
+                'validated_data' => $request->validated(),
             ]);
-            
+
             // Use the same validation as store method
             $data = $this->repository->validateRequest($request);
-            
+
             // Handle file upload if exists
             if ($request->hasFile('file')) {
                 $data['file'] = $request->file('file');
             }
-            
+
             Log::info('PelatihController: data after validation', [
-                'data' => $data
+                'data' => $data,
             ]);
-            
+
             // Update the record
             $model = $this->repository->update($id, $data);
-            
+
             return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil diperbarui!');
-                
+
         } catch (\Exception $e) {
             Log::error('Error updating pelatih: ' . $e->getMessage());
             return redirect()
@@ -140,7 +140,7 @@ class PelatihController extends Controller implements HasMiddleware
 
         return response()->json(['message' => 'Pelatih terpilih berhasil dihapus!']);
     }
-    
+
     public function import(Request $request)
     {
         Log::info('PelatihController: import method called', [
@@ -149,20 +149,20 @@ class PelatihController extends Controller implements HasMiddleware
         ]);
 
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
         ]);
 
         try {
             $import = new PelatihImport();
             Excel::import($import, $request->file('file'));
-            
+
             Log::info('PelatihController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count' => $import->getSuccessCount(),
-                'error_count' => $import->getErrorCount(),
+                'success_count'  => $import->getSuccessCount(),
+                'error_count'    => $import->getErrorCount(),
             ]);
 
-            $message = "Import berhasil! ";
+            $message = 'Import berhasil! ';
             if ($import->getSuccessCount() > 0) {
                 $message .= "Berhasil import {$import->getSuccessCount()} data.";
             }
@@ -173,24 +173,24 @@ class PelatihController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => [
-                    'total_rows' => $import->getRowCount(),
+                'data'    => [
+                    'total_rows'    => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count' => $import->getErrorCount(),
-                    'errors' => $import->getErrors(),
-                ]
+                    'error_count'   => $import->getErrorCount(),
+                    'errors'        => $import->getErrors(),
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error('PelatihController: import failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal import: ' . $e->getMessage(),
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }

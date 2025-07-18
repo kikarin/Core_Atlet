@@ -15,7 +15,7 @@ class AtletOrangTuaRepository
 
     public function __construct(AtletOrangTua $model)
     {
-        $this->model            = $model;
+        $this->model = $model;
     }
 
     public function create(array $data)
@@ -29,14 +29,14 @@ class AtletOrangTuaRepository
     {
         Log::info('AtletOrangTuaRepository: update method called with data', ['id' => $id, 'data' => $data]);
         $record = $this->model->find($id);
-        
+
         if ($record) {
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             Log::info('AtletOrangTuaRepository: update method - record updated', $record->toArray());
-            return $record; 
+            return $record;
         }
-        
+
         Log::warning('AtletOrangTuaRepository: update method - record not found for update', ['id' => $id]);
         return null;
     }
@@ -47,7 +47,7 @@ class AtletOrangTuaRepository
         $record = $this->model->withTrashed()->find($id);
 
         if ($record) {
-            $record->forceDelete(); 
+            $record->forceDelete();
             Log::info('AtletOrangTuaRepository: record successfully hard-deleted', ['id' => $id]);
             return true;
         }
@@ -85,4 +85,4 @@ class AtletOrangTuaRepository
     {
         return $this->model->with(['created_by_user', 'updated_by_user'])->find($id);
     }
-} 
+}

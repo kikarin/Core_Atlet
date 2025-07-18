@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 import Form from './Form.vue';
-import FormSertifikat from './sertifikat/Form.vue';
-import FormPrestasi from './prestasi/Form.vue';
 import FormKesehatan from './FormKesehatan.vue';
 import FormDokumen from './dokumen/Form.vue';
+import FormPrestasi from './prestasi/Form.vue';
+import FormSertifikat from './sertifikat/Form.vue';
 
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const activeTab = ref('pelatih-data');
 
@@ -63,10 +63,8 @@ const tabsConfig = computed(() => [
         disabled: true,
     },
 ]);
-
 </script>
 
 <template>
-    <PageCreate :title="dynamicTitle" :breadcrumbs="breadcrumbs" back-url="/pelatih" :tabs-config="tabsConfig"
-        v-model:activeTabValue="activeTab" />
+    <PageCreate :title="dynamicTitle" :breadcrumbs="breadcrumbs" back-url="/pelatih" :tabs-config="tabsConfig" v-model:activeTabValue="activeTab" />
 </template>

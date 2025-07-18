@@ -28,4 +28,4 @@ class MstJenisTenagaPendukungSeeder extends Seeder
             MstJenisTenagaPendukung::firstOrCreate(['nama' => $item['nama']], $item);
         }
     }
-} 
+}

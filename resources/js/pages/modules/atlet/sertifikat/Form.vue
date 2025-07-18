@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 
@@ -23,14 +23,18 @@ const formData = ref<Record<string, any>>({
 
 const formInputInitialData = computed(() => ({ ...formData.value }));
 
-watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(formData.value, newVal);
-        if (props.atletId) {
-            formData.value.atlet_id = props.atletId;
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(formData.value, newVal);
+            if (props.atletId) {
+                formData.value.atlet_id = props.atletId;
+            }
         }
-    }
-}, { immediate: true, deep: true });
+    },
+    { immediate: true, deep: true },
+);
 
 const formInputs = computed(() => [
     { name: 'nama_sertifikat', label: 'Nama Sertifikat', type: 'text' as const, placeholder: 'Masukkan nama sertifikat', required: true },
@@ -54,15 +58,11 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: props.redirectUrl ?? `/atlet/${props.atletId}/sertifikat`
+        redirectUrl: props.redirectUrl ?? `/atlet/${props.atletId}/sertifikat`,
     });
 };
 </script>
 
 <template>
-    <FormInput
-        :form-inputs="formInputs"
-        :initial-data="formInputInitialData"
-        @save="handleSave"
-    />
-</template> 
+    <FormInput :form-inputs="formInputs" :initial-data="formInputInitialData" @save="handleSave" />
+</template>

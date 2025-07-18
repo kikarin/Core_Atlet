@@ -20,16 +20,16 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     public function __construct(Request $request, CaborKategoriTenagaPendukungRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->route = 'cabor-kategori-tenaga-pendukung';
-        $this->commonData['kode_first_menu'] = 'CABOR';
+        $this->route                          = 'cabor-kategori-tenaga-pendukung';
+        $this->commonData['kode_first_menu']  = 'CABOR';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
         return [
@@ -78,7 +78,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Detail Cabor Kategori Tenaga Pendukung',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -93,7 +93,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Edit Cabor Kategori Tenaga Pendukung',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -134,12 +134,12 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         return response()->json([
             'data' => $data['records'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -153,7 +153,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
         $data = $this->commonData + [
-            'titlePage' => 'Daftar Tenaga Pendukung - ' . $caborKategori->nama,
+            'titlePage'     => 'Daftar Tenaga Pendukung - ' . $caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
         if ($this->check_permission == true) {
@@ -171,7 +171,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
         $data = $this->commonData + [
-            'titlePage' => 'Tambah Multiple Tenaga Pendukung - ' . $caborKategori->nama,
+            'titlePage'     => 'Tambah Multiple Tenaga Pendukung - ' . $caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
         if ($this->check_permission == true) {
@@ -186,7 +186,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         try {
             Log::info('storeMultiple called', [
                 'caborKategoriId' => $caborKategoriId,
-                'request_data' => $request->all()
+                'request_data'    => $request->all(),
             ]);
 
             $caborKategori = app(CaborKategori::class)->find($caborKategoriId);
@@ -197,7 +197,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
             // Merge ke request sebelum validasi
             $request->merge([
                 'cabor_kategori_id' => $caborKategoriId,
-                'cabor_id' => $caborKategori->cabor_id,
+                'cabor_id'          => $caborKategori->cabor_id,
             ]);
 
             $validatedData = $this->repository->validateRequest($request);
@@ -214,12 +214,12 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
                 ->with('success', 'Tenaga Pendukung berhasil ditambahkan ke kategori!');
         } catch (\Exception $e) {
             Log::error('Error in storeMultiple', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'        => $e->getMessage(),
+                'trace'        => $e->getTraceAsString(),
                 'request_data' => $request->all(),
             ]);
 
             return redirect()->back()->with('error', 'Gagal menambahkan tenaga pendukung: ' . $e->getMessage());
         }
     }
-} 
+}

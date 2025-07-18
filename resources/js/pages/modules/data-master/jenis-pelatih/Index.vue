@@ -10,9 +10,7 @@ const breadcrumbs = [
     { title: 'Jenis Pelatih', href: '/data-master/jenis-pelatih' },
 ];
 
-const columns = [
-    { key: 'nama', label: 'Nama Jenis Pelatih' },
-];
+const columns = [{ key: 'nama', label: 'Nama Jenis Pelatih' }];
 
 const selected = ref<number[]>([]);
 
@@ -94,4 +92,4 @@ const deleteRow = async (row: any) => {
             :show-import="false"
         />
     </div>
-</template> 
+</template>

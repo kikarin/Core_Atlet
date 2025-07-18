@@ -14,14 +14,16 @@ use Illuminate\Support\Facades\DB;
 
 class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
-    private $rowCount = 0;
+    private $rowCount     = 0;
     private $successCount = 0;
-    private $errorCount = 0;
-    private $errors = [];
+    private $errorCount   = 0;
+    private $errors       = [];
 
     private function convertExcelDate($excelDate)
     {
-        if (empty($excelDate)) return null;
+        if (empty($excelDate)) {
+            return null;
+        }
         if (is_string($excelDate) && strtotime($excelDate) !== false) {
             return date('Y-m-d', strtotime($excelDate));
         }
@@ -39,18 +41,18 @@ class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, W
             DB::beginTransaction();
             try {
                 $pelatih = Pelatih::withTrashed()->where('nik', $row['nik'])->first();
-                $data = [
-                    'nik' => $row['nik'] ?? null,
-                    'nama' => $row['nama'] ?? null,
+                $data    = [
+                    'nik'           => $row['nik']           ?? null,
+                    'nama'          => $row['nama']          ?? null,
                     'jenis_kelamin' => $row['jenis_kelamin'] ?? null,
-                    'tempat_lahir' => $row['tempat_lahir'] ?? null,
+                    'tempat_lahir'  => $row['tempat_lahir']  ?? null,
                     'tanggal_lahir' => $this->convertExcelDate($row['tanggal_lahir'] ?? null),
-                    'alamat' => $row['alamat'] ?? null,
-                    'kecamatan_id' => $row['kecamatan_id'] ?? null,
-                    'kelurahan_id' => $row['kelurahan_id'] ?? null,
-                    'no_hp' => $row['no_hp'] ?? null,
-                    'email' => $row['email'] ?? null,
-                    'is_active' => $row['is_active'] ?? 1,
+                    'alamat'        => $row['alamat']       ?? null,
+                    'kecamatan_id'  => $row['kecamatan_id'] ?? null,
+                    'kelurahan_id'  => $row['kelurahan_id'] ?? null,
+                    'no_hp'         => $row['no_hp']        ?? null,
+                    'email'         => $row['email']        ?? null,
+                    'is_active'     => $row['is_active']    ?? 1,
                 ];
                 if ($pelatih) {
                     if ($pelatih->trashed()) {
@@ -66,15 +68,15 @@ class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, W
                 }
                 $this->successCount++;
                 $kesehatanData = [
-                    'pelatih_id' => $pelatihId,
-                    'tinggi_badan' => $row['tinggi_badan'] ?? null,
-                    'berat_badan' => $row['berat_badan'] ?? null,
-                    'penglihatan' => $row['penglihatan'] ?? null,
-                    'pendengaran' => $row['pendengaran'] ?? null,
+                    'pelatih_id'       => $pelatihId,
+                    'tinggi_badan'     => $row['tinggi_badan']     ?? null,
+                    'berat_badan'      => $row['berat_badan']      ?? null,
+                    'penglihatan'      => $row['penglihatan']      ?? null,
+                    'pendengaran'      => $row['pendengaran']      ?? null,
                     'riwayat_penyakit' => $row['riwayat_penyakit'] ?? null,
-                    'alergi' => $row['alergi'] ?? null,
+                    'alergi'           => $row['alergi']           ?? null,
                 ];
-                $kesehatanData = array_filter($kesehatanData, function($value) { return $value !== null; });
+                $kesehatanData = array_filter($kesehatanData, function ($value) { return $value !== null; });
                 Log::info('Saving pelatih kesehatan data:', $kesehatanData);
                 $kesehatan = PelatihKesehatan::withTrashed()->where('pelatih_id', $pelatihId)->first();
                 if ($kesehatan) {
@@ -91,15 +93,15 @@ class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, W
             } catch (\Exception $e) {
                 DB::rollBack();
                 $this->errorCount++;
-                $errorMessage = $this->getUserFriendlyErrorMessage($e);
+                $errorMessage   = $this->getUserFriendlyErrorMessage($e);
                 $this->errors[] = [
-                    'row' => $this->rowCount,
+                    'row'   => $this->rowCount,
                     'error' => $errorMessage,
-                    'data' => $row
+                    'data'  => $row,
                 ];
                 Log::error('Error importing row ' . $this->rowCount . ': ' . $e->getMessage(), [
-                    'row' => $row,
-                    'exception' => $e
+                    'row'       => $row,
+                    'exception' => $e,
                 ]);
                 continue;
             }
@@ -112,7 +114,7 @@ class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, W
         $message = $e->getMessage();
         Log::error('Import Error: ' . $message, [
             'exception' => get_class($e),
-            'trace' => $e->getTraceAsString()
+            'trace'     => $e->getTraceAsString(),
         ]);
         if (str_contains($message, 'Integrity constraint violation')) {
             if (str_contains($message, 'Duplicate entry') && str_contains($message, 'pelatihs_nik_unique')) {
@@ -152,10 +154,28 @@ class PelatihImport implements ToCollection, WithHeadingRow, WithBatchInserts, W
         return 'Data tidak dapat disimpan: ' . $e->getMessage();
     }
 
-    public function batchSize(): int { return 100; }
-    public function chunkSize(): int { return 100; }
-    public function getRowCount(): int { return $this->rowCount; }
-    public function getSuccessCount(): int { return $this->successCount; }
-    public function getErrorCount(): int { return $this->errorCount; }
-    public function getErrors(): array { return $this->errors; }
+    public function batchSize(): int
+    {
+        return 100;
+    }
+    public function chunkSize(): int
+    {
+        return 100;
+    }
+    public function getRowCount(): int
+    {
+        return $this->rowCount;
+    }
+    public function getSuccessCount(): int
+    {
+        return $this->successCount;
+    }
+    public function getErrorCount(): int
+    {
+        return $this->errorCount;
+    }
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
 }

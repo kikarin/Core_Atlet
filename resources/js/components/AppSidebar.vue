@@ -61,11 +61,9 @@ const fetchMenus = async () => {
 
         if (menus.data && Array.isArray(menus.data)) {
             menus = menus.data;
-        }
-        else if (menus.menus && Array.isArray(menus.menus)) {
+        } else if (menus.menus && Array.isArray(menus.menus)) {
             menus = menus.menus;
-        }
-        else if (!Array.isArray(menus)) {
+        } else if (!Array.isArray(menus)) {
             console.error('Invalid menu data format:', menus);
             mainNavItems.value = [];
             settingNavItems.value = [];
@@ -131,7 +129,6 @@ const fetchMenus = async () => {
 
         mainNavItems.value = [];
         settingNavItems.value = [];
-
     } finally {
         isLoading.value = false;
     }
@@ -159,7 +156,7 @@ onUnmounted(() => {
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="route('dashboard')">
-                        <AppLogo />
+                            <AppLogo />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -167,8 +164,7 @@ onUnmounted(() => {
         </SidebarHeader>
 
         <SidebarContent>
-            <div v-if="isLoading && mainNavItems.length === 0 && settingNavItems.length === 0"
-                class="text-muted-foreground px-4 py-2 text-sm">
+            <div v-if="isLoading && mainNavItems.length === 0 && settingNavItems.length === 0" class="text-muted-foreground px-4 py-2 text-sm">
                 Loading menus...
             </div>
 
@@ -176,22 +172,22 @@ onUnmounted(() => {
 
             <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Atlet" section-id="atlet" />
 
-            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih"
-                section-id="pelatih" />
+            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih" section-id="pelatih" />
 
-            <NavMain v-if="tenaga_pendukungNavItems.length > 0" :items="tenaga_pendukungNavItems" section-title="Tenaga Pendukung"
-                section-id="Tenaga" />
+            <NavMain
+                v-if="tenaga_pendukungNavItems.length > 0"
+                :items="tenaga_pendukungNavItems"
+                section-title="Tenaga Pendukung"
+                section-id="Tenaga"
+            />
 
             <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
 
-            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Training"
-                section-id="training" />
+            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Training" section-id="training" />
 
-            <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings"
-                section-id="setting" />
+            <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings" section-id="setting" />
 
-            <div v-if="!isLoading && mainNavItems.length === 0 && settingNavItems.length === 0"
-                class="text-muted-foreground px-4 py-2 text-sm">
+            <div v-if="!isLoading && mainNavItems.length === 0 && settingNavItems.length === 0" class="text-muted-foreground px-4 py-2 text-sm">
                 No menu items available
             </div>
         </SidebarContent>

@@ -73,25 +73,25 @@ Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex'])
 Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
 
 // select
-Route::get('/api/tingkat-list', function() {
+Route::get('/api/tingkat-list', function () {
     return MstTingkat::select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/jenis-dokumen-list', function() {
+Route::get('/api/jenis-dokumen-list', function () {
     return MstJenisDokumen::select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/kecamatan-list', function() {
+Route::get('/api/kecamatan-list', function () {
     return MstKecamatan::select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan) {
+Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function ($id_kecamatan) {
     return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/posisi-atlet-list', function() {
+Route::get('/api/posisi-atlet-list', function () {
     return MstPosisiAtlet::select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/jenis-pelatih-list', function() {
+Route::get('/api/jenis-pelatih-list', function () {
     return MstJenisPelatih::select('id', 'nama')->orderBy('nama')->get();
 });
-Route::get('/api/jenis-tenaga-pendukung-list', function() {
+Route::get('/api/jenis-tenaga-pendukung-list', function () {
     return MstJenisTenagaPendukung::select('id', 'nama')->orderBy('nama')->get();
 });
 
@@ -116,17 +116,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/menu-permissions/roles/set-permissions/{id}', [RoleController::class, 'set_permission_action'])->name('roles.set-permission-action');
     Route::post('/menu-permissions/roles/destroy-selected', [RoleController::class, 'destroy_selected'])->name('roles.destroy_selected');
 
-Route::middleware(['auth', 'verified'])->prefix('menu-permissions')->group(function () {
-    Route::get('/permissions/create-permission', [PermissionController::class, 'create'])->name('permissions.create-permission');
-    Route::post('/permissions/store-permission', [PermissionController::class, 'store'])->name('permissions.store-permission');
-    Route::get('/permissions/{id}/edit-permission', [PermissionController::class, 'edit'])->name('permissions.edit-permission');
-    Route::put('/permissions/update-permission/{id}', [PermissionController::class, 'update'])->name('permissions.update-permission');
-    Route::get('/permissions/{id}/detail', [PermissionController::class, 'show'])->name('permissions.detail');
-    Route::delete('/permissions/delete-permission/{id}', [PermissionController::class, 'destroy'])->name('permissions.delete-permission');
-    Route::resource('/permissions', CategoryPermissionController::class)->names('permissions');
-    Route::get('/permissions/category/{id}', [CategoryPermissionController::class, 'show'])->name('permissions.category.show');
-    Route::get('/permissions/category/{id}/edit', [CategoryPermissionController::class, 'edit'])->name('permissions.category.edit');
-});
+    Route::middleware(['auth', 'verified'])->prefix('menu-permissions')->group(function () {
+        Route::get('/permissions/create-permission', [PermissionController::class, 'create'])->name('permissions.create-permission');
+        Route::post('/permissions/store-permission', [PermissionController::class, 'store'])->name('permissions.store-permission');
+        Route::get('/permissions/{id}/edit-permission', [PermissionController::class, 'edit'])->name('permissions.edit-permission');
+        Route::put('/permissions/update-permission/{id}', [PermissionController::class, 'update'])->name('permissions.update-permission');
+        Route::get('/permissions/{id}/detail', [PermissionController::class, 'show'])->name('permissions.detail');
+        Route::delete('/permissions/delete-permission/{id}', [PermissionController::class, 'destroy'])->name('permissions.delete-permission');
+        Route::resource('/permissions', CategoryPermissionController::class)->names('permissions');
+        Route::get('/permissions/category/{id}', [CategoryPermissionController::class, 'show'])->name('permissions.category.show');
+        Route::get('/permissions/category/{id}/edit', [CategoryPermissionController::class, 'edit'])->name('permissions.category.edit');
+    });
 
     Route::get('/menu-permissions/logs', fn () => Inertia::render('modules/activity-logs/Index'))->name('access-control.logs.index');
     Route::get('/menu-permissions/logs/{id}', [ActivityLogController::class, 'show'])->name('access-control.logs.show');
@@ -263,27 +263,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/cabor-kategori', [CaborKategoriController::class, 'apiIndex']);
     Route::post('/cabor-kategori/destroy-selected', [CaborKategoriController::class, 'destroy_selected'])->name('cabor-kategori.destroy_selected');
     // API select option
-    Route::get('/api/cabor-list', function() {
+    Route::get('/api/cabor-list', function () {
         return Cabor::select('id', 'nama')->orderBy('nama')->get();
     });
     Route::get('/api/cabor-kategori-list', [CaborKategoriController::class, 'list']);
     Route::get('/api/cabor-kategori-by-cabor/{cabor_id}', [CaborKategoriController::class, 'listByCabor']);
-    
+
     // CABOR KATEGORI ATLET
     Route::resource('/cabor-kategori-atlet', CaborKategoriAtletController::class)->names('cabor-kategori-atlet');
     Route::get('/api/cabor-kategori-atlet', [CaborKategoriAtletController::class, 'apiIndex']);
     Route::post('/cabor-kategori-atlet/destroy-selected', [CaborKategoriAtletController::class, 'destroy_selected'])->name('cabor-kategori-atlet.destroy_selected');
-    
+
     // Routes untuk daftar atlet per kategori
     Route::get('/cabor-kategori/{cabor_kategori_id}/atlet', [CaborKategoriAtletController::class, 'atletByKategori'])->name('cabor-kategori-atlet.atlet-by-kategori');
     Route::get('/cabor-kategori/{cabor_kategori_id}/atlet/create-multiple', [CaborKategoriAtletController::class, 'createMultiple'])->name('cabor-kategori-atlet.create-multiple');
     Route::post('/cabor-kategori/{cabor_kategori_id}/atlet/store-multiple', [CaborKategoriAtletController::class, 'storeMultiple'])->name('cabor-kategori-atlet.store-multiple');
-    
+
     // CABOR KATEGORI PELATIH
     Route::resource('/cabor-kategori-pelatih', CaborKategoriPelatihController::class)->names('cabor-kategori-pelatih');
     Route::get('/api/cabor-kategori-pelatih', [CaborKategoriPelatihController::class, 'apiIndex']);
     Route::post('/cabor-kategori-pelatih/destroy-selected', [CaborKategoriPelatihController::class, 'destroy_selected'])->name('cabor-kategori-pelatih.destroy_selected');
-    
+
     // Routes untuk daftar pelatih per kategori
     Route::get('/cabor-kategori/{cabor_kategori_id}/pelatih', [CaborKategoriPelatihController::class, 'pelatihByKategori'])->name('cabor-kategori-pelatih.pelatih-by-kategori');
     Route::get('/cabor-kategori/{cabor_kategori_id}/pelatih/create-multiple', [CaborKategoriPelatihController::class, 'createMultiple'])->name('cabor-kategori-pelatih.create-multiple');

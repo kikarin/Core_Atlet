@@ -15,15 +15,13 @@ const columns = [
     {
         key: 'cabor_kategori_nama',
         label: 'Kategori',
-        format: (row: any) => row.cabor_kategori_nama || row.cabor_kategori?.nama || '-'
+        format: (row: any) => row.cabor_kategori_nama || row.cabor_kategori?.nama || '-',
     },
     {
         key: 'periode',
         label: 'Periode',
         format: (row: any) => {
-            return row.periode_mulai && row.periode_selesai
-                ? `${row.periode_mulai} s/d ${row.periode_selesai}`
-                : '-';
+            return row.periode_mulai && row.periode_selesai ? `${row.periode_mulai} s/d ${row.periode_selesai}` : '-';
         },
     },
     { key: 'target_individu', label: 'Target Individu' },
@@ -100,8 +98,8 @@ const deleteProgram = async (row: any) => {
                             label: 'Rencana Latihan',
                             value: row.jumlah_rencana_latihan || 0,
                             colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`)
-                        }
+                            onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
+                        },
                     ]"
                 />
             </template>
@@ -113,8 +111,8 @@ const deleteProgram = async (row: any) => {
                             label: 'Target Individu',
                             value: row.jumlah_target_individu || 0,
                             colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu`)
-                        }
+                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu`),
+                        },
                     ]"
                 />
             </template>
@@ -126,8 +124,8 @@ const deleteProgram = async (row: any) => {
                             label: 'Target Kelompok',
                             value: row.jumlah_target_kelompok || 0,
                             colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`)
-                        }
+                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),
+                        },
                     ]"
                 />
             </template>

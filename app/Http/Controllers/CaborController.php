@@ -82,7 +82,7 @@ class CaborController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
         return Inertia::render('modules/cabor/Show', [
             'item' => $itemArray,
@@ -98,7 +98,7 @@ class CaborController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:cabor,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -138,4 +138,4 @@ class CaborController extends Controller implements HasMiddleware
         return inertia('modules/cabor/Edit', $data);
     }
 
-} 
+}

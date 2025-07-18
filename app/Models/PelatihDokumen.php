@@ -13,9 +13,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PelatihDokumen extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
 
-    protected $table = 'pelatih_dokumen';
+    protected $table   = 'pelatih_dokumen';
     protected $guarded = [];
 
     protected $fillable = [
@@ -35,7 +39,7 @@ class PelatihDokumen extends Model implements HasMedia
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Pelatih Dokumen");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Pelatih Dokumen');
     }
 
     public function pelatih()

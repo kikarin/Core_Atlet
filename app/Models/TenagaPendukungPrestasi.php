@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\MstTingkat;
 
 class TenagaPendukungPrestasi extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'tenaga_pendukung_prestasi';
+    protected $table   = 'tenaga_pendukung_prestasi';
     protected $guarded = [];
 
     protected $fillable = [
@@ -33,7 +35,7 @@ class TenagaPendukungPrestasi extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Tenaga Pendukung Prestasi");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Tenaga Pendukung Prestasi');
     }
 
     public function tenaga_pendukung()
@@ -45,4 +47,4 @@ class TenagaPendukungPrestasi extends Model
     {
         return $this->belongsTo(MstTingkat::class, 'tingkat_id');
     }
-} 
+}

@@ -43,4 +43,4 @@ class MstJenisTenagaPendukungRequest extends FormRequest
             'nama.unique'   => 'Nama jenis tenaga pendukung sudah ada.',
         ];
     }
-} 
+}

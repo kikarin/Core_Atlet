@@ -56,11 +56,11 @@ export function useHandleFormSave() {
             console.log('File details:', {
                 name: data.file.name,
                 size: data.file.size,
-                type: data.file.type
+                type: data.file.type,
             });
         }
 
-        const hasFiles = Object.values(data).some(value => value instanceof File);
+        const hasFiles = Object.values(data).some((value) => value instanceof File);
         let requestData: FormData | Record<string, any> = data;
 
         if (hasFiles) {
@@ -69,7 +69,7 @@ export function useHandleFormSave() {
                 if (value instanceof File) {
                     formData.append(key, value);
                 } else if (Array.isArray(value)) {
-                    value.forEach(item => formData.append(`${key}[]`, item));
+                    value.forEach((item) => formData.append(`${key}[]`, item));
                 } else {
                     if (value === null || value === undefined) {
                         formData.append(key, '');
@@ -85,7 +85,7 @@ export function useHandleFormSave() {
         console.log('RequestData (final):', requestData);
         if (requestData instanceof FormData) {
             for (const pair of requestData.entries()) {
-                console.log(pair[0]+ ': ' + pair[1]);
+                console.log(pair[0] + ': ' + pair[1]);
             }
         }
 
@@ -96,50 +96,49 @@ export function useHandleFormSave() {
             } else {
                 requestData = { ...requestData, _method: 'PUT' };
             }
-            
+
             // Append the ID to the URL for edit operations
             return router.post(`${url}/${id}`, requestData, {
                 ...(requestData instanceof FormData ? { forceFormData: true } : {}),
-                      onSuccess: (response: any) => {
-                          toast({ title: successMessage, variant: 'success' });
-                          if (onSuccess) {
-                              onSuccess(response);
-                          }
-                          if (redirectUrl) {
-                              router.visit(redirectUrl);
-                          }
-                      },
-                      onError: (errors) => {
-                          if (onError) {
-                              onError(errors);
-                          } else {
-                              handleError(errors, errorMessage, setFormErrors);
-                          }
-                      },
+                onSuccess: (response: any) => {
+                    toast({ title: successMessage, variant: 'success' });
+                    if (onSuccess) {
+                        onSuccess(response);
+                    }
+                    if (redirectUrl) {
+                        router.visit(redirectUrl);
+                    }
+                },
+                onError: (errors) => {
+                    if (onError) {
+                        onError(errors);
+                    } else {
+                        handleError(errors, errorMessage, setFormErrors);
+                    }
+                },
             });
         }
-        
+
         // For create operations, also add redirectUrl
         return router.post(url, requestData, {
             ...(requestData instanceof FormData ? { forceFormData: true } : {}),
-                      onSuccess: (response: any) => {
-                          toast({ title: successMessage, variant: 'success' });
-                          if (onSuccess) {
-                              onSuccess(response);
-                          }
-                          if (redirectUrl) {
-                              router.visit(redirectUrl);
-                          }
-                      },
-                      onError: (errors) => {
-                          if (onError) {
-                              onError(errors);
-                          }
-                          else {
-                              handleError(errors, errorMessage, setFormErrors);
-                          }
-                      },
-                  });
+            onSuccess: (response: any) => {
+                toast({ title: successMessage, variant: 'success' });
+                if (onSuccess) {
+                    onSuccess(response);
+                }
+                if (redirectUrl) {
+                    router.visit(redirectUrl);
+                }
+            },
+            onError: (errors) => {
+                if (onError) {
+                    onError(errors);
+                } else {
+                    handleError(errors, errorMessage, setFormErrors);
+                }
+            },
+        });
     };
 
     return { save };

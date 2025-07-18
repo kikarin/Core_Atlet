@@ -49,4 +49,4 @@ class AtletDokumenRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

@@ -38,11 +38,11 @@ class PelatihDokumenRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'pelatih_id.required' => 'ID Pelatih wajib diisi.',
-            'pelatih_id.exists'   => 'ID Pelatih tidak valid.',
+            'pelatih_id.required'     => 'ID Pelatih wajib diisi.',
+            'pelatih_id.exists'       => 'ID Pelatih tidak valid.',
             'jenis_dokumen_id.exists' => 'Jenis dokumen tidak valid.',
-            'file.mimes'        => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
-            'file.max'          => 'Ukuran file maksimal 4MB.',
+            'file.mimes'              => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
+            'file.max'                => 'Ukuran file maksimal 4MB.',
         ];
     }
 

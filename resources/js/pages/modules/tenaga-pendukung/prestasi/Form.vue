@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, onMounted } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { computed, onMounted, ref } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
@@ -25,15 +25,15 @@ const formData = ref({
     id: props.initialData?.id || undefined,
 });
 
-const tingkatOptions = ref<{ value: number; label: string; }[]>([]);
+const tingkatOptions = ref<{ value: number; label: string }[]>([]);
 
 onMounted(async () => {
     try {
         const res = await axios.get('/api/tingkat-list');
         tingkatOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
-        console.error("Gagal mengambil data tingkat", e);
-        toast({ title: "Gagal memuat daftar tingkat", variant: "destructive" });
+        console.error('Gagal mengambil data tingkat', e);
+        toast({ title: 'Gagal memuat daftar tingkat', variant: 'destructive' });
         tingkatOptions.value = [];
     }
 });
@@ -74,10 +74,6 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 
 <template>
     <div>
-        <FormInput
-            :form-inputs="formInputs"
-            :initial-data="formData"
-            @save="handleSave"
-        />
+        <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
     </div>
-</template> 
+</template>

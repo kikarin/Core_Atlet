@@ -117,27 +117,28 @@ const deleteRow = async (row: any) => {
                     </div>
                 </div>
             </template>
-             <template #cell-peserta="{ row }">
+            <template #cell-peserta="{ row }">
                 <BadgeGroup
                     :badges="[
                         {
                             label: 'Atlet',
                             value: row.jumlah_atlet || 0,
                             colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                            onClick: () => router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/atlet`)
+                            onClick: () => router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/atlet`),
                         },
                         {
                             label: 'Pelatih',
                             value: row.jumlah_pelatih || 0,
                             colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                            onClick: () => router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/pelatih`)
+                            onClick: () => router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/pelatih`),
                         },
                         {
                             label: 'Tenaga Pendukung',
                             value: row.jumlah_tenaga_pendukung || 0,
                             colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                            onClick: () => router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/tenaga-pendukung`)
-                        }
+                            onClick: () =>
+                                router.visit(`/program-latihan/${info.program_latihan_id}/rencana-latihan/${row.id}/index/tenaga-pendukung`),
+                        },
                     ]"
                 />
             </template>

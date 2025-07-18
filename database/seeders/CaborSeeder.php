@@ -18,4 +18,4 @@ class CaborSeeder extends Seeder
             Cabor::firstOrCreate(['nama' => $item['nama']], $item);
         }
     }
-} 
+}

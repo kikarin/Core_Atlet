@@ -13,4 +13,4 @@ const breadcrumbs = [
     <PageCreate title="Create Jenis Tenaga Pendukung" :breadcrumbs="breadcrumbs" back-url="/data-master/jenis-tenaga-pendukung">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

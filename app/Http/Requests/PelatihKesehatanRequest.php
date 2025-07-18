@@ -47,8 +47,8 @@ class PelatihKesehatanRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'pelatih_id.required' => 'ID Pelatih wajib diisi.',
-            'pelatih_id.exists'   => 'ID Pelatih tidak valid.',
+            'pelatih_id.required'  => 'ID Pelatih wajib diisi.',
+            'pelatih_id.exists'    => 'ID Pelatih tidak valid.',
             'tinggi_badan.numeric' => 'Tinggi badan harus berupa angka.',
             'berat_badan.numeric'  => 'Berat badan harus berupa angka.',
         ];

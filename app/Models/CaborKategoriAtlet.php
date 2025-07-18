@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\MstPosisiAtlet;
 
 class CaborKategoriAtlet extends Model
 {
@@ -17,7 +16,7 @@ class CaborKategoriAtlet extends Model
     use SoftDeletes;
     use Blameable;
 
-    protected $table = 'cabor_kategori_atlet';
+    protected $table   = 'cabor_kategori_atlet';
     protected $guarded = [];
 
     protected $fillable = [
@@ -37,7 +36,7 @@ class CaborKategoriAtlet extends Model
 
     public function getIsActiveBadgeAttribute()
     {
-        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $text  = $this->is_active ? 'Aktif' : 'Nonaktif';
         $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
         return "<span class='badge $badge'>$text</span>";
     }
@@ -82,4 +81,4 @@ class CaborKategoriAtlet extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
-} 
+}

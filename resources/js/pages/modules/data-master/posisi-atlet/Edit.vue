@@ -17,4 +17,4 @@ const breadcrumbs = [
     <PageEdit title="Posisi Atlet" :breadcrumbs="breadcrumbs" back-url="/data-master/posisi-atlet">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
-</template> 
+</template>

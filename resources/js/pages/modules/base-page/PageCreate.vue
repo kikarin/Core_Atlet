@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import AppTabs from '@/components/AppTabs.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import AppTabs from '@/components/AppTabs.vue';
 import HeaderForm from './HeaderForm.vue';
 
 const props = defineProps<{
@@ -31,7 +31,6 @@ const handleTabChange = (value: string) => {
         <div class="space-y-4 p-4">
             <div class="grid grid-cols-1 lg:grid-cols-12">
                 <div class="col-span-1 lg:col-span-7 lg:col-start-1">
-
                     <!-- Navigasi Tabs di luar Card -->
                     <div v-if="tabsConfig && tabsConfig.length > 0" class="mb-4">
                         <AppTabs
@@ -47,8 +46,8 @@ const handleTabChange = (value: string) => {
                         <CardContent>
                             <template v-if="tabsConfig && tabsConfig.length">
                                 <component
-                                    :is="tabsConfig.find(tab => tab.value === activeTabValue)?.component"
-                                    v-bind="tabsConfig.find(tab => tab.value === activeTabValue)?.props"
+                                    :is="tabsConfig.find((tab) => tab.value === activeTabValue)?.component"
+                                    v-bind="tabsConfig.find((tab) => tab.value === activeTabValue)?.props"
                                 />
                             </template>
                             <template v-else>

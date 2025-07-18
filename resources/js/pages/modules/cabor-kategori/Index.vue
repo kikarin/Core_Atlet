@@ -12,7 +12,11 @@ const columns = [
     { key: 'peserta', label: 'Peserta', sortable: false },
     { key: 'cabor_nama', label: 'Cabor' },
     { key: 'nama', label: 'Nama' },
-    { key: 'jenis_kelamin', label: 'Gender', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran' },
+    {
+        key: 'jenis_kelamin',
+        label: 'Gender',
+        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran'),
+    },
     { key: 'deskripsi', label: 'Deskripsi' },
 ];
 
@@ -109,26 +113,26 @@ const deleteKategori = async (row: any) => {
         >
             <template #cell-peserta="{ row }">
                 <BadgeGroup
-                  :badges="[
-                    {
-                      label: 'Atlet',
-                      value: row.jumlah_atlet || 0,
-                      colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                      onClick: () => router.visit(`/cabor-kategori/${row.id}/atlet`)
-                    },
-                    {
-                      label: 'Pelatih',
-                      value: row.jumlah_pelatih || 0,
-                      colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                      onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`)
-                    },
-                    {
-                      label: 'Tenaga Pendukung',
-                      value: row.jumlah_tenaga_pendukung || 0,
-                      colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                      onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`)
-                    }
-                  ]"
+                    :badges="[
+                        {
+                            label: 'Atlet',
+                            value: row.jumlah_atlet || 0,
+                            colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                            onClick: () => router.visit(`/cabor-kategori/${row.id}/atlet`),
+                        },
+                        {
+                            label: 'Pelatih',
+                            value: row.jumlah_pelatih || 0,
+                            colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                            onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`),
+                        },
+                        {
+                            label: 'Tenaga Pendukung',
+                            value: row.jumlah_tenaga_pendukung || 0,
+                            colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                            onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`),
+                        },
+                    ]"
                 />
             </template>
         </PageIndex>

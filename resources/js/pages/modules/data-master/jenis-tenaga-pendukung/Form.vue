@@ -41,7 +41,8 @@ const handleSave = (form: any) => {
         url: '/data-master/jenis-tenaga-pendukung',
         mode: props.mode,
         id: props.initialData?.id,
-        successMessage: props.mode === 'create' ? 'Data jenis tenaga pendukung berhasil ditambahkan' : 'Data jenis tenaga pendukung berhasil diperbarui',
+        successMessage:
+            props.mode === 'create' ? 'Data jenis tenaga pendukung berhasil ditambahkan' : 'Data jenis tenaga pendukung berhasil diperbarui',
         errorMessage: props.mode === 'create' ? 'Gagal menyimpan data jenis tenaga pendukung' : 'Gagal memperbarui data jenis tenaga pendukung',
         redirectUrl: '/data-master/jenis-tenaga-pendukung',
     });
@@ -50,4 +51,4 @@ const handleSave = (form: any) => {
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
-</template> 
+</template>

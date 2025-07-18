@@ -10,10 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstJenisTenagaPendukung extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'mst_jenis_tenaga_pendukung';
-    protected $guarded = [];
+    protected $table    = 'mst_jenis_tenaga_pendukung';
+    protected $guarded  = [];
     protected $fillable = [
         'nama',
         'created_by',
@@ -26,6 +29,6 @@ class MstJenisTenagaPendukung extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Master Jenis Tenaga Pendukung");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Jenis Tenaga Pendukung');
     }
-} 
+}

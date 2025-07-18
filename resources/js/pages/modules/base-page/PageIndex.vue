@@ -7,7 +7,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
-import { onMounted, ref, watch, computed } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import DataTable from '../components/DataTable.vue';
 import HeaderActions from './HeaderActions.vue';
 
@@ -28,7 +28,7 @@ const fetchData = async () => {
         const response = await axios.get(props.apiEndpoint, {
             params: {
                 search: search.value,
-                page: localLimit.value === -1 ? undefined : (page.value < 1 ? 1 : page.value),
+                page: localLimit.value === -1 ? undefined : page.value < 1 ? 1 : page.value,
                 per_page: props.limit !== undefined ? props.limit : localLimit.value,
                 sort: sort.value.key,
                 order: sort.value.order,
@@ -77,7 +77,7 @@ const props = defineProps<{
     showImport: boolean;
     showMultipleButton?: boolean;
     createMultipleUrl?: string;
-    showKehadiran?: boolean; 
+    showKehadiran?: boolean;
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
@@ -177,17 +177,14 @@ const handlePageChange = debounce((val) => {
     handleSearch({ page: val });
 }, 300);
 
-const slotCustomKeys = [
-    'peserta',
-    'rencana_latihan',
-    'target_individu',
-    'target_kelompok',
-];
+const slotCustomKeys = ['peserta', 'rencana_latihan', 'target_individu', 'target_kelompok'];
 
 const rowsWithCustom = computed(() => {
     return tableRows.value.map((row) => {
         const customFields: Record<string, boolean> = {};
-        slotCustomKeys.forEach((key: string) => { customFields[key] = true; });
+        slotCustomKeys.forEach((key: string) => {
+            customFields[key] = true;
+        });
         return {
             ...row,
             ...customFields,
@@ -201,8 +198,8 @@ defineExpose({ fetchData });
 <template>
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950 pt-4">
-            <div class="max-w-5xl mx-auto">
+        <div class="min-h-screen w-full bg-gray-100 pt-4 dark:bg-neutral-950">
+            <div class="mx-auto max-w-5xl">
                 <div class="mx-auto p-2 py-4">
                     <slot name="header-extra"></slot>
                     <HeaderActions
@@ -218,7 +215,7 @@ defineExpose({ fetchData });
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
                 </div>
-                <div class="bg-white dark:bg-neutral-900 rounded-xl shadow pt-4">
+                <div class="rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"
                         :rows="rowsWithCustom"

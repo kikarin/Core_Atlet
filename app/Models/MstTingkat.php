@@ -10,9 +10,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstTingkat extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'mst_tingkat';
+    protected $table   = 'mst_tingkat';
     protected $guarded = [];
 
     // Kolom yang dapat diisi secara massal
@@ -29,6 +32,6 @@ class MstTingkat extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Master Tingkat");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Tingkat');
     }
-} 
+}

@@ -10,9 +10,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class AtletOrangTua extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'atlet_orang_tua';
+    protected $table   = 'atlet_orang_tua';
     protected $guarded = [];
 
     protected $fillable = [
@@ -45,7 +48,7 @@ class AtletOrangTua extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Atlet Orang Tua");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Orang Tua');
     }
 
     public function atlet()
@@ -53,4 +56,4 @@ class AtletOrangTua extends Model
         return $this->belongsTo(Atlet::class, 'atlet_id');
     }
 
-} 
+}

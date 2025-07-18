@@ -21,7 +21,7 @@ class ProgramLatihanController extends Controller implements HasMiddleware
         $this->repository = $repository;
         $this->request    = ProgramLatihanRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'program-latihan';
+        $this->route                          = 'program-latihan';
         $this->commonData['kode_first_menu']  = 'PROGRAM-LATIHAN';
         $this->commonData['kode_second_menu'] = null;
     }
@@ -130,4 +130,4 @@ class ProgramLatihanController extends Controller implements HasMiddleware
         $this->repository->delete_selected($request->ids);
         return response()->json(['message' => 'Program latihan terpilih berhasil dihapus!']);
     }
-} 
+}

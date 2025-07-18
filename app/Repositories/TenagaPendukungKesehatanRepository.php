@@ -80,4 +80,4 @@ class TenagaPendukungKesehatanRepository
     {
         return $this->model->with(['created_by_user', 'updated_by_user'])->find($id);
     }
-} 
+}

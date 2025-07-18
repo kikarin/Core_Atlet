@@ -42,12 +42,12 @@ class DesaController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['desas'] ?? $data['data'] ?? $data,
             'meta' => [
-                'total'        => $data['total'] ?? 0,
+                'total'        => $data['total']       ?? 0,
                 'current_page' => $data['currentPage'] ?? 1,
-                'per_page'     => $data['perPage'] ?? 10,
-                'search'       => $data['search'] ?? '',
-                'sort'         => $data['sort'] ?? '',
-                'order'        => $data['order'] ?? 'asc',
+                'per_page'     => $data['perPage']     ?? 10,
+                'search'       => $data['search']      ?? '',
+                'sort'         => $data['sort']        ?? '',
+                'order'        => $data['order']       ?? 'asc',
             ],
         ]);
     }
@@ -65,7 +65,7 @@ class DesaController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
         return inertia('modules/data-master/desa/Show', [
             'item' => $itemArray,

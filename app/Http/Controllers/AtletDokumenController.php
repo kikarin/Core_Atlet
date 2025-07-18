@@ -46,7 +46,7 @@ class AtletDokumenController extends Controller implements HasMiddleware
 
     public function store(AtletDokumenRequest $request, $atlet_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +59,7 @@ class AtletDokumenController extends Controller implements HasMiddleware
 
     public function update(AtletDokumenRequest $request, $atlet_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -124,7 +124,7 @@ class AtletDokumenController extends Controller implements HasMiddleware
         }
         return Inertia::render('modules/atlet/dokumen/Show', [
             'atletId' => (int) $atlet_id,
-            'item' => $dokumen,
+            'item'    => $dokumen,
         ]);
     }
-} 
+}

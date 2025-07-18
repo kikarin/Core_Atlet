@@ -10,22 +10,25 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TenagaPendukungKesehatan extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
-    
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+
     protected $guarded = [];
-    protected $table = "tenaga_pendukung_kesehatan";
+    protected $table   = 'tenaga_pendukung_kesehatan';
 
     protected $fillable = [
-        "tenaga_pendukung_id",
-        "tinggi_badan",
-        "berat_badan",
-        "penglihatan",
-        "pendengaran",
-        "riwayat_penyakit",
-        "alergi",
-        "created_by",
-        "updated_by",
-        "deleted_by",
+        'tenaga_pendukung_id',
+        'tinggi_badan',
+        'berat_badan',
+        'penglihatan',
+        'pendengaran',
+        'riwayat_penyakit',
+        'alergi',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -33,11 +36,11 @@ class TenagaPendukungKesehatan extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Tenaga Pendukung Kesehatan");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Tenaga Pendukung Kesehatan');
     }
 
     public function tenaga_pendukung()
     {
         return $this->belongsTo(TenagaPendukung::class, 'tenaga_pendukung_id');
     }
-} 
+}

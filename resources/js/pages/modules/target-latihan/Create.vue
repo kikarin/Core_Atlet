@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
-import Form from './Form.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import Form from './Form.vue';
 
 const page = usePage();
 const routeParams = computed(() => page.props.ziggy?.route_parameters || {});
@@ -22,4 +22,4 @@ const breadcrumbs = [
     <PageCreate title="Tambah Target Latihan" :breadcrumbs="breadcrumbs" :back-url="`/program-latihan/${programId}/target-latihan/${jenisTarget}`">
         <Form mode="create" :info-header="infoHeader" />
     </PageCreate>
-</template> 
+</template>

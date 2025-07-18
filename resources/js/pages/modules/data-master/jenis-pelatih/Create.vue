@@ -13,4 +13,4 @@ const breadcrumbs = [
     <PageCreate title="Create Jenis Pelatih" :breadcrumbs="breadcrumbs" back-url="/data-master/jenis-pelatih">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

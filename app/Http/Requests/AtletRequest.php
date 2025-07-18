@@ -70,7 +70,7 @@ class AtletRequest extends FormRequest
 
         return $rules;
     }
-    
+
     /**
      * Prepare the data for validation.
      */
@@ -80,7 +80,7 @@ class AtletRequest extends FormRequest
         $this->merge([
             'kecamatan_id' => $this->kecamatan_id ?: null,
             'kelurahan_id' => $this->kelurahan_id ?: null,
-            'is_active' => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
+            'is_active'    => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
 
             // Prepare AtletOrangTua fields - convert empty strings to null
             'nama_ibu_kandung'  => $this->nama_ibu_kandung ?: null,

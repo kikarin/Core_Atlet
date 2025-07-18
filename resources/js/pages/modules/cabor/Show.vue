@@ -6,7 +6,17 @@ import { computed } from 'vue';
 
 const { toast } = useToast();
 
-const props = defineProps<{ item: { id: number; nama: string; deskripsi: string; created_at: string; created_by_user: { id: number; name: string } | null; updated_at: string; updated_by_user: { id: number; name: string } | null; } }>();
+const props = defineProps<{
+    item: {
+        id: number;
+        nama: string;
+        deskripsi: string;
+        created_at: string;
+        created_by_user: { id: number; name: string } | null;
+        updated_at: string;
+        updated_by_user: { id: number; name: string } | null;
+    };
+}>();
 
 const dataItem = computed(() => props.item);
 
@@ -54,4 +64,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>
