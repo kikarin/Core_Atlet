@@ -380,6 +380,7 @@ Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/index/{je
 Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'index'])->middleware(['auth', 'verified']);
 Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified']);
 Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified']);
+Route::post('/rencana-latihan/{rencana}/peserta/{jenis}/set-kehadiran', [RencanaLatihanPesertaController::class, 'setKehadiran'])->middleware(['auth', 'verified']);
 
 // =====================
 // DATA MASTER (CRUD)

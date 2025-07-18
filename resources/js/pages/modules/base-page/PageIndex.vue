@@ -77,9 +77,10 @@ const props = defineProps<{
     showImport: boolean;
     showMultipleButton?: boolean;
     createMultipleUrl?: string;
+    showKehadiran?: boolean; 
 }>();
 
-const emit = defineEmits(['search', 'update:selected', 'import']);
+const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
 
 const localSelected = ref<number[]>([]);
 
@@ -212,7 +213,9 @@ defineExpose({ fetchData });
                         :showImport="props.showImport"
                         :showMultipleButton="props.showMultipleButton"
                         :createMultipleUrl="props.createMultipleUrl"
+                        :showKehadiran="props.showKehadiran"
                         @import="$emit('import')"
+                        @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
                 </div>
                 <div class="bg-white dark:bg-neutral-900 rounded-xl shadow pt-4">

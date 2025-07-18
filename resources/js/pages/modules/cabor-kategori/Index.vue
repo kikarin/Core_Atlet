@@ -3,7 +3,7 @@ import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
 
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\RencanaLatihan;
 use Illuminate\Http\Request;
+use App\Models\Atlet;
+use App\Models\Pelatih;
+use App\Models\TenagaPendukung;
+use App\Models\MstPosisiAtlet;
 
 class RencanaLatihanPesertaController extends Controller
 {
@@ -27,30 +31,45 @@ class RencanaLatihanPesertaController extends Controller
 
         if ($jenis_peserta === 'atlet') {
             $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
-            $query = $rencana->atlets()
-                ->select(
-                    'atlets.id', 'atlets.nama', 'atlets.foto', 'atlets.jenis_kelamin',
-                    'atlets.tempat_lahir', 'atlets.tanggal_lahir', 'atlets.no_hp',
-                    'cabor_kategori_atlet.is_active as kategori_is_active',
-                    'cabor_kategori_atlet.posisi_atlet_id'
-                )
+            $query = Atlet::query()
+                ->join('rencana_latihan_atlet', function($join) use ($rencana_id) {
+                    $join->on('atlets.id', '=', 'rencana_latihan_atlet.atlet_id')
+                         ->where('rencana_latihan_atlet.rencana_latihan_id', $rencana_id);
+                })
                 ->leftJoin('cabor_kategori_atlet', function($join) use ($caborKategoriId) {
                     $join->on('atlets.id', '=', 'cabor_kategori_atlet.atlet_id')
                          ->where('cabor_kategori_atlet.cabor_kategori_id', $caborKategoriId)
                          ->whereNull('cabor_kategori_atlet.deleted_at');
-                });
+                })
+                ->select(
+                    'atlets.id', 'atlets.nama', 'atlets.foto', 'atlets.jenis_kelamin',
+                    'atlets.tempat_lahir', 'atlets.tanggal_lahir', 'atlets.no_hp',
+                    'cabor_kategori_atlet.is_active as kategori_is_active',
+                    'cabor_kategori_atlet.posisi_atlet_id',
+                    'rencana_latihan_atlet.kehadiran as kehadiran'
+                );
         } elseif ($jenis_peserta === 'pelatih') {
-            $query = $rencana->pelatihs();
-            $query->select(
-                'pelatihs.id', 'pelatihs.nama', 'pelatihs.foto', 'pelatihs.jenis_kelamin',
-                'pelatihs.tempat_lahir', 'pelatihs.tanggal_lahir', 'pelatihs.no_hp', 'pelatihs.is_active'
-            );
+            $query = Pelatih::query()
+                ->join('rencana_latihan_pelatih', function($join) use ($rencana_id) {
+                    $join->on('pelatihs.id', '=', 'rencana_latihan_pelatih.pelatih_id')
+                         ->where('rencana_latihan_pelatih.rencana_latihan_id', $rencana_id);
+                })
+                ->select(
+                    'pelatihs.id', 'pelatihs.nama', 'pelatihs.foto', 'pelatihs.jenis_kelamin',
+                    'pelatihs.tempat_lahir', 'pelatihs.tanggal_lahir', 'pelatihs.no_hp', 'pelatihs.is_active',
+                    'rencana_latihan_pelatih.kehadiran as kehadiran'
+                );
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
-            $query = $rencana->tenagaPendukung();
-            $query->select(
-                'tenaga_pendukungs.id', 'tenaga_pendukungs.nama', 'tenaga_pendukungs.foto', 'tenaga_pendukungs.jenis_kelamin',
-                'tenaga_pendukungs.tempat_lahir', 'tenaga_pendukungs.tanggal_lahir', 'tenaga_pendukungs.no_hp', 'tenaga_pendukungs.is_active'
-            );
+            $query = TenagaPendukung::query()
+                ->join('rencana_latihan_tenaga_pendukung', function($join) use ($rencana_id) {
+                    $join->on('tenaga_pendukungs.id', '=', 'rencana_latihan_tenaga_pendukung.tenaga_pendukung_id')
+                         ->where('rencana_latihan_tenaga_pendukung.rencana_latihan_id', $rencana_id);
+                })
+                ->select(
+                    'tenaga_pendukungs.id', 'tenaga_pendukungs.nama', 'tenaga_pendukungs.foto', 'tenaga_pendukungs.jenis_kelamin',
+                    'tenaga_pendukungs.tempat_lahir', 'tenaga_pendukungs.tanggal_lahir', 'tenaga_pendukungs.no_hp', 'tenaga_pendukungs.is_active',
+                    'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran'
+                );
         } else {
             return response()->json([
                 'data' => [],
@@ -74,7 +93,7 @@ class RencanaLatihanPesertaController extends Controller
             foreach ($data as &$row) {
                 $row->posisi_atlet_nama = '-';
                 if (!empty($row->posisi_atlet_id)) {
-                    $posisi = \App\Models\MstPosisiAtlet::find($row->posisi_atlet_id);
+                    $posisi = MstPosisiAtlet::find($row->posisi_atlet_id);
                     $row->posisi_atlet_nama = $posisi ? $posisi->nama : '-';
                 }
             }
@@ -160,5 +179,36 @@ class RencanaLatihanPesertaController extends Controller
             return response()->json(['message' => 'Jenis peserta tidak valid'], 400);
         }
         return response()->json(['message' => 'Peserta berhasil dihapus']);
+    }
+
+    /**
+     * Set kehadiran massal untuk peserta
+     */
+    public function setKehadiran(Request $request, $rencana_id, $jenis_peserta)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'kehadiran' => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
+        ]);
+        $ids = $request->input('ids');
+        $kehadiran = $request->input('kehadiran');
+        $rencana = RencanaLatihan::findOrFail($rencana_id);
+
+        if ($jenis_peserta === 'atlet') {
+            foreach ($ids as $id) {
+                $rencana->atlets()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+            }
+        } elseif ($jenis_peserta === 'pelatih') {
+            foreach ($ids as $id) {
+                $rencana->pelatihs()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+            }
+        } elseif ($jenis_peserta === 'tenaga-pendukung') {
+            foreach ($ids as $id) {
+                $rencana->tenagaPendukung()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+            }
+        } else {
+            return response()->json(['message' => 'Jenis peserta tidak valid'], 400);
+        }
+        return response()->json(['message' => 'Kehadiran berhasil diupdate']);
     }
 } 

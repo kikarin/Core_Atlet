@@ -160,7 +160,7 @@ const fetchPosisiAtlet = async () => {
   try {
     const res = await axios.get('/api/posisi-atlet-list');
     posisiAtletOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
-  } catch (e) {
+  } catch {
     posisiAtletOptions.value = [];
   }
 };

@@ -7,6 +7,7 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CaborKategoriRequest;
 use Inertia\Inertia;    
+use App\Models\CaborKategoriTenagaPendukung;
 
 class CaborKategoriRepository
 {
@@ -64,6 +65,7 @@ class CaborKategoriRepository
                     'deskripsi' => $item->deskripsi,
                     'jumlah_atlet' => $item->jumlah_atlet,
                     'jumlah_pelatih' => $item->jumlah_pelatih,
+                    'jumlah_tenaga_pendukung' => CaborKategoriTenagaPendukung::where('cabor_kategori_id', $item->id)->count(),
                 ];
             });
             $data += [
@@ -91,6 +93,7 @@ class CaborKategoriRepository
                 'deskripsi' => $item->deskripsi,
                 'jumlah_atlet' => $item->jumlah_atlet,
                 'jumlah_pelatih' => $item->jumlah_pelatih,
+                'jumlah_tenaga_pendukung' => CaborKategoriTenagaPendukung::where('cabor_kategori_id', $item->id)->count(),
             ];
         });
 

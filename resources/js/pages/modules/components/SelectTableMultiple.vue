@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue';
-import { Button } from '@/components/ui/button';
+import { ref, watch, onMounted } from 'vue';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import axios from 'axios';
@@ -84,20 +82,6 @@ const toggleSelectAll = (checked: boolean) => {
 };
 const isSelected = (id: number) => localSelected.value.includes(id);
 
-const totalPages = computed(() => Math.ceil(total.value / perPage.value));
-const getPageNumbers = () => {
-    const pages = [];
-    const maxPages = 5;
-    let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2));
-    const end = Math.min(totalPages.value, start + maxPages - 1);
-    if (end - start + 1 < maxPages) {
-        start = Math.max(1, end - maxPages + 1);
-    }
-    for (let i = start; i <= end; i++) {
-        pages.push(i);
-    }
-    return pages;
-};
 </script>
 <template>
     <div class="space-y-6">

@@ -2,10 +2,12 @@
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { ref } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const page = usePage();
 const programId = page.props.program_id as string;
@@ -22,13 +24,14 @@ const jenisLabel: Record<string, string> = {
 };
 
 const breadcrumbs = [
-  { title: 'Program Latihan', href: `/program-latihan/${programId}` },
+  { title: 'Program Latihan', href: `/program-latihan` },
   { title: 'Rencana Latihan', href: `/program-latihan/${programId}/rencana-latihan` },
   { title: `Peserta (${jenisLabel[jenisPeserta] || jenisPeserta})`, href: '#' },
 ];
 
 const columns = [
   { key: 'nama', label: 'Nama' },
+  { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-' },
   {
     key: 'foto',
     label: 'Foto',
@@ -67,6 +70,9 @@ const selected = ref<number[]>([]);
 const pageIndex = ref();
 const { toast } = useToast();
 
+const showConfirmKehadiran = ref(false);
+const kehadiranToSet = ref('');
+
 const actions = (row: any) => [
   {
     label: 'Delete',
@@ -84,9 +90,9 @@ const deleteSelected = async () => {
       ids: selected.value,
     });
     selected.value = [];
-    pageIndex.value.fetchData && pageIndex.value.fetchData();
+if (pageIndex.value.fetchData) pageIndex.value.fetchData();
     toast({ title: 'Data berhasil dihapus', variant: 'success' });
-  } catch (error) {
+  } catch {
     toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
   }
 };
@@ -95,10 +101,36 @@ const deleteRow = async (row: any) => {
   try {
     await axios.delete(`/api/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}/${row.id}`);
     toast({ title: 'Data berhasil dihapus', variant: 'success' });
-    pageIndex.value.fetchData && pageIndex.value.fetchData();
-  } catch (error) {
+if (pageIndex.value.fetchData) pageIndex.value.fetchData();
+  } catch {
     toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
   }
+};
+
+const setKehadiran = async (status: string) => {
+  if (!selected.value.length) return;
+  try {
+    await axios.post(`/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}/set-kehadiran`, {
+      ids: selected.value,
+      kehadiran: status,
+    });
+    toast({ title: `Kehadiran Peserta berhasil diupdate menjadi '${status}'`, variant: 'success' });
+    selected.value = [];
+if (pageIndex.value.fetchData) pageIndex.value.fetchData();
+  } catch (error: any) {
+    toast({ title: error.response?.data?.message || 'Gagal update kehadiran', variant: 'destructive' });
+  }
+};
+
+const handleSetKehadiran = (status: string) => {
+  kehadiranToSet.value = status;
+  showConfirmKehadiran.value = true;
+};
+
+const confirmSetKehadiran = async () => {
+  await setKehadiran(kehadiranToSet.value);
+  showConfirmKehadiran.value = false;
+  kehadiranToSet.value = '';
 };
 </script>
 
@@ -121,6 +153,8 @@ const deleteRow = async (row: any) => {
       :hide-search="true"
       :hide-pagination="true"
       :on-toast="toast"
+      :showKehadiran="true"
+      @setKehadiran="handleSetKehadiran"
     >
       <template #header-extra>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -167,5 +201,19 @@ const deleteRow = async (row: any) => {
         </div>
       </template>
     </PageIndex>
+    <Dialog v-model:open="showConfirmKehadiran">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Set Kehadiran</DialogTitle>
+          <DialogDescription>
+            Set status kehadiran Peserta menjadi <b>{{ kehadiranToSet }}</b> untuk {{ selected.length }} peserta terpilih?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" @click="showConfirmKehadiran = false">Batal</Button>
+          <Button variant="default" @click="confirmSetKehadiran">Ya, Set Kehadiran</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template> 

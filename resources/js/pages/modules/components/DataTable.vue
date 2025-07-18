@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import RowActions from '@/pages/modules/components/tables/RowActions.vue';
-import * as LucideIcons from 'lucide-vue-next';
 
 import { computed, type PropType } from 'vue';
 import type { Column, Sort } from './datatable/types';
