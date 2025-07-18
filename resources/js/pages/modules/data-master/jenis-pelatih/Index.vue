@@ -90,7 +90,7 @@ const deleteRow = async (row: any) => {
             api-endpoint="/api/jenis-pelatih"
             ref="pageIndex"
             :on-toast="toast"
-            :on-delete-row-confirm="deleteRow"
+            :on-delete-row="deleteRow"
             :show-import="false"
         />
     </div>

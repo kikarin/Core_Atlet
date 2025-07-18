@@ -3,43 +3,13 @@ import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import BadgeGroup from '../components/BadgeGroup.vue';
 
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];
 
 const columns = [
-    {
-        key: 'peserta',
-        label: 'Peserta',
-        sortable: false,
-        format: (row: any) => {
-            const atlet = row.jumlah_atlet || 0;
-            const pelatih = row.jumlah_pelatih || 0;
-            const tenaga = row.jumlah_tenaga_pendukung || 0;
-            return `
-<div class="flex flex-col gap-1 items-start">
-            <button
-                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 cursor-pointer"
-                onclick="window.location.href='/cabor-kategori/${row.id}/atlet'"
-            >
-                <span class="font-semibold mr-1">${atlet}</span> Atlet
-            </button>
-            <button
-                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 cursor-pointer"
-                onclick="window.location.href='/cabor-kategori/${row.id}/pelatih'"
-            >
-                <span class="font-semibold mr-1">${pelatih}</span> Pelatih
-            </button>
-            <button
-                class="w-fit inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200 cursor-pointer"
-                onclick="window.location.href='/cabor-kategori/${row.id}/tenaga-pendukung'"
-            >
-                <span class="font-semibold mr-1">${tenaga}</span> Tenaga Pendukung
-            </button>
-        </div>
-            `;
-        },
-    },
+    { key: 'peserta', label: 'Peserta', sortable: false },
     { key: 'cabor_nama', label: 'Cabor' },
     { key: 'nama', label: 'Nama' },
     { key: 'jenis_kelamin', label: 'Gender', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran' },
@@ -122,10 +92,45 @@ const deleteKategori = async (row: any) => {
 
 <template>
     <div class="space-y-4">
-        <PageIndex title="Cabor Kategori" :breadcrumbs="breadcrumbs" :columns="columns"
-            :create-url="'/cabor-kategori/create'" :actions="actions" :selected="selected"
-            @update:selected="(val) => (selected = val)" :on-delete-selected="deleteSelected"
-            api-endpoint="/api/cabor-kategori" ref="pageIndex" :on-toast="toast" :on-delete-row="deleteKategori"
-            :show-import="false" />
+        <PageIndex
+            title="Cabor Kategori"
+            :breadcrumbs="breadcrumbs"
+            :columns="columns"
+            :create-url="'/cabor-kategori/create'"
+            :actions="actions"
+            :selected="selected"
+            @update:selected="(val) => (selected = val)"
+            :on-delete-selected="deleteSelected"
+            api-endpoint="/api/cabor-kategori"
+            ref="pageIndex"
+            :on-toast="toast"
+            :on-delete-row="deleteKategori"
+            :show-import="false"
+        >
+            <template #cell-peserta="{ row }">
+                <BadgeGroup
+                  :badges="[
+                    {
+                      label: 'Atlet',
+                      value: row.jumlah_atlet || 0,
+                      colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                      onClick: () => router.visit(`/cabor-kategori/${row.id}/atlet`)
+                    },
+                    {
+                      label: 'Pelatih',
+                      value: row.jumlah_pelatih || 0,
+                      colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                      onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`)
+                    },
+                    {
+                      label: 'Tenaga Pendukung',
+                      value: row.jumlah_tenaga_pendukung || 0,
+                      colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                      onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`)
+                    }
+                  ]"
+                />
+            </template>
+        </PageIndex>
     </div>
 </template>

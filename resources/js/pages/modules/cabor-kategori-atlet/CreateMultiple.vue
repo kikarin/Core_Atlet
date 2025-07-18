@@ -152,6 +152,20 @@ const handlePerPageChange = (value: number) => {
 };
 
 const selectedStatus = ref(1); // 1 = aktif, 0 = nonaktif
+const posisiAtletOptions = ref<{ value: number; label: string }[]>([]);
+const selectedPosisiAtletId = ref<number|null>(null);
+
+// Fetch posisi atlet
+const fetchPosisiAtlet = async () => {
+  try {
+    const res = await axios.get('/api/posisi-atlet-list');
+    posisiAtletOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
+  } catch (e) {
+    posisiAtletOptions.value = [];
+  }
+};
+
+fetchPosisiAtlet();
 
 // Handle save
 const handleSave = async () => {
@@ -163,6 +177,7 @@ const handleSave = async () => {
         await router.post(`/cabor-kategori/${props.caborKategori.id}/atlet/store-multiple`, {
             atlet_ids: selectedAtletIds.value,
             is_active: selectedStatus.value,
+            posisi_atlet_id: selectedPosisiAtletId.value,
         }, {
             onSuccess: () => {
                 toast({ title: 'Atlet berhasil ditambahkan ke kategori', variant: 'success' });
@@ -221,6 +236,20 @@ fetchAvailableAtlet();
                         <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
                     </div>
                 </div>
+            </div>
+
+            <!-- Pilih Posisi Atlet (opsional) -->
+            <div class="flex items-center gap-4">
+                <span class="text-sm font-medium text-muted-foreground">Posisi Atlet (opsional):</span>
+                <Select v-model="selectedPosisiAtletId" class="w-64">
+                    <SelectTrigger>
+                        <SelectValue placeholder="Pilih Posisi Atlet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem :value="null">- Tidak Ada -</SelectItem>
+                        <SelectItem v-for="opt in posisiAtletOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <!-- Selection Counter -->

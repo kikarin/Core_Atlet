@@ -6,6 +6,7 @@ use App\Models\CaborKategoriAtlet;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CaborKategoriAtletRepository
 {
@@ -22,8 +23,16 @@ class CaborKategoriAtletRepository
     public function customIndex($data)
     {
         $query = $this->model
-            ->with(['cabor', 'caborKategori', 'atlet'])
-            ->select('cabor_kategori_atlet.id', 'cabor_kategori_atlet.cabor_id', 'cabor_kategori_atlet.cabor_kategori_id', 'cabor_kategori_atlet.atlet_id', 'cabor_kategori_atlet.is_active', 'cabor_kategori_atlet.created_at');
+            ->with(['cabor', 'caborKategori', 'atlet', 'posisiAtlet'])
+            ->select(
+                'cabor_kategori_atlet.id',
+                'cabor_kategori_atlet.cabor_id',
+                'cabor_kategori_atlet.cabor_kategori_id',
+                'cabor_kategori_atlet.atlet_id',
+                'cabor_kategori_atlet.posisi_atlet_id', 
+                'cabor_kategori_atlet.is_active',
+                'cabor_kategori_atlet.created_at'
+            );
 
         // Filter by cabor_kategori_id jika ada
         if (request('cabor_kategori_id')) {
@@ -112,6 +121,7 @@ class CaborKategoriAtletRepository
                 'tempat_lahir' => $record->atlet->tempat_lahir ?? '-',
                 'tanggal_lahir' => $record->atlet->tanggal_lahir ?? '-',
                 'foto' => $record->atlet->foto ?? null,
+                'posisi_atlet_nama' => $record->posisiAtlet?->nama ?? '-',
             ];
         });
 
@@ -142,6 +152,8 @@ class CaborKategoriAtletRepository
 
     public function batchInsert($data)
     {
+        Log::info('BatchInsert Data', $data);
+
         $userId = Auth::id();
         $insertData = [];
 
@@ -175,6 +187,9 @@ class CaborKategoriAtletRepository
                 }
                 // Update status aktif/nonaktif
                 $existing->is_active = (int) $data['is_active'];
+                if (isset($data['posisi_atlet_id'])) {
+                    $existing->posisi_atlet_id = $data['posisi_atlet_id'];
+                }
                 $existing->updated_by = $userId;
                 $existing->updated_at = now();
                 $existing->save();
@@ -184,6 +199,7 @@ class CaborKategoriAtletRepository
                     'cabor_id' => $data['cabor_id'],
                     'cabor_kategori_id' => $data['cabor_kategori_id'],
                     'atlet_id' => $atletId,
+                    'posisi_atlet_id' => $data['posisi_atlet_id'] ?? null,
                     'is_active' => (int) $data['is_active'],
                     'created_by' => $userId,
                     'updated_by' => $userId,

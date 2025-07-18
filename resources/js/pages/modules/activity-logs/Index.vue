@@ -89,6 +89,6 @@ const deleteLog = async (row: any) => {
         :selected="selected"
         @update:selected="(val) => (selected = val)"
         :on-delete-selected="deleteSelected"
-        :on-delete-row-confirm="deleteLog"
+        :on-delete-row="deleteLog"
     />
 </template>

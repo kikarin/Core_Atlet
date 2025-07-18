@@ -9,7 +9,6 @@ const breadcrumbs = [
 ];
 
 const columns = [
-    { key: 'id', label: 'ID', orderable: true },
     { key: 'nama', label: 'Nama Kecamatan', orderable: true },
 ];
 

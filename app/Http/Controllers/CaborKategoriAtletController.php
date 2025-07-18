@@ -206,9 +206,15 @@ public function storeMultiple(Request $request, $caborKategoriId)
         $request->merge([
             'cabor_kategori_id' => $caborKategoriId,
             'cabor_id' => $caborKategori->cabor_id,
+            'posisi_atlet_id' => $request->input('posisi_atlet_id'),
         ]);
 
         $validatedData = $this->repository->validateRequest($request);
+
+        // Pastikan posisi_atlet_id tetap diteruskan ke repository
+        if ($request->has('posisi_atlet_id')) {
+            $validatedData['posisi_atlet_id'] = $request->input('posisi_atlet_id');
+        }
 
         Log::info('Validated data', $validatedData);
 

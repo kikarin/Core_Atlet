@@ -235,6 +235,16 @@ async function handleImport() {
                             <div><strong>Orang Tua:</strong> nama_ibu_kandung, nama_ayah_kandung, nama_wali, dst</div>
                             <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
                         </div>
+                        <div class="mt-2">
+                            <a
+                                href="/template-import/template_import_atlet.xlsx"
+                                target="_blank"
+                                class="text-blue-600 hover:underline text-sm"
+                                download
+                            >
+                                Unduh Format Excel Atlet
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>

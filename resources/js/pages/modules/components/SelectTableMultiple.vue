@@ -14,6 +14,7 @@ const props = defineProps<{
     idKey: string;
     nameKey: string;
     selectedIds?: number[];
+    autoSelectAll?: boolean; // improvement: auto select all saat create
 }>();
 
 const emit = defineEmits(['update:selectedIds']);
@@ -38,6 +39,9 @@ const fetchData = async () => {
         });
         items.value = response.data.data || [];
         total.value = response.data.meta?.total || 0;
+        if (props.autoSelectAll && items.value.length > 0 && localSelected.value.length === 0) {
+            localSelected.value = items.value.map((item) => item[props.idKey]);
+        }
     } catch {
         items.value = [];
         total.value = 0;
@@ -102,21 +106,6 @@ const getPageNumbers = () => {
             <Badge variant="secondary">{{ localSelected.length }} dipilih</Badge>
         </div>
         <div class="flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between mb-2">
-            <div class="ml-2 flex items-center gap-2">
-                <span class="text-muted-foreground text-sm">Show</span>
-                <Select v-model="perPage">
-                    <SelectTrigger class="w-24">
-                        <SelectValue :placeholder="String(perPage)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem :value="10">10</SelectItem>
-                        <SelectItem :value="25">25</SelectItem>
-                        <SelectItem :value="50">50</SelectItem>
-                        <SelectItem :value="100">100</SelectItem>
-                    </SelectContent>
-                </Select>
-                <span class="text-muted-foreground text-sm">entries</span>
-            </div>
             <div class="w-full sm:w-64">
                 <Input v-model="searchQuery" placeholder="Search..." class="w-full" />
             </div>
@@ -181,41 +170,6 @@ const getPageNumbers = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-            </div>
-            <div class="text-muted-foreground flex flex-col items-center justify-center gap-2 border-t p-4 text-center text-sm md:flex-row md:justify-between">
-                <span>
-                    Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, total) }} of
-                    {{ total }} entries
-                </span>
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                    <Button size="sm" :disabled="currentPage === 1" @click="currentPage--" class="bg-muted/40 text-foreground">
-                        Previous
-                    </Button>
-                    <div class="flex flex-wrap items-center gap-1">
-                        <Button
-                            v-for="page in getPageNumbers()"
-                            :key="page"
-                            size="sm"
-                            class="rounded-md border px-3 py-1.5 text-sm"
-                            :class="[
-                                currentPage === page
-                                    ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-muted border-input text-black dark:text-white',
-                            ]"
-                            @click="currentPage = page"
-                        >
-                            {{ page }}
-                        </Button>
-                    </div>
-                    <Button
-                        size="sm"
-                        :disabled="currentPage === totalPages"
-                        @click="currentPage++"
-                        class="bg-muted/40 text-foreground"
-                    >
-                        Next
-                    </Button>
-                </div>
             </div>
         </div>
     </div>

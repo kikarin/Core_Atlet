@@ -129,37 +129,41 @@ const columnsTenagaPendukung = [
                 <SelectTableMultiple
                     v-model:selected-ids="formData.target_latihan_ids"
                     label="Target Latihan"
-                    :endpoint="'/api/target-latihan?program_latihan_id=' + props.infoHeader?.program_latihan_id"
+                    :endpoint="`/api/target-latihan?program_latihan_id=${props.infoHeader?.program_latihan_id}`"
                     :columns="[
                         { key: 'deskripsi', label: 'Deskripsi' },
                         { key: 'jenis_target', label: 'Jenis' }
                     ]"
                     id-key="id"
                     name-key="deskripsi"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.atlet_ids"
                     label="Atlet"
-                    endpoint="/api/atlet"
+                    :endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsAtlet"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="atlet_id"
+                    name-key="atlet_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.pelatih_ids"
                     label="Pelatih"
-                    endpoint="/api/pelatih"
+                    :endpoint="`/api/cabor-kategori-pelatih?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsPelatih"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="pelatih_id"
+                    name-key="pelatih_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.tenaga_pendukung_ids"
                     label="Tenaga Pendukung"
-                    endpoint="/api/tenaga-pendukung"
+                    :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsTenagaPendukung"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="tenaga_pendukung_id"
+                    name-key="tenaga_pendukung_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
             </template>
         </FormInput>

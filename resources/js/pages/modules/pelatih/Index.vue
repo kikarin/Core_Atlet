@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 
 const breadcrumbs = [{ title: 'Pelatih', href: '/pelatih' }];
 
 const columns = [
     { key: 'nama', label: 'Nama' },
-    { 
+    {
         key: 'foto',
         label: 'Foto',
         format: (row: any) => {
@@ -35,11 +35,13 @@ const columns = [
         key: 'tanggal_lahir',
         label: 'Tanggal Lahir',
         format: (row: any) => {
-            return row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            }) : '-';
+            return row.tanggal_lahir
+                ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                  })
+                : '-';
         },
     },
     { key: 'no_hp', label: 'No HP' },
@@ -101,7 +103,7 @@ const deletePelatih = async (row: any) => {
 };
 
 const showImportModal = ref(false);
-const importFile = ref<File|null>(null);
+const importFile = ref<File | null>(null);
 const importLoading = ref(false);
 const fileName = ref<string>('');
 const fileInput = ref<HTMLInputElement>();
@@ -188,46 +190,50 @@ async function handleImport() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Import Data Pelatih</DialogTitle>
-                    <DialogDescription>
-                        Upload file Excel (.xlsx atau .xls) yang berisi data pelatih.
-                    </DialogDescription>
+                    <DialogDescription> Upload file Excel (.xlsx atau .xls) yang berisi data pelatih. </DialogDescription>
                 </DialogHeader>
                 <div class="space-y-4">
                     <div class="space-y-2">
                         <label class="text-sm font-medium">File Excel</label>
                         <div class="flex items-center gap-2">
-                            <input 
+                            <input
                                 ref="fileInput"
-                                type="file" 
-                                accept=".xlsx,.xls" 
+                                type="file"
+                                accept=".xlsx,.xls"
                                 @change="handleFileChange"
-                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             />
                         </div>
-                        <div v-if="fileName" class="text-sm text-muted-foreground">
-                            File: {{ fileName }}
-                        </div>
+                        <div v-if="fileName" class="text-muted-foreground text-sm">File: {{ fileName }}</div>
                     </div>
-                    <div class="rounded-lg border bg-muted p-3">
-                        <div class="text-sm font-medium mb-2">Format kolom yang didukung:</div>
-                        <div class="text-xs text-muted-foreground space-y-1">
-                            <div><strong>Pelatih:</strong> nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, kecamatan_id, kelurahan_id, no_hp, email, is_active</div>
+                    <div class="bg-muted rounded-lg border p-3">
+                        <div class="mb-2 text-sm font-medium">Format kolom yang didukung:</div>
+                        <div class="text-muted-foreground space-y-1 text-xs">
+                            <div>
+                                <strong>Pelatih:</strong> nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, kecamatan_id, kelurahan_id,
+                                no_hp, email, is_active
+                            </div>
                             <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
+                        </div>
+                        <div class="mt-2">
+                            <a
+                                href="/template-import/template_import.xlsx"
+                                target="_blank"
+                                class="text-sm text-blue-600 hover:underline"
+                                download
+                            >
+                                Unduh Format Excel Pelatih
+                            </a>
                         </div>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" @click="closeImportModal" :disabled="importLoading">
-                        Batal
-                    </Button>
-                    <Button 
-                        @click="handleImport" 
-                        :disabled="importLoading || !importFile"
-                    >
+                    <Button variant="outline" @click="closeImportModal" :disabled="importLoading"> Batal </Button>
+                    <Button @click="handleImport" :disabled="importLoading || !importFile">
                         {{ importLoading ? 'Mengimpor...' : 'Import' }}
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     </div>
-</template> 
+</template>

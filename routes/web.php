@@ -16,6 +16,7 @@ use App\Models\MstTingkat;
 use App\Models\MstJenisDokumen;
 use App\Models\MstJenisPelatih;
 use App\Models\MstJenisTenagaPendukung;
+use App\Models\MstPosisiAtlet;
 use App\Models\Cabor;
 use App\Http\Controllers\AtletSertifikatController;
 use App\Http\Controllers\AtletPrestasiController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\MstTingkatController;
 use App\Http\Controllers\MstJenisDokumenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\DesaController;
+use App\Http\Controllers\MstPosisiAtletController;
 use App\Http\Controllers\MstJenisPelatihController;
 use App\Http\Controllers\CaborController;
 use App\Http\Controllers\CaborKategoriController;
@@ -45,6 +47,7 @@ use App\Http\Controllers\CaborKategoriTenagaPendukungController;
 use App\Http\Controllers\ProgramLatihanController;
 use App\Http\Controllers\TargetLatihanController;
 use App\Http\Controllers\RencanaLatihanController;
+use App\Http\Controllers\RencanaLatihanPesertaController;
 
 // =====================
 // ROUTE UTAMA
@@ -65,6 +68,7 @@ Route::get('/api/tingkat', [MstTingkatController::class, 'apiIndex']);
 Route::get('/api/jenis-dokumen', [MstJenisDokumenController::class, 'apiIndex']);
 Route::get('/api/kecamatan', [KecamatanController::class, 'apiIndex']);
 Route::get('/api/desa', [DesaController::class, 'apiIndex']);
+Route::get('/api/posisi-atlet', [MstPosisiAtletController::class, 'apiIndex']);
 Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex']);
 Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
 
@@ -80,6 +84,9 @@ Route::get('/api/kecamatan-list', function() {
 });
 Route::get('/api/kelurahan-by-kecamatan/{id_kecamatan}', function($id_kecamatan) {
     return MstDesa::where('id_kecamatan', $id_kecamatan)->select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/posisi-atlet-list', function() {
+    return MstPosisiAtlet::select('id', 'nama')->orderBy('nama')->get();
 });
 Route::get('/api/jenis-pelatih-list', function() {
     return MstJenisPelatih::select('id', 'nama')->orderBy('nama')->get();
@@ -362,6 +369,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // =====================
+// RENCANA LATIHAN - DAFTAR PESERTA (INERTIA PAGE)
+// =====================
+
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/index/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'indexPage'])->middleware(['auth', 'verified']);
+
+// =====================
+// API: Daftar Peserta Rencana Latihan (Atlet, Pelatih, Tenaga Pendukung)
+// =====================
+Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'index'])->middleware(['auth', 'verified']);
+Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified']);
+Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified']);
+
+// =====================
 // DATA MASTER (CRUD)
 // =====================
 Route::prefix('data-master')->group(function () {
@@ -377,6 +397,9 @@ Route::prefix('data-master')->group(function () {
     // Master Desa (hanya index & show)
     Route::get('/desa', [DesaController::class, 'index'])->name('desa.index');
     Route::get('/desa/{id}', [DesaController::class, 'show'])->name('desa.show');
+    // Master Posisi Atlet
+    Route::resource('/posisi-atlet', MstPosisiAtletController::class)->names('posisi-atlet');
+    Route::post('/posisi-atlet/destroy-selected', [MstPosisiAtletController::class, 'destroy_selected'])->name('posisi-atlet.destroy_selected');
     // Master Jenis Pelatih
     Route::resource('/jenis-pelatih', MstJenisPelatihController::class)->names('jenis-pelatih');
     Route::post('/jenis-pelatih/destroy-selected', [MstJenisPelatihController::class, 'destroy_selected'])->name('jenis-pelatih.destroy_selected');

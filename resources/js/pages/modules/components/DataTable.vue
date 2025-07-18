@@ -39,7 +39,7 @@ const selectLabel = computed(() => {
 <template>
     <div class="space-y-4">
         <!-- Search dan Length -->
-        <div class="flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
+        <div class="ml-1.5 flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
             <!-- Length -->
             <div v-if="!props.disableLength" class="ml-2 flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Show</span>
@@ -60,7 +60,7 @@ const selectLabel = computed(() => {
             </div>
 
             <!-- Search (selalu tampil di kanan) -->
-            <div v-if="!props.hideSearch" class="w-full sm:w-64">
+            <div v-if="!props.hideSearch" class="w-full sm:w-64 mr-2">
                 <Input :model-value="props.search" @update:model-value="(val) => emit('update:search', val)" placeholder="Search..." class="w-full" />
             </div>
         </div>
@@ -141,15 +141,10 @@ const selectLabel = computed(() => {
                                 :key="col.key"
                                 :class="typeof col.className === 'function' ? col.className(row) : col.className"
                             >
-                                <component
-                                    v-if="col.key === 'icon' && row[col.key] && row[col.key] in LucideIcons"
-                                    :is="LucideIcons[row[col.key] as keyof typeof LucideIcons]"
-                                    class="text-muted-foreground h-4 w-4"
-                                />
-                                <span v-else>
+                                <slot :name="`cell-${col.key}`" :row="row">
                                     <span v-if="typeof col.format === 'function'" v-html="col.format(row)"></span>
                                     <span v-else>{{ row[col.key] }}</span>
-                                </span>
+                                </slot>
                             </TableCell>
                         </TableRow>
                     </TableBody>

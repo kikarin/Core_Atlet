@@ -45,6 +45,7 @@ const iconMap: Record<string, any> = {
     ClipboardList: LucideIcons.ClipboardList,
     UserCircle2: LucideIcons.UserCircle2,
     CalendarCheck: LucideIcons.CalendarCheck,
+    CalendarSync: LucideIcons.CalendarSync,
 };
 
 const fetchMenus = async () => {

@@ -122,6 +122,10 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => ['Mst Desa Show', 'Mst Desa Detail'],
             ],
             [
+                'name' => 'Mst Posisi Atlet',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name' => 'Mst Jenis Pelatih',
                 'permission' => 'CRUD',
             ],

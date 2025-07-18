@@ -7,7 +7,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import DataTable from '../components/DataTable.vue';
 import HeaderActions from './HeaderActions.vue';
 
@@ -176,13 +176,31 @@ const handlePageChange = debounce((val) => {
     handleSearch({ page: val });
 }, 300);
 
+const slotCustomKeys = [
+    'peserta',
+    'rencana_latihan',
+    'target_individu',
+    'target_kelompok',
+];
+
+const rowsWithCustom = computed(() => {
+    return tableRows.value.map((row) => {
+        const customFields: Record<string, boolean> = {};
+        slotCustomKeys.forEach((key: string) => { customFields[key] = true; });
+        return {
+            ...row,
+            ...customFields,
+        };
+    });
+});
+
 defineExpose({ fetchData });
 </script>
 
 <template>
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950 py-4">
+        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950 pt-4">
             <div class="max-w-5xl mx-auto">
                 <div class="mx-auto p-2 py-4">
                     <slot name="header-extra"></slot>
@@ -197,10 +215,10 @@ defineExpose({ fetchData });
                         @import="$emit('import')"
                     />
                 </div>
-                <div class="bg-white dark:bg-neutral-900 rounded-xl shadow p-2 py-4">
+                <div class="bg-white dark:bg-neutral-900 rounded-xl shadow pt-4">
                     <DataTable
                         :columns="columns"
-                        :rows="tableRows"
+                        :rows="rowsWithCustom"
                         :actions="localActions"
                         :total="total"
                         :loading="loading"
@@ -218,7 +236,20 @@ defineExpose({ fetchData });
                         :hide-pagination="props.hidePagination"
                         :disable-length="props.disableLength"
                         :hide-search="props.hideSearch"
-                    />
+                    >
+                        <template #cell-peserta="slotProps">
+                            <slot name="cell-peserta" v-bind="slotProps" />
+                        </template>
+                        <template #cell-rencana_latihan="slotProps">
+                            <slot name="cell-rencana_latihan" v-bind="slotProps" />
+                        </template>
+                        <template #cell-target_individu="slotProps">
+                            <slot name="cell-target_individu" v-bind="slotProps" />
+                        </template>
+                        <template #cell-target_kelompok="slotProps">
+                            <slot name="cell-target_kelompok" v-bind="slotProps" />
+                        </template>
+                    </DataTable>
                 </div>
             </div>
             <Dialog v-model:open="showConfirm">

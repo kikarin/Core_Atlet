@@ -7,11 +7,11 @@ import { ref } from 'vue';
 
 const breadcrumbs = [
     { title: 'Data Master', href: '/data-master' },
-    { title: 'Jenis Tenaga Pendukung', href: '/data-master/jenis-tenaga-pendukung' },
+    { title: 'Posis Atlet', href: '/data-master/posisi-atlet' },
 ];
 
 const columns = [
-    { key: 'nama', label: 'Nama Jenis Tenaga Pendukung' },
+    { key: 'nama', label: 'Nama Posisi Atlet' },
 ];
 
 const selected = ref<number[]>([]);
@@ -23,11 +23,11 @@ const { toast } = useToast();
 const actions = (row: any) => [
     {
         label: 'Detail',
-        onClick: () => router.visit(`/data-master/jenis-tenaga-pendukung/${row.id}`),
+        onClick: () => router.visit(`/data-master/posisi-atlet/${row.id}`),
     },
     {
         label: 'Edit',
-        onClick: () => router.visit(`/data-master/jenis-tenaga-pendukung/${row.id}/edit`),
+        onClick: () => router.visit(`/data-master/posisi-atlet/${row.id}/edit`),
     },
     {
         label: 'Delete',
@@ -41,7 +41,7 @@ const deleteSelected = async () => {
     }
 
     try {
-        const response = await axios.post('/data-master/jenis-tenaga-pendukung/destroy-selected', {
+        const response = await axios.post('/data-master/posisi-atlet/destroy-selected', {
             ids: selected.value,
         });
 
@@ -64,7 +64,7 @@ const deleteSelected = async () => {
 };
 
 const deleteRow = async (row: any) => {
-    await router.delete(`/data-master/jenis-tenaga-pendukung/${row.id}`, {
+    await router.delete(`/data-master/posisi-atlet/${row.id}`, {
         onSuccess: () => {
             toast({ title: 'Data berhasil dihapus', variant: 'success' });
             pageIndex.value.fetchData();
@@ -79,15 +79,15 @@ const deleteRow = async (row: any) => {
 <template>
     <div class="space-y-4">
         <PageIndex
-            title="Jenis Tenaga Pendukung"
+            title="Posisi Atlet"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
-            :create-url="'/data-master/jenis-tenaga-pendukung/create'"
+            :create-url="'/data-master/posisi-atlet/create'"
             :actions="actions"
             :selected="selected"
             @update:selected="(val) => (selected = val)"
             :on-delete-selected="deleteSelected"
-            api-endpoint="/api/jenis-tenaga-pendukung"
+            api-endpoint="/api/posisi-atlet"
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row="deleteRow"

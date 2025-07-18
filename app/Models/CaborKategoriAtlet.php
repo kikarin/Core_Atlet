@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Models\MstPosisiAtlet;
 
 class CaborKategoriAtlet extends Model
 {
@@ -23,6 +24,7 @@ class CaborKategoriAtlet extends Model
         'cabor_id',
         'cabor_kategori_id',
         'atlet_id',
+        'posisi_atlet_id',
         'is_active',
         'created_by',
         'updated_by',
@@ -59,6 +61,11 @@ class CaborKategoriAtlet extends Model
     public function atlet()
     {
         return $this->belongsTo(Atlet::class, 'atlet_id');
+    }
+
+    public function posisiAtlet()
+    {
+        return $this->belongsTo(MstPosisiAtlet::class, 'posisi_atlet_id');
     }
 
     public function created_by_user()

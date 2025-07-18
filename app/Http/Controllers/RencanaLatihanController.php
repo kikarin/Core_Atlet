@@ -54,6 +54,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
             'nama_program' => $programLatihan->nama_program,
             'cabor_nama' => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
+            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
             'periode_mulai' => $programLatihan->periode_mulai,
             'periode_selesai' => $programLatihan->periode_selesai,
         ];
@@ -72,6 +73,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
             'nama_program' => $programLatihan->nama_program,
             'cabor_nama' => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
+            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
             'periode_mulai' => $programLatihan->periode_mulai,
             'periode_selesai' => $programLatihan->periode_selesai,
         ];
@@ -99,6 +101,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
             'nama_program' => $programLatihan->nama_program,
             'cabor_nama' => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
+            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
             'periode_mulai' => $programLatihan->periode_mulai,
             'periode_selesai' => $programLatihan->periode_selesai,
         ];
@@ -118,6 +121,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
             'nama_program' => $programLatihan->nama_program,
             'cabor_nama' => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
+            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
             'periode_mulai' => $programLatihan->periode_mulai,
             'periode_selesai' => $programLatihan->periode_selesai,
         ];

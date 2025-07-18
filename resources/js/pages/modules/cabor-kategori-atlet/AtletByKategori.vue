@@ -28,6 +28,7 @@ const rowToDelete = ref<any>(null);
 
 const columns = [
     { key: 'atlet_nama', label: 'Nama' },
+    { key: 'posisi_atlet_nama', label: 'Posisi' },
     {
         key: 'foto',
         label: 'Foto',
