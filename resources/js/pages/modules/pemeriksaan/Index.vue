@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
+import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { useToast } from '@/components/ui/toast/useToast';
+import axios from 'axios';
+
+const { toast } = useToast();
+const breadcrumbs = [
+    { title: 'Pemeriksaan', href: '/pemeriksaan' },
+];
+
+const columns = [
+    { key: 'cabor', label: 'Cabor' },
+    { key: 'cabor_kategori', label: 'Kategori' },
+    { key: 'tenaga_pendukung', label: 'Tenaga Pendukung' },
+    { key: 'nama_pemeriksaan', label: 'Nama Pemeriksaan' },
+    { key: 'tanggal_pemeriksaan', label: 'Tanggal Pemeriksaan' },
+    {
+        key: 'status',
+        label: 'Status',
+        format: (row) => {
+            if (row.status === 'belum') return '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-300 rounded-full">Belum</span>';
+            if (row.status === 'sebagian') return '<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Sebagian</span>';
+            if (row.status === 'selesai') return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Selesai</span>';
+            return row.status;
+        }
+    },
+];
+
+const selected = ref<number[]>([]);
+
+const actions = (row: any) => [
+    {
+        label: 'Detail',
+        onClick: () => router.visit(`/pemeriksaan/${row.id}`),
+    },
+    {
+        label: 'Edit',
+        onClick: () => router.visit(`/pemeriksaan/${row.id}/edit`),
+    },
+    {
+        label: 'Delete',
+        onClick: () => pageIndex.value.handleDeleteRow(row),
+    },
+];
+
+const pageIndex = ref();
+
+const deleteSelected = async () => {
+    if (!selected.value.length) {
+        return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
+    }
+    try {
+        const response = await axios.post('/pemeriksaan/destroy-selected', { ids: selected.value });
+        selected.value = [];
+        pageIndex.value.fetchData();
+        toast({ title: response.data?.message || 'Data berhasil dihapus', variant: 'success' });
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Gagal menghapus data', variant: 'destructive' });
+    }
+};
+</script>
+
+<template>
+    <PageIndex
+        title="Pemeriksaan"
+        :breadcrumbs="breadcrumbs"
+        :columns="columns"
+        :create-url="'/pemeriksaan/create'"
+        :actions="actions"
+        :selected="selected"
+        @update:selected="(val) => (selected = val)"
+        :on-delete-selected="deleteSelected"
+        api-endpoint="/api/pemeriksaan"
+        ref="pageIndex"
+        :showImport="false"
+    />
+</template> 

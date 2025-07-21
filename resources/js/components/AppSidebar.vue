@@ -11,10 +11,9 @@ import AppLogo from './AppLogo.vue';
 
 const mainNavItems = ref<NavItem[]>([]);
 const atletNavItems = ref<NavItem[]>([]);
-const pelatihNavItems = ref<NavItem[]>([]);
-const tenaga_pendukungNavItems = ref<NavItem[]>([]);
 const caborNavItems = ref<NavItem[]>([]);
 const trainingNavItems = ref<NavItem[]>([]);
+const pemeriksaanNavItems = ref<NavItem[]>([]);
 const settingNavItems = ref<NavItem[]>([]);
 const isLoading = ref(false);
 const iconMap: Record<string, any> = {
@@ -46,6 +45,7 @@ const iconMap: Record<string, any> = {
     UserCircle2: LucideIcons.UserCircle2,
     CalendarCheck: LucideIcons.CalendarCheck,
     CalendarSync: LucideIcons.CalendarSync,
+    ClipboardCheck: LucideIcons.ClipboardCheck,
 };
 
 const fetchMenus = async () => {
@@ -93,21 +93,17 @@ const fetchMenus = async () => {
             const urutan = menu.urutan || 0;
             return urutan > 10 && urutan <= 20;
         });
-        const pelatihMenus = menus.filter((menu: any) => {
+        const caborMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan > 20 && urutan <= 30;
         });
-        const tenaga_pendukungMenus = menus.filter((menu: any) => {
+        const trainingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan > 30 && urutan <= 40;
         });
-        const caborMenus = menus.filter((menu: any) => {
+        const pesertaMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
             return urutan > 40 && urutan <= 50;
-        });
-        const trainingMenus = menus.filter((menu: any) => {
-            const urutan = menu.urutan || 0;
-            return urutan > 50 && urutan <= 60;
         });
         const settingMenus = menus.filter((menu: any) => {
             const urutan = menu.urutan || 0;
@@ -116,10 +112,9 @@ const fetchMenus = async () => {
 
         mainNavItems.value = mainMenus.map(transformMenuToNavItem);
         atletNavItems.value = atletMenus.map(transformMenuToNavItem);
-        pelatihNavItems.value = pelatihMenus.map(transformMenuToNavItem);
-        tenaga_pendukungNavItems.value = tenaga_pendukungMenus.map(transformMenuToNavItem);
         caborNavItems.value = caborMenus.map(transformMenuToNavItem);
         trainingNavItems.value = trainingMenus.map(transformMenuToNavItem);
+        pemeriksaanNavItems.value = pesertaMenus.map(transformMenuToNavItem);
         settingNavItems.value = settingMenus.map(transformMenuToNavItem);
 
         console.log('Main Menus:', mainNavItems.value);
@@ -170,20 +165,18 @@ onUnmounted(() => {
 
             <NavMain v-if="mainNavItems.length > 0" :items="mainNavItems" section-title="Menu" section-id="main" />
 
-            <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Atlet" section-id="atlet" />
-
-            <NavMain v-if="pelatihNavItems.length > 0" :items="pelatihNavItems" section-title="Pelatih" section-id="pelatih" />
-
-            <NavMain
-                v-if="tenaga_pendukungNavItems.length > 0"
-                :items="tenaga_pendukungNavItems"
-                section-title="Tenaga Pendukung"
-                section-id="Tenaga"
-            />
+            <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Data Peserta" section-id="atlet" />
 
             <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
 
-            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Training" section-id="training" />
+            <NavMain
+                v-if="trainingNavItems.length > 0"
+                :items="trainingNavItems"
+                section-title="Training"
+                section-id="training"
+            />
+
+            <NavMain v-if="pemeriksaanNavItems.length > 0" :items="pemeriksaanNavItems" section-title="Pemeriksaan" section-id="pemeriksaan" />
 
             <NavMain v-if="settingNavItems.length > 0" :items="settingNavItems" section-title="Settings" section-id="setting" />
 
