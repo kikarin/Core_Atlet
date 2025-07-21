@@ -48,6 +48,7 @@ use App\Http\Controllers\ProgramLatihanController;
 use App\Http\Controllers\TargetLatihanController;
 use App\Http\Controllers\RencanaLatihanController;
 use App\Http\Controllers\RencanaLatihanPesertaController;
+use App\Http\Controllers\PemeriksaanController;
 
 // =====================
 // ROUTE UTAMA
@@ -407,6 +408,15 @@ Route::prefix('data-master')->group(function () {
     // Master Jenis Tenaga Pendukung
     Route::resource('/jenis-tenaga-pendukung', MstJenisTenagaPendukungController::class)->names('jenis-tenaga-pendukung');
     Route::post('/jenis-tenaga-pendukung/destroy-selected', [MstJenisTenagaPendukungController::class, 'destroy_selected'])->name('jenis-tenaga-pendukung.destroy_selected');
+});
+
+// =====================
+// PEMERIKSAAN
+// =====================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('/pemeriksaan', PemeriksaanController::class)->names('pemeriksaan');
+    Route::get('/api/pemeriksaan', [PemeriksaanController::class, 'apiIndex']);
+    Route::post('/pemeriksaan/destroy-selected', [PemeriksaanController::class, 'destroy_selected'])->name('pemeriksaan.destroy_selected');
 });
 
 require __DIR__ . '/settings.php';

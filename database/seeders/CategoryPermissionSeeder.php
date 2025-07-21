@@ -165,6 +165,10 @@ class CategoryPermissionSeeder extends Seeder
                 'name'       => 'Rencana Latihan',
                 'permission' => 'CRUD',
             ],
+            [
+                'name'       => 'Pemeriksaan',
+                'permission' => 'CRUD',
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

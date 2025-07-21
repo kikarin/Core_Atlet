@@ -39,7 +39,7 @@ class UsersMenuSeeder extends Seeder
                     'url'           => '/pelatih',
                     'icon'          => 'UserCircle2',
                     'rel'           => 0,
-                    'urutan'        => 21,
+                    'urutan'        => 12,
                     'permission_id' => 'Pelatih Show',
                 ],
                 [
@@ -48,7 +48,7 @@ class UsersMenuSeeder extends Seeder
                     'url'           => '/tenaga-pendukung',
                     'icon'          => 'UserCircle2',
                     'rel'           => 0,
-                    'urutan'        => 31,
+                    'urutan'        => 13,
                     'permission_id' => 'Tenaga Pendukung Show',
                 ],
                 [
@@ -57,7 +57,7 @@ class UsersMenuSeeder extends Seeder
                     'url'           => '/cabor',
                     'icon'          => 'Flag',
                     'rel'           => 0,
-                    'urutan'        => 41,
+                    'urutan'        => 21,
                     'permission_id' => '',
                     'children'      => [
                         [
@@ -82,8 +82,17 @@ class UsersMenuSeeder extends Seeder
                     'url'           => '/program-latihan',
                     'icon'          => 'CalendarSync',
                     'rel'           => 0,
-                    'urutan'        => 51,
+                    'urutan'        => 31,
                     'permission_id' => 'Program Latihan Show',
+                ],
+                [
+                    'nama'          => 'Pemeriksaaan',
+                    'kode'          => 'PEMERIKSAAN',
+                    'url'           => '/pemeriksaan',
+                    'icon'          => 'ClipboardCheck',
+                    'rel'           => 0,
+                    'urutan'        => 41,
+                    'permission_id' => 'Pemeriksaan Show',
                 ],
                 [
                     'nama'          => 'Data Master',
