@@ -11,7 +11,7 @@ const props = defineProps<{
     selected: number[];
     onDeleteSelected: () => void;
     showImport: boolean;
-    showKehadiran?: boolean; 
+    showKehadiran?: boolean;
 }>();
 </script>
 

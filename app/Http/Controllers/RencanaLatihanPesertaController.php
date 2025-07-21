@@ -51,7 +51,8 @@ class RencanaLatihanPesertaController extends Controller
                     'atlets.no_hp',
                     'cabor_kategori_atlet.is_active as kategori_is_active',
                     'cabor_kategori_atlet.posisi_atlet_id',
-                    'rencana_latihan_atlet.kehadiran as kehadiran'
+                    'rencana_latihan_atlet.kehadiran as kehadiran',
+                    'rencana_latihan_atlet.keterangan as keterangan'
                 );
         } elseif ($jenis_peserta === 'pelatih') {
             $query = Pelatih::query()
@@ -68,7 +69,8 @@ class RencanaLatihanPesertaController extends Controller
                     'pelatihs.tanggal_lahir',
                     'pelatihs.no_hp',
                     'pelatihs.is_active',
-                    'rencana_latihan_pelatih.kehadiran as kehadiran'
+                    'rencana_latihan_pelatih.kehadiran as kehadiran',
+                    'rencana_latihan_pelatih.keterangan as keterangan'
                 );
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
             $query = TenagaPendukung::query()
@@ -85,7 +87,8 @@ class RencanaLatihanPesertaController extends Controller
                     'tenaga_pendukungs.tanggal_lahir',
                     'tenaga_pendukungs.no_hp',
                     'tenaga_pendukungs.is_active',
-                    'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran'
+                    'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran',
+                    'rencana_latihan_tenaga_pendukung.keterangan as keterangan'
                 );
         } else {
             return response()->json([
@@ -206,22 +209,27 @@ class RencanaLatihanPesertaController extends Controller
         $request->validate([
             'ids'       => 'required|array',
             'kehadiran' => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
+            'keterangan' => 'nullable|string|max:1000',
         ]);
         $ids       = $request->input('ids');
         $kehadiran = $request->input('kehadiran');
+        $keterangan = $request->input('keterangan');
         $rencana   = RencanaLatihan::findOrFail($rencana_id);
 
         if ($jenis_peserta === 'atlet') {
             foreach ($ids as $id) {
-                $rencana->atlets()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+                $rencana->atlets()->updateExistingPivot($id, ['kehadiran' => $kehadiran
+            , 'keterangan' => $keterangan ?? null]);
             }
         } elseif ($jenis_peserta === 'pelatih') {
             foreach ($ids as $id) {
-                $rencana->pelatihs()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+                $rencana->pelatihs()->updateExistingPivot($id, ['kehadiran' => $kehadiran
+            , 'keterangan' => $keterangan ?? null]);
             }
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
             foreach ($ids as $id) {
-                $rencana->tenagaPendukung()->updateExistingPivot($id, ['kehadiran' => $kehadiran]);
+                $rencana->tenagaPendukung()->updateExistingPivot($id, ['kehadiran' => $kehadiran
+            , 'keterangan' => $keterangan ?? null]);
             }
         } else {
             return response()->json(['message' => 'Jenis peserta tidak valid'], 400);

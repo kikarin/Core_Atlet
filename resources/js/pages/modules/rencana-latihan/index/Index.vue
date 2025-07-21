@@ -15,6 +15,8 @@ const jenisPeserta = page.props.jenis_peserta as string;
 const infoHeader = page.props.infoHeader as any;
 const info = computed(() => infoHeader || {});
 const infoRencana = page.props.infoRencana as any;
+const keterangan = ref('');
+
 
 const jenisLabel: Record<string, string> = {
     atlet: 'Atlet',
@@ -31,6 +33,11 @@ const breadcrumbs = [
 const columns = [
     { key: 'nama', label: 'Nama' },
     { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-' },
+    {
+        key: 'keterangan',
+        label: 'Keterangan',
+        format: (row: any) => row.keterangan || '-',
+    },
     {
         key: 'foto',
         label: 'Foto',
@@ -114,9 +121,11 @@ const setKehadiran = async (status: string) => {
         await axios.post(`/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}/set-kehadiran`, {
             ids: selected.value,
             kehadiran: status,
+            keterangan: keterangan.value,
         });
         toast({ title: `Kehadiran Peserta berhasil diupdate menjadi '${status}'`, variant: 'success' });
         selected.value = [];
+        keterangan.value = '';
         if (pageIndex.value.fetchData) pageIndex.value.fetchData();
     } catch (error: any) {
         toast({ title: error.response?.data?.message || 'Gagal update kehadiran', variant: 'destructive' });
@@ -151,7 +160,7 @@ const confirmSetKehadiran = async () => {
             :api-endpoint="`/api/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}`"
             ref="pageIndex"
             :disable-length="true"
-            :hide-search="true"
+            :hide-search="false"
             :hide-pagination="true"
             :on-toast="toast"
             :showKehadiran="true"
@@ -213,8 +222,21 @@ const confirmSetKehadiran = async () => {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Set Kehadiran</DialogTitle>
-                    <DialogDescription>
-                        Set status kehadiran Peserta menjadi <b>{{ kehadiranToSet }}</b> untuk {{ selected.length }} peserta terpilih?
+                    <DialogDescription class="space-y-4">
+                        <div>
+                            Set status kehadiran Peserta menjadi <b>{{ kehadiranToSet }}</b> untuk {{ selected.length }} peserta terpilih?
+                        </div>
+
+                        <div>
+                            <label for="keterangan" class="mb-1 block text-sm font-medium">Keterangan (opsional)</label>
+                            <textarea
+                                id="keterangan"
+                                v-model="keterangan"
+                                rows="3"
+                                class="w-full rounded border p-2 text-sm"
+                                placeholder="Contoh: Cedera, Izin ke dokter, dll"
+                            />
+                        </div>
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
