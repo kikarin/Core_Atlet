@@ -115,4 +115,9 @@ class Pelatih extends Model implements HasMedia
     {
         return $this->hasOne(PelatihKesehatan::class, 'pelatih_id');
     }
+
+    public function pemeriksaanPeserta()
+    {
+        return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
+    }
 }

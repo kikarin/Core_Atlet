@@ -44,6 +44,16 @@ class Pemeriksaan extends Model
         return $this->belongsTo(TenagaPendukung::class, 'tenaga_pendukung_id');
     }
 
+    public function pemeriksaanParameter()
+    {
+        return $this->hasMany(PemeriksaanParameter::class, 'pemeriksaan_id');
+    }
+
+    public function pemeriksaanPeserta()
+    {
+        return $this->hasMany(PemeriksaanPeserta::class, 'pemeriksaan_id');
+    }
+
     public function created_by_user()
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -113,6 +113,7 @@ class CaborKategoriAtletRepository
             return [
                 'id'                => $record->id,
                 'atlet_id'          => $record->atlet_id,
+                'nama'              => $record->atlet->nama ?? '-',
                 'atlet_nama'        => $record->atlet->nama ?? '-',
                 'is_active'         => $record->is_active,
                 'is_active_badge'   => $record->is_active_badge,

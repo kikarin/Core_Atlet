@@ -53,6 +53,8 @@ class DatabaseSeeder extends Seeder
         $this->call(CaborKategoriAtletSeeder::class);
         $this->call(CaborKategoriPelatihSeeder::class);
         $this->call(CaborKategoriTenagaPendukungSeeder::class);
+        $this->call(PemeriksaanSeeder::class);
+        $this->call(PemeriksaanParameterSeeder::class);
+        $this->call(RefStatusPemeriksaanSeeder::class);
     }
-
 }

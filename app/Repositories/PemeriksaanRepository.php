@@ -27,7 +27,8 @@ class PemeriksaanRepository
 
     public function customIndex($data)
     {
-        $query = $this->model->with($this->with);
+        $query = $this->model->with($this->with)
+            ->withCount(['pemeriksaanParameter as jumlah_parameter', 'pemeriksaanPeserta as jumlah_peserta']);
 
         $sortField = request('sort');
         $order     = request('order', 'asc');
@@ -73,6 +74,8 @@ class PemeriksaanRepository
                     'nama_pemeriksaan' => $item->nama_pemeriksaan,
                     'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
                     'status' => $item->status,
+                    'jumlah_parameter' => $item->jumlah_parameter ?? 0,
+                    'jumlah_peserta' => $item->jumlah_peserta ?? 0,
                 ];
             });
             $data += [
@@ -96,6 +99,8 @@ class PemeriksaanRepository
                 'nama_pemeriksaan' => $item->nama_pemeriksaan,
                 'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
                 'status' => $item->status,
+                'jumlah_parameter' => $item->jumlah_parameter ?? 0,
+                'jumlah_peserta' => $item->jumlah_peserta ?? 0,
             ];
         });
         $data += [

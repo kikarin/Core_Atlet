@@ -86,7 +86,7 @@ class UsersMenuSeeder extends Seeder
                     'permission_id' => 'Program Latihan Show',
                 ],
                 [
-                    'nama'          => 'Pemeriksaaan',
+                    'nama'          => 'Pemeriksaan',
                     'kode'          => 'PEMERIKSAAN',
                     'url'           => '/pemeriksaan',
                     'icon'          => 'ClipboardCheck',

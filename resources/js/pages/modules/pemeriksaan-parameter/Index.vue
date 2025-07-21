@@ -1,0 +1,108 @@
+<script setup lang="ts">
+import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
+import { router, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { useToast } from '@/components/ui/toast/useToast';
+import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+
+interface Pemeriksaan {
+    id: number;
+    nama_pemeriksaan: string;
+    cabor: { nama: string };
+    cabor_kategori: { nama: string };
+    tenaga_pendukung: { nama: string };
+}
+
+const { toast } = useToast();
+const page = usePage();
+const pemeriksaan = computed(() => page.props.pemeriksaan as Pemeriksaan || {} as Pemeriksaan);
+const pemeriksaanId = computed(() => pemeriksaan.value?.id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
+
+const breadcrumbs = [
+    { title: 'Pemeriksaan', href: '/pemeriksaan' },
+    { title: 'Parameter Pemeriksaan', href: `/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter` },
+];
+
+const columns = [
+    { key: 'nama_parameter', label: 'Nama Parameter' },
+    { key: 'satuan', label: 'Satuan' },
+];
+
+const selected = ref<number[]>([]);
+const pageIndex = ref();
+
+const actions = (row: any) => [
+    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`) },
+    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}/edit`) },
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+];
+
+const deleteSelected = async () => {
+    if (!selected.value.length) {
+        return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
+    }
+    try {
+        const response = await axios.post(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/destroy-selected`, { ids: selected.value });
+        selected.value = [];
+        pageIndex.value.fetchData();
+        toast({ title: response.data?.message || 'Data berhasil dihapus', variant: 'success' });
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Gagal menghapus data', variant: 'destructive' });
+    }
+};
+
+const deleteRow = async (row: any) => {
+  await router.delete(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`, {
+    onSuccess: () => {
+      toast({ title: 'Data berhasil dihapus', variant: 'success' });
+      pageIndex.value.fetchData();
+    },
+    onError: () => {
+      toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
+    },
+  });
+};
+</script>
+
+<template>
+    <PageIndex
+        title="Parameter Pemeriksaan"
+        :breadcrumbs="breadcrumbs"
+        :columns="columns"
+        :create-url="`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter/create`"
+        :actions="actions"
+        :selected="selected"
+        @update:selected="(val) => (selected = val)"
+        :on-delete-selected="deleteSelected"
+        :api-endpoint="`/api/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter`"
+        ref="pageIndex"
+        :on-toast="toast"
+        :on-delete-row="deleteRow"
+        :showImport="false"
+    >
+        <template #header-extra>
+            <div class="bg-card mb-4 rounded-lg border p-4">
+                <h3 class="mb-2 text-lg font-semibold">Informasi Pemeriksaan</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-muted-foreground text-sm font-medium">Nama Pemeriksaan:</span>
+                        <Badge variant="secondary">{{ pemeriksaan.nama_pemeriksaan }}</Badge>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
+                        <Badge variant="outline">{{ pemeriksaan.cabor?.nama }}</Badge>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
+                        <Badge variant="outline">{{ pemeriksaan.cabor_kategori?.nama }}</Badge>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-muted-foreground text-sm font-medium">Tenaga Pendukung:</span>
+                        <Badge variant="outline">{{ pemeriksaan.tenaga_pendukung?.nama }}</Badge>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </PageIndex>
+</template> 

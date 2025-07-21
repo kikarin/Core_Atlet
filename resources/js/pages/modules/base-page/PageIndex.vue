@@ -249,6 +249,12 @@ defineExpose({ fetchData });
                         <template #cell-target_kelompok="slotProps">
                             <slot name="cell-target_kelompok" v-bind="slotProps" />
                         </template>
+                        <template #cell-parameter="slotProps">
+                            <slot name="cell-parameter" v-bind="slotProps" />
+                        </template>
+                        <template #cell-pemeriksaan-peserta="slotProps">
+                            <slot name="cell-pemeriksaan-peserta" v-bind="slotProps" />
+                        </template>
                     </DataTable>
                 </div>
             </div>

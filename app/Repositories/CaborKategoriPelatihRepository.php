@@ -107,6 +107,7 @@ class CaborKategoriPelatihRepository
             return [
                 'id'                 => $record->id,
                 'pelatih_id'         => $record->pelatih_id,
+                'nama'               => $record->pelatih->nama ?? '-',
                 'pelatih_nama'       => $record->pelatih->nama ?? '-',
                 'jenis_pelatih_id'   => $record->jenis_pelatih_id,
                 'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',

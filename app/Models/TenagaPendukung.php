@@ -114,4 +114,9 @@ class TenagaPendukung extends Model implements HasMedia
         return $this->hasMany(TenagaPendukungDokumen::class, 'tenaga_pendukung_id')
             ->with(['created_by_user', 'updated_by_user', 'jenis_dokumen']);
     }
+
+    public function pemeriksaanPeserta()
+    {
+        return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
+    }
 }

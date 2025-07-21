@@ -105,6 +105,7 @@ class CaborKategoriTenagaPendukungRepository
             return [
                 'id'                          => $record->id,
                 'tenaga_pendukung_id'         => $record->tenaga_pendukung_id,
+                'nama'                        => $record->tenagaPendukung->nama ?? '-',
                 'tenaga_pendukung_nama'       => $record->tenagaPendukung->nama ?? '-',
                 'jenis_tenaga_pendukung_id'   => $record->jenis_tenaga_pendukung_id,
                 'jenis_tenaga_pendukung_nama' => $record->jenisTenagaPendukung->nama ?? '-',

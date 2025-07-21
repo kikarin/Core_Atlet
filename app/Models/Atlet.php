@@ -120,4 +120,9 @@ class Atlet extends Model implements HasMedia
     {
         return $this->hasOne(AtletKesehatan::class, 'atlet_id');
     }
+
+    public function pemeriksaanPeserta()
+    {
+        return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
+    }
 }
