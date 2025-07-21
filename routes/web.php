@@ -446,6 +446,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // API nested
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-peserta', [PemeriksaanPesertaController::class, 'apiIndex']);
+Route::get('/pemeriksaan/{pemeriksaan}/peserta', [PemeriksaanPesertaController::class, 'index'])->name('pemeriksaan.peserta.index');
+Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta}', [PemeriksaanPesertaController::class, 'apiIndex']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

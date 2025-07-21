@@ -28,7 +28,7 @@ const columns = [
         }
     },
     { key: 'parameter', label: 'Parameter' },
-    { key: 'pemeriksaan-peserta', label: 'Peserta' },
+    { key: 'peserta', label: 'Peserta' },
 ];
 
 const selected = ref<number[]>([]);
@@ -86,19 +86,31 @@ const deleteSelected = async () => {
                         label: 'Parameter',
                         value: row.jumlah_parameter || 0,
                         colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
-                        onClick: () => router.visit(`/pemeriksaan/${row.id}/pemeriksaan-parameter`),
+                        onClick: () => router.visit(`/pemeriksaan/${row.id}/parameter`),
                     },
                 ]"
             />
         </template>
-        <template #cell-pemeriksaan-peserta="{ row }">
+        <template #cell-peserta="{ row }">
             <BadgeGroup
                 :badges="[
                     {
-                        label: 'Peserta',
-                        value: row.jumlah_peserta || 0,
+                        label: 'Atlet',
+                        value: row.jumlah_atlet || 0,
+                        colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                        onClick: () => router.visit(`/pemeriksaan/${row.id}/peserta?jenis_peserta=atlet`),
+                    },
+                    {
+                        label: 'Pelatih',
+                        value: row.jumlah_pelatih || 0,
                         colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                        onClick: () => router.visit(`/pemeriksaan/${row.id}/pemeriksaan-peserta`),
+                        onClick: () => router.visit(`/pemeriksaan/${row.id}/peserta?jenis_peserta=pelatih`),
+                    },
+                    {
+                        label: 'Tenaga Pendukung',
+                        value: row.jumlah_tenaga_pendukung || 0,
+                        colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                        onClick: () => router.visit(`/pemeriksaan/${row.id}/peserta?jenis_peserta=tenaga-pendukung`),
                     },
                 ]"
             />

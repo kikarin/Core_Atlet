@@ -9,7 +9,18 @@ const props = defineProps<{
     mode: 'create' | 'edit';
     initialData?: any;
     pemeriksaan: any;
+    jenisPeserta?: string;
 }>();
+
+function getJenisPeserta() {
+  if (props.jenisPeserta && ["atlet", "pelatih", "tenaga-pendukung"].includes(props.jenisPeserta)) return props.jenisPeserta;
+  const ziggy: any = usePage().props.ziggy;
+  const jenis = (ziggy?.query?.jenis_peserta || '').toString();
+  if (["atlet", "pelatih", "tenaga-pendukung"].includes(jenis)) return jenis;
+  return "atlet";
+}
+
+const jenisPeserta = computed(() => getJenisPeserta());
 
 const { save } = useHandleFormSave();
 
@@ -42,7 +53,7 @@ const formInputs = computed(() => {
 
 const handleSave = (form: any) => {
     let dataToSave;
-    const url = `/pemeriksaan/${props.pemeriksaan.id}/pemeriksaan-peserta`;
+    const url = `/pemeriksaan/${props.pemeriksaan.id}/peserta`;
 
     if (props.mode === 'create') {
         dataToSave = { ...form, ...selectionState.value };
@@ -60,7 +71,7 @@ const handleSave = (form: any) => {
         {
             url: props.mode === 'edit' ? `${url}/${props.initialData.id}` : url,
             mode: props.mode,
-            redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/pemeriksaan-peserta`,
+            redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
         },
     );
 };
@@ -71,7 +82,7 @@ const columns = [
         label: 'Foto',
         format: (row: any) =>
             row.foto
-                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                ? `<div class='cursor-pointer' onclick=\"window.open('${row.foto}', '_blank')\"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
                 : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
     },
     { key: 'nama', label: 'Nama' },
@@ -95,6 +106,7 @@ const columns = [
     <FormInput :form-inputs="formInputs" @save="handleSave" :initial-data="formState">
         <template #custom-fields v-if="mode === 'create'">
             <SelectTableMultiple
+                v-if="jenisPeserta.value === 'atlet'"
                 v-model:selected-ids="selectionState.atlet_ids"
                 label="Atlet"
                 :endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
@@ -104,6 +116,7 @@ const columns = [
                 :auto-select-all="true"
             />
             <SelectTableMultiple
+                v-if="jenisPeserta.value === 'pelatih'"
                 v-model:selected-ids="selectionState.pelatih_ids"
                 label="Pelatih"
                 :endpoint="`/api/cabor-kategori-pelatih?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
@@ -113,6 +126,7 @@ const columns = [
                 :auto-select-all="true"
             />
             <SelectTableMultiple
+                v-if="jenisPeserta.value === 'tenaga-pendukung'"
                 v-model:selected-ids="selectionState.tenaga_pendukung_ids"
                 label="Tenaga Pendukung"
                 :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
