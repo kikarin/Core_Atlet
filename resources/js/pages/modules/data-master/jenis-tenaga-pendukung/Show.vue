@@ -31,9 +31,7 @@ const breadcrumbs = [
     { title: 'Detail Jenis Tenaga Pendukung', href: `/data-master/jenis-tenaga-pendukung/${props.item.id}` },
 ];
 
-const fields = computed(() => [
-    { label: 'Nama Jenis Tenaga Pendukung', value: dataItem.value?.nama || '-' },
-]);
+const fields = computed(() => [{ label: 'Nama Jenis Tenaga Pendukung', value: dataItem.value?.nama || '-' }]);
 
 const actionFields = [
     { label: 'Created At', value: new Date(props.item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },
@@ -69,4 +67,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

@@ -6,7 +6,18 @@ import { computed } from 'vue';
 
 const { toast } = useToast();
 
-const props = defineProps<{ item: { id: number; cabor_nama: string; nama: string; deskripsi: string; created_at: string; created_by_user: { id: number; name: string } | null; updated_at: string; updated_by_user: { id: number; name: string } | null; } }>();
+const props = defineProps<{
+    item: {
+        id: number;
+        cabor_nama: string;
+        nama: string;
+        deskripsi: string;
+        created_at: string;
+        created_by_user: { id: number; name: string } | null;
+        updated_at: string;
+        updated_by_user: { id: number; name: string } | null;
+    };
+}>();
 
 const dataItem = computed(() => props.item);
 
@@ -19,7 +30,10 @@ const breadcrumbs = [
 const fields = computed(() => [
     { label: 'Cabor', value: dataItem.value?.cabor_nama || '-' },
     { label: 'Nama Kategori', value: dataItem.value?.nama || '-' },
-    { label: 'Gender', value: dataItem.value?.jenis_kelamin === 'L' ? 'Laki-laki' : dataItem.value?.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran' },
+    {
+        label: 'Gender',
+        value: dataItem.value?.jenis_kelamin === 'L' ? 'Laki-laki' : dataItem.value?.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran',
+    },
     { label: 'Deskripsi', value: dataItem.value?.deskripsi || '-' },
 ]);
 
@@ -57,4 +71,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

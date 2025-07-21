@@ -16,7 +16,7 @@ class CaborKategoriPelatih extends Model
     use SoftDeletes;
     use Blameable;
 
-    protected $table = 'cabor_kategori_pelatih';
+    protected $table   = 'cabor_kategori_pelatih';
     protected $guarded = [];
 
     protected $fillable = [
@@ -36,7 +36,7 @@ class CaborKategoriPelatih extends Model
 
     public function getIsActiveBadgeAttribute()
     {
-        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $text  = $this->is_active ? 'Aktif' : 'Nonaktif';
         $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
         return "<span class='badge $badge'>$text</span>";
     }
@@ -81,4 +81,4 @@ class CaborKategoriPelatih extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
-} 
+}

@@ -7,17 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\Cabor;
-use App\Models\CaborKategori;
-use App\Models\TargetLatihan;
-use App\Models\RencanaLatihan;
 
 class ProgramLatihan extends Model
 {
-    use HasFactory, SoftDeletes, Blameable, LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+    use Blameable;
+    use LogsActivity;
 
-    protected $table = 'program_latihan';
-    protected $guarded = [];
+    protected $table    = 'program_latihan';
+    protected $guarded  = [];
     protected $fillable = [
         'cabor_id',
         'nama_program',
@@ -55,6 +54,6 @@ class ProgramLatihan extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Program Latihan");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Program Latihan');
     }
-} 
+}

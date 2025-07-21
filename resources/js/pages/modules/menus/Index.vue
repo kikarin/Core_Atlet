@@ -137,7 +137,7 @@ const deleteMenu = async (row: any) => {
         api-endpoint="/api/menus"
         ref="pageIndex"
         :on-toast="toast"
-        :on-delete-row-confirm="deleteMenu"
+        :on-delete-row="deleteMenu"
         :disable-length="true"
         :hide-pagination="true"
         :hide-search="true"

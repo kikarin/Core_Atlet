@@ -33,8 +33,8 @@ class CaborRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama', 'deskripsi', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -49,16 +49,16 @@ class CaborRepository
         $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allData = $query->get();
+            $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id'   => $item->id,
-                    'nama' => $item->nama,
+                    'id'        => $item->id,
+                    'nama'      => $item->nama,
                     'deskripsi' => $item->deskripsi,
                 ];
             });
             $data += [
-                'cabors'    => $transformedData,
+                'cabors'      => $transformedData,
                 'total'       => $transformedData->count(),
                 'currentPage' => 1,
                 'perPage'     => -1,
@@ -70,18 +70,18 @@ class CaborRepository
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id'   => $item->id,
-                'nama' => $item->nama,
+                'id'        => $item->id,
+                'nama'      => $item->nama,
                 'deskripsi' => $item->deskripsi,
             ];
         });
 
         $data += [
-            'cabors'    => $transformedData,
+            'cabors'      => $transformedData,
             'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
             'perPage'     => $items->perPage(),
@@ -139,4 +139,4 @@ class CaborRepository
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
         return $request->validate($rules, $messages);
     }
-} 
+}

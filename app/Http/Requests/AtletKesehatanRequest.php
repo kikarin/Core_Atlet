@@ -14,13 +14,13 @@ class AtletKesehatanRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id'        => 'required|exists:atlets,id',
+            'atlet_id'               => 'required|exists:atlets,id',
                    'tinggi_badan'    => 'nullable|numeric',
                    'berat_badan'     => 'nullable|numeric',
-            'penglihatan'     => 'nullable|string|max:255',
-            'pendengaran'     => 'nullable|string|max:255',
-            'riwayat_penyakit' => 'nullable|string',
-            'alergi'          => 'nullable|string',
+            'penglihatan'            => 'nullable|string|max:255',
+            'pendengaran'            => 'nullable|string|max:255',
+            'riwayat_penyakit'       => 'nullable|string',
+            'alergi'                 => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -52,4 +52,4 @@ class AtletKesehatanRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

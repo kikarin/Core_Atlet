@@ -7,14 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\CaborKategori;
 
 class Cabor extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'cabor';
-    protected $guarded = [];
+    protected $table    = 'cabor';
+    protected $guarded  = [];
     protected $fillable = [
         'nama',
         'deskripsi',
@@ -33,6 +35,6 @@ class Cabor extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Cabor");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Cabor');
     }
-} 
+}

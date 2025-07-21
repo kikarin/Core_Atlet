@@ -20,16 +20,16 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
     public function __construct(Request $request, CaborKategoriAtletRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->route = 'cabor-kategori-atlet';
-        $this->commonData['kode_first_menu'] = 'CABOR';
+        $this->route                          = 'cabor-kategori-atlet';
+        $this->commonData['kode_first_menu']  = 'CABOR';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
         return [
@@ -78,7 +78,7 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Detail Cabor Kategori Atlet',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -93,7 +93,7 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Edit Cabor Kategori Atlet',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -134,12 +134,12 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['records'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -149,20 +149,20 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
     {
         $this->repository->customProperty(__FUNCTION__, ['cabor_kategori_id' => $caborKategoriId]);
         $caborKategori = app(CaborKategori::class)->with('cabor')->find($caborKategoriId);
-        
+
         if (!$caborKategori) {
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
 
         $data = $this->commonData + [
-            'titlePage' => 'Daftar Atlet - ' . $caborKategori->nama,
+            'titlePage'     => 'Daftar Atlet - ' . $caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
-        
+
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
-        
+
         return inertia('modules/cabor-kategori-atlet/AtletByKategori', $data);
     }
 
@@ -171,61 +171,67 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
     {
         $this->repository->customProperty(__FUNCTION__, ['cabor_kategori_id' => $caborKategoriId]);
         $caborKategori = app(CaborKategori::class)->with('cabor')->find($caborKategoriId);
-        
+
         if (!$caborKategori) {
             return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
         }
 
         $data = $this->commonData + [
-            'titlePage' => 'Tambah Multiple Atlet - ' . $caborKategori->nama,
+            'titlePage'     => 'Tambah Multiple Atlet - ' . $caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
-        
+
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
-        
+
         return inertia('modules/cabor-kategori-atlet/CreateMultiple', $data);
     }
 
     // Method untuk store multiple atlet
-public function storeMultiple(Request $request, $caborKategoriId)
-{
-    try {
-        Log::info('storeMultiple called', [
-            'caborKategoriId' => $caborKategoriId,
-            'request_data' => $request->all()
-        ]);
+    public function storeMultiple(Request $request, $caborKategoriId)
+    {
+        try {
+            Log::info('storeMultiple called', [
+                'caborKategoriId' => $caborKategoriId,
+                'request_data'    => $request->all(),
+            ]);
 
-        $caborKategori = app(CaborKategori::class)->find($caborKategoriId);
-        if (!$caborKategori) {
-            return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
+            $caborKategori = app(CaborKategori::class)->find($caborKategoriId);
+            if (!$caborKategori) {
+                return redirect()->back()->with('error', 'Kategori tidak ditemukan!');
+            }
+
+            // Merge ke request sebelum validasi
+            $request->merge([
+                'cabor_kategori_id' => $caborKategoriId,
+                'cabor_id'          => $caborKategori->cabor_id,
+                'posisi_atlet_id'   => $request->input('posisi_atlet_id'),
+            ]);
+
+            $validatedData = $this->repository->validateRequest($request);
+
+            // Pastikan posisi_atlet_id tetap diteruskan ke repository
+            if ($request->has('posisi_atlet_id')) {
+                $validatedData['posisi_atlet_id'] = $request->input('posisi_atlet_id');
+            }
+
+            Log::info('Validated data', $validatedData);
+
+            $this->repository->batchInsert($validatedData);
+
+            Log::info('Batch insert successful');
+
+            return redirect()->route('cabor-kategori-atlet.atlet-by-kategori', $caborKategoriId)
+                ->with('success', 'Atlet berhasil ditambahkan ke kategori!');
+        } catch (\Exception $e) {
+            Log::error('Error in storeMultiple', [
+                'message'      => $e->getMessage(),
+                'trace'        => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal menambahkan atlet: ' . $e->getMessage());
         }
-
-        // Merge ke request sebelum validasi
-        $request->merge([
-            'cabor_kategori_id' => $caborKategoriId,
-            'cabor_id' => $caborKategori->cabor_id,
-        ]);
-
-        $validatedData = $this->repository->validateRequest($request);
-
-        Log::info('Validated data', $validatedData);
-
-        $this->repository->batchInsert($validatedData);
-
-        Log::info('Batch insert successful');
-
-        return redirect()->route('cabor-kategori-atlet.atlet-by-kategori', $caborKategoriId)
-            ->with('success', 'Atlet berhasil ditambahkan ke kategori!');
-    } catch (\Exception $e) {
-        Log::error('Error in storeMultiple', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'request_data' => $request->all(),
-        ]);
-
-        return redirect()->back()->with('error', 'Gagal menambahkan atlet: ' . $e->getMessage());
     }
 }
-} 

@@ -17,4 +17,4 @@ const breadcrumbs = [
     <PageEdit title="Jenis Tenaga Pendukung" :breadcrumbs="breadcrumbs" back-url="/data-master/jenis-tenaga-pendukung">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
-</template> 
+</template>

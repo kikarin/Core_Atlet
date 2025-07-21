@@ -1,71 +1,71 @@
 <script setup lang="ts">
+import AppTabs from '@/components/AppTabs.vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
-import AppTabs from '@/components/AppTabs.vue';
-import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
-import ShowPrestasi from './prestasi/ShowPrestasi.vue';
-import ShowDokumen from './dokumen/ShowDokumen.vue';
-import ShowKesehatan from './ShowKesehatan.vue';
 import { Pencil, Plus } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
+import ShowDokumen from './dokumen/ShowDokumen.vue';
+import ShowPrestasi from './prestasi/ShowPrestasi.vue';
+import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
+import ShowKesehatan from './ShowKesehatan.vue';
 
 const { toast } = useToast();
 
 interface Sertifikat {
-  id: number;
-  tenaga_pendukung_id: number;
-  nama_sertifikat: string;
-  penyelenggara?: string;
-  tanggal_terbit?: string;
-  file_url?: string;
-  created_at: string;
-  updated_at: string;
-  created_by_user?: { name: string } | null;
-  updated_by_user?: { name: string } | null;
+    id: number;
+    tenaga_pendukung_id: number;
+    nama_sertifikat: string;
+    penyelenggara?: string;
+    tanggal_terbit?: string;
+    file_url?: string;
+    created_at: string;
+    updated_at: string;
+    created_by_user?: { name: string } | null;
+    updated_by_user?: { name: string } | null;
 }
 
 interface Prestasi {
-  id: number;
-  tenaga_pendukung_id: number;
-  nama_event: string;
-  tingkat_id?: number;
-  tingkat?: { nama: string } | null;
-  tanggal?: string;
-  peringkat?: string;
-  keterangan?: string;
-  created_at: string;
-  updated_at: string;
-  created_by_user?: { name: string } | null;
-  updated_by_user?: { name: string } | null;
+    id: number;
+    tenaga_pendukung_id: number;
+    nama_event: string;
+    tingkat_id?: number;
+    tingkat?: { nama: string } | null;
+    tanggal?: string;
+    peringkat?: string;
+    keterangan?: string;
+    created_at: string;
+    updated_at: string;
+    created_by_user?: { name: string } | null;
+    updated_by_user?: { name: string } | null;
 }
 
 interface Dokumen {
-  id: number;
-  tenaga_pendukung_id: number;
-  jenis_dokumen_id?: number;
-  jenis_dokumen?: { nama: string } | null;
-  nomor?: string;
-  file_url?: string;
-  created_at: string;
-  updated_at: string;
-  created_by_user?: { name: string } | null;
-  updated_by_user?: { name: string } | null;
+    id: number;
+    tenaga_pendukung_id: number;
+    jenis_dokumen_id?: number;
+    jenis_dokumen?: { nama: string } | null;
+    nomor?: string;
+    file_url?: string;
+    created_at: string;
+    updated_at: string;
+    created_by_user?: { name: string } | null;
+    updated_by_user?: { name: string } | null;
 }
 
 interface Kesehatan {
-  id: number;
-  tenaga_pendukung_id: number;
-  tinggi_badan?: string;
-  berat_badan?: string;
-  penglihatan?: string;
-  pendengaran?: string;
-  riwayat_penyakit?: string;
-  alergi?: string;
-  created_at: string;
-  updated_at: string;
-  created_by_user?: { name: string } | null;
-  updated_by_user?: { name: string } | null;
+    id: number;
+    tenaga_pendukung_id: number;
+    tinggi_badan?: string;
+    berat_badan?: string;
+    penglihatan?: string;
+    pendengaran?: string;
+    riwayat_penyakit?: string;
+    alergi?: string;
+    created_at: string;
+    updated_at: string;
+    created_by_user?: { name: string } | null;
+    updated_by_user?: { name: string } | null;
 }
 
 const props = defineProps<{
@@ -98,10 +98,10 @@ const props = defineProps<{
 
 // Ambil tab dari query string
 function getTabFromUrl(url: string, fallback = 'tenaga-pendukung-data') {
-  if (url.includes('tab=')) {
-    return new URLSearchParams(url.split('?')[1]).get('tab') || fallback;
-  }
-  return fallback;
+    if (url.includes('tab=')) {
+        return new URLSearchParams(url.split('?')[1]).get('tab') || fallback;
+    }
+    return fallback;
 }
 
 const page = usePage();
@@ -109,32 +109,33 @@ const initialTab = getTabFromUrl(page.url);
 const activeTab = ref(initialTab);
 
 watch(activeTab, (val) => {
-  const url = `/tenaga-pendukung/${props.item.id}?tab=${val}`;
-  router.visit(url, { replace: true, preserveState: true, preserveScroll: true, only: [] });});
+    const url = `/tenaga-pendukung/${props.item.id}?tab=${val}`;
+    router.visit(url, { replace: true, preserveState: true, preserveScroll: true, only: [] });
+});
 
 watch(
-  () => page.url,
-  (newUrl) => {
-    const tab = getTabFromUrl(newUrl);
-    if (tab !== activeTab.value) {
-      activeTab.value = tab;
-    }
-  }
+    () => page.url,
+    (newUrl) => {
+        const tab = getTabFromUrl(newUrl);
+        if (tab !== activeTab.value) {
+            activeTab.value = tab;
+        }
+    },
 );
 
 const dynamicTitle = computed(() => {
-  if (activeTab.value === 'tenaga-pendukung-data') {
-    return `Tenaga Pendukung : ${props.item.nama}`;
-  } else if (activeTab.value === 'sertifikat-data') {
-    return `Sertifikat : ${props.item.nama}`;
-  } else if (activeTab.value === 'prestasi-data') {
-    return `Prestasi : ${props.item.nama}`;
-  } else if (activeTab.value === 'kesehatan-data') {
-    return `Kesehatan : ${props.item.nama}`;
-  } else if (activeTab.value === 'dokumen-data') {
-    return `Dokumen : ${props.item.nama}`;
-  }
-  return `Tenaga Pendukung: ${props.item.nama}`;
+    if (activeTab.value === 'tenaga-pendukung-data') {
+        return `Tenaga Pendukung : ${props.item.nama}`;
+    } else if (activeTab.value === 'sertifikat-data') {
+        return `Sertifikat : ${props.item.nama}`;
+    } else if (activeTab.value === 'prestasi-data') {
+        return `Prestasi : ${props.item.nama}`;
+    } else if (activeTab.value === 'kesehatan-data') {
+        return `Kesehatan : ${props.item.nama}`;
+    } else if (activeTab.value === 'dokumen-data') {
+        return `Dokumen : ${props.item.nama}`;
+    }
+    return `Tenaga Pendukung: ${props.item.nama}`;
 });
 
 const breadcrumbs = [
@@ -179,8 +180,8 @@ const fields = computed(() => {
             className: 'sm:col-span-2',
             imageConfig: {
                 size: 'md' as const,
-                labelText: 'Klik untuk melihat lebih besar'
-            }
+                labelText: 'Klik untuk melihat lebih besar',
+            },
         },
     ];
 });
@@ -193,25 +194,25 @@ const actionFields = computed(() => [
 ]);
 
 const kesehatanActionFields = computed(() => {
-  const o = props.item.kesehatan;
-  return [
-    {
-      label: 'Created At',
-      value: o?.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
-    },
-    {
-      label: 'Created By',
-      value: o?.created_by_user?.name || '-',
-    },
-    {
-      label: 'Updated At',
-      value: o?.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
-    },
-    {
-      label: 'Updated By',
-      value: o?.updated_by_user?.name || '-',
-    },
-  ];
+    const o = props.item.kesehatan;
+    return [
+        {
+            label: 'Created At',
+            value: o?.created_at ? new Date(o.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+        },
+        {
+            label: 'Created By',
+            value: o?.created_by_user?.name || '-',
+        },
+        {
+            label: 'Updated At',
+            value: o?.updated_at ? new Date(o.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+        },
+        {
+            label: 'Updated By',
+            value: o?.updated_by_user?.name || '-',
+        },
+    ];
 });
 
 const tabsConfig = [
@@ -262,7 +263,12 @@ const handleDeleteKesehatan = () => {
         router.delete(`/tenaga-pendukung/${props.item.id}/kesehatan/${props.item.kesehatan.id}`, {
             onSuccess: () => {
                 toast({ title: 'Data kesehatan tenaga pendukung berhasil dihapus', variant: 'success' });
-                router.visit(`/tenaga-pendukung/${props.item.id}?tab=kesehatan-data`, { replace: true, preserveState: true, preserveScroll: true, only: [] });
+                router.visit(`/tenaga-pendukung/${props.item.id}?tab=kesehatan-data`, {
+                    replace: true,
+                    preserveState: true,
+                    preserveScroll: true,
+                    only: [],
+                });
             },
             onError: () => {
                 toast({ title: 'Gagal menghapus data kesehatan tenaga pendukung', variant: 'destructive' });
@@ -302,18 +308,17 @@ const currentOnDeleteHandler = computed(() => {
 });
 
 const mappedPrestasi = computed(() =>
-  (props.item.prestasi || []).map((p) => ({
-    ...p,
-    tingkat: p.tingkat || (p.tingkat_id ? { nama: '-' } : undefined),
-  }))
+    (props.item.prestasi || []).map((p) => ({
+        ...p,
+        tingkat: p.tingkat || (p.tingkat_id ? { nama: '-' } : undefined),
+    })),
 );
 const mappedDokumen = computed(() =>
-  (props.item.dokumen || []).map((d) => ({
-    ...d,
-    jenis_dokumen: d.jenis_dokumen || (d.jenis_dokumen_id ? { nama: '-' } : undefined),
-  }))
+    (props.item.dokumen || []).map((d) => ({
+        ...d,
+        jenis_dokumen: d.jenis_dokumen || (d.jenis_dokumen_id ? { nama: '-' } : undefined),
+    })),
 );
-
 </script>
 
 <template>
@@ -321,7 +326,13 @@ const mappedDokumen = computed(() =>
         :title="dynamicTitle"
         :breadcrumbs="breadcrumbs"
         :fields="activeTab === 'tenaga-pendukung-data' ? fields : []"
-        :actionFields="activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data' ? [] : (activeTab === 'tenaga-pendukung-data' ? actionFields : kesehatanActionFields)"
+        :actionFields="
+            activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data'
+                ? []
+                : activeTab === 'tenaga-pendukung-data'
+                  ? actionFields
+                  : kesehatanActionFields
+        "
         :back-url="'/tenaga-pendukung'"
         :on-edit="currentOnEditHandler"
         :on-delete="currentOnDeleteHandler"
@@ -329,62 +340,48 @@ const mappedDokumen = computed(() =>
         :on-edit-icon="activeTab === 'kesehatan-data' && !props.item.kesehatan ? Plus : Pencil"
     >
         <template #tabs>
-            <AppTabs
-                :tabs="tabsConfig"
-                :default-value="'tenaga-pendukung-data'"
-                v-model="activeTab"
-    />
+            <AppTabs :tabs="tabsConfig" :default-value="'tenaga-pendukung-data'" v-model="activeTab" />
         </template>
         <template #custom-action>
             <div v-if="activeTab === 'sertifikat-data'">
                 <button
-                  class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-                  @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/sertifikat`)"
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/sertifikat`)"
                 >
-                  Kelola Sertifikat
+                    Kelola Sertifikat
                 </button>
             </div>
             <div v-if="activeTab === 'prestasi-data'">
                 <button
-                  class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-                  @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/prestasi`)"
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/prestasi`)"
                 >
-                  Kelola Prestasi
+                    Kelola Prestasi
                 </button>
             </div>
             <div v-if="activeTab === 'dokumen-data'">
                 <button
-                  class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
-                  @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/dokumen`)"
+                    class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm transition-colors"
+                    @click="() => router.visit(`/tenaga-pendukung/${props.item.id}/dokumen`)"
                 >
-                  Kelola Dokumen
+                    Kelola Dokumen
                 </button>
             </div>
-            <div v-if="activeTab === 'kesehatan-data'">
-            </div>
+            <div v-if="activeTab === 'kesehatan-data'"></div>
         </template>
         <template #custom>
             <div v-if="activeTab === 'sertifikat-data'">
-                <ShowSertifikat
-                  :sertifikat-list="props.item.sertifikat || []"
-                  :tenaga_pendukung-id="props.item.id"
-                />
+                <ShowSertifikat :sertifikat-list="props.item.sertifikat || []" :tenaga_pendukung-id="props.item.id" />
             </div>
             <div v-if="activeTab === 'prestasi-data'">
-                <ShowPrestasi
-                  :prestasi-list="mappedPrestasi"
-                  :tenaga_pendukung-id="props.item.id"
-                />
+                <ShowPrestasi :prestasi-list="mappedPrestasi" :tenaga_pendukung-id="props.item.id" />
             </div>
             <div v-if="activeTab === 'kesehatan-data'">
                 <ShowKesehatan :kesehatan="props.item.kesehatan || null" />
             </div>
             <div v-if="activeTab === 'dokumen-data'">
-                <ShowDokumen
-                  :dokumen-list="mappedDokumen"
-                  :tenaga_pendukung-id="props.item.id"
-                />
+                <ShowDokumen :dokumen-list="mappedDokumen" :tenaga_pendukung-id="props.item.id" />
             </div>
         </template>
     </PageShow>
-</template> 
+</template>

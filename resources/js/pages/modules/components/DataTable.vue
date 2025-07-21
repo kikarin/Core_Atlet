@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import RowActions from '@/pages/modules/components/tables/RowActions.vue';
-import * as LucideIcons from 'lucide-vue-next';
 
 import { computed, type PropType } from 'vue';
 import type { Column, Sort } from './datatable/types';
@@ -39,7 +38,7 @@ const selectLabel = computed(() => {
 <template>
     <div class="space-y-4">
         <!-- Search dan Length -->
-        <div class="flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
+        <div class="ml-1.5 flex flex-col flex-wrap items-center justify-center gap-4 text-center sm:flex-row sm:justify-between">
             <!-- Length -->
             <div v-if="!props.disableLength" class="ml-2 flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Show</span>
@@ -60,7 +59,7 @@ const selectLabel = computed(() => {
             </div>
 
             <!-- Search (selalu tampil di kanan) -->
-            <div v-if="!props.hideSearch" class="w-full sm:w-64">
+            <div v-if="!props.hideSearch" class="mr-2 w-full sm:w-64">
                 <Input :model-value="props.search" @update:model-value="(val) => emit('update:search', val)" placeholder="Search..." class="w-full" />
             </div>
         </div>
@@ -84,7 +83,7 @@ const selectLabel = computed(() => {
                                     <div class="bg-primary h-3 w-3 scale-0 transform rounded-sm transition-all peer-checked:scale-100"></div>
                                 </label>
                             </TableHead>
-                            <TableHead class="w-28 text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">Actions</TableHead>
+                            <TableHead class="w-28 px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">Actions</TableHead>
                             <TableHead
                                 v-for="col in visibleColumns"
                                 :key="col.key"
@@ -103,10 +102,10 @@ const selectLabel = computed(() => {
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="(row, index) in props.rows" :key="index" class="hover:bg-muted/40 border-t transition">
-                            <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
+                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 {{ (props.page - 1) * props.perPage + index + 1 }}
                             </TableCell>
-                            <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
+                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 <label
                                     class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
                                 >
@@ -127,7 +126,7 @@ const selectLabel = computed(() => {
                                     </svg>
                                 </label>
                             </TableCell>
-                            <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
+                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 <RowActions
                                     v-if="actions(row).length > 0"
                                     :actions="actions(row)"
@@ -141,15 +140,10 @@ const selectLabel = computed(() => {
                                 :key="col.key"
                                 :class="typeof col.className === 'function' ? col.className(row) : col.className"
                             >
-                                <component
-                                    v-if="col.key === 'icon' && row[col.key] && row[col.key] in LucideIcons"
-                                    :is="LucideIcons[row[col.key] as keyof typeof LucideIcons]"
-                                    class="text-muted-foreground h-4 w-4"
-                                />
-                                <span v-else>
+                                <slot :name="`cell-${col.key}`" :row="row">
                                     <span v-if="typeof col.format === 'function'" v-html="col.format(row)"></span>
                                     <span v-else>{{ row[col.key] }}</span>
-                                </span>
+                                </slot>
                             </TableCell>
                         </TableRow>
                     </TableBody>

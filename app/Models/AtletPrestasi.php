@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\MstTingkat;
 
 class AtletPrestasi extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'atlet_prestasi';
+    protected $table   = 'atlet_prestasi';
     protected $guarded = [];
 
     protected $fillable = [
@@ -33,7 +35,7 @@ class AtletPrestasi extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Atlet Prestasi");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Prestasi');
     }
 
     public function atlet()
@@ -45,4 +47,4 @@ class AtletPrestasi extends Model
     {
         return $this->belongsTo(MstTingkat::class, 'tingkat_id');
     }
-} 
+}

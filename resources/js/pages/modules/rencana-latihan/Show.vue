@@ -26,9 +26,15 @@ const fields = computed(() => [
 ]);
 
 const actionFields = computed(() => [
-    { label: 'Created At', value: dataItem.value.created_at ? new Date(dataItem.value.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-' },
+    {
+        label: 'Created At',
+        value: dataItem.value.created_at ? new Date(dataItem.value.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+    },
     { label: 'Created By', value: dataItem.value.created_by_user?.name || '-' },
-    { label: 'Updated At', value: dataItem.value.updated_at ? new Date(dataItem.value.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-' },
+    {
+        label: 'Updated At',
+        value: dataItem.value.updated_at ? new Date(dataItem.value.updated_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) : '-',
+    },
     { label: 'Updated By', value: dataItem.value.updated_by_user?.name || '-' },
 ]);
 
@@ -55,4 +61,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

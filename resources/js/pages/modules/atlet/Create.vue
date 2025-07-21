@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 // import AppTabs from '@/components/AppTabs.vue'; // Remove direct import
-import Form from './Form.vue';
-import FormOrangTua from './FormOrangTua.vue';
-import FormSertifikat from './sertifikat/Form.vue';
-import FormPrestasi from './prestasi/Form.vue';
 import FormDokumen from './dokumen/Form.vue';
+import Form from './Form.vue';
 import FormKesehatan from './FormKesehatan.vue';
+import FormOrangTua from './FormOrangTua.vue';
+import FormPrestasi from './prestasi/Form.vue';
+import FormSertifikat from './sertifikat/Form.vue';
 
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const activeTab = ref('atlet-data');
 
@@ -60,22 +60,20 @@ const tabsConfig = computed(() => [
     {
         value: 'dokumen-data',
         label: 'Dokumen',
-        component: FormDokumen, 
+        component: FormDokumen,
         props: { atletId: null, mode: 'create' },
         disabled: true,
     },
     {
         value: 'kesehatan-data',
         label: 'Kesehatan',
-        component: FormKesehatan, 
+        component: FormKesehatan,
         props: { atletId: null, mode: 'create' },
         disabled: true,
     },
 ]);
-
 </script>
 
 <template>
-    <PageCreate :title="dynamicTitle" :breadcrumbs="breadcrumbs" back-url="/atlet" :tabs-config="tabsConfig"
-        v-model:activeTabValue="activeTab" />
+    <PageCreate :title="dynamicTitle" :breadcrumbs="breadcrumbs" back-url="/atlet" :tabs-config="tabsConfig" v-model:activeTabValue="activeTab" />
 </template>

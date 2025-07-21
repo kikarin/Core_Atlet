@@ -12,7 +12,11 @@ const breadcrumbs = [
 </script>
 
 <template>
-    <PageCreate title="Tambah Rencana Latihan" :breadcrumbs="breadcrumbs" :back-url="`/program-latihan/${props.infoHeader.program_latihan_id}/rencana-latihan`">
+    <PageCreate
+        title="Tambah Rencana Latihan"
+        :breadcrumbs="breadcrumbs"
+        :back-url="`/program-latihan/${props.infoHeader.program_latihan_id}/rencana-latihan`"
+    >
         <Form mode="create" :info-header="infoHeader" />
     </PageCreate>
-</template> 
+</template>

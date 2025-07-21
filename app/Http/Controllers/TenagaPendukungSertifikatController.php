@@ -46,7 +46,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
     public function store(TenagaPendukungSertifikatRequest $request, $tenaga_pendukung_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +59,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
     public function update(TenagaPendukungSertifikatRequest $request, $tenaga_pendukung_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -109,7 +109,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
         }
         return Inertia::render('modules/tenaga-pendukung/sertifikat/Edit', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $sertifikat,
+            'item'              => $sertifikat,
         ]);
     }
 
@@ -133,7 +133,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
         }
         return Inertia::render('modules/tenaga-pendukung/sertifikat/Show', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $sertifikat,
+            'item'              => $sertifikat,
         ]);
     }
-} 
+}

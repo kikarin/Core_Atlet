@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useToast } from '@/components/ui/toast/useToast';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
+import { useToast } from '@/components/ui/toast/useToast';
 import ButtonsForm from '@/pages/modules/base-page/ButtonsForm.vue';
+import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
 import { router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
 import axios from 'axios';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     caborKategori: {
@@ -65,11 +65,13 @@ const columns = [
         key: 'tanggal_lahir',
         label: 'Tanggal Lahir',
         format: (row: any) => {
-            return row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            }) : '-';
+            return row.tanggal_lahir
+                ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                  })
+                : '-';
         },
     },
     { key: 'no_hp', label: 'No HP' },
@@ -120,7 +122,7 @@ const toggleSelect = (atletId: number) => {
 // Toggle select all
 const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-        selectedAtletIds.value = atletList.value.map(atlet => atlet.id);
+        selectedAtletIds.value = atletList.value.map((atlet) => atlet.id);
     } else {
         selectedAtletIds.value = [];
     }
@@ -152,6 +154,20 @@ const handlePerPageChange = (value: number) => {
 };
 
 const selectedStatus = ref(1); // 1 = aktif, 0 = nonaktif
+const posisiAtletOptions = ref<{ value: number; label: string }[]>([]);
+const selectedPosisiAtletId = ref<number | null>(null);
+
+// Fetch posisi atlet
+const fetchPosisiAtlet = async () => {
+    try {
+        const res = await axios.get('/api/posisi-atlet-list');
+        posisiAtletOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
+    } catch {
+        posisiAtletOptions.value = [];
+    }
+};
+
+fetchPosisiAtlet();
 
 // Handle save
 const handleSave = async () => {
@@ -160,19 +176,24 @@ const handleSave = async () => {
         return;
     }
     try {
-        await router.post(`/cabor-kategori/${props.caborKategori.id}/atlet/store-multiple`, {
-            atlet_ids: selectedAtletIds.value,
-            is_active: selectedStatus.value,
-        }, {
-            onSuccess: () => {
-                toast({ title: 'Atlet berhasil ditambahkan ke kategori', variant: 'success' });
-                router.visit(`/cabor-kategori/${props.caborKategori.id}/atlet`);
+        await router.post(
+            `/cabor-kategori/${props.caborKategori.id}/atlet/store-multiple`,
+            {
+                atlet_ids: selectedAtletIds.value,
+                is_active: selectedStatus.value,
+                posisi_atlet_id: selectedPosisiAtletId.value,
             },
-            onError: () => {
-                toast({ title: 'Gagal menambahkan atlet ke kategori', variant: 'destructive' });
-            }
-        });
-    } catch  {
+            {
+                onSuccess: () => {
+                    toast({ title: 'Atlet berhasil ditambahkan ke kategori', variant: 'success' });
+                    router.visit(`/cabor-kategori/${props.caborKategori.id}/atlet`);
+                },
+                onError: () => {
+                    toast({ title: 'Gagal menambahkan atlet ke kategori', variant: 'destructive' });
+                },
+            },
+        );
+    } catch {
         toast({ title: 'Gagal menambahkan atlet', variant: 'destructive' });
     }
 };
@@ -189,15 +210,15 @@ const getPageNumbers = () => {
     const maxPages = 5;
     let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2));
     const end = Math.min(totalPages.value, start + maxPages - 1);
-    
+
     if (end - start + 1 < maxPages) {
         start = Math.max(1, end - maxPages + 1);
     }
-    
+
     for (let i = start; i <= end; i++) {
         pages.push(i);
     }
-    
+
     return pages;
 };
 
@@ -209,18 +230,32 @@ fetchAvailableAtlet();
     <PageCreate title="Tambah Multiple Atlet" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori">
         <div class="space-y-6">
             <!-- Informasi Kategori -->
-            <div class="bg-card border rounded-lg p-4">
-                <h3 class="text-lg font-semibold mb-2">Informasi Kategori</h3>
+            <div class="bg-card rounded-lg border p-4">
+                <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-muted-foreground">Nama Kategori:</span>
+                        <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
                         <Badge variant="secondary">{{ caborKategori.nama }}</Badge>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-muted-foreground">Cabor:</span>
+                        <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                         <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
                     </div>
                 </div>
+            </div>
+
+            <!-- Pilih Posisi Atlet (opsional) -->
+            <div class="flex items-center gap-4">
+                <span class="text-muted-foreground text-sm font-medium">Posisi Atlet (opsional):</span>
+                <Select v-model="selectedPosisiAtletId" class="w-64">
+                    <SelectTrigger>
+                        <SelectValue placeholder="Pilih Posisi Atlet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem :value="null">- Tidak Ada -</SelectItem>
+                        <SelectItem v-for="opt in posisiAtletOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <!-- Selection Counter -->
@@ -236,9 +271,7 @@ fetchAvailableAtlet();
                             <SelectItem :value="0">Nonaktif</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Badge variant="secondary">
-                        {{ selectedAtletIds.length }} atlet dipilih
-                    </Badge>
+                    <Badge variant="secondary"> {{ selectedAtletIds.length }} atlet dipilih </Badge>
                 </div>
             </div>
 
@@ -263,23 +296,23 @@ fetchAvailableAtlet();
 
                 <!-- Search -->
                 <div class="w-full sm:w-64">
-                    <Input 
-                        :model-value="searchQuery" 
-                        @update:model-value="(val: any) => handleSearch(val as string)" 
-                        placeholder="Search..." 
-                        class="w-full" 
+                    <Input
+                        :model-value="searchQuery"
+                        @update:model-value="(val: any) => handleSearch(val as string)"
+                        placeholder="Search..."
+                        class="w-full"
                     />
                 </div>
             </div>
 
             <!-- Loading State -->
             <div v-if="loading" class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <span class="ml-2 text-sm text-muted-foreground">Memuat data atlet...</span>
+                <div class="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
+                <span class="text-muted-foreground ml-2 text-sm">Memuat data atlet...</span>
             </div>
 
             <!-- Empty State -->
-            <div v-else-if="atletList.length === 0" class="text-center py-8">
+            <div v-else-if="atletList.length === 0" class="py-8 text-center">
                 <p class="text-muted-foreground">Tidak ada atlet yang tersedia</p>
             </div>
 
@@ -291,7 +324,9 @@ fetchAvailableAtlet();
                             <TableRow>
                                 <TableHead class="w-12 text-center">No</TableHead>
                                 <TableHead class="w-10 text-center">
-                                    <label class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500">
+                                    <label
+                                        class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+                                    >
                                         <input
                                             type="checkbox"
                                             class="peer sr-only"
@@ -301,11 +336,7 @@ fetchAvailableAtlet();
                                         <div class="bg-primary h-3 w-3 scale-0 transform rounded-sm transition-all peer-checked:scale-100"></div>
                                     </label>
                                 </TableHead>
-                                <TableHead
-                                    v-for="col in columns"
-                                    :key="col.key"
-                                    class="cursor-pointer select-none"
-                                >
+                                <TableHead v-for="col in columns" :key="col.key" class="cursor-pointer select-none">
                                     <div class="flex items-center gap-1">
                                         {{ col.label }}
                                     </div>
@@ -314,11 +345,13 @@ fetchAvailableAtlet();
                         </TableHeader>
                         <TableBody>
                             <TableRow v-for="(atlet, index) in atletList" :key="atlet.id" class="hover:bg-muted/40 border-t transition">
-                                <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
+                                <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                     {{ (currentPage - 1) * perPage + index + 1 }}
                                 </TableCell>
-                                <TableCell class="text-center text-xs sm:text-sm px-2 sm:px-4 whitespace-normal break-words">
-                                    <label class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500">
+                                <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
+                                    <label
+                                        class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+                                    >
                                         <input
                                             type="checkbox"
                                             class="peer sr-only"
@@ -336,10 +369,7 @@ fetchAvailableAtlet();
                                         </svg>
                                     </label>
                                 </TableCell>
-                                <TableCell
-                                    v-for="col in columns"
-                                    :key="col.key"
-                                >
+                                <TableCell v-for="col in columns" :key="col.key">
                                     <span v-if="typeof col.format === 'function'" v-html="col.format(atlet)"></span>
                                     <span v-else>{{ atlet[col.key] }}</span>
                                 </TableCell>
@@ -347,15 +377,21 @@ fetchAvailableAtlet();
                         </TableBody>
                     </Table>
                 </div>
-                
+
                 <!-- Pagination Info -->
-                <div class="text-muted-foreground flex flex-col items-center justify-center gap-2 border-t p-4 text-center text-sm md:flex-row md:justify-between">
+                <div
+                    class="text-muted-foreground flex flex-col items-center justify-center gap-2 border-t p-4 text-center text-sm md:flex-row md:justify-between"
+                >
                     <span>
-                        Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, total) }} of
-                        {{ total }} entries
+                        Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, total) }} of {{ total }} entries
                     </span>
                     <div class="flex flex-wrap items-center justify-center gap-2">
-                        <Button size="sm" :disabled="currentPage === 1" @click="handlePageChange(currentPage - 1)" class="bg-muted/40 text-foreground">
+                        <Button
+                            size="sm"
+                            :disabled="currentPage === 1"
+                            @click="handlePageChange(currentPage - 1)"
+                            class="bg-muted/40 text-foreground"
+                        >
                             Previous
                         </Button>
                         <div class="flex flex-wrap items-center gap-1">
@@ -397,4 +433,4 @@ fetchAvailableAtlet();
             />
         </div>
     </PageCreate>
-</template> 
+</template>

@@ -11,7 +11,7 @@ class CaborKategoriSeeder extends Seeder
     public function run(): void
     {
         $cabors = Cabor::pluck('id', 'nama');
-        $data = [
+        $data   = [
             // Sepak Bola
             ['cabor_id' => $cabors['Sepak Bola'] ?? null, 'nama' => 'Putra', 'deskripsi' => 'Sepak bola putra', 'jenis_kelamin' => 'L'],
             ['cabor_id' => $cabors['Sepak Bola'] ?? null, 'nama' => 'Putri', 'deskripsi' => 'Sepak bola putri', 'jenis_kelamin' => 'P'],
@@ -26,9 +26,9 @@ class CaborKategoriSeeder extends Seeder
             if ($item['cabor_id']) {
                 CaborKategori::firstOrCreate([
                     'cabor_id' => $item['cabor_id'],
-                    'nama' => $item['nama'],
+                    'nama'     => $item['nama'],
                 ], $item);
             }
         }
     }
-} 
+}

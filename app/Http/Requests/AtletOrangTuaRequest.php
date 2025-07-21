@@ -13,7 +13,7 @@ class AtletOrangTuaRequest extends FormRequest
     public function authorize(): bool
     {
         // Pastikan user terautentikasi dan memiliki izin yang sesuai jika diperlukan
-        return true; 
+        return true;
     }
 
     /**

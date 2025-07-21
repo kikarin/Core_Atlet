@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, watch, onMounted } from 'vue';
 import axios from 'axios';
-import { useToast } from '@/components/ui/toast/useToast';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
@@ -27,24 +27,28 @@ const formData = ref<Record<string, any>>({
 
 const formInputInitialData = computed(() => ({ ...formData.value }));
 
-const tingkatOptions = ref<{ value: number; label: string; }[]>([]);
+const tingkatOptions = ref<{ value: number; label: string }[]>([]);
 
-watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(formData.value, newVal);
-        if (props.atletId) {
-            formData.value.atlet_id = props.atletId;
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(formData.value, newVal);
+            if (props.atletId) {
+                formData.value.atlet_id = props.atletId;
+            }
         }
-    }
-}, { immediate: true, deep: true });
+    },
+    { immediate: true, deep: true },
+);
 
 onMounted(async () => {
     try {
         const res = await axios.get('/api/tingkat-list');
         tingkatOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
-        console.error("Gagal mengambil data tingkat", e);
-        toast({ title: "Gagal memuat daftar tingkat", variant: "destructive" });
+        console.error('Gagal mengambil data tingkat', e);
+        toast({ title: 'Gagal memuat daftar tingkat', variant: 'destructive' });
         tingkatOptions.value = [];
     }
 });
@@ -72,15 +76,11 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: props.redirectUrl ?? `/atlet/${props.atletId}/prestasi`
+        redirectUrl: props.redirectUrl ?? `/atlet/${props.atletId}/prestasi`,
     });
 };
 </script>
 
 <template>
-    <FormInput
-        :form-inputs="formInputs"
-        :initial-data="formInputInitialData"
-        @save="handleSave"
-    />
-</template> 
+    <FormInput :form-inputs="formInputs" :initial-data="formInputInitialData" @save="handleSave" />
+</template>

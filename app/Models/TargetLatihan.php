@@ -11,10 +11,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TargetLatihan extends Model
 {
-    use HasFactory, SoftDeletes, Blameable, LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+    use Blameable;
+    use LogsActivity;
 
-    protected $table = 'target_latihan';
-    protected $guarded = [];
+    protected $table    = 'target_latihan';
+    protected $guarded  = [];
     protected $fillable = [
         'program_latihan_id',
         'jenis_target',
@@ -50,6 +53,6 @@ class TargetLatihan extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Target Latihan");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Target Latihan');
     }
-} 
+}

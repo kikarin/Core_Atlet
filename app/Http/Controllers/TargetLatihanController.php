@@ -22,7 +22,7 @@ class TargetLatihanController extends Controller implements HasMiddleware
         $this->repository = $repository;
         $this->request    = $request;
         $this->initialize();
-        $this->route = 'target-latihan';
+        $this->route                          = 'target-latihan';
         $this->commonData['kode_first_menu']  = 'PROGRAM-LATIHAN';
         $this->commonData['kode_second_menu'] = 'TARGET-LATIHAN';
     }
@@ -70,11 +70,11 @@ class TargetLatihanController extends Controller implements HasMiddleware
             $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->find($request->program_latihan_id);
         }
         $data['infoHeader'] = [
-            'nama_program' => $programLatihan?->nama_program ?? '-',
-            'cabor_nama' => $programLatihan?->cabor?->nama ?? '-',
-            'periode_mulai' => $programLatihan?->periode_mulai ?? '-',
+            'nama_program'    => $programLatihan?->nama_program    ?? '-',
+            'cabor_nama'      => $programLatihan?->cabor?->nama    ?? '-',
+            'periode_mulai'   => $programLatihan?->periode_mulai   ?? '-',
             'periode_selesai' => $programLatihan?->periode_selesai ?? '-',
-            'jenis_target' => $request->jenis_target ?? '-',
+            'jenis_target'    => $request->jenis_target            ?? '-',
         ];
         return inertia('modules/target-latihan/Index', $data);
     }
@@ -94,11 +94,11 @@ class TargetLatihanController extends Controller implements HasMiddleware
             $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->find($request->program_latihan_id);
         }
         $data['infoHeader'] = [
-            'nama_program' => $programLatihan?->nama_program ?? '-',
-            'cabor_nama' => $programLatihan?->cabor?->nama ?? '-',
-            'periode_mulai' => $programLatihan?->periode_mulai ?? '-',
+            'nama_program'    => $programLatihan?->nama_program    ?? '-',
+            'cabor_nama'      => $programLatihan?->cabor?->nama    ?? '-',
+            'periode_mulai'   => $programLatihan?->periode_mulai   ?? '-',
             'periode_selesai' => $programLatihan?->periode_selesai ?? '-',
-            'jenis_target' => $request->jenis_target ?? '-',
+            'jenis_target'    => $request->jenis_target            ?? '-',
         ];
         $data = $this->repository->customCreateEdit($data);
         return inertia('modules/target-latihan/Create', $data);
@@ -162,21 +162,21 @@ class TargetLatihanController extends Controller implements HasMiddleware
     public function nestedIndex($program_id, $jenis_target, Request $request)
     {
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + [];
+        $data           = $this->commonData + [];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         // Filter by program_id & jenis_target
         $request->merge(['program_latihan_id' => $program_id, 'jenis_target' => $jenis_target]);
-        $data = $this->repository->customIndex($data);
+        $data               = $this->repository->customIndex($data);
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
             'cabor_kategori_nama' => $programLatihan->caborKategori ? $programLatihan->caborKategori->nama : null,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
-            'jenis_target' => $jenis_target,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
+            'jenis_target'        => $jenis_target,
         ];
         return inertia('modules/target-latihan/Index', $data);
     }
@@ -184,18 +184,18 @@ class TargetLatihanController extends Controller implements HasMiddleware
     public function nestedCreate($program_id, $jenis_target)
     {
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + [ 'item' => null ];
+        $data           = $this->commonData + [ 'item' => null ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
             'cabor_kategori_nama' => $programLatihan->caborKategori ? $programLatihan->caborKategori->nama : null,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
-            'jenis_target' => $jenis_target,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
+            'jenis_target'        => $jenis_target,
         ];
         $data = $this->repository->customCreateEdit($data);
         return inertia('modules/target-latihan/Create', $data);
@@ -206,7 +206,7 @@ class TargetLatihanController extends Controller implements HasMiddleware
         $programLatihan = ProgramLatihan::findOrFail($program_id);
         $request->merge([
             'program_latihan_id' => $program_id,
-            'jenis_target' => $jenis_target,
+            'jenis_target'       => $jenis_target,
         ]);
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
@@ -221,20 +221,20 @@ class TargetLatihanController extends Controller implements HasMiddleware
 
     public function nestedEdit($program_id, $jenis_target, $target_id)
     {
-        $item = $this->repository->getById($target_id);
+        $item           = $this->repository->getById($target_id);
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + [ 'item' => $item ];
+        $data           = $this->commonData + [ 'item' => $item ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor ? $programLatihan->cabor->nama : '-',
             'cabor_kategori_nama' => $programLatihan->caborKategori ? $programLatihan->caborKategori->nama : null,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
-            'jenis_target' => $jenis_target,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
+            'jenis_target'        => $jenis_target,
         ];
         $data = $this->repository->customCreateEdit($data, $item);
         return inertia('modules/target-latihan/Edit', $data);
@@ -244,7 +244,7 @@ class TargetLatihanController extends Controller implements HasMiddleware
     {
         $request->merge([
             'program_latihan_id' => $program_id,
-            'jenis_target' => $jenis_target,
+            'jenis_target'       => $jenis_target,
         ]);
         $data = $this->repository->validateRequest($request);
         $this->repository->update($target_id, $data);
@@ -256,4 +256,4 @@ class TargetLatihanController extends Controller implements HasMiddleware
         $this->repository->delete($target_id);
         return redirect()->route('program-latihan.target-latihan.index', [$program_id, $jenis_target])->with('success', 'Target latihan berhasil dihapus!');
     }
-} 
+}

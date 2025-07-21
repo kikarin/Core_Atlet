@@ -31,9 +31,7 @@ const breadcrumbs = [
     { title: 'Detail Tingkat', href: `/data-master/tingkat/${props.item.id}` },
 ];
 
-const fields = computed(() => [
-    { label: 'Nama Tingkat', value: dataItem.value?.nama || '-' },
-]);
+const fields = computed(() => [{ label: 'Nama Tingkat', value: dataItem.value?.nama || '-' }]);
 
 const actionFields = [
     { label: 'Created At', value: new Date(props.item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },
@@ -71,4 +69,4 @@ console.log('Show data:', props.item);
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

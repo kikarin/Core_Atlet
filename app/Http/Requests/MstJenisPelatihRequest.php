@@ -43,4 +43,4 @@ class MstJenisPelatihRequest extends FormRequest
             'nama.unique'   => 'Nama jenis pelatih sudah ada.',
         ];
     }
-} 
+}

@@ -7,8 +7,6 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\AtletRequest;
-use App\Repositories\AtletOrangTuaRepository;
 
 class AtletRepository
 {
@@ -19,9 +17,9 @@ class AtletRepository
 
     public function __construct(Atlet $model, AtletOrangTuaRepository $atletOrangTuaRepository)
     {
-        $this->model            = $model;
+        $this->model                   = $model;
         $this->atletOrangTuaRepository = $atletOrangTuaRepository;
-        $this->with = [
+        $this->with                    = [
             'media',
             'created_by_user',
             'updated_by_user',
@@ -46,7 +44,7 @@ class AtletRepository
     public function customIndex($data)
     {
         $query = $this->model->query();
-        
+
         // Filter untuk exclude atlet yang sudah ada di kategori tertentu
         if (request('exclude_cabor_kategori_id')) {
             $excludeKategoriId = request('exclude_cabor_kategori_id');
@@ -62,23 +60,23 @@ class AtletRepository
         if (request('jenis_kelamin') && in_array(request('jenis_kelamin'), ['L', 'P'])) {
             $query->where('jenis_kelamin', request('jenis_kelamin'));
         }
-        
+
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nik', 'like', "%" . $search . "%")
-                  ->orWhere('nama', 'like', "%" . $search . "%")
-                  ->orWhere('email', 'like', "%" . $search . "%")
-                  ->orWhere('no_hp', 'like', "%" . $search . "%")
-                  ->orWhere('jenis_kelamin', 'like', "%" . $search . "%")
-                  ->orWhere('tempat_lahir', 'like', "%" . $search . "%")
-                  ->orWhere('alamat', 'like', "%" . $search . "%")
-                  ;
+                $q->where('nik', 'like', '%' . $search . '%')
+                  ->orWhere('nama', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('no_hp', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_kelamin', 'like', '%' . $search . '%')
+                  ->orWhere('tempat_lahir', 'like', '%' . $search . '%')
+                  ->orWhere('alamat', 'like', '%' . $search . '%')
+                ;
             });
         }
         if (request('sort')) {
-            $order     = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nik', 'nama', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'no_hp', 'email', 'is_active', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -91,7 +89,7 @@ class AtletRepository
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return $item->toArray();
             });
@@ -108,7 +106,7 @@ class AtletRepository
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
         $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $transformed     = collect($items->items())->map(function ($item) {
             return $item->toArray();
         });
         $data += [
@@ -137,12 +135,12 @@ class AtletRepository
             $data['created_by'] = $userId;
         }
         $data['updated_by'] = $userId;
-        
+
         Log::info('AtletRepository: customDataCreateUpdate', [
-            'data' => $data,
-            'method' => is_null($record) ? 'create' : 'update'
+            'data'   => $data,
+            'method' => is_null($record) ? 'create' : 'update',
         ]);
-        
+
         return $data;
     }
 
@@ -152,10 +150,10 @@ class AtletRepository
             DB::beginTransaction();
 
             Log::info('AtletRepository: Starting file upload process', [
-                'method' => $method,
-                'has_file' => isset($data['file']),
-                'file_data' => $data['file'] ? 'File exists' : 'No file',
-                'is_delete_foto' => @$data['is_delete_foto']
+                'method'         => $method,
+                'has_file'       => isset($data['file']),
+                'file_data'      => $data['file'] ? 'File exists' : 'No file',
+                'is_delete_foto' => @$data['is_delete_foto'],
             ]);
 
             // Handle file upload
@@ -168,29 +166,29 @@ class AtletRepository
                 Log::info('AtletRepository: Adding media file', [
                     'file_name' => $data['file']->getClientOriginalName(),
                     'file_size' => $data['file']->getSize(),
-                    'model_id' => $model->id
+                    'model_id'  => $model->id,
                 ]);
-                
+
                 $media = $model->addMedia($data['file'])
                       ->usingName($data['nama'])
                       ->toMediaCollection('images');
-                      
+
                 Log::info('AtletRepository: Media added successfully', [
-                    'media_id' => $media->id,
+                    'media_id'  => $media->id,
                     'file_name' => $media->file_name,
-                    'disk' => $media->disk,
-                    'path' => $media->getPath()
+                    'disk'      => $media->disk,
+                    'path'      => $media->getPath(),
                 ]);
             }
 
             // Handle AtletOrangTua data
-            $atletOrangTuaData = [];
+            $atletOrangTuaData   = [];
             $atletOrangTuaFields = [
                 'nama_ibu_kandung', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'alamat_ibu', 'no_hp_ibu', 'pekerjaan_ibu',
                 'nama_ayah_kandung', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'alamat_ayah', 'no_hp_ayah', 'pekerjaan_ayah',
                 'nama_wali', 'tempat_lahir_wali', 'tanggal_lahir_wali', 'alamat_wali', 'no_hp_wali', 'pekerjaan_wali',
             ];
-            
+
             foreach ($atletOrangTuaFields as $field) {
                 if (isset($data[$field])) {
                     $atletOrangTuaData[$field] = $data[$field];
@@ -216,7 +214,7 @@ class AtletRepository
             DB::rollback();
             Log::error('AtletRepository: Error during file upload or AtletOrangTua save', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }

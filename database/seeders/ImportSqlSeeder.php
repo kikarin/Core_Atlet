@@ -20,7 +20,7 @@ class ImportSqlSeeder extends Seeder
         try {
 
             $path = database_path('sql/kecamatan_kelurahan.sql');
-            $sql = File::get($path);
+            $sql  = File::get($path);
             DB::unprepared($sql);  // Menjalankan perintah SQL
 
             // Pesan sukses

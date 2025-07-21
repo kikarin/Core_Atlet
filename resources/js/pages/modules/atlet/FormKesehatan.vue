@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, onMounted, computed, watch } from 'vue';
-import axios from 'axios';
-import { useToast } from '@/components/ui/toast/useToast';
 import { usePage } from '@inertiajs/vue3';
+import axios from 'axios';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
@@ -38,19 +38,23 @@ const formInputInitialData = computed(() => {
     return { ...formData.value };
 });
 
-watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(formData.value, newVal);
-        if (props.atletId) {
-            formData.value.atlet_id = props.atletId;
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(formData.value, newVal);
+            if (props.atletId) {
+                formData.value.atlet_id = props.atletId;
+            }
         }
-    }
-}, { immediate: true, deep: true });
+    },
+    { immediate: true, deep: true },
+);
 
 onMounted(async () => {
     const flashedKesehatanId = (page.props.flash as FlashMessages)?.kesehatanId;
     if (flashedKesehatanId) {
-        console.log("Flashed Kesehatan ID detected:", flashedKesehatanId);
+        console.log('Flashed Kesehatan ID detected:', flashedKesehatanId);
         formData.value.id = flashedKesehatanId;
     }
 
@@ -59,14 +63,14 @@ onMounted(async () => {
             const res = await axios.get(`/atlet/${props.atletId}/kesehatan`);
             if (res.data) {
                 Object.assign(formData.value, res.data);
-                console.log("Atlet/FormKesehatan.vue: Fetched existing kesehatan data and updated formData:", formData.value);
+                console.log('Atlet/FormKesehatan.vue: Fetched existing kesehatan data and updated formData:', formData.value);
             } else {
-                console.log("Atlet/FormKesehatan.vue: No existing kesehatan data found for atlet_id:", props.atletId);
+                console.log('Atlet/FormKesehatan.vue: No existing kesehatan data found for atlet_id:', props.atletId);
             }
         } catch (e: any) {
-            console.error("Gagal mengambil data atlet kesehatan", e);
+            console.error('Gagal mengambil data atlet kesehatan', e);
             if (e.response && e.response.status !== 404) {
-                toast({ title: "Terjadi kesalahan saat memuat data kesehatan atlet", variant: "destructive" });
+                toast({ title: 'Terjadi kesalahan saat memuat data kesehatan atlet', variant: 'destructive' });
             }
         }
     }
@@ -75,27 +79,44 @@ onMounted(async () => {
 const formInputs = computed(() => [
     { name: 'tinggi_badan', label: 'Tinggi Badan (cm)', type: 'number' as const, placeholder: 'Masukkan tinggi badan', min: 0 },
     { name: 'berat_badan', label: 'Berat Badan (kg)', type: 'number' as const, placeholder: 'Masukkan berat badan', min: 0 },
-    { name: 'penglihatan', label: 'Penglihatan', type: 'select' as const, placeholder: 'Pilih kondisi penglihatan', options: [
-        { value: 'Normal', label: 'Normal' },
-        { value: 'Minus', label: 'Minus' },
-        { value: 'Plus', label: 'Plus' },
-        { value: 'Silinder', label: 'Silinder' },
-        { value: 'Buta Warna', label: 'Buta Warna' },
-        { value: 'Rabun Jauh', label: 'Rabun Jauh' },
-        { value: 'Rabun Dekat', label: 'Rabun Dekat' },
-        { value: 'Astigmatisma', label: 'Astigmatisma' },
-        { value: 'Presbiopi', label: 'Presbiopi' },
-        { value: 'Lainnya', label: 'Lainnya' },
-    ] },
-    { name: 'pendengaran', label: 'Pendengaran', type: 'select' as const, placeholder: 'Pilih kondisi pendengaran', options: [
-        { value: 'Normal', label: 'Normal' },
-        { value: 'Gangguan Ringan', label: 'Gangguan Ringan' },
-        { value: 'Gangguan Sedang', label: 'Gangguan Sedang' },
-        { value: 'Gangguan Berat', label: 'Gangguan Berat' },
-        { value: 'Tuli', label: 'Tuli' },
-        { value: 'Lainnya', label: 'Lainnya' },
-    ] },
-    { name: 'riwayat_penyakit', label: 'Riwayat Penyakit', type: 'textarea' as const, placeholder: 'Kosongkan jika tidak mempunyai riwayat penyakit' },
+    {
+        name: 'penglihatan',
+        label: 'Penglihatan',
+        type: 'select' as const,
+        placeholder: 'Pilih kondisi penglihatan',
+        options: [
+            { value: 'Normal', label: 'Normal' },
+            { value: 'Minus', label: 'Minus' },
+            { value: 'Plus', label: 'Plus' },
+            { value: 'Silinder', label: 'Silinder' },
+            { value: 'Buta Warna', label: 'Buta Warna' },
+            { value: 'Rabun Jauh', label: 'Rabun Jauh' },
+            { value: 'Rabun Dekat', label: 'Rabun Dekat' },
+            { value: 'Astigmatisma', label: 'Astigmatisma' },
+            { value: 'Presbiopi', label: 'Presbiopi' },
+            { value: 'Lainnya', label: 'Lainnya' },
+        ],
+    },
+    {
+        name: 'pendengaran',
+        label: 'Pendengaran',
+        type: 'select' as const,
+        placeholder: 'Pilih kondisi pendengaran',
+        options: [
+            { value: 'Normal', label: 'Normal' },
+            { value: 'Gangguan Ringan', label: 'Gangguan Ringan' },
+            { value: 'Gangguan Sedang', label: 'Gangguan Sedang' },
+            { value: 'Gangguan Berat', label: 'Gangguan Berat' },
+            { value: 'Tuli', label: 'Tuli' },
+            { value: 'Lainnya', label: 'Lainnya' },
+        ],
+    },
+    {
+        name: 'riwayat_penyakit',
+        label: 'Riwayat Penyakit',
+        type: 'textarea' as const,
+        placeholder: 'Kosongkan jika tidak mempunyai riwayat penyakit',
+    },
     { name: 'alergi', label: 'Alergi', type: 'textarea' as const, placeholder: 'Kosongkan jika tidak mempunyai alergi' },
 ]);
 
@@ -128,9 +149,5 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 </script>
 
 <template>
-    <FormInput
-        :form-inputs="formInputs"
-        :initial-data="formInputInitialData"
-        @save="handleSave"
-    />
-</template> 
+    <FormInput :form-inputs="formInputs" :initial-data="formInputInitialData" @save="handleSave" />
+</template>

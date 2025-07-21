@@ -8,7 +8,6 @@ use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Inertia\Inertia;
 use App\Models\CaborKategori;
 
 class CaborKategoriController extends Controller implements HasMiddleware
@@ -95,7 +94,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:cabor_kategori,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -149,4 +148,4 @@ class CaborKategoriController extends Controller implements HasMiddleware
             ->get();
         return response()->json($data);
     }
-} 
+}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 import { router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
@@ -57,10 +57,6 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 
 <template>
     <div>
-        <FormInput 
-            :form-inputs="formInputs" 
-            :initial-data="formData" 
-            @save="handleSave"
-        />
+        <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
     </div>
-</template> 
+</template>

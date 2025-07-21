@@ -82,7 +82,7 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
         return Inertia::render('modules/data-master/jenis-tenaga-pendukung/Show', [
             'item' => $itemArray,
@@ -98,7 +98,7 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_jenis_tenaga_pendukung,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -137,4 +137,4 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
         }
         return inertia('modules/data-master/jenis-tenaga-pendukung/Edit', $data);
     }
-} 
+}

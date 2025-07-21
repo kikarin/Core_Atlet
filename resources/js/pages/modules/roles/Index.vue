@@ -95,6 +95,6 @@ const deleteRole = async (row: any) => {
         api-endpoint="/api/roles"
         ref="pageIndex"
         :on-toast="toast"
-        :on-delete-row-confirm="deleteRole"
+        :on-delete-row="deleteRole"
     />
 </template>

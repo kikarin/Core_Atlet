@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import { computed } from 'vue';
-import { Badge } from '@/components/ui/badge';
 
 const { save } = useHandleFormSave();
 
@@ -77,28 +77,30 @@ const handleSave = (form: any) => {
 </script>
 
 <template>
-    <div class="bg-card border rounded-lg p-4 mb-4">
-        <h3 class="text-lg font-semibold mb-2">Informasi Program Latihan</h3>
+    <div class="bg-card mb-4 rounded-lg border p-4">
+        <h3 class="mb-2 text-lg font-semibold">Informasi Program Latihan</h3>
         <div class="space-y-2">
             <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-muted-foreground">Nama Program:</span>
+                <span class="text-muted-foreground text-sm font-medium">Nama Program:</span>
                 <Badge variant="secondary">{{ info.nama_program }}</Badge>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-muted-foreground">Cabor:</span>
+                <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                 <Badge variant="outline">
-                  {{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template>
+                    {{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template>
                 </Badge>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-muted-foreground">Periode:</span>
-                <Badge variant="secondary">{{ info.periode_mulai && info.periode_selesai ? `${info.periode_mulai} s/d ${info.periode_selesai}` : '-' }}</Badge>
+                <span class="text-muted-foreground text-sm font-medium">Periode:</span>
+                <Badge variant="secondary">{{
+                    info.periode_mulai && info.periode_selesai ? `${info.periode_mulai} s/d ${info.periode_selesai}` : '-'
+                }}</Badge>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-muted-foreground">Jenis Target:</span>
+                <span class="text-muted-foreground text-sm font-medium">Jenis Target:</span>
                 <Badge variant="outline">{{ info.jenis_target }}</Badge>
             </div>
         </div>
     </div>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
-</template> 
+</template>

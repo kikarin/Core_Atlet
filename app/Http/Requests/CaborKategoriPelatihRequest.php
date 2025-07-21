@@ -22,12 +22,12 @@ class CaborKategoriPelatihRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'cabor_id' => 'required|exists:cabor,id',
+            'cabor_id'          => 'required|exists:cabor,id',
             'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-            'pelatih_ids' => 'required|array|min:1',
-            'pelatih_ids.*' => 'required|exists:pelatihs,id',
-            'jenis_pelatih_id' => 'required|exists:mst_jenis_pelatih,id',
-            'is_active' => 'required|boolean',
+            'pelatih_ids'       => 'required|array|min:1',
+            'pelatih_ids.*'     => 'required|exists:pelatihs,id',
+            'jenis_pelatih_id'  => 'required|exists:mst_jenis_pelatih,id',
+            'is_active'         => 'required|boolean',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -43,17 +43,17 @@ class CaborKategoriPelatihRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'cabor_id.required' => 'Cabor harus dipilih.',
-            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
+            'cabor_id.required'          => 'Cabor harus dipilih.',
+            'cabor_id.exists'            => 'Cabor yang dipilih tidak valid.',
             'cabor_kategori_id.required' => 'Kategori harus dipilih.',
-            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
-            'pelatih_ids.required' => 'Pelatih harus dipilih minimal 1.',
-            'pelatih_ids.array' => 'Pelatih harus berupa array.',
-            'pelatih_ids.min' => 'Pelatih harus dipilih minimal 1.',
-            'pelatih_ids.*.required' => 'Pelatih tidak boleh kosong.',
-            'pelatih_ids.*.exists' => 'Pelatih yang dipilih tidak valid.',
-            'jenis_pelatih_id.required' => 'Jenis pelatih harus dipilih.',
-            'jenis_pelatih_id.exists' => 'Jenis pelatih yang dipilih tidak valid.',
+            'cabor_kategori_id.exists'   => 'Kategori yang dipilih tidak valid.',
+            'pelatih_ids.required'       => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.array'          => 'Pelatih harus berupa array.',
+            'pelatih_ids.min'            => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.*.required'     => 'Pelatih tidak boleh kosong.',
+            'pelatih_ids.*.exists'       => 'Pelatih yang dipilih tidak valid.',
+            'jenis_pelatih_id.required'  => 'Jenis pelatih harus dipilih.',
+            'jenis_pelatih_id.exists'    => 'Jenis pelatih yang dipilih tidak valid.',
         ];
     }
-} 
+}

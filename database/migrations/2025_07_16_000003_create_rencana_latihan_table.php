@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up(): void
     {
         Schema::create('rencana_latihan', function (Blueprint $table) {
@@ -38,6 +37,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('rencana_latihan_id');
             $table->unsignedBigInteger('atlet_id');
+            $table->string('kehadiran')->nullable();
+            $table->text('keterangan')->nullable();
+
             $table->foreign('rencana_latihan_id')->references('id')->on('rencana_latihan')->onDelete('cascade');
             $table->foreign('atlet_id')->references('id')->on('atlets')->onDelete('cascade');
         });
@@ -47,6 +49,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('rencana_latihan_id');
             $table->unsignedBigInteger('pelatih_id');
+            $table->string('kehadiran')->nullable();
+            $table->text('keterangan')->nullable();
+
             $table->foreign('rencana_latihan_id')->references('id')->on('rencana_latihan')->onDelete('cascade');
             $table->foreign('pelatih_id')->references('id')->on('pelatihs')->onDelete('cascade');
         });
@@ -56,6 +61,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('rencana_latihan_id');
             $table->unsignedBigInteger('tenaga_pendukung_id');
+            $table->string('kehadiran')->nullable();
+            $table->text('keterangan')->nullable();
+
             $table->foreign('rencana_latihan_id')->references('id')->on('rencana_latihan')->onDelete('cascade');
             $table->foreign('tenaga_pendukung_id')->references('id')->on('tenaga_pendukungs')->onDelete('cascade');
         });
@@ -69,4 +77,4 @@ return new class extends Migration
         Schema::dropIfExists('rencana_latihan_target_latihan');
         Schema::dropIfExists('rencana_latihan');
     }
-}; 
+};

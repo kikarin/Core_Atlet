@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\DB;
 
 class TenagaPendukungImport implements ToCollection, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
-    private $rowCount = 0;
+    private $rowCount     = 0;
     private $successCount = 0;
-    private $errorCount = 0;
-    private $errors = [];
+    private $errorCount   = 0;
+    private $errors       = [];
 
     private function convertExcelDate($excelDate)
     {
-        if (empty($excelDate)) return null;
+        if (empty($excelDate)) {
+            return null;
+        }
         if (is_string($excelDate) && strtotime($excelDate) !== false) {
             return date('Y-m-d', strtotime($excelDate));
         }
@@ -37,19 +39,19 @@ class TenagaPendukungImport implements ToCollection, WithHeadingRow, WithBatchIn
             $this->rowCount++;
             DB::beginTransaction();
             try {
-                $tp = TenagaPendukung::withTrashed()->where('nik', $row['nik'])->first();
+                $tp   = TenagaPendukung::withTrashed()->where('nik', $row['nik'])->first();
                 $data = [
-                    'nik' => $row['nik'] ?? null,
-                    'nama' => $row['nama'] ?? null,
+                    'nik'           => $row['nik']           ?? null,
+                    'nama'          => $row['nama']          ?? null,
                     'jenis_kelamin' => $row['jenis_kelamin'] ?? null,
-                    'tempat_lahir' => $row['tempat_lahir'] ?? null,
+                    'tempat_lahir'  => $row['tempat_lahir']  ?? null,
                     'tanggal_lahir' => $this->convertExcelDate($row['tanggal_lahir'] ?? null),
-                    'alamat' => $row['alamat'] ?? null,
-                    'kecamatan_id' => $row['kecamatan_id'] ?? null,
-                    'kelurahan_id' => $row['kelurahan_id'] ?? null,
-                    'no_hp' => $row['no_hp'] ?? null,
-                    'email' => $row['email'] ?? null,
-                    'is_active' => $row['is_active'] ?? 1,
+                    'alamat'        => $row['alamat']       ?? null,
+                    'kecamatan_id'  => $row['kecamatan_id'] ?? null,
+                    'kelurahan_id'  => $row['kelurahan_id'] ?? null,
+                    'no_hp'         => $row['no_hp']        ?? null,
+                    'email'         => $row['email']        ?? null,
+                    'is_active'     => $row['is_active']    ?? 1,
                 ];
                 if ($tp) {
                     if ($tp->trashed()) {
@@ -66,15 +68,15 @@ class TenagaPendukungImport implements ToCollection, WithHeadingRow, WithBatchIn
             } catch (\Exception $e) {
                 DB::rollBack();
                 $this->errorCount++;
-                $errorMessage = $this->getUserFriendlyErrorMessage($e);
+                $errorMessage   = $this->getUserFriendlyErrorMessage($e);
                 $this->errors[] = [
-                    'row' => $this->rowCount,
+                    'row'   => $this->rowCount,
                     'error' => $errorMessage,
-                    'data' => $row
+                    'data'  => $row,
                 ];
                 Log::error('Error importing row ' . $this->rowCount . ': ' . $e->getMessage(), [
-                    'row' => $row,
-                    'exception' => $e
+                    'row'       => $row,
+                    'exception' => $e,
                 ]);
                 continue;
             }
@@ -87,7 +89,7 @@ class TenagaPendukungImport implements ToCollection, WithHeadingRow, WithBatchIn
         $message = $e->getMessage();
         Log::error('Import Error: ' . $message, [
             'exception' => get_class($e),
-            'trace' => $e->getTraceAsString()
+            'trace'     => $e->getTraceAsString(),
         ]);
         if (str_contains($message, 'Integrity constraint violation')) {
             if (str_contains($message, 'Duplicate entry') && str_contains($message, 'tenaga_pendukungs_nik_unique')) {
@@ -127,10 +129,28 @@ class TenagaPendukungImport implements ToCollection, WithHeadingRow, WithBatchIn
         return 'Data tidak dapat disimpan: ' . $e->getMessage();
     }
 
-    public function batchSize(): int { return 100; }
-    public function chunkSize(): int { return 100; }
-    public function getRowCount(): int { return $this->rowCount; }
-    public function getSuccessCount(): int { return $this->successCount; }
-    public function getErrorCount(): int { return $this->errorCount; }
-    public function getErrors(): array { return $this->errors; }
-} 
+    public function batchSize(): int
+    {
+        return 100;
+    }
+    public function chunkSize(): int
+    {
+        return 100;
+    }
+    public function getRowCount(): int
+    {
+        return $this->rowCount;
+    }
+    public function getSuccessCount(): int
+    {
+        return $this->successCount;
+    }
+    public function getErrorCount(): int
+    {
+        return $this->errorCount;
+    }
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+}

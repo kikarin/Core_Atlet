@@ -8,10 +8,7 @@ const breadcrumbs = [
     { title: 'Kecamatan', href: '/data-master/kecamatan' },
 ];
 
-const columns = [
-    { key: 'id', label: 'ID', orderable: true },
-    { key: 'nama', label: 'Nama Kecamatan', orderable: true },
-];
+const columns = [{ key: 'nama', label: 'Nama Kecamatan', orderable: true }];
 
 const pageIndex = ref();
 const selected = ref<number[]>([]);
@@ -41,4 +38,3 @@ const actions = (row: any) => [
         :show-delete-selected="false"
     />
 </template>
-

@@ -8,18 +8,18 @@ use App\Repositories\AtletOrangTuaRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
 
 class AtletOrangTuaController extends Controller implements HasMiddleware
 {
     use BaseTrait;
     private $repository;
-    private $request; 
+    private $request;
 
     public function __construct(AtletOrangTuaRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = $request; 
+        $this->request    = $request;
         $this->initialize();
         $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
@@ -42,8 +42,8 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
     {
         Log::info('AtletOrangTuaController: START store method', ['atlet_id_route' => $atlet_id, 'request_all' => $request->all()]);
 
-        $data = $request->validated();
-        $data['atlet_id'] = $atlet_id; 
+        $data             = $request->validated();
+        $data['atlet_id'] = $atlet_id;
 
         Log::info('AtletOrangTuaController: store method - validated data', $data);
 
@@ -51,11 +51,11 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
 
         if ($existingOrangTua) {
             Log::info('AtletOrangTuaController: Existing record found, updating.', ['id' => $existingOrangTua->id]);
-            $model = $this->repository->update($existingOrangTua->id, $data);
+            $model   = $this->repository->update($existingOrangTua->id, $data);
             $message = 'Data orang tua/wali berhasil diperbarui!';
         } else {
             Log::info('AtletOrangTuaController: No existing record, creating new.');
-            $model = $this->repository->create($data);
+            $model   = $this->repository->create($data);
             $message = 'Data orang tua/wali berhasil ditambahkan!';
         }
 
@@ -85,8 +85,8 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
         Log::info('AtletOrangTuaController: START update method', ['atlet_id_route' => $atlet_id, 'id_orang_tua' => $id, 'request_all' => $request->all()]);
 
         try {
-            $data = $request->validated();
-            $data['atlet_id'] = $atlet_id; 
+            $data             = $request->validated();
+            $data['atlet_id'] = $atlet_id;
 
             Log::info('AtletOrangTuaController: update method - validated data', $data);
 
@@ -113,13 +113,13 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
         $atletOrangTua = $this->repository->getByAtletId($atletId);
 
         if (!$atletOrangTua) {
-            return response()->json(null, 200); 
+            return response()->json(null, 200);
         }
 
         return response()->json($atletOrangTua);
     }
 
-    public function destroy($atlet_id, $id) 
+    public function destroy($atlet_id, $id)
     {
         Log::info('AtletOrangTuaController: START destroy method', ['atlet_id_route' => $atlet_id, 'id_orang_tua' => $id]);
 
@@ -132,4 +132,4 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
             return redirect()->back()->with('error', 'Gagal menghapus data orang tua/wali: ' . $e->getMessage());
         }
     }
-} 
+}

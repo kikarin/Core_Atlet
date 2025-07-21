@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, onMounted, computed, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { useToast } from '@/components/ui/toast/useToast';
-import { usePage } from '@inertiajs/vue3'; 
+import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
-const page = usePage(); 
+const page = usePage();
 
 interface FlashMessages {
     success?: string;
@@ -19,12 +19,12 @@ interface FlashMessages {
 const props = defineProps<{
     atletId: number | null; // ID atlet induk
     mode: 'create' | 'edit';
-    initialData?: any; 
+    initialData?: any;
 }>();
 
 const formData = ref<Record<string, any>>({
-    id: props.initialData?.id || undefined, 
-    atlet_id: props.atletId, 
+    id: props.initialData?.id || undefined,
+    atlet_id: props.atletId,
     nama_ibu_kandung: props.initialData?.nama_ibu_kandung || '',
     tempat_lahir_ibu: props.initialData?.tempat_lahir_ibu || '',
     tanggal_lahir_ibu: props.initialData?.tanggal_lahir_ibu || '',
@@ -52,20 +52,23 @@ const formInputInitialData = computed(() => {
     return { ...formData.value };
 });
 
-watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(formData.value, newVal);
-        if (props.atletId) {
-            formData.value.atlet_id = props.atletId;
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(formData.value, newVal);
+            if (props.atletId) {
+                formData.value.atlet_id = props.atletId;
+            }
         }
-    }
-}, { immediate: true, deep: true });
-
+    },
+    { immediate: true, deep: true },
+);
 
 onMounted(async () => {
     const flashedOrangTuaId = (page.props.flash as FlashMessages)?.orangTuaId;
     if (flashedOrangTuaId) {
-        console.log("Flashed Orang Tua ID detected:", flashedOrangTuaId);
+        console.log('Flashed Orang Tua ID detected:', flashedOrangTuaId);
         formData.value.id = flashedOrangTuaId;
     }
 
@@ -74,19 +77,18 @@ onMounted(async () => {
             const res = await axios.get(`/atlet/${props.atletId}/orang-tua`);
             if (res.data) {
                 Object.assign(formData.value, res.data);
-                console.log("FormOrangTua.vue: Fetched existing orang tua data and updated formData:", formData.value);
+                console.log('FormOrangTua.vue: Fetched existing orang tua data and updated formData:', formData.value);
             } else {
-                console.log("FormOrangTua.vue: No existing orang tua data found for atlet_id:", props.atletId);
+                console.log('FormOrangTua.vue: No existing orang tua data found for atlet_id:', props.atletId);
             }
         } catch (e: any) {
-            console.error("Gagal mengambil data atlet orang tua", e);
+            console.error('Gagal mengambil data atlet orang tua', e);
             if (e.response && e.response.status !== 404) {
-                toast({ title: "Terjadi kesalahan saat memuat data orang tua/wali", variant: "destructive" });
+                toast({ title: 'Terjadi kesalahan saat memuat data orang tua/wali', variant: 'destructive' });
             }
         }
     }
 });
-
 
 const formInputs = computed(() => [
     { name: 'nama_ibu_kandung', label: 'Nama Ibu Kandung', type: 'text' as const, placeholder: 'Masukkan nama ibu kandung' },
@@ -127,22 +129,18 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 
     save(formFields, {
         url: baseUrl,
-        mode: formData.value.id ? 'edit' : 'create', 
-        id: formData.value.id, 
+        mode: formData.value.id ? 'edit' : 'create',
+        id: formData.value.id,
         successMessage: formData.value.id ? 'Data orang tua/wali berhasil diperbarui!' : 'Data orang tua/wali berhasil ditambahkan!',
         errorMessage: formData.value.id ? 'Gagal memperbarui data orang tua/wali.' : 'Gagal menyimpan data orang tua/wali.',
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: `/atlet/${props.atletId}/edit?tab=orang-tua-data`, 
+        redirectUrl: `/atlet/${props.atletId}/edit?tab=orang-tua-data`,
     });
 };
 </script>
 
 <template>
-    <FormInput
-        :form-inputs="formInputs"
-        :initial-data="formInputInitialData" 
-        @save="handleSave"
-    />
+    <FormInput :form-inputs="formInputs" :initial-data="formInputInitialData" @save="handleSave" />
 </template>

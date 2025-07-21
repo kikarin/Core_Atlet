@@ -16,13 +16,14 @@ class CaborKategoriAtlet extends Model
     use SoftDeletes;
     use Blameable;
 
-    protected $table = 'cabor_kategori_atlet';
+    protected $table   = 'cabor_kategori_atlet';
     protected $guarded = [];
 
     protected $fillable = [
         'cabor_id',
         'cabor_kategori_id',
         'atlet_id',
+        'posisi_atlet_id',
         'is_active',
         'created_by',
         'updated_by',
@@ -35,7 +36,7 @@ class CaborKategoriAtlet extends Model
 
     public function getIsActiveBadgeAttribute()
     {
-        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $text  = $this->is_active ? 'Aktif' : 'Nonaktif';
         $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
         return "<span class='badge $badge'>$text</span>";
     }
@@ -61,6 +62,11 @@ class CaborKategoriAtlet extends Model
         return $this->belongsTo(Atlet::class, 'atlet_id');
     }
 
+    public function posisiAtlet()
+    {
+        return $this->belongsTo(MstPosisiAtlet::class, 'posisi_atlet_id');
+    }
+
     public function created_by_user()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -75,4 +81,4 @@ class CaborKategoriAtlet extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
-} 
+}

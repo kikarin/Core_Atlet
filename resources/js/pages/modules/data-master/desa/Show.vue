@@ -2,7 +2,17 @@
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { computed } from 'vue';
 
-const props = defineProps<{ item: { id: number; nama: string; id_kecamatan?: number; created_at?: string; updated_at?: string; created_by_user?: { name: string }; updated_by_user?: { name: string } } }>();
+const props = defineProps<{
+    item: {
+        id: number;
+        nama: string;
+        id_kecamatan?: number;
+        created_at?: string;
+        updated_at?: string;
+        created_by_user?: { name: string };
+        updated_by_user?: { name: string };
+    };
+}>();
 
 const breadcrumbs = [
     { title: 'Data Master', href: '/data-master' },
@@ -25,11 +35,5 @@ const actionFields = [
 </script>
 
 <template>
-    <PageShow
-        title="Desa/Kelurahan"
-        :breadcrumbs="breadcrumbs"
-        :fields="fields"
-        :action-fields="actionFields"
-        :back-url="'/data-master/desa'"
-    />
+    <PageShow title="Desa/Kelurahan" :breadcrumbs="breadcrumbs" :fields="fields" :action-fields="actionFields" :back-url="'/data-master/desa'" />
 </template>

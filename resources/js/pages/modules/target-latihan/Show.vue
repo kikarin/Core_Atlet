@@ -10,7 +10,12 @@ const props = defineProps<{ item: any }>();
 
 const dataItem = computed(() => props.item);
 
-const programId = computed(() => props.item?.program_latihan_id || props.item?.program_latihan?.id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
+const programId = computed(
+    () =>
+        props.item?.program_latihan_id ||
+        props.item?.program_latihan?.id ||
+        (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''),
+);
 const jenisTarget = computed(() => props.item?.jenis_target || (typeof window !== 'undefined' ? window.location.pathname.split('/')[4] : ''));
 
 const breadcrumbs = [
@@ -25,7 +30,13 @@ const fields = computed(() => [
     { label: 'Nilai Target', value: dataItem.value?.nilai_target || '-' },
     { label: 'Jenis Target', value: dataItem.value?.jenis_target || '-' },
     { label: 'Nama Program', value: dataItem.value?.program_latihan?.nama_program || '-' },
-    { label: 'Periode', value: dataItem.value?.program_latihan?.periode_mulai && dataItem.value?.program_latihan?.periode_selesai ? `${dataItem.value.program_latihan.periode_mulai} s/d ${dataItem.value.program_latihan.periode_selesai}` : '-' },
+    {
+        label: 'Periode',
+        value:
+            dataItem.value?.program_latihan?.periode_mulai && dataItem.value?.program_latihan?.periode_selesai
+                ? `${dataItem.value.program_latihan.periode_mulai} s/d ${dataItem.value.program_latihan.periode_selesai}`
+                : '-',
+    },
 ]);
 
 const actionFields = [
@@ -40,7 +51,7 @@ const handleEdit = () => {
 };
 
 const handleDelete = () => {
-    router.delete(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${props.item.id}` , {
+    router.delete(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${props.item.id}`, {
         onSuccess: () => {
             toast({ title: 'Data target latihan berhasil dihapus', variant: 'success' });
             router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}`);
@@ -62,4 +73,4 @@ const handleDelete = () => {
         :on-edit="handleEdit"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

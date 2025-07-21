@@ -46,7 +46,7 @@ class AtletSertifikatController extends Controller implements HasMiddleware
 
     public function store(AtletSertifikatRequest $request, $atlet_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +59,7 @@ class AtletSertifikatController extends Controller implements HasMiddleware
 
     public function update(AtletSertifikatRequest $request, $atlet_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -127,7 +127,7 @@ class AtletSertifikatController extends Controller implements HasMiddleware
         }
         return Inertia::render('modules/atlet/sertifikat/Show', [
             'atletId' => (int) $atlet_id,
-            'item' => $sertifikat,
+            'item'    => $sertifikat,
         ]);
     }
-} 
+}

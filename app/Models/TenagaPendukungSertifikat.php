@@ -13,9 +13,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class TenagaPendukungSertifikat extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
 
-    protected $table = 'tenaga_pendukung_sertifikat';
+    protected $table   = 'tenaga_pendukung_sertifikat';
     protected $guarded = [];
 
     protected $fillable = [
@@ -36,7 +40,7 @@ class TenagaPendukungSertifikat extends Model implements HasMedia
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Tenaga Pendukung Sertifikat");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Tenaga Pendukung Sertifikat');
     }
 
     public function tenaga_pendukung()
@@ -71,4 +75,4 @@ class TenagaPendukungSertifikat extends Model implements HasMedia
         }
         return null;
     }
-} 
+}

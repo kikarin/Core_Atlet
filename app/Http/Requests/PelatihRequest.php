@@ -49,7 +49,7 @@ class PelatihRequest extends FormRequest
 
         return $rules;
     }
-    
+
     /**
      * Prepare the data for validation.
      */
@@ -59,7 +59,7 @@ class PelatihRequest extends FormRequest
         $this->merge([
             'kecamatan_id' => $this->kecamatan_id ?: null,
             'kelurahan_id' => $this->kelurahan_id ?: null,
-            'is_active' => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
+            'is_active'    => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
         ]);
     }
-} 
+}

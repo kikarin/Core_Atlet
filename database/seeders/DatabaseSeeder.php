@@ -4,11 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\MstTingkat;
-use App\Models\TargetLatihan;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Exception;
 
 class DatabaseSeeder extends Seeder
 {
@@ -51,8 +47,12 @@ class DatabaseSeeder extends Seeder
         $this->call(TenagaPendukungDokumenSeeder::class);
         $this->call(MstJenisTenagaPendukungSeeder::class);
         $this->call(ProgramLatihanSeeder::class);
+        $this->call(MstPosisiAtletSeeder::class);
         $this->call(TargetLatihanSeeder::class);
         $this->call(RencanaLatihanSeeder::class);
+        $this->call(CaborKategoriAtletSeeder::class);
+        $this->call(CaborKategoriPelatihSeeder::class);
+        $this->call(CaborKategoriTenagaPendukungSeeder::class);
     }
 
 }

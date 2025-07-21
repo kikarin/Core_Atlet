@@ -14,7 +14,7 @@ class CaborRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nama' => 'required|string|max:255',
+            'nama'      => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -34,4 +34,4 @@ class CaborRequest extends FormRequest
             'nama.unique'   => 'Nama cabor sudah ada.',
         ];
     }
-} 
+}

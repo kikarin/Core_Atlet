@@ -10,19 +10,17 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Models\MstKecamatan;
-use App\Models\MstDesa;
-use App\Models\PelatihSertifikat;
-use App\Models\PelatihPrestasi;
-use App\Models\PelatihKesehatan;
-use App\Models\PelatihDokumen;
 
 class Pelatih extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
-    
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
+
     protected $guarded = [];
-    protected $table = "pelatihs";
+    protected $table   = 'pelatihs';
 
     protected $fillable = [
         'nik',
@@ -47,7 +45,7 @@ class Pelatih extends Model implements HasMedia
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Pelatih");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Pelatih');
     }
 
     public function registerMediaCollections(): void
@@ -117,4 +115,4 @@ class Pelatih extends Model implements HasMedia
     {
         return $this->hasOne(PelatihKesehatan::class, 'pelatih_id');
     }
-} 
+}

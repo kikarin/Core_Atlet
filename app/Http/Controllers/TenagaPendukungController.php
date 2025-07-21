@@ -10,7 +10,6 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\TenagaPendukungImport;
 
 class TenagaPendukungController extends Controller implements HasMiddleware
@@ -59,7 +58,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
     public function store(TenagaPendukungRequest $request)
     {
-        $data = $this->repository->validateRequest($request);
+        $data  = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
         return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil ditambahkan!');
     }
@@ -68,16 +67,16 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     {
         try {
             Log::info('TenagaPendukungController: update method called', [
-                'id' => $id,
-                'all_data' => $request->all(),
-                'validated_data' => $request->validated()
+                'id'             => $id,
+                'all_data'       => $request->all(),
+                'validated_data' => $request->validated(),
             ]);
             $data = $this->repository->validateRequest($request);
             if ($request->hasFile('file')) {
                 $data['file'] = $request->file('file');
             }
             Log::info('TenagaPendukungController: data after validation', [
-                'data' => $data
+                'data' => $data,
             ]);
             $model = $this->repository->update($id, $data);
             return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil diperbarui!');
@@ -128,7 +127,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
         $this->repository->delete_selected($request->ids);
         return response()->json(['message' => 'Tenaga Pendukung terpilih berhasil dihapus!']);
     }
-    
+
     public function import(Request $request)
     {
         Log::info('TenagaPendukungController: import method called', [
@@ -136,17 +135,17 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             'file_size' => $request->file('file')?->getSize(),
         ]);
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
         ]);
         try {
             $import = new TenagaPendukungImport();
             \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
             Log::info('TenagaPendukungController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count' => $import->getSuccessCount(),
-                'error_count' => $import->getErrorCount(),
+                'success_count'  => $import->getSuccessCount(),
+                'error_count'    => $import->getErrorCount(),
             ]);
-            $message = "Import berhasil! ";
+            $message = 'Import berhasil! ';
             if ($import->getSuccessCount() > 0) {
                 $message .= "Berhasil import {$import->getSuccessCount()} data.";
             }
@@ -156,23 +155,23 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => [
-                    'total_rows' => $import->getRowCount(),
+                'data'    => [
+                    'total_rows'    => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count' => $import->getErrorCount(),
-                    'errors' => $import->getErrors(),
-                ]
+                    'error_count'   => $import->getErrorCount(),
+                    'errors'        => $import->getErrors(),
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('TenagaPendukungController: import failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal import: ' . $e->getMessage(),
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
-} 
+}

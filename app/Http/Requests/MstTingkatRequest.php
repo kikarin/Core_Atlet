@@ -48,4 +48,4 @@ class MstTingkatRequest extends FormRequest
             'nama.unique'   => 'Nama tingkat sudah ada.',
         ];
     }
-} 
+}

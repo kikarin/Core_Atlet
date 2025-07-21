@@ -10,9 +10,7 @@ const breadcrumbs = [
     { title: 'Tingkat', href: '/data-master/tingkat' },
 ];
 
-const columns = [
-    { key: 'nama', label: 'Nama Tingkat' },
-];
+const columns = [{ key: 'nama', label: 'Nama Tingkat' }];
 
 const selected = ref<number[]>([]);
 
@@ -90,8 +88,8 @@ const deleteRow = async (row: any) => {
             api-endpoint="/api/tingkat"
             ref="pageIndex"
             :on-toast="toast"
-            :on-delete-row-confirm="deleteRow"
+            :on-delete-row="deleteRow"
             :show-import="false"
         />
     </div>
-</template> 
+</template>

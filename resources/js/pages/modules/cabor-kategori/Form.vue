@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { computed, ref, onMounted } from 'vue';
 import axios from 'axios';
+import { computed, onMounted, ref } from 'vue';
 
 const { save } = useHandleFormSave();
 
@@ -89,4 +89,4 @@ const handleSave = (form: any) => {
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
-</template> 
+</template>

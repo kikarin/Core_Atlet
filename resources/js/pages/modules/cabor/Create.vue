@@ -12,4 +12,4 @@ const breadcrumbs = [
     <PageCreate title="Create Cabor" :breadcrumbs="breadcrumbs" back-url="/cabor">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

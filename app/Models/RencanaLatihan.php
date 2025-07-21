@@ -11,10 +11,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class RencanaLatihan extends Model
 {
-    use HasFactory, SoftDeletes, Blameable, LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+    use Blameable;
+    use LogsActivity;
 
-    protected $table = 'rencana_latihan';
-    protected $guarded = [];
+    protected $table    = 'rencana_latihan';
+    protected $guarded  = [];
     protected $fillable = [
         'program_latihan_id',
         'tanggal',
@@ -56,7 +59,7 @@ class RencanaLatihan extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Rencana Latihan");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Rencana Latihan');
     }
 
     public function created_by_user()
@@ -68,4 +71,4 @@ class RencanaLatihan extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-} 
+}

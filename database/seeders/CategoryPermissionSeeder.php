@@ -12,153 +12,157 @@ class CategoryPermissionSeeder extends Seeder
     {
         $categoryPermissions = [
             [
-                'name' => 'Users',
+                'name'       => 'Users',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Users Menu',
+                'name'       => 'Users Menu',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Role',
-                'permission' => 'CRUD',
+                'name'              => 'Role',
+                'permission'        => 'CRUD',
                 'permission_common' => ['Role Set Permission'],
             ],
             [
-                'name' => 'Permission',
+                'name'       => 'Permission',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Category Permission',
+                'name'       => 'Category Permission',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Activity Log',
+                'name'       => 'Activity Log',
                 'permission' => ['Activity Log Show', 'Activity Log Detail', 'Activity Log Delete'],
             ],
             [
-                'name' => 'Dashboard',
+                'name'       => 'Dashboard',
                 'permission' => ['Dashboard Show'],
             ],
             [
-                'name' => 'Atlet',
+                'name'       => 'Atlet',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Atlet Orang Tua',
+                'name'       => 'Atlet Orang Tua',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Atlet Sertifikat',
+                'name'       => 'Atlet Sertifikat',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Atlet Prestasi',
+                'name'       => 'Atlet Prestasi',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Atlet Dokumen',
+                'name'       => 'Atlet Dokumen',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Atlet Kesehatan',
+                'name'       => 'Atlet Kesehatan',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pelatih',
+                'name'       => 'Pelatih',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pelatih Sertifikat',
+                'name'       => 'Pelatih Sertifikat',
                 'permission' => 'CRUD',
             ]
             ,
             [
-                'name' => 'Pelatih Prestasi',
+                'name'       => 'Pelatih Prestasi',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pelatih Dokumen',
+                'name'       => 'Pelatih Dokumen',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pelatih Kesehatan',
+                'name'       => 'Pelatih Kesehatan',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Tenaga Pendukung',
+                'name'       => 'Tenaga Pendukung',
                 'permission' => 'CRUD',
             ],
             [
-                'name'=> 'Tenaga Pendukung Sertifikat',
+                'name'      => 'Tenaga Pendukung Sertifikat',
                 'permission'=> 'CRUD',
             ],
             [
-                'name'=> 'Tenaga Pendukung Prestasi',
+                'name'      => 'Tenaga Pendukung Prestasi',
                 'permission'=> 'CRUD',
             ],
             [
-                'name' => 'Tenaga Pendukung Kesehatan',
+                'name'       => 'Tenaga Pendukung Kesehatan',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Tenaga Pendukung Dokumen',
+                'name'       => 'Tenaga Pendukung Dokumen',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Mst Tingkat',
+                'name'       => 'Mst Tingkat',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Mst Jenis Dokumen',
+                'name'       => 'Mst Jenis Dokumen',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Mst Kecamatan',
+                'name'       => 'Mst Kecamatan',
                 'permission' => ['Mst Kecamatan Show', 'Mst Kecamatan Detail'],
             ],
             [
-                'name' => 'Mst Desa',
+                'name'       => 'Mst Desa',
                 'permission' => ['Mst Desa Show', 'Mst Desa Detail'],
             ],
             [
-                'name' => 'Mst Jenis Pelatih',
+                'name'       => 'Mst Posisi Atlet',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Mst Jenis Tenaga Pendukung',
+                'name'       => 'Mst Jenis Pelatih',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Cabor',
+                'name'       => 'Mst Jenis Tenaga Pendukung',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Cabor Kategori',
+                'name'       => 'Cabor',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Cabor Kategori Atlet',
+                'name'       => 'Cabor Kategori',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Cabor Kategori Pelatih',
+                'name'       => 'Cabor Kategori Atlet',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Cabor Kategori Tenaga Pendukung',
+                'name'       => 'Cabor Kategori Pelatih',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Program Latihan',
+                'name'       => 'Cabor Kategori Tenaga Pendukung',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Target Latihan',
+                'name'       => 'Program Latihan',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Rencana Latihan',
+                'name'       => 'Target Latihan',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name'       => 'Rencana Latihan',
                 'permission' => 'CRUD',
             ],
         ];
@@ -194,7 +198,7 @@ class CategoryPermissionSeeder extends Seeder
                     ['name' => $permissionName],
                     [
                         'category_permission_id' => $existingCategoryPermission->id,
-                        'name' => $permissionName,
+                        'name'                   => $permissionName,
                     ]
                 );
             }

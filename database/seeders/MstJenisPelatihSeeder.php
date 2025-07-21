@@ -22,4 +22,4 @@ class MstJenisPelatihSeeder extends Seeder
             MstJenisPelatih::firstOrCreate(['nama' => $item['nama']], $item);
         }
     }
-} 
+}

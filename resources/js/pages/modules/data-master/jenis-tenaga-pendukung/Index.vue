@@ -10,9 +10,7 @@ const breadcrumbs = [
     { title: 'Jenis Tenaga Pendukung', href: '/data-master/jenis-tenaga-pendukung' },
 ];
 
-const columns = [
-    { key: 'nama', label: 'Nama Jenis Tenaga Pendukung' },
-];
+const columns = [{ key: 'nama', label: 'Nama Jenis Tenaga Pendukung' }];
 
 const selected = ref<number[]>([]);
 
@@ -90,8 +88,8 @@ const deleteRow = async (row: any) => {
             api-endpoint="/api/jenis-tenaga-pendukung"
             ref="pageIndex"
             :on-toast="toast"
-            :on-delete-row-confirm="deleteRow"
+            :on-delete-row="deleteRow"
             :show-import="false"
         />
     </div>
-</template> 
+</template>

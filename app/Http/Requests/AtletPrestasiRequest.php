@@ -32,8 +32,8 @@ class AtletPrestasiRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists'   => 'ID Atlet tidak valid.',
+            'atlet_id.required'   => 'ID Atlet wajib diisi.',
+            'atlet_id.exists'     => 'ID Atlet tidak valid.',
             'nama_event.required' => 'Nama event wajib diisi.',
         ];
     }
@@ -52,4 +52,4 @@ class AtletPrestasiRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

@@ -46,7 +46,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
 
     public function store(TenagaPendukungPrestasiRequest $request, $tenaga_pendukung_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +59,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
 
     public function update(TenagaPendukungPrestasiRequest $request, $tenaga_pendukung_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -124,7 +124,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
         }
         return Inertia::render('modules/tenaga-pendukung/prestasi/Show', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $prestasi,
+            'item'              => $prestasi,
         ]);
     }
-} 
+}

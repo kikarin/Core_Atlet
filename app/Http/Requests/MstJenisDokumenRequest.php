@@ -48,4 +48,4 @@ class MstJenisDokumenRequest extends FormRequest
             'nama.unique'   => 'Nama jenis dokumen sudah ada.',
         ];
     }
-} 
+}

@@ -15,7 +15,7 @@ class RencanaLatihanRepository
     public function __construct(RencanaLatihan $model)
     {
         $this->model = $model;
-        $this->with = ['programLatihan', 'targetLatihan', 'atlets', 'pelatihs', 'tenagaPendukung', 'created_by_user', 'updated_by_user'];
+        $this->with  = ['programLatihan', 'targetLatihan', 'atlets', 'pelatihs', 'tenagaPendukung', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -32,12 +32,12 @@ class RencanaLatihanRepository
                 $q->where('materi', 'like', "%$search%")
                   ->orWhere('lokasi_latihan', 'like', "%$search%")
                   ->orWhere('catatan', 'like', "%$search%")
-                  ;
+                ;
             });
         }
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'tanggal', 'lokasi_latihan', 'materi', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -48,52 +48,52 @@ class RencanaLatihanRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return array_merge(
                     $item->toArray(),
                     [
-                        'jumlah_target' => $item->target_latihan_count,
-                        'jumlah_atlet' => $item->atlets_count,
-                        'jumlah_pelatih' => $item->pelatihs_count,
+                        'jumlah_target'           => $item->target_latihan_count,
+                        'jumlah_atlet'            => $item->atlets_count,
+                        'jumlah_pelatih'          => $item->pelatihs_count,
                         'jumlah_tenaga_pendukung' => $item->tenaga_pendukung_count,
                     ]
                 );
             });
             $data += [
-                'data' => $transformed,
-                'total' => $transformed->count(),
+                'data'        => $transformed,
+                'total'       => $transformed->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
             return $data;
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return array_merge(
                 $item->toArray(),
                 [
-                    'jumlah_target' => $item->target_latihan_count,
-                    'jumlah_atlet' => $item->atlets_count,
-                    'jumlah_pelatih' => $item->pelatihs_count,
+                    'jumlah_target'           => $item->target_latihan_count,
+                    'jumlah_atlet'            => $item->atlets_count,
+                    'jumlah_pelatih'          => $item->pelatihs_count,
                     'jumlah_tenaga_pendukung' => $item->tenaga_pendukung_count,
                 ]
             );
         });
         $data += [
-            'data' => $transformed,
-            'total' => $items->total(),
+            'data'        => $transformed,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $items->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
         return $data;
     }
@@ -171,8 +171,8 @@ class RencanaLatihanRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
         return $request->validate($rules, $messages);
     }
-} 
+}

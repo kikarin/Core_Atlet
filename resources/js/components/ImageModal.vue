@@ -145,10 +145,7 @@ watch(() => props.isOpen, handleOpen);
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
                     </svg>
                 </button>
-                <button
-                    @click="resetZoom"
-                    class="bg-opacity-50 hover:bg-opacity-75 rounded bg-black px-3 py-2 text-sm text-white transition-all"
-                >
+                <button @click="resetZoom" class="bg-opacity-50 hover:bg-opacity-75 rounded bg-black px-3 py-2 text-sm text-white transition-all">
                     Reset
                 </button>
             </div>
@@ -176,4 +173,4 @@ watch(() => props.isOpen, handleOpen);
             </div>
         </div>
     </div>
-</template> 
+</template>

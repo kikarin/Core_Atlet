@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
+import { ref, watch } from 'vue';
 import SelectTableMultiple from '../components/SelectTableMultiple.vue';
 
 const { save } = useHandleFormSave();
@@ -24,21 +24,25 @@ const formData = ref({
 });
 
 let initialized = false;
-watch(() => props.initialData, (newVal) => {
-  if (!initialized && newVal) {
-    formData.value = {
-      tanggal: newVal.tanggal || '',
-      materi: newVal.materi || '',
-      lokasi_latihan: newVal.lokasi_latihan || '',
-      catatan: newVal.catatan || '',
-      target_latihan_ids: newVal.target_latihan?.map((t: any) => t.id) || [],
-      atlet_ids: newVal.atlets?.map((a: any) => a.id) || [],
-      pelatih_ids: newVal.pelatihs?.map((p: any) => p.id) || [],
-      tenaga_pendukung_ids: newVal.tenaga_pendukung?.map((t: any) => t.id) || [],
-    };
-    initialized = true;
-  }
-}, { immediate: true, deep: true });
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (!initialized && newVal) {
+            formData.value = {
+                tanggal: newVal.tanggal || '',
+                materi: newVal.materi || '',
+                lokasi_latihan: newVal.lokasi_latihan || '',
+                catatan: newVal.catatan || '',
+                target_latihan_ids: newVal.target_latihan?.map((t: any) => t.id) || [],
+                atlet_ids: newVal.atlets?.map((a: any) => a.id) || [],
+                pelatih_ids: newVal.pelatihs?.map((p: any) => p.id) || [],
+                tenaga_pendukung_ids: newVal.tenaga_pendukung?.map((t: any) => t.id) || [],
+            };
+            initialized = true;
+        }
+    },
+    { immediate: true, deep: true },
+);
 
 const handleSave = (form: any) => {
     // Gunakan data dari parameter form (hasil emit dari FormInput)
@@ -67,49 +71,76 @@ const handleSave = (form: any) => {
 };
 
 const columnsAtlet = [
-  {
-    key: 'foto',
-    label: 'Foto',
-    format: (row: any) =>
-      row.foto
-        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-  },
-  { key: 'nama', label: 'Nama' },
-  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
-  { key: 'tempat_lahir', label: 'Tempat Lahir' },
-  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
-  { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
+    { key: 'nama', label: 'Nama' },
+    {
+        key: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+    },
+    { key: 'tempat_lahir', label: 'Tempat Lahir' },
+    {
+        key: 'tanggal_lahir',
+        label: 'Tanggal Lahir',
+        format: (row: any) =>
+            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+    },
+    { key: 'no_hp', label: 'No HP' },
 ];
 const columnsPelatih = [
-  {
-    key: 'foto',
-    label: 'Foto',
-    format: (row: any) =>
-      row.foto
-        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-  },
-  { key: 'nama', label: 'Nama' },
-  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
-  { key: 'tempat_lahir', label: 'Tempat Lahir' },
-  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
-  { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
+    { key: 'nama', label: 'Nama' },
+    {
+        key: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+    },
+    { key: 'tempat_lahir', label: 'Tempat Lahir' },
+    {
+        key: 'tanggal_lahir',
+        label: 'Tanggal Lahir',
+        format: (row: any) =>
+            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+    },
+    { key: 'no_hp', label: 'No HP' },
 ];
 const columnsTenagaPendukung = [
-  {
-    key: 'foto',
-    label: 'Foto',
-    format: (row: any) =>
-      row.foto
-        ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-        : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-  },
-  { key: 'nama', label: 'Nama' },
-  { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-' },
-  { key: 'tempat_lahir', label: 'Tempat Lahir' },
-  { key: 'tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-' },
-  { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
+    { key: 'nama', label: 'Nama' },
+    {
+        key: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+    },
+    { key: 'tempat_lahir', label: 'Tempat Lahir' },
+    {
+        key: 'tanggal_lahir',
+        label: 'Tanggal Lahir',
+        format: (row: any) =>
+            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+    },
+    { key: 'no_hp', label: 'No HP' },
 ];
 </script>
 
@@ -129,39 +160,43 @@ const columnsTenagaPendukung = [
                 <SelectTableMultiple
                     v-model:selected-ids="formData.target_latihan_ids"
                     label="Target Latihan"
-                    :endpoint="'/api/target-latihan?program_latihan_id=' + props.infoHeader?.program_latihan_id"
+                    :endpoint="`/api/target-latihan?program_latihan_id=${props.infoHeader?.program_latihan_id}`"
                     :columns="[
                         { key: 'deskripsi', label: 'Deskripsi' },
-                        { key: 'jenis_target', label: 'Jenis' }
+                        { key: 'jenis_target', label: 'Jenis' },
                     ]"
                     id-key="id"
                     name-key="deskripsi"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.atlet_ids"
                     label="Atlet"
-                    endpoint="/api/atlet"
+                    :endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsAtlet"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="atlet_id"
+                    name-key="atlet_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.pelatih_ids"
                     label="Pelatih"
-                    endpoint="/api/pelatih"
+                    :endpoint="`/api/cabor-kategori-pelatih?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsPelatih"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="pelatih_id"
+                    name-key="pelatih_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
                 <SelectTableMultiple
                     v-model:selected-ids="formData.tenaga_pendukung_ids"
                     label="Tenaga Pendukung"
-                    endpoint="/api/tenaga-pendukung"
+                    :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${props.infoHeader?.cabor_kategori_id}`"
                     :columns="columnsTenagaPendukung"
-                    id-key="id"
-                    name-key="nama"
+                    id-key="tenaga_pendukung_id"
+                    name-key="tenaga_pendukung_nama"
+                    :auto-select-all="props.mode === 'create'"
                 />
             </template>
         </FormInput>
     </div>
-</template> 
+</template>

@@ -15,10 +15,10 @@ class TenagaPendukungSertifikatRequest extends FormRequest
     {
         $rules = [
             'tenaga_pendukung_id'       => 'required|exists:tenaga_pendukungs,id',
-            'nama_sertifikat'  => 'required|string|max:255',
-            'penyelenggara'    => 'nullable|string|max:255',
-            'tanggal_terbit'   => 'nullable|date',
-            'file'             => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'nama_sertifikat'           => 'required|string|max:255',
+            'penyelenggara'             => 'nullable|string|max:255',
+            'tanggal_terbit'            => 'nullable|date',
+            'file'                      => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -33,7 +33,7 @@ class TenagaPendukungSertifikatRequest extends FormRequest
         return [
             'tenaga_pendukung_id.required' => 'ID Tenaga Pendukung wajib diisi.',
             'tenaga_pendukung_id.exists'   => 'ID Tenaga Pendukung tidak valid.',
-            'nama_sertifikat.required' => 'Nama sertifikat wajib diisi.',
+            'nama_sertifikat.required'     => 'Nama sertifikat wajib diisi.',
         ];
     }
 
@@ -51,4 +51,4 @@ class TenagaPendukungSertifikatRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

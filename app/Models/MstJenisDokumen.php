@@ -10,16 +10,19 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstJenisDokumen extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
-    
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+
     protected $guarded = [];
-    protected $table = "mst_jenis_dokumen";
+    protected $table   = 'mst_jenis_dokumen';
 
     protected $fillable = [
-        "nama",
-        "created_by",
-        "updated_by",
-        "deleted_by",
+        'nama',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -27,6 +30,6 @@ class MstJenisDokumen extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Master Jenis Dokumen");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Jenis Dokumen');
     }
 }

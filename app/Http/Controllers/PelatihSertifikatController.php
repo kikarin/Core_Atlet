@@ -46,7 +46,7 @@ class PelatihSertifikatController extends Controller implements HasMiddleware
 
     public function store(PelatihSertifikatRequest $request, $pelatih_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +59,7 @@ class PelatihSertifikatController extends Controller implements HasMiddleware
 
     public function update(PelatihSertifikatRequest $request, $pelatih_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -124,7 +124,7 @@ class PelatihSertifikatController extends Controller implements HasMiddleware
         }
         return Inertia::render('modules/pelatih/sertifikat/Show', [
             'pelatihId' => (int) $pelatih_id,
-            'item' => $sertifikat,
+            'item'      => $sertifikat,
         ]);
     }
-} 
+}

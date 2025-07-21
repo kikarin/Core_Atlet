@@ -10,10 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class CaborKategori extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
 
-    protected $table = 'cabor_kategori';
-    protected $guarded = [];
+    protected $table    = 'cabor_kategori';
+    protected $guarded  = [];
     protected $fillable = [
         'cabor_id',
         'nama',
@@ -50,7 +53,7 @@ class CaborKategori extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Cabor Kategori");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Cabor Kategori');
     }
 
     // Attributes untuk menghitung jumlah
@@ -63,4 +66,4 @@ class CaborKategori extends Model
     {
         return $this->caborKategoriPelatih()->count();
     }
-} 
+}

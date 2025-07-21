@@ -13,9 +13,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class AtletDokumen extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
 
-    protected $table = 'atlet_dokumen';
+    protected $table   = 'atlet_dokumen';
     protected $guarded = [];
 
     protected $fillable = [
@@ -35,7 +39,7 @@ class AtletDokumen extends Model implements HasMedia
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "Atlet Dokumen");
+            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Dokumen');
     }
 
     public function atlet()
@@ -75,4 +79,4 @@ class AtletDokumen extends Model implements HasMedia
         }
         return null;
     }
-} 
+}

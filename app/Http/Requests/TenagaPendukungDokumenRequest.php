@@ -15,9 +15,9 @@ class TenagaPendukungDokumenRequest extends FormRequest
     {
         $rules = [
             'tenaga_pendukung_id'       => 'required|exists:tenaga_pendukungs,id',
-            'jenis_dokumen_id' => 'nullable|integer',
-            'nomor'            => 'nullable|string|max:255',
-            'file'             => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'jenis_dokumen_id'          => 'nullable|integer',
+            'nomor'                     => 'nullable|string|max:255',
+            'file'                      => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -32,9 +32,9 @@ class TenagaPendukungDokumenRequest extends FormRequest
         return [
             'tenaga_pendukung_id.required' => 'ID Tenaga Pendukung wajib diisi.',
             'tenaga_pendukung_id.exists'   => 'ID Tenaga Pendukung tidak valid.',
-            'jenis_dokumen_id.exists' => 'Jenis dokumen tidak valid.',
-            'file.mimes'        => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
-            'file.max'          => 'Ukuran file maksimal 4MB.',
+            'jenis_dokumen_id.exists'      => 'Jenis dokumen tidak valid.',
+            'file.mimes'                   => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
+            'file.max'                     => 'Ukuran file maksimal 4MB.',
         ];
     }
 
@@ -52,4 +52,4 @@ class TenagaPendukungDokumenRequest extends FormRequest
             $this->merge(['id' => $this->route('id')]);
         }
     }
-} 
+}

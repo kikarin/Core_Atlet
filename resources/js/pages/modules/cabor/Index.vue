@@ -5,9 +5,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 
-const breadcrumbs = [
-    { title: 'Cabor', href: '/cabor' },
-];
+const breadcrumbs = [{ title: 'Cabor', href: '/cabor' }];
 
 const columns = [
     { key: 'nama', label: 'Nama Cabor' },
@@ -70,4 +68,4 @@ const deleteRow = async (row: any) => {
             :show-import="false"
         />
     </div>
-</template> 
+</template>

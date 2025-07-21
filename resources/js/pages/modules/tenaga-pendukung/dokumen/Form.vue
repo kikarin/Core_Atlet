@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { ref, computed, watch, onMounted } from 'vue';
 import axios from 'axios';
-import { useToast } from '@/components/ui/toast/useToast';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
 const { toast } = useToast();
@@ -25,30 +25,40 @@ const formData = ref<Record<string, any>>({
 
 const formInputInitialData = computed(() => ({ ...formData.value }));
 
-const jenisDokumenOptions = ref<{ value: number; label: string; }[]>([]);
+const jenisDokumenOptions = ref<{ value: number; label: string }[]>([]);
 
-watch(() => props.initialData, (newVal) => {
-    if (newVal) {
-        Object.assign(formData.value, newVal);
-        if (props.tenagaPendukungId) {
-            formData.value.tenaga_pendukung_id = props.tenagaPendukungId;
+watch(
+    () => props.initialData,
+    (newVal) => {
+        if (newVal) {
+            Object.assign(formData.value, newVal);
+            if (props.tenagaPendukungId) {
+                formData.value.tenaga_pendukung_id = props.tenagaPendukungId;
+            }
         }
-    }
-}, { immediate: true, deep: true });
+    },
+    { immediate: true, deep: true },
+);
 
 onMounted(async () => {
     try {
         const res = await axios.get('/api/jenis-dokumen-list');
         jenisDokumenOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
     } catch (e) {
-        console.error("Gagal mengambil data jenis dokumen", e);
-             toast({ title: "Gagal memuat daftar jenis dokumen", variant: "destructive" });
+        console.error('Gagal mengambil data jenis dokumen', e);
+        toast({ title: 'Gagal memuat daftar jenis dokumen', variant: 'destructive' });
         jenisDokumenOptions.value = [];
     }
 });
 
 const formInputs = computed(() => [
-    { name: 'jenis_dokumen_id', label: 'Jenis Dokumen', type: 'select' as const, placeholder: 'Pilih Jenis Dokumen', options: jenisDokumenOptions.value },
+    {
+        name: 'jenis_dokumen_id',
+        label: 'Jenis Dokumen',
+        type: 'select' as const,
+        placeholder: 'Pilih Jenis Dokumen',
+        options: jenisDokumenOptions.value,
+    },
     { name: 'nomor', label: 'Nomor Dokumen', type: 'text' as const, placeholder: 'Masukkan nomor dokumen' },
     { name: 'file', label: 'File Dokumen', type: 'file' as const, placeholder: 'Upload file dokumen (pdf/gambar)' },
 ]);
@@ -68,15 +78,11 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         onError: (errors: Record<string, string>) => {
             setFormErrors(errors);
         },
-        redirectUrl: props.redirectUrl ?? `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`
+        redirectUrl: props.redirectUrl ?? `/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`,
     });
 };
 </script>
 
 <template>
-    <FormInput
-        :form-inputs="formInputs"
-        :initial-data="formInputInitialData"
-        @save="handleSave"
-    />
-</template> 
+    <FormInput :form-inputs="formInputs" :initial-data="formInputInitialData" @save="handleSave" />
+</template>

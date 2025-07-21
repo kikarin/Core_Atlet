@@ -82,7 +82,7 @@ class MstJenisPelatihController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
         return Inertia::render('modules/data-master/jenis-pelatih/Show', [
             'item' => $itemArray,
@@ -98,7 +98,7 @@ class MstJenisPelatihController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_jenis_pelatih,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -137,4 +137,4 @@ class MstJenisPelatihController extends Controller implements HasMiddleware
         }
         return inertia('modules/data-master/jenis-pelatih/Edit', $data);
     }
-} 
+}

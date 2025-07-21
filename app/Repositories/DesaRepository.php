@@ -2,9 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Desa;
 use App\Models\MstDesa;
-use App\Models\MstKecamatan;
 use App\Traits\RepositoryTrait;
 
 class DesaRepository
@@ -17,8 +15,8 @@ class DesaRepository
     public function __construct(MstDesa $model, KecamatanRepository $kecamatanRepository)
     {
         $this->model               = $model;
-        $this->orderByColumnsArray = ["id_kecamatan" => "asc", "nama" => "asc"];
-        $this->with                = ["kecamatan"];
+        $this->orderByColumnsArray = ['id_kecamatan' => 'asc', 'nama' => 'asc'];
+        $this->with                = ['kecamatan'];
 
         $this->kecamatanRepository = $kecamatanRepository;
     }
@@ -26,14 +24,14 @@ class DesaRepository
     public function customCreateEdit($data, $item = null)
     {
         $data += [
-            "listKecamatan"   => $this->kecamatanRepository->getAll()->pluck('nama', 'id')->toArray(),
+            'listKecamatan'   => $this->kecamatanRepository->getAll()->pluck('nama', 'id')->toArray(),
         ];
         return $data;
     }
 
     public function getByIdKecamatan($id_kecamatan)
     {
-        $record = $this->model::where("id_kecamatan", $id_kecamatan)->get();
+        $record = $this->model::where('id_kecamatan', $id_kecamatan)->get();
         return $record;
     }
 
@@ -49,8 +47,8 @@ class DesaRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama', 'id_kecamatan', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -65,16 +63,16 @@ class DesaRepository
         $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allData = $query->get();
+            $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id'   => $item->id,
-                    'nama' => $item->nama,
+                    'id'           => $item->id,
+                    'nama'         => $item->nama,
                     'id_kecamatan' => $item->id_kecamatan,
                 ];
             });
             $data += [
-                'desas'    => $transformedData,
+                'desas'       => $transformedData,
                 'total'       => $transformedData->count(),
                 'currentPage' => 1,
                 'perPage'     => -1,
@@ -86,18 +84,18 @@ class DesaRepository
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id'   => $item->id,
-                'nama' => $item->nama,
+                'id'           => $item->id,
+                'nama'         => $item->nama,
                 'id_kecamatan' => $item->id_kecamatan,
             ];
         });
 
         $data += [
-            'desas'    => $transformedData,
+            'desas'       => $transformedData,
             'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
             'perPage'     => $items->perPage(),
