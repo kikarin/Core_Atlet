@@ -6,10 +6,13 @@ import { computed } from 'vue';
 
 const page = usePage();
 const pemeriksaan = computed(() => page.props.pemeriksaan as any);
-const jenisPeserta = computed((): string => {
-  const jenis = (page.props.jenis_peserta as string) || '';
-  if (["atlet", "pelatih", "tenaga-pendukung"].includes(jenis)) return jenis;
-  return 'atlet';
+const jenisPeserta = computed(() => {
+    const url = new URL(window.location.href);
+    const jenis = url.searchParams.get('jenis_peserta');
+    if (jenis && ["atlet", "pelatih", "tenaga-pendukung"].includes(jenis)) {
+        return jenis;
+    }
+    return 'atlet'; // Fallback
 });
 
 const breadcrumbs = computed(() => [

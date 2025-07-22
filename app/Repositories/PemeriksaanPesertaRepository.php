@@ -62,10 +62,11 @@ class PemeriksaanPesertaRepository
             return [
                 'id' => $item->id,
                 'pemeriksaan_id' => $item->pemeriksaan_id,
-                'peserta_nama' => $item->peserta->nama ?? '-',
-                'peserta_type' => $item->peserta_type,
-                'status' => $item->status->nama ?? '-',
+                'peserta' => $item->peserta,
+                'status' => $item->status,
                 'catatan_umum' => $item->catatan_umum,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
             ];
         });
 

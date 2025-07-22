@@ -28,7 +28,19 @@ class PemeriksaanRepository
     public function customIndex($data)
     {
         $query = $this->model->with($this->with)
-            ->withCount(['pemeriksaanParameter as jumlah_parameter', 'pemeriksaanPeserta as jumlah_peserta']);
+            ->withCount([
+                'pemeriksaanParameter as jumlah_parameter',
+                'pemeriksaanPeserta as jumlah_peserta',
+                'pemeriksaanPeserta as jumlah_atlet' => function ($q) {
+                    $q->where('peserta_type', 'App\\Models\\Atlet');
+                },
+                'pemeriksaanPeserta as jumlah_pelatih' => function ($q) {
+                    $q->where('peserta_type', 'App\\Models\\Pelatih');
+                },
+                'pemeriksaanPeserta as jumlah_tenaga_pendukung' => function ($q) {
+                    $q->where('peserta_type', 'App\\Models\\TenagaPendukung');
+                },
+            ]);
 
         $sortField = request('sort');
         $order     = request('order', 'asc');
@@ -76,6 +88,9 @@ class PemeriksaanRepository
                     'status' => $item->status,
                     'jumlah_parameter' => $item->jumlah_parameter ?? 0,
                     'jumlah_peserta' => $item->jumlah_peserta ?? 0,
+                    'jumlah_atlet' => $item->jumlah_atlet ?? 0,
+                    'jumlah_pelatih' => $item->jumlah_pelatih ?? 0,
+                    'jumlah_tenaga_pendukung' => $item->jumlah_tenaga_pendukung ?? 0,
                 ];
             });
             $data += [
@@ -101,6 +116,9 @@ class PemeriksaanRepository
                 'status' => $item->status,
                 'jumlah_parameter' => $item->jumlah_parameter ?? 0,
                 'jumlah_peserta' => $item->jumlah_peserta ?? 0,
+                'jumlah_atlet' => $item->jumlah_atlet ?? 0,
+                'jumlah_pelatih' => $item->jumlah_pelatih ?? 0,
+                'jumlah_tenaga_pendukung' => $item->jumlah_tenaga_pendukung ?? 0,
             ];
         });
         $data += [

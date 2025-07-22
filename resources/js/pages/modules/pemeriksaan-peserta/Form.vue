@@ -12,15 +12,13 @@ const props = defineProps<{
     jenisPeserta?: string;
 }>();
 
-function getJenisPeserta() {
-  if (props.jenisPeserta && ["atlet", "pelatih", "tenaga-pendukung"].includes(props.jenisPeserta)) return props.jenisPeserta;
-  const ziggy: any = usePage().props.ziggy;
-  const jenis = (ziggy?.query?.jenis_peserta || '').toString();
-  if (["atlet", "pelatih", "tenaga-pendukung"].includes(jenis)) return jenis;
-  return "atlet";
-}
-
-const jenisPeserta = computed(() => getJenisPeserta());
+const jenisPeserta = computed(() => {
+  const validJenis = ["atlet", "pelatih", "tenaga-pendukung"];
+  if (props.jenisPeserta && validJenis.includes(props.jenisPeserta)) {
+    return props.jenisPeserta;
+  }
+  return "atlet"; // Default ke atlet jika tidak ada atau tidak valid
+});
 
 const { save } = useHandleFormSave();
 
@@ -106,7 +104,7 @@ const columns = [
     <FormInput :form-inputs="formInputs" @save="handleSave" :initial-data="formState">
         <template #custom-fields v-if="mode === 'create'">
             <SelectTableMultiple
-                v-if="jenisPeserta.value === 'atlet'"
+                v-if="jenisPeserta === 'atlet'"
                 v-model:selected-ids="selectionState.atlet_ids"
                 label="Atlet"
                 :endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
@@ -116,7 +114,7 @@ const columns = [
                 :auto-select-all="true"
             />
             <SelectTableMultiple
-                v-if="jenisPeserta.value === 'pelatih'"
+                v-if="jenisPeserta === 'pelatih'"
                 v-model:selected-ids="selectionState.pelatih_ids"
                 label="Pelatih"
                 :endpoint="`/api/cabor-kategori-pelatih?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
@@ -126,7 +124,7 @@ const columns = [
                 :auto-select-all="true"
             />
             <SelectTableMultiple
-                v-if="jenisPeserta.value === 'tenaga-pendukung'"
+                v-if="jenisPeserta === 'tenaga-pendukung'"
                 v-model:selected-ids="selectionState.tenaga_pendukung_ids"
                 label="Tenaga Pendukung"
                 :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"

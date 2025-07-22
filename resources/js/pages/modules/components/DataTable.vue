@@ -27,12 +27,19 @@ const props = defineProps({
 
 const emit = defineEmits(['update:selected', 'update:search', 'update:sort', 'update:page', 'update:perPage', 'deleted']);
 
-const { visibleColumns, totalPages, getPageNumbers, sortBy, toggleSelect, toggleSelectAll } = useDataTable(props, emit);
+const { visibleColumns, totalPages, getPageNumbers, sortBy, toggleSelect, toggleSelectAll } = useDataTable(
+    props,
+    emit as (event: string, ...args: any[]) => void,
+);
 
 const selectLabel = computed(() => {
     if (props.perPage === -1) return 'All';
-    return props.perPage;
+    return props.perPage.toString();
 });
+
+const getValue = (obj: any, key: string) => {
+    return key.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
+};
 </script>
 
 <template>
@@ -42,16 +49,19 @@ const selectLabel = computed(() => {
             <!-- Length -->
             <div v-if="!props.disableLength" class="ml-2 flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Show</span>
-                <Select :model-value="props.perPage" @update:model-value="(val) => emit('update:perPage', val === 'all' ? -1 : Number(val))">
+                <Select
+                    :model-value="props.perPage.toString()"
+                    @update:model-value="(val) => emit('update:perPage', val === 'all' ? -1 : Number(val))"
+                >
                     <SelectTrigger class="w-24">
                         <SelectValue :placeholder="selectLabel" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem :value="10">10</SelectItem>
-                        <SelectItem :value="25">25</SelectItem>
-                        <SelectItem :value="50">50</SelectItem>
-                        <SelectItem :value="100">100</SelectItem>
-                        <SelectItem :value="500">500</SelectItem>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="25">25</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="500">500</SelectItem>
                         <SelectItem value="all">All</SelectItem>
                     </SelectContent>
                 </Select>
@@ -142,7 +152,7 @@ const selectLabel = computed(() => {
                             >
                                 <slot :name="`cell-${col.key}`" :row="row">
                                     <span v-if="typeof col.format === 'function'" v-html="col.format(row)"></span>
-                                    <span v-else>{{ row[col.key] }}</span>
+                                    <span v-else>{{ getValue(row, col.key) }}</span>
                                 </slot>
                             </TableCell>
                         </TableRow>

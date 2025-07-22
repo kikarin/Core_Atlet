@@ -40,7 +40,7 @@ class PemeriksaanPeserta extends Model
 
     public function peserta()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     public function created_by_user()

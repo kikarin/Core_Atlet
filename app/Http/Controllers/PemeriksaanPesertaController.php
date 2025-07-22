@@ -35,7 +35,7 @@ class PemeriksaanPesertaController extends Controller
         return inertia('modules/pemeriksaan-peserta/Index', $data);
     }
     
-    public function create(Pemeriksaan $pemeriksaan)
+    public function create(Pemeriksaan $pemeriksaan, Request $request)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
         $atlets = Atlet::where('is_active', true)->get(['id', 'nama']);
@@ -49,6 +49,7 @@ class PemeriksaanPesertaController extends Controller
             'pelatihs' => $pelatihs,
             'tenagaPendukung' => $tenagaPendukung,
             'ref_status_pemeriksaan' => $ref_status_pemeriksaan,
+            'jenis_peserta' => $request->query('jenis_peserta', 'atlet'),
         ]);
     }
 
@@ -102,9 +103,12 @@ class PemeriksaanPesertaController extends Controller
         return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan->id)->with('success', 'Peserta berhasil dihapus.');
     }
 
-    public function apiIndex(Pemeriksaan $pemeriksaan)
+    public function apiIndex(Pemeriksaan $pemeriksaan, $jenis_peserta = null)
     {
-        request()->merge(['pemeriksaan_id' => $pemeriksaan->id]);
+        request()->merge([
+            'pemeriksaan_id' => $pemeriksaan->id,
+            'jenis_peserta' => $jenis_peserta
+        ]);
         $data = $this->repository->customIndex([]);
         return response()->json($data);
     }

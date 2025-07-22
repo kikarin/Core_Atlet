@@ -432,22 +432,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('pemeriksaan-parameter/destroy-selected', [PemeriksaanParameterController::class, 'destroy_selected'])->name('pemeriksaan.parameter.destroy_selected');
     });
 
-    // Nested Pemeriksaan Peserta
-    Route::prefix('pemeriksaan/{pemeriksaan}')->group(function () {
-        Route::get('pemeriksaan-peserta', [PemeriksaanPesertaController::class, 'index'])->name('pemeriksaan.peserta.index');
-        Route::get('pemeriksaan-peserta/create', [PemeriksaanPesertaController::class, 'create'])->name('pemeriksaan.peserta.create');
-        Route::post('pemeriksaan-peserta', [PemeriksaanPesertaController::class, 'store'])->name('pemeriksaan.peserta.store');
-        Route::get('pemeriksaan-peserta/{id}', [PemeriksaanPesertaController::class, 'show'])->name('pemeriksaan.peserta.show');
-        Route::get('pemeriksaan-peserta/{id}/edit', [PemeriksaanPesertaController::class, 'edit'])->name('pemeriksaan.peserta.edit');
-        Route::put('pemeriksaan-peserta/{id}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
-        Route::delete('pemeriksaan-peserta/{id}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
+    // Nested Pemeriksaan Peserta - Web Routes
+    Route::prefix('pemeriksaan/{pemeriksaan}/peserta')->group(function () {
+        Route::get('/', [PemeriksaanPesertaController::class, 'index'])->name('pemeriksaan.peserta.index');
+        Route::get('/create', [PemeriksaanPesertaController::class, 'create'])->name('pemeriksaan.peserta.create');
+        Route::post('/', [PemeriksaanPesertaController::class, 'store'])->name('pemeriksaan.peserta.store');
+        Route::get('/{id}', [PemeriksaanPesertaController::class, 'show'])->name('pemeriksaan.peserta.show');
+        Route::get('/{id}/edit', [PemeriksaanPesertaController::class, 'edit'])->name('pemeriksaan.peserta.edit');
+        Route::put('/{id}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
+        Route::delete('/{id}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
     });
 });
 // API nested
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
-Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-peserta', [PemeriksaanPesertaController::class, 'apiIndex']);
-Route::get('/pemeriksaan/{pemeriksaan}/peserta', [PemeriksaanPesertaController::class, 'index'])->name('pemeriksaan.peserta.index');
-Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta}', [PemeriksaanPesertaController::class, 'apiIndex']);
+
+// API untuk Pemeriksaan Peserta
+Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');
+
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

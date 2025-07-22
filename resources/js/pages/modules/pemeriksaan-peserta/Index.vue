@@ -11,10 +11,12 @@ import { computed, ref } from 'vue';
 const page = usePage();
 const pemeriksaan = computed(() => page.props.pemeriksaan as any);
 const jenisPeserta = computed(() => {
-  const ziggy: any = usePage().props.ziggy;
-  const jenis = (ziggy?.query?.jenis_peserta || '').toString();
-  if (['atlet', 'pelatih', 'tenaga-pendukung'].includes(jenis)) return jenis;
-  return 'atlet';
+    const params = new URLSearchParams(window.location.search);
+    const jenis = params.get('jenis_peserta');
+    if (jenis && ['atlet', 'pelatih', 'tenaga-pendukung'].includes(jenis)) {
+        return jenis;
+    }
+    return 'atlet';
 });
 const refStatusPemeriksaan = computed(() => page.props.ref_status_pemeriksaan as any[]);
 
@@ -30,28 +32,48 @@ const jenisLabel: Record<string, string> = {
 const breadcrumbs = computed(() => [
     { title: 'Pemeriksaan', href: `/pemeriksaan` },
     { title: pemeriksaan.value.nama_pemeriksaan, href: `/pemeriksaan/${pemeriksaan.value.id}` },
-    { title: `Peserta (${jenisLabel[jenisPeserta.value] || jenisPeserta.value})`, href: '#' },
+    { title: `Peserta (${jenisLabel[jenisPeserta.value] || 'Undefined'})`, href: '#' },
 ]);
 
 const columns = computed(() => [
-    { key: 'peserta.nama', label: 'Nama' },
-    { key: 'status', label: 'Status', format: (row: any) => row.status || '-' },
-    { key: 'catatan_umum', label: 'Catatan', format: (row: any) => row.catatan_umum || '-' },
     {
-        key: 'foto',
+        key: 'peserta.nama', // Use dot notation for nested property
+        label: 'Nama Peserta',
+        format: (row: any) => {
+            const peserta = row.peserta || {};
+            return `
+                <div class="flex flex-col">
+                    <span class="font-medium">${peserta.nama || '-'}</span>
+                    <span class="text-xs text-gray-500">${peserta.no_hp || ''}</span>
+                    <span class="text-xs text-gray-500">${peserta.tempat_lahir || ''} ${peserta.tanggal_lahir ? new Date(peserta.tanggal_lahir).toLocaleDateString('id-ID') : ''}</span>
+                </div>
+            `;
+        },
+    },
+    {
+        key: 'peserta.foto',
         label: 'Foto',
         format: (row: any) => {
-            const peserta = row.peserta;
-            if(peserta && peserta.foto) {
-                return `<div class='cursor-pointer' onclick=\"window.open('${peserta.foto}', '_blank')\"><img src='${peserta.foto}' alt='Foto ${peserta.nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+            const peserta = row.peserta || {};
+            if (peserta.foto) {
+                return `<div class='cursor-pointer'><img src='${peserta.foto}' alt='Foto ${peserta.nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`;
             }
             return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
         },
     },
-    { key: 'peserta.jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => (row.peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : row.peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-')},
-    { key: 'peserta.tempat_lahir', label: 'Tempat Lahir' },
-    { key: 'peserta.tanggal_lahir', label: 'Tanggal Lahir', format: (row: any) => row.peserta?.tanggal_lahir ? new Date(row.peserta.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-'},
-    { key: 'peserta.no_hp', label: 'No HP' },
+    { 
+        key: 'status.nama', // Use dot notation for nested property
+        label: 'Status',
+        format: (row: any) => {
+            const status = row.status?.nama || '-';
+            return `<span class="px-2 py-1 rounded-full text-xs font-medium ${status === 'Normal' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${status}</span>`;
+        },
+    },
+    { 
+        key: 'catatan_umum', // Match the exact key from API
+        label: 'Catatan',
+        format: (row: any) => row.catatan_umum || '-',
+    }
 ]);
 
 const selected = ref<number[]>([]);
@@ -120,7 +142,7 @@ const handleUpdateStatus = () => {
 <template>
     <div class="space-y-4">
         <PageIndex
-            :title="`Peserta (${jenisLabel[jenisPeserta.value] || jenisPeserta.value})`"
+            :title="`Peserta (${jenisLabel[jenisPeserta] || 'Undefined'})`"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"
@@ -129,11 +151,11 @@ const handleUpdateStatus = () => {
             :on-delete-selected="deleteSelected"
             :on-delete-row="deleteRow"
             :show-import="false"
-            :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/create?jenis_peserta=${jenisPeserta.value}`"
-            :api-endpoint="`/api/pemeriksaan/${pemeriksaan.id}/peserta/${jenisPeserta.value}`"
+            :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/create?jenis_peserta=${jenisPeserta}`"
+            :api-endpoint="`/api/pemeriksaan/${pemeriksaan.id}/peserta/${jenisPeserta}`"
             ref="pageIndex"
             :on-toast="toast"
-            :key="jenisPeserta.value"
+            :key="jenisPeserta"
         >
             <template #header-extra>
                 <div class="bg-card mb-4 rounded-lg border p-4">
