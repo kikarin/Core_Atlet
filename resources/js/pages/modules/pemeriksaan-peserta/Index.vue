@@ -1,11 +1,10 @@
-<!-- resources/js/pages/modules/pemeriksaan-peserta/Index.vue -->
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+import { computed, onMounted, ref, watch } from 'vue';
 
 interface Pemeriksaan {
     id: number;
@@ -16,15 +15,14 @@ interface Pemeriksaan {
 }
 
 const page = usePage();
-const jenisPeserta = computed(() => page.props.jenis_peserta as string || 'atlet');
-const pemeriksaan = computed(() => page.props.pemeriksaan as Pemeriksaan || {} as Pemeriksaan);
+const jenisPeserta = computed(() => (page.props.jenis_peserta as string) || 'atlet');
+const pemeriksaan = computed(() => (page.props.pemeriksaan as Pemeriksaan) || ({} as Pemeriksaan));
 
 const props = defineProps<{
     pemeriksaan: any;
     items?: any;
 }>();
 
-// Debugging: Memeriksa data yang diterima dari server
 onMounted(() => {
     console.log('Page props:', page.props);
     console.log('Items from props:', props.items);
@@ -35,189 +33,151 @@ onMounted(() => {
 });
 
 const { toast } = useToast();
+const pageIndex = ref();
+
+const handleDeleteRow = async (row: any) => {
+    console.log('row for delete:', row);
+    try {
+        await axios.delete(`/pemeriksaan/${row.pemeriksaan_id}/peserta/${row.id}`);
+        if (pageIndex.value && pageIndex.value.fetchData) {
+            pageIndex.value.fetchData();
+        }
+        toast({ title: 'Peserta berhasil dihapus', variant: 'success' });
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Gagal menghapus peserta', variant: 'destructive' });
+    }
+};
+
+const deleteSelected = async () => {
+    try {
+        await axios.post(`/pemeriksaan/${props.pemeriksaan.id}/peserta/destroy-selected`, {
+            ids: selected.value,
+        });
+        selected.value = [];
+        if (pageIndex.value && pageIndex.value.fetchData) {
+            pageIndex.value.fetchData();
+        }
+        toast({ title: 'Data berhasil dihapus', variant: 'success' });
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Terjadi kesalahan', variant: 'destructive' });
+    }
+};
 
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
     { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta` },
 ];
 
-// Kolom dinamis berdasarkan jenis peserta
+const pesertaCache = ref<Record<string, any>>({});
+
+const fetchPesertaDetail = async (jenis: string, id: number) => {
+    const cacheKey = `${jenis}_${id}`;
+    if (pesertaCache.value[cacheKey]) return pesertaCache.value[cacheKey];
+    try {
+        const { data } = await axios.get(`/api/${jenis}/${id}`);
+        pesertaCache.value[cacheKey] = data.data || data;
+        return pesertaCache.value[cacheKey];
+    } catch {
+        pesertaCache.value[cacheKey] = null;
+        return null;
+    }
+};
+
+const getPesertaData = (row: any) => {
+    if (typeof row.peserta === 'object' && row.peserta !== null) return row.peserta;
+    let jenis = '';
+    if (row.peserta_type?.includes('Atlet')) jenis = 'atlet';
+    else if (row.peserta_type?.includes('Pelatih')) jenis = 'pelatih';
+    else if (row.peserta_type?.includes('TenagaPendukung')) jenis = 'tenaga-pendukung';
+    const cacheKey = `${jenis}_${row.peserta_id}`;
+    if (!pesertaCache.value[cacheKey]) {
+        fetchPesertaDetail(jenis, row.peserta_id);
+        return {  };
+    }
+    return pesertaCache.value[cacheKey];
+};
+
+watch(pesertaCache, () => {}, { deep: true });
+
+const fotoColumn = {
+    key: 'peserta.foto',
+    label: 'Foto',
+    format: (row: any) => {
+        const foto = getPesertaData(row)?.foto;
+        const nama = getPesertaData(row)?.nama || 'Peserta';
+
+        if (foto) {
+            return `
+                <div class='cursor-pointer' onclick="window.open('${foto}', '_blank')">
+                    <img src='${foto}' alt='Foto ${nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' />
+                </div>
+            `;
+        }
+
+        return `<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>`;
+    },
+};
+
+const baseColumns = [
+    {
+        key: 'status',
+        label: 'Status',
+        format: (row: any) => row.status?.nama || '-',
+    },
+    {
+        key: 'catatan_umum',
+        label: 'Catatan',
+        format: (row: any) => row.catatan_umum || '-',
+    },
+];
+
+const specificLabel: Record<string, string> = {
+    atlet: 'Nama Atlet',
+    pelatih: 'Nama Pelatih',
+    'tenaga-pendukung': 'Nama Tenaga Pendukung',
+};
+
 const columns = computed(() => {
-    const baseColumns = [
-        { 
-          key: 'status', 
-          label: 'Status', 
-          format: (row: any) => row.status?.nama || '-'
+    const labelNama = specificLabel[jenisPeserta.value] || 'Nama Peserta';
+
+    return [
+        {
+            key: 'peserta.nama',
+            label: labelNama,
+            format: (row: any) => getPesertaData(row)?.nama || '-',
         },
-        { 
-          key: 'catatan_umum', 
-          label: 'Catatan',
-          format: (row: any) => row.catatan_umum || '-'
+        fotoColumn,
+        ...baseColumns,
+        {
+            key: 'peserta.jenis_kelamin',
+            label: 'Jenis Kelamin',
+            format: (row: any) => {
+                const jenisKelamin = getPesertaData(row)?.jenis_kelamin;
+                return jenisKelamin === 'L' ? 'Laki-laki' : jenisKelamin === 'P' ? 'Perempuan' : '-';
+            },
+        },
+        {
+            key: 'peserta.tempat_lahir',
+            label: 'Tempat Lahir',
+            format: (row: any) => getPesertaData(row)?.tempat_lahir || '-',
+        },
+        {
+            key: 'peserta.tanggal_lahir',
+            label: 'Tanggal Lahir',
+            format: (row: any) => {
+                const tanggalLahir = getPesertaData(row)?.tanggal_lahir;
+                return tanggalLahir
+                    ? new Date(tanggalLahir).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'numeric',
+                          year: 'numeric',
+                      })
+                    : '-';
+            },
         },
     ];
-
-    // Debugging untuk melihat struktur data
-    console.log('Row data example:', props.items?.data?.[0]);
-    
-    // Fungsi untuk mendapatkan data peserta dari row
-    const getPesertaData = (row: any) => {
-        // Jika peserta adalah boolean true, coba ambil dari peserta_type dan peserta_id
-        if (row.peserta === true && row.peserta_type && row.peserta_id) {
-            // Log untuk debugging
-            console.log('Peserta is boolean true, trying to get data from API');
-            
-            // Tentukan jenis peserta dari peserta_type
-            let jenisPeserta = '';
-            if (row.peserta_type.includes('Atlet')) {
-                jenisPeserta = 'atlet';
-            } else if (row.peserta_type.includes('Pelatih')) {
-                jenisPeserta = 'pelatih';
-            } else if (row.peserta_type.includes('TenagaPendukung')) {
-                jenisPeserta = 'tenaga-pendukung';
-            }
-            
-            // Ambil data peserta dari cache jika sudah ada
-            const cacheKey = `${jenisPeserta}_${row.peserta_id}`;
-            if (pesertaCache.value[cacheKey]) {
-                console.log('Using cached peserta data:', pesertaCache.value[cacheKey]);
-                return pesertaCache.value[cacheKey];
-            }
-            
-            // Jika tidak ada di cache, ambil data dari API
-            // Ini akan dijalankan secara asinkron, jadi mungkin tidak langsung tersedia
-            fetchPesertaData(jenisPeserta, row.peserta_id, cacheKey);
-            
-            // Sementara menunggu data, tampilkan placeholder
-            return { nama: 'Loading...', nik: 'Loading...', tempat_lahir: 'Loading...' };
-        }
-        
-        // Jika peserta adalah objek, gunakan langsung
-        return row.peserta || null;
-    };
-    
-    // Cache untuk menyimpan data peserta yang sudah diambil
-    const pesertaCache = ref({});
-    
-    // Fungsi untuk mengambil data peserta dari API
-    const fetchPesertaData = async (jenisPeserta: string, pesertaId: number, cacheKey: string) => {
-        try {
-            // Tentukan endpoint API berdasarkan jenis peserta
-            const endpoint = `/api/${jenisPeserta}/${pesertaId}`;
-            console.log('Fetching peserta data from:', endpoint);
-            
-            // Panggil API untuk mendapatkan data peserta
-            const response = await fetch(endpoint);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch peserta data: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            console.log('Fetched peserta data:', data);
-            
-            // Simpan data ke cache
-            pesertaCache.value[cacheKey] = data.data || data;
-            
-            // Paksa komponen untuk dirender ulang
-            forceUpdate.value++;
-        } catch (error) {
-            console.error('Error fetching peserta data:', error);
-        }
-    };
-    
-    // Untuk memaksa komponen dirender ulang saat data peserta sudah diambil
-    const forceUpdate = ref(0);
-
-    const specificColumns = {
-        'atlet': [
-            { 
-                key: 'peserta.nama', 
-                label: 'Nama Atlet',
-                format: (row: any) => {
-                    console.log('Atlet row:', row);
-                    const peserta = getPesertaData(row);
-                    return peserta?.nama || '-';
-                }
-            },
-            { 
-                key: 'peserta.nik', 
-                label: 'NIK',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.nik || '-';
-                }
-            },
-            { 
-                key: 'peserta.tempat_lahir', 
-                label: 'Tempat Lahir',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.tempat_lahir || '-';
-                }
-            },
-        ],
-        'pelatih': [
-            { 
-                key: 'peserta.nama', 
-                label: 'Nama Pelatih',
-                format: (row: any) => {
-                    console.log('Pelatih row:', row);
-                    const peserta = getPesertaData(row);
-                    return peserta?.nama || '-';
-                }
-            },
-            { 
-                key: 'peserta.nik', 
-                label: 'NIK',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.nik || '-';
-                }
-            },
-            { 
-                key: 'peserta.jenis_pelatih.nama', 
-                label: 'Jenis Pelatih',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.jenis_pelatih?.nama || '-';
-                }
-            },
-        ],
-        'tenaga-pendukung': [
-            { 
-                key: 'peserta.nama', 
-                label: 'Nama Tenaga Pendukung',
-                format: (row: any) => {
-                    console.log('Tenaga Pendukung row:', row);
-                    const peserta = getPesertaData(row);
-                    return peserta?.nama || '-';
-                }
-            },
-            { 
-                key: 'peserta.nik', 
-                label: 'NIK',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.nik || '-';
-                }
-            },
-            { 
-                key: 'peserta.jenis_tenaga_pendukung.nama', 
-                label: 'Jenis',
-                format: (row: any) => {
-                    const peserta = getPesertaData(row);
-                    return peserta?.jenis_tenaga_pendukung?.nama || '-';
-                }
-            },
-        ],
-    };
-
-    // Get columns based on current participant type
-    const pesertaColumns = specificColumns[jenisPeserta.value] || specificColumns['atlet'];
-    return [...pesertaColumns, ...baseColumns];
 });
-
 const selected = ref<number[]>([]);
-const pageIndex = ref();
 
 const actions = (row: any) => [
     {
@@ -228,31 +188,17 @@ const actions = (row: any) => [
     {
         label: 'Edit',
         icon: 'pencil',
-        onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit`),
+        onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit?jenis_peserta=${jenisPeserta}`),
     },
     {
         label: 'Hapus',
         icon: 'trash',
-        onClick: () => pageIndex.value.handleDeleteRow(row),
+        onClick: () => handleDeleteRow(row),
     },
 ];
 
-const deleteSelected = async () => {
-    try {
-        await axios.post(`/pemeriksaan/${props.pemeriksaan.id}/peserta/destroy-selected`, {
-            ids: selected.value,
-        });
-        selected.value = [];
-        pageIndex.value?.refreshData();
-        toast({ title: 'Data berhasil dihapus', variant: 'success' });
-    } catch (error: any) {
-        toast({ title: error.response?.data?.message || 'Terjadi kesalahan', variant: 'destructive' });
-    }
-};
-
-// Helper function untuk mendapatkan label jenis peserta
 const getPesertaLabel = computed(() => {
-    switch(jenisPeserta.value) {
+    switch (jenisPeserta.value) {
         case 'atlet':
             return 'Atlet';
         case 'pelatih':
@@ -270,10 +216,10 @@ const getPesertaLabel = computed(() => {
         :title="`Peserta ${getPesertaLabel}`"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
-        :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/create`"
+        :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/create?jenis_peserta=${jenisPeserta}`"
         :actions="actions"
         :selected="selected"
-        @update:selected="(val) => (selected = val)"
+        @update:selected="(val: number[]) => (selected = val)"
         :on-delete-selected="deleteSelected"
         :api-endpoint="`/api/pemeriksaan/${pemeriksaan.id}/peserta/${jenisPeserta}`"
         ref="pageIndex"

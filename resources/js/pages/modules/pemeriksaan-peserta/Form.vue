@@ -9,26 +9,68 @@ const props = defineProps<{
     mode: 'create' | 'edit';
     initialData?: any;
     pemeriksaan: any;
-    jenisPeserta?: string;
+    jenisPeserta?: string; // Tidak dipakai lagi, ambil dari query
 }>();
 
-function getJenisPeserta() {
-    if (props.jenisPeserta && ["atlet", "pelatih", "tenaga_pendukung"].includes(props.jenisPeserta)) return props.jenisPeserta;
-    const ziggy: any = usePage().props.ziggy;
-    const jenis = (ziggy?.query?.jenis_peserta || '').toString();
-    if (["atlet", "pelatih", "tenaga_pendukung"].includes(jenis)) return jenis;
-    return "atlet";
+console.log('pemeriksaan:', props.pemeriksaan);
+console.log('cabor_kategori_id:', props.pemeriksaan?.cabor_kategori_id);
+
+const page = usePage();
+const jenisPeserta = computed(() => props.jenisPeserta || 'atlet');
+
+// Mapping config untuk SelectTableMultiple
+const pesertaConfig = computed(() => {
+    if (jenisPeserta.value === 'pelatih') {
+        return {
+            label: 'Pelatih',
+            endpoint: `/api/cabor-kategori-pelatih?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}`,
+            idKey: 'pelatih_id',
+            nameKey: 'pelatih_nama',
+            stateKey: 'pelatih_ids',
+        };
+    }
+    if (jenisPeserta.value === 'tenaga-pendukung') {
+        return {
+            label: 'Tenaga Pendukung',
+            endpoint: `/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}`,
+            idKey: 'tenaga_pendukung_id',
+            nameKey: 'tenaga_pendukung_nama',
+            stateKey: 'tenaga_pendukung_ids',
+        };
+    }
+    // Fallback: atlet
+    return {
+        label: 'Atlet',
+        endpoint: `/api/cabor-kategori-atlet?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}`,
+        idKey: 'atlet_id',
+        nameKey: 'atlet_nama',
+        stateKey: 'atlet_ids',
+    };
+});
+
+interface SelectionState {
+    atlet_ids: number[];
+    pelatih_ids: number[];
+    tenaga_pendukung_ids: number[];
+    [key: string]: number[];
 }
 
-const jenisPeserta = computed(() => getJenisPeserta());
-
-const { save } = useHandleFormSave();
-
-const selectionState = ref({
-    atlet_ids: props.initialData?.atlets?.map((a: any) => a.id) || [],
-    pelatih_ids: props.initialData?.pelatihs?.map((p: any) => p.id) || [],
-    tenaga_pendukung_ids: props.initialData?.tenaga_pendukung?.map((t: any) => t.id) || [],
+const selectionState = ref<SelectionState>({
+    atlet_ids: [],
+    pelatih_ids: [],
+    tenaga_pendukung_ids: [],
 });
+
+// Set initial selection sesuai jenis peserta
+if (props.mode === 'create' && props.initialData) {
+    if (jenisPeserta.value === 'atlet') {
+        selectionState.value.atlet_ids = props.initialData?.atlets?.map((a: any) => a.id) || [];
+    } else if (jenisPeserta.value === 'pelatih') {
+        selectionState.value.pelatih_ids = props.initialData?.pelatihs?.map((p: any) => p.id) || [];
+    } else if (jenisPeserta.value === 'tenaga-pendukung') {
+        selectionState.value.tenaga_pendukung_ids = props.initialData?.tenaga_pendukung?.map((t: any) => t.id) || [];
+    }
+}
 
 const formState = ref({
     ref_status_pemeriksaan_id: props.initialData?.ref_status_pemeriksaan_id || '',
@@ -52,21 +94,25 @@ const formInputs = computed(() => {
             type: 'textarea' as const 
         },
     ];
-
-    if (props.mode === 'edit') {
-        inputs.unshift({ name: 'peserta_tipe', label: 'Tipe Peserta', type: 'text' as const, disabled: true });
-        inputs.unshift({ name: 'peserta_nama', label: 'Nama Peserta', type: 'text' as const, disabled: true });
-    }
-    
     return inputs;
 });
+
+const { save } = useHandleFormSave();
 
 const handleSave = (form: any) => {
     let dataToSave;
     const url = `/pemeriksaan/${props.pemeriksaan.id}/peserta`;
 
     if (props.mode === 'create') {
-        dataToSave = { ...form, ...selectionState.value };
+        dataToSave = { ...form, [pesertaConfig.value.stateKey]: selectionState.value[pesertaConfig.value.stateKey] };
+        save(
+            dataToSave,
+            {
+                url,
+                mode: 'create',
+                redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
+            },
+        );
     } else {
         dataToSave = {
             ref_status_pemeriksaan_id: form.ref_status_pemeriksaan_id,
@@ -116,30 +162,33 @@ const columns = [
     <FormInput :form-inputs="formInputs" @save="handleSave" :initial-data="formState">
         <template #custom-fields v-if="mode === 'create'">
             <SelectTableMultiple
-                v-if="jenisPeserta === 'atlet'"
+                v-show="jenisPeserta === 'atlet'"
+                :key="'atlet'"
                 v-model:selected-ids="selectionState.atlet_ids"
                 label="Atlet"
-                :endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
+                :endpoint="`/api/cabor-kategori-atlet/available-for-pemeriksaan?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}&pemeriksaan_id=${props.pemeriksaan.id}`"
                 :columns="columns"
                 id-key="atlet_id"
                 name-key="atlet_nama"
                 :auto-select-all="true"
             />
             <SelectTableMultiple
-                v-if="jenisPeserta === 'pelatih'"
+                v-show="jenisPeserta === 'pelatih'"
+                :key="'pelatih'"
                 v-model:selected-ids="selectionState.pelatih_ids"
                 label="Pelatih"
-                :endpoint="`/api/cabor-kategori-pelatih?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
+                :endpoint="`/api/cabor-kategori-pelatih/available-for-pemeriksaan?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}&pemeriksaan_id=${props.pemeriksaan.id}`"
                 :columns="columns"
                 id-key="pelatih_id"
                 name-key="pelatih_nama"
                 :auto-select-all="true"
             />
             <SelectTableMultiple
-                v-if="jenisPeserta === 'tenaga_pendukung'"
+                v-show="jenisPeserta === 'tenaga-pendukung'"
+                :key="'tenaga-pendukung'"
                 v-model:selected-ids="selectionState.tenaga_pendukung_ids"
                 label="Tenaga Pendukung"
-                :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
+                :endpoint="`/api/cabor-kategori-tenaga-pendukung/available-for-pemeriksaan?cabor_kategori_id=${props.pemeriksaan.cabor_kategori_id}&pemeriksaan_id=${props.pemeriksaan.id}`"
                 :columns="columns"
                 id-key="tenaga_pendukung_id"
                 name-key="tenaga_pendukung_nama"

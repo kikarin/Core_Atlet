@@ -30,16 +30,16 @@ const pesertaLabel = computed(() => {
 
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
-    { title: pemeriksaan.value?.nama_pemeriksaan || 'Peserta', href: `/pemeriksaan/${pemeriksaanId.value}/peserta` },
-    { title: `Edit ${pesertaLabel.value}`, href: `/pemeriksaan/${pemeriksaanId.value}/peserta/${item.value.id}/edit` },
+    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${pemeriksaanId.value}/peserta?jenis_peserta=${jenisPeserta.value}` },
+    { title: `Edit Pemeriksaan ${pesertaLabel.value}`, href: `/pemeriksaan/${pemeriksaanId.value}/peserta/${item.value.id}/edit` },
 ];
 </script>
 
 <template>
     <PageEdit 
-        :title="`Edit ${pesertaLabel}`" 
+        :title="`${pesertaLabel}`" 
         :breadcrumbs="breadcrumbs" 
-        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta/${item.id}`"
+        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta?jenis_peserta=${jenisPeserta}`"
     >
         <Form 
             mode="edit" 

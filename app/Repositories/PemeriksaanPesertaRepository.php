@@ -77,29 +77,25 @@ class PemeriksaanPesertaRepository
         Log::info('Query result count: ' . count($items));
 
         $transformed = collect($items->items())->map(function ($item) {
-            // Pastikan relasi peserta dimuat dengan benar
+            // Pastikan peserta adalah objek dengan field penting, bukan true/null
             $peserta = $item->peserta;
-            
-            // Tambahkan logging untuk debugging
-            Log::info('PemeriksaanPeserta ID: ' . $item->id);
-            Log::info('Peserta Type: ' . $item->peserta_type);
-            Log::info('Peserta ID: ' . $item->peserta_id);
-            Log::info('Peserta Data: ' . json_encode($peserta));
-            
-            // Jika peserta null, coba muat ulang relasinya
-            if (!$peserta) {
-                Log::warning('Peserta is null, trying to reload relation');
-                $item->load('peserta');
-                $peserta = $item->peserta;
-                Log::info('After reload - Peserta Data: ' . json_encode($peserta));
+            if (is_object($peserta)) {
+                $pesertaData = [
+                    'id' => $peserta->id,
+                    'nama' => $peserta->nama ?? null,
+                    'tempat_lahir' => $peserta->tempat_lahir ?? null,
+                    'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
+                    'foto' => $peserta->foto ?? null,
+                ];
+            } else {
+                $pesertaData = null;
             }
-            
             return [
                 'id' => $item->id,
                 'pemeriksaan_id' => $item->pemeriksaan_id,
                 'peserta_type' => $item->peserta_type,
                 'peserta_id' => $item->peserta_id,
-                'peserta' => $peserta,
+                'peserta' => $pesertaData,
                 'status' => $item->status,
                 'catatan_umum' => $item->catatan_umum,
                 'created_at' => $item->created_at,

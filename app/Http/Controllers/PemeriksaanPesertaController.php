@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Models\PemeriksaanPeserta;
 
 class PemeriksaanPesertaController extends Controller
 {
@@ -53,12 +54,10 @@ public function index(Pemeriksaan $pemeriksaan)
         'peserta_type' => request('jenis_peserta', 'atlet')
     ];
     
-    // Log untuk debugging
     Log::info('Index method called with jenis_peserta: ' . request('jenis_peserta', 'atlet'));
     
     $items = $this->repository->customIndex($data);
     
-    // Log hasil items untuk debugging
     Log::info('Items count: ' . count($items['data']));
     if (count($items['data']) > 0) {
         Log::info('First item: ' . json_encode($items['data'][0]));
@@ -128,17 +127,26 @@ public function index(Pemeriksaan $pemeriksaan)
         ]);
     }
 
-    public function update(PemeriksaanPesertaRequest $request, Pemeriksaan $pemeriksaan, $peserta_id)
+    public function update(Request $request, $pemeriksaan, $peserta)
     {
-        $data = $request->validated();
-        $this->repository->update($peserta_id, $data);
-        return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan->id)->with('success', 'Peserta berhasil diperbarui.');
+        $item = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaan)->where('id', $peserta)->firstOrFail();
+        $item->ref_status_pemeriksaan_id = $request->input('ref_status_pemeriksaan_id');
+        $item->catatan_umum = $request->input('catatan_umum');
+        $item->save();
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Peserta berhasil diperbarui']);
+        }
+        return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan)->with('success', 'Peserta berhasil diperbarui!');
     }
-    
-    public function destroy(Pemeriksaan $pemeriksaan, $peserta_id)
+
+    public function destroy($pemeriksaan, $peserta)
     {
-        $this->repository->delete($peserta_id);
-        return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan->id)->with('success', 'Peserta berhasil dihapus.');
+        $item = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaan)->where('id', $peserta)->firstOrFail();
+        $item->delete();
+        if (request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Peserta berhasil dihapus']);
+        }
+        return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan)->with('success', 'Peserta berhasil dihapus!');
     }
 
     public function apiIndex(Pemeriksaan $pemeriksaan, $jenis_peserta = null)

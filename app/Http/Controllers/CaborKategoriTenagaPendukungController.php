@@ -10,6 +10,8 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 use App\Models\CaborKategori;
+use App\Models\PemeriksaanPeserta;
+use App\Models\CaborKategoriTenagaPendukung;
 
 class CaborKategoriTenagaPendukungController extends Controller implements HasMiddleware
 {
@@ -221,5 +223,62 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
 
             return redirect()->back()->with('error', 'Gagal menambahkan tenaga pendukung: ' . $e->getMessage());
         }
+    }
+
+    // Endpoint khusus untuk pemeriksaan peserta: hanya tampilkan tenaga pendukung yang belum jadi peserta di pemeriksaan ini
+    public function apiAvailableForPemeriksaan(Request $request)
+    {
+        $caborKategoriId = $request->input('cabor_kategori_id');
+        $pemeriksaanId = $request->input('pemeriksaan_id');
+
+        // Ambil semua tenaga_pendukung_id yang sudah jadi peserta di pemeriksaan ini
+        $usedTPIds = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaanId)
+            ->where('peserta_type', 'App\\Models\\TenagaPendukung')
+            ->pluck('peserta_id')
+            ->toArray();
+
+        // Query tenaga pendukung yang belum jadi peserta
+        $query = CaborKategoriTenagaPendukung::with('tenagaPendukung')
+            ->where('cabor_kategori_id', $caborKategoriId)
+            ->whereNotIn('tenaga_pendukung_id', $usedTPIds);
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('tenagaPendukung', function($q) use ($search) {
+                $q->where('nama', 'like', "%$search%")
+                  ->orWhere('nik', 'like', "%$search%")
+                  ->orWhere('no_hp', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                ;
+            });
+        }
+        $perPage = (int) $request->input('per_page', 10);
+        $page = (int) $request->input('page', 1);
+        $result = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $data = $result->items();
+        $transformed = collect($data)->map(function($item) {
+            return [
+                'id' => $item->id,
+                'tenaga_pendukung_id' => $item->tenaga_pendukung_id,
+                'tenaga_pendukung_nama' => $item->tenagaPendukung->nama ?? '-',
+                'nik' => $item->tenagaPendukung->nik ?? '-',
+                'jenis_kelamin' => $item->tenagaPendukung->jenis_kelamin ?? '-',
+                'tempat_lahir' => $item->tenagaPendukung->tempat_lahir ?? '-',
+                'tanggal_lahir' => $item->tenagaPendukung->tanggal_lahir ?? '-',
+                'no_hp' => $item->tenagaPendukung->no_hp ?? '-',
+                'foto' => $item->tenagaPendukung->foto ?? null,
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformed,
+            'meta' => [
+                'total' => $result->total(),
+                'current_page' => $result->currentPage(),
+                'per_page' => $result->perPage(),
+                'search' => $request->input('search', ''),
+            ],
+        ]);
     }
 }

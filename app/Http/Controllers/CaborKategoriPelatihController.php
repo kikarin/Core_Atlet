@@ -10,6 +10,8 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 use App\Models\CaborKategori;
+use App\Models\PemeriksaanPeserta;
+use App\Models\CaborKategoriPelatih;
 
 class CaborKategoriPelatihController extends Controller implements HasMiddleware
 {
@@ -229,5 +231,62 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
 
             return redirect()->back()->with('error', 'Gagal menambahkan pelatih: ' . $e->getMessage());
         }
+    }
+
+    // Endpoint khusus untuk pemeriksaan peserta: hanya tampilkan pelatih yang belum jadi peserta di pemeriksaan ini
+    public function apiAvailableForPemeriksaan(Request $request)
+    {
+        $caborKategoriId = $request->input('cabor_kategori_id');
+        $pemeriksaanId = $request->input('pemeriksaan_id');
+
+        // Ambil semua pelatih_id yang sudah jadi peserta di pemeriksaan ini
+        $usedPelatihIds = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaanId)
+            ->where('peserta_type', 'App\\Models\\Pelatih')
+            ->pluck('peserta_id')
+            ->toArray();
+
+        // Query pelatih yang belum jadi peserta
+        $query = CaborKategoriPelatih::with('pelatih')
+            ->where('cabor_kategori_id', $caborKategoriId)
+            ->whereNotIn('pelatih_id', $usedPelatihIds);
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('pelatih', function($q) use ($search) {
+                $q->where('nama', 'like', "%$search%")
+                  ->orWhere('nik', 'like', "%$search%")
+                  ->orWhere('no_hp', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                ;
+            });
+        }
+        $perPage = (int) $request->input('per_page', 10);
+        $page = (int) $request->input('page', 1);
+        $result = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $data = $result->items();
+        $transformed = collect($data)->map(function($item) {
+            return [
+                'id' => $item->id,
+                'pelatih_id' => $item->pelatih_id,
+                'pelatih_nama' => $item->pelatih->nama ?? '-',
+                'nik' => $item->pelatih->nik ?? '-',
+                'jenis_kelamin' => $item->pelatih->jenis_kelamin ?? '-',
+                'tempat_lahir' => $item->pelatih->tempat_lahir ?? '-',
+                'tanggal_lahir' => $item->pelatih->tanggal_lahir ?? '-',
+                'no_hp' => $item->pelatih->no_hp ?? '-',
+                'foto' => $item->pelatih->foto ?? null,
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformed,
+            'meta' => [
+                'total' => $result->total(),
+                'current_page' => $result->currentPage(),
+                'per_page' => $result->perPage(),
+                'search' => $request->input('search', ''),
+            ],
+        ]);
     }
 }

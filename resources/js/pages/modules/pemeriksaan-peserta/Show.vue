@@ -12,7 +12,6 @@ const pemeriksaanId = computed(() => pemeriksaan.value.id || (typeof window !== 
 
 const props = defineProps<{ item: Record<string, any> }>();
 
-// Menentukan jenis peserta berdasarkan peserta_type
 const jenisPeserta = computed(() => {
     const pesertaType = props.item?.peserta_type || '';
     if (pesertaType.includes('Atlet')) return 'atlet';
@@ -21,7 +20,6 @@ const jenisPeserta = computed(() => {
     return 'atlet';
 });
 
-// Label untuk jenis peserta
 const pesertaLabel = computed(() => {
     switch (jenisPeserta.value) {
         case 'atlet': return 'Atlet';
@@ -33,11 +31,10 @@ const pesertaLabel = computed(() => {
 
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
-    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${pemeriksaanId.value}/peserta` },
+    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${pemeriksaanId.value}/peserta?jenis_peserta=${jenisPeserta.value}` },
     { title: `Detail ${pesertaLabel.value}`, href: `/pemeriksaan/${pemeriksaanId.value}/peserta/${props.item.id}` },
 ];
 
-// Menentukan fields berdasarkan jenis peserta
 const fields = computed(() => {
     const baseFields = [
         { label: 'Status Pemeriksaan', value: props.item?.status?.nama || '-' },
@@ -47,7 +44,6 @@ const fields = computed(() => {
     const pesertaFields = [];
     const peserta = props.item?.peserta || {};
 
-    // Fields khusus berdasarkan jenis peserta
     if (jenisPeserta.value === 'atlet') {
         pesertaFields.push(
             { label: 'NIK', value: peserta?.nik || '-' },
@@ -55,7 +51,7 @@ const fields = computed(() => {
             { 
                 label: 'Jenis Kelamin', 
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-blue-600' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
             },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
             { 
@@ -87,7 +83,7 @@ const fields = computed(() => {
             { 
                 label: 'Jenis Kelamin', 
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-blue-600' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
             },
             { label: 'Jenis Pelatih', value: peserta?.jenis_pelatih?.nama || '-' },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
@@ -120,7 +116,7 @@ const fields = computed(() => {
             { 
                 label: 'Jenis Kelamin', 
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-blue-600' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
             },
             { label: 'Jenis Tenaga Pendukung', value: peserta?.jenis_tenaga_pendukung?.nama || '-' },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
@@ -170,23 +166,26 @@ const handleDelete = () => {
     router.delete(`/pemeriksaan/${pemeriksaanId.value}/peserta/${props.item.id}`, {
         onSuccess: () => {
             toast({ title: 'Data peserta pemeriksaan berhasil dihapus', variant: 'success' });
-            router.visit(`/pemeriksaan/${pemeriksaanId.value}/peserta`);
+
+            // Redirect ke URL dinamis dengan query jenis_peserta
+            router.visit(`/pemeriksaan/${pemeriksaanId.value}/peserta?jenis_peserta=${jenisPeserta.value}`);
         },
         onError: () => {
             toast({ title: 'Gagal menghapus data peserta pemeriksaan', variant: 'destructive' });
         },
     });
 };
+
 </script>
 
 <template>
     <PageShow
-        :title="`Detail ${pesertaLabel}`"
+        :title="`${pesertaLabel}`"
         :breadcrumbs="breadcrumbs"
         :fields="fields"
         :actionFields="actionFields"
-        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta`"
-        :on-edit="() => router.visit(`/pemeriksaan/${pemeriksaanId}/peserta/${props.item.id}/edit`)"
+        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta?jenis_peserta=${jenisPeserta}`"
+        :on-edit="() => router.visit(`/pemeriksaan/${page.props.pemeriksaan.id}/peserta/${props.item.id}/edit?jenis_peserta=${jenisPeserta}`)"
         :on-delete="handleDelete"
     />
 </template>

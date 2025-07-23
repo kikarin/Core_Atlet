@@ -449,12 +449,19 @@ Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanP
 
 // API untuk Pemeriksaan Peserta
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');
+Route::put('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
+Route::delete('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
 
 
  // API untuk detail atlet, pelatih, dan tenaga pendukung
 Route::get('/api/atlet/{id}', [AtletController::class, 'apiShow']);
 Route::get('/api/pelatih/{id}', [PelatihController::class, 'apiShow']);
 Route::get('/api/tenaga-pendukung/{id}', [TenagaPendukungController::class, 'apiShow']);
+
+// Endpoint API khusus untuk pemeriksaan peserta
+Route::get('/api/cabor-kategori-atlet/available-for-pemeriksaan', [CaborKategoriAtletController::class, 'apiAvailableForPemeriksaan']);
+Route::get('/api/cabor-kategori-pelatih/available-for-pemeriksaan', [CaborKategoriPelatihController::class, 'apiAvailableForPemeriksaan']);
+Route::get('/api/cabor-kategori-tenaga-pendukung/available-for-pemeriksaan', [CaborKategoriTenagaPendukungController::class, 'apiAvailableForPemeriksaan']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
