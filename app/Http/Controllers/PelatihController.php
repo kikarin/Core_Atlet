@@ -57,6 +57,38 @@ class PelatihController extends Controller implements HasMiddleware
         ]);
     }
 
+        public function apiShow($id)
+    {
+        try {
+            // Debug logging
+            Log::info('PelatihController: apiShow method called', [
+                'id' => $id,
+            ]);
+
+            $item = $this->repository->getDetailWithRelations($id);
+            
+            if (!$item) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pelatih tidak ditemukan',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $item,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching pelatih detail: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data pelatih',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function store(PelatihRequest $request)
     {
         $data  = $this->repository->validateRequest($request);

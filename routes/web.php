@@ -441,6 +441,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{id}/edit', [PemeriksaanPesertaController::class, 'edit'])->name('pemeriksaan.peserta.edit');
         Route::put('/{id}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
         Route::delete('/{id}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
+         Route::post('/destroy-selected', [PemeriksaanPesertaController::class, 'destroy_selected'])->name('pemeriksaan.peserta.destroy_selected');
     });
 });
 // API nested
@@ -449,6 +450,11 @@ Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanP
 // API untuk Pemeriksaan Peserta
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');
 
+
+ // API untuk detail atlet, pelatih, dan tenaga pendukung
+Route::get('/api/atlet/{id}', [AtletController::class, 'apiShow']);
+Route::get('/api/pelatih/{id}', [PelatihController::class, 'apiShow']);
+Route::get('/api/tenaga-pendukung/{id}', [TenagaPendukungController::class, 'apiShow']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

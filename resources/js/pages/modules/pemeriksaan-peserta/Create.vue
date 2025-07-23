@@ -5,30 +5,25 @@ import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const page = usePage();
-const pemeriksaan = computed(() => page.props.pemeriksaan as any);
-const jenisPeserta = computed(() => {
-    const url = new URL(window.location.href);
-    const jenis = url.searchParams.get('jenis_peserta');
-    if (jenis && ["atlet", "pelatih", "tenaga-pendukung"].includes(jenis)) {
-        return jenis;
-    }
-    return 'atlet'; // Fallback
-});
+const pemeriksaan = computed(() => page.props.pemeriksaan || {});
+const pemeriksaanId = computed(() => pemeriksaan.value.id);
 
-const breadcrumbs = computed(() => [
+const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
-    { title: pemeriksaan.value.nama_pemeriksaan, href: `/pemeriksaan/${pemeriksaan.value.id}/peserta` },
-    { title: 'Tambah Peserta', href: '#' },
-]);
-
+    { title: pemeriksaan.value?.nama_pemeriksaan || 'Peserta', href: `/pemeriksaan/${pemeriksaanId.value}/peserta` },
+    { title: 'Tambah Peserta', href: `/pemeriksaan/${pemeriksaanId.value}/peserta/create` },
+];
 </script>
 
 <template>
-    <PageCreate
-        title="Tambah Peserta Pemeriksaan"
-        :breadcrumbs="breadcrumbs"
-        :back-url="`/pemeriksaan/${pemeriksaan.id}/peserta`"
+    <PageCreate 
+        title="Tambah Peserta" 
+        :breadcrumbs="breadcrumbs" 
+        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta`"
     >
-        <Form mode="create" :pemeriksaan="pemeriksaan" :jenis-peserta="jenisPeserta" />
+        <Form 
+            mode="create" 
+            :pemeriksaan="pemeriksaan"
+        />
     </PageCreate>
-</template> 
+</template>

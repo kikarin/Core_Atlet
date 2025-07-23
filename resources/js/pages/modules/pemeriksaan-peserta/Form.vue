@@ -12,20 +12,22 @@ const props = defineProps<{
     jenisPeserta?: string;
 }>();
 
-const jenisPeserta = computed(() => {
-  const validJenis = ["atlet", "pelatih", "tenaga-pendukung"];
-  if (props.jenisPeserta && validJenis.includes(props.jenisPeserta)) {
-    return props.jenisPeserta;
-  }
-  return "atlet"; // Default ke atlet jika tidak ada atau tidak valid
-});
+function getJenisPeserta() {
+    if (props.jenisPeserta && ["atlet", "pelatih", "tenaga_pendukung"].includes(props.jenisPeserta)) return props.jenisPeserta;
+    const ziggy: any = usePage().props.ziggy;
+    const jenis = (ziggy?.query?.jenis_peserta || '').toString();
+    if (["atlet", "pelatih", "tenaga_pendukung"].includes(jenis)) return jenis;
+    return "atlet";
+}
+
+const jenisPeserta = computed(() => getJenisPeserta());
 
 const { save } = useHandleFormSave();
 
 const selectionState = ref({
-    atlet_ids: [],
-    pelatih_ids: [],
-    tenaga_pendukung_ids: [],
+    atlet_ids: props.initialData?.atlets?.map((a: any) => a.id) || [],
+    pelatih_ids: props.initialData?.pelatihs?.map((p: any) => p.id) || [],
+    tenaga_pendukung_ids: props.initialData?.tenaga_pendukung?.map((t: any) => t.id) || [],
 });
 
 const formState = ref({
@@ -37,8 +39,18 @@ const formState = ref({
 
 const formInputs = computed(() => {
     const inputs: any[] = [
-        { name: 'ref_status_pemeriksaan_id', label: 'Status Pemeriksaan', type: 'select' as const, required: true, options: (usePage().props.ref_status_pemeriksaan as any[] || []).map(s => ({ value: s.id, label: s.nama })) },
-        { name: 'catatan_umum', label: 'Catatan Umum', type: 'textarea' as const },
+        { 
+            name: 'ref_status_pemeriksaan_id', 
+            label: 'Status Pemeriksaan', 
+            type: 'select' as const, 
+            required: true, 
+            options: (usePage().props.ref_status_pemeriksaan as any[] || []).map(s => ({ value: s.id, label: s.nama })) 
+        },
+        { 
+            name: 'catatan_umum', 
+            label: 'Catatan Umum', 
+            type: 'textarea' as const 
+        },
     ];
 
     if (props.mode === 'edit') {
@@ -124,7 +136,7 @@ const columns = [
                 :auto-select-all="true"
             />
             <SelectTableMultiple
-                v-if="jenisPeserta === 'tenaga-pendukung'"
+                v-if="jenisPeserta === 'tenaga_pendukung'"
                 v-model:selected-ids="selectionState.tenaga_pendukung_ids"
                 label="Tenaga Pendukung"
                 :endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${pemeriksaan.cabor_kategori_id}`"
@@ -135,4 +147,4 @@ const columns = [
             />
         </template>
     </FormInput>
-</template> 
+</template>

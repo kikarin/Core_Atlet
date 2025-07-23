@@ -56,6 +56,38 @@ class TenagaPendukungController extends Controller implements HasMiddleware
         ]);
     }
 
+        public function apiShow($id)
+    {
+        try {
+            // Debug logging
+            Log::info('Tenaga Pendukung Controller: apiShow method called', [
+                'id' => $id,
+            ]);
+
+            $item = $this->repository->getDetailWithRelations($id);
+            
+            if (!$item) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tenaga Pendukung  tidak ditemukan',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $item,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Tenaga Pendukung  detail: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data Tenaga Pendukung ',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function store(TenagaPendukungRequest $request)
     {
         $data  = $this->repository->validateRequest($request);

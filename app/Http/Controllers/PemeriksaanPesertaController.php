@@ -11,6 +11,9 @@ use App\Models\RefStatusPemeriksaan;
 use App\Repositories\PemeriksaanPesertaRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class PemeriksaanPesertaController extends Controller
 {
@@ -23,25 +26,60 @@ class PemeriksaanPesertaController extends Controller
         $this->initialize();
     }
 
-    public function index(Pemeriksaan $pemeriksaan)
+        public static function middleware(): array
     {
-        $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
-        request()->merge(['pemeriksaan_id' => $pemeriksaan->id]);
-        $data = $this->repository->customIndex(['pemeriksaan' => $pemeriksaan]);
-        
-        // Pass pemeriksaan data to inertia
-        $data['pemeriksaan'] = $pemeriksaan;
-
-        return inertia('modules/pemeriksaan-peserta/Index', $data);
+        $className  = class_basename(__CLASS__);
+        $permission = str_replace('Controller', '', $className);
+        $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+        return [
+            new Middleware("can:$permission Add", only: ['create', 'store']),
+            new Middleware("can:$permission Detail", only: ['show']),
+            new Middleware("can:$permission Edit", only: ['edit', 'update']),
+            new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
+        ];
     }
+
+
+public function index(Pemeriksaan $pemeriksaan)
+{
+    // Load semua relasi yang dibutuhkan
+    $pemeriksaan->load([
+        'cabor',
+        'caborKategori',
+        'tenagaPendukung'
+    ]);
+    
+    $data = [
+        'peserta_type' => request('jenis_peserta', 'atlet')
+    ];
+    
+    // Log untuk debugging
+    Log::info('Index method called with jenis_peserta: ' . request('jenis_peserta', 'atlet'));
+    
+    $items = $this->repository->customIndex($data);
+    
+    // Log hasil items untuk debugging
+    Log::info('Items count: ' . count($items['data']));
+    if (count($items['data']) > 0) {
+        Log::info('First item: ' . json_encode($items['data'][0]));
+    }
+    
+    return Inertia::render('modules/pemeriksaan-peserta/Index', [
+        'items' => $items,
+        'pemeriksaan' => $pemeriksaan,
+        'jenis_peserta' => request('jenis_peserta', 'atlet')
+    ]);
+}
     
     public function create(Pemeriksaan $pemeriksaan, Request $request)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
-        $atlets = Atlet::where('is_active', true)->get(['id', 'nama']);
-        $pelatihs = Pelatih::where('is_active', true)->get(['id', 'nama']);
-        $tenagaPendukung = TenagaPendukung::where('is_active', true)->get(['id', 'nama']);
         $ref_status_pemeriksaan = RefStatusPemeriksaan::all();
+        
+        return Inertia::render('modules/pemeriksaan-peserta/Create', [
+            'pemeriksaan' => $pemeriksaan,
+            'ref_status_pemeriksaan' => $ref_status_pemeriksaan,
+        ]);
         
         return inertia('modules/pemeriksaan-peserta/Create', [
             'pemeriksaan' => $pemeriksaan,
@@ -112,4 +150,4 @@ class PemeriksaanPesertaController extends Controller
         $data = $this->repository->customIndex([]);
         return response()->json($data);
     }
-} 
+}

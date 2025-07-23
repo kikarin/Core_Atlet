@@ -52,52 +52,8 @@ class AtletController extends Controller implements HasMiddleware
                 'per_page'     => $data['perPage'],
                 'search'       => $data['search'],
                 'sort'         => $data['sort'],
-                'order'        => $data['order'],
             ],
         ]);
-    }
-
-    public function store(AtletRequest $request)
-    {
-        $data  = $this->repository->validateRequest($request);
-        $model = $this->repository->create($data);
-        return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil ditambahkan!');
-    }
-
-    public function update(AtletRequest $request, $id)
-    {
-        try {
-            // Debug logging
-            Log::info('AtletController: update method called', [
-                'id'             => $id,
-                'all_data'       => $request->all(),
-                'validated_data' => $request->validated(),
-            ]);
-
-            // Use the same validation as store method
-            $data = $this->repository->validateRequest($request);
-
-            // Handle file upload if exists
-            if ($request->hasFile('file')) {
-                $data['file'] = $request->file('file');
-            }
-
-            Log::info('AtletController: data after validation', [
-                'data' => $data,
-            ]);
-
-            // Update the record
-            $model = $this->repository->update($id, $data);
-
-            return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil diperbarui!');
-
-        } catch (\Exception $e) {
-            Log::error('Error updating atlet: ' . $e->getMessage());
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data atlet.');
-        }
     }
 
     public function show($id)
@@ -106,6 +62,37 @@ class AtletController extends Controller implements HasMiddleware
         return Inertia::render('modules/atlet/Show', [
             'item' => $item,
         ]);
+    }
+
+    public function apiShow($id)
+    {
+        try {
+            // Debug logging
+            Log::info('AtletController: apiShow method called', [
+                'id' => $id,
+            ]);
+
+            $item = $this->repository->getDetailWithRelations($id);
+            
+            if (!$item) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Atlet tidak ditemukan',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $item,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching atlet detail: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data atlet',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function import(Request $request)

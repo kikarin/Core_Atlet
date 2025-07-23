@@ -10,6 +10,7 @@ use App\Models\Pemeriksaan;
 use App\Models\Atlet;
 use App\Models\Pelatih;
 use App\Models\TenagaPendukung;
+use Illuminate\Support\Facades\Log;
 
 class PemeriksaanPesertaRepository
 {
@@ -25,7 +26,13 @@ class PemeriksaanPesertaRepository
 
     public function customIndex($data)
     {
+        // Pastikan relasi peserta dimuat dengan benar
         $query = $this->model->with($this->with);
+
+        // Log untuk debugging
+        Log::info('customIndex called with data: ' . json_encode($data));
+        Log::info('Request pemeriksaan_id: ' . request('pemeriksaan_id'));
+        Log::info('Request jenis_peserta: ' . request('jenis_peserta'));
 
         if (request('pemeriksaan_id')) {
             $query->where('pemeriksaan_id', request('pemeriksaan_id'));
@@ -41,6 +48,7 @@ class PemeriksaanPesertaRepository
             };
             if ($modelClass) {
                 $query->where('peserta_type', $modelClass);
+                Log::info('Filtering by peserta_type: ' . $modelClass);
             }
         }
 
@@ -56,13 +64,42 @@ class PemeriksaanPesertaRepository
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
         
+        // Pastikan relasi peserta dimuat dengan benar
+        $query->with(['peserta']);
+        
+        // Log query SQL untuk debugging
+        Log::info('SQL Query: ' . $query->toSql());
+        Log::info('SQL Bindings: ' . json_encode($query->getBindings()));
+        
         $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        
+        // Log hasil query untuk debugging
+        Log::info('Query result count: ' . count($items));
 
         $transformed = collect($items->items())->map(function ($item) {
+            // Pastikan relasi peserta dimuat dengan benar
+            $peserta = $item->peserta;
+            
+            // Tambahkan logging untuk debugging
+            Log::info('PemeriksaanPeserta ID: ' . $item->id);
+            Log::info('Peserta Type: ' . $item->peserta_type);
+            Log::info('Peserta ID: ' . $item->peserta_id);
+            Log::info('Peserta Data: ' . json_encode($peserta));
+            
+            // Jika peserta null, coba muat ulang relasinya
+            if (!$peserta) {
+                Log::warning('Peserta is null, trying to reload relation');
+                $item->load('peserta');
+                $peserta = $item->peserta;
+                Log::info('After reload - Peserta Data: ' . json_encode($peserta));
+            }
+            
             return [
                 'id' => $item->id,
                 'pemeriksaan_id' => $item->pemeriksaan_id,
-                'peserta' => $item->peserta,
+                'peserta_type' => $item->peserta_type,
+                'peserta_id' => $item->peserta_id,
+                'peserta' => $peserta,
                 'status' => $item->status,
                 'catatan_umum' => $item->catatan_umum,
                 'created_at' => $item->created_at,
@@ -153,4 +190,4 @@ class PemeriksaanPesertaRepository
     {
         return $this->model->with($this->with)->findOrFail($id);
     }
-} 
+}
