@@ -177,6 +177,10 @@ class CategoryPermissionSeeder extends Seeder
                 'name' => 'Pemeriksaan Peserta',
                 'permission' => 'CRUD',
             ],
+            [
+                'name' => 'Pemeriksaan Peserta Parameter',
+                'permission' => 'CRUD',
+            ],
         ];
 
         $listCrud = ['Show', 'Add', 'Edit', 'Detail', 'Delete'];

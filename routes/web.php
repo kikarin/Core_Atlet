@@ -51,6 +51,7 @@ use App\Http\Controllers\RencanaLatihanPesertaController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PemeriksaanParameterController;
 use App\Http\Controllers\PemeriksaanPesertaController;
+use App\Http\Controllers\PemeriksaanPesertaParameterController;
 
 // =====================
 // ROUTE UTAMA
@@ -443,9 +444,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{id}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
          Route::post('/destroy-selected', [PemeriksaanPesertaController::class, 'destroy_selected'])->name('pemeriksaan.peserta.destroy_selected');
     });
+
+    // Nested Pemeriksaan Peserta Parameter - Web Routes
+    Route::prefix('pemeriksaan/{pemeriksaan}/peserta/{peserta}/parameter')->group(function () {
+        Route::get('/', [PemeriksaanPesertaParameterController::class, 'index'])->name('pemeriksaan.peserta.parameter.index');
+        Route::get('/create', [PemeriksaanPesertaParameterController::class, 'create'])->name('pemeriksaan.peserta.parameter.create');
+        Route::post('/', [PemeriksaanPesertaParameterController::class, 'store'])->name('pemeriksaan.peserta.parameter.store');
+        Route::get('/{id}', [PemeriksaanPesertaParameterController::class, 'show'])->name('pemeriksaan.peserta.parameter.show');
+        Route::get('/{id}/edit', [PemeriksaanPesertaParameterController::class, 'edit'])->name('pemeriksaan.peserta.parameter.edit');
+        Route::put('/{id}', [PemeriksaanPesertaParameterController::class, 'update'])->name('pemeriksaan.peserta.parameter.update');
+        Route::delete('/{id}', [PemeriksaanPesertaParameterController::class, 'destroy'])->name('pemeriksaan.peserta.parameter.destroy');
+        Route::post('/destroy-selected', [PemeriksaanPesertaParameterController::class, 'destroy_selected'])->name('pemeriksaan.peserta.parameter.destroy_selected');
+    });
 });
 // API nested
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
+
+    // API untuk pemeriksaan peserta parameter
+    Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{peserta}/parameter', [PemeriksaanPesertaParameterController::class, 'apiIndex']);
 
 // API untuk Pemeriksaan Peserta
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');

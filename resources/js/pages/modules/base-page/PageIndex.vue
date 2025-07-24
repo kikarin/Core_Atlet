@@ -177,7 +177,7 @@ const handlePageChange = debounce((val) => {
     handleSearch({ page: val });
 }, 300);
 
-const slotCustomKeys = ['peserta', 'rencana_latihan', 'target_individu', 'target_kelompok'];
+const slotCustomKeys = ['peserta', 'rencana_latihan', 'target_individu', 'target_kelompok', 'parameter', 'pemeriksaan-peserta', 'parameter_peserta'];
 
 const rowsWithCustom = computed(() => {
     return tableRows.value.map((row) => {
@@ -254,6 +254,9 @@ defineExpose({ fetchData });
                         </template>
                         <template #cell-pemeriksaan-peserta="slotProps">
                             <slot name="cell-pemeriksaan-peserta" v-bind="slotProps" />
+                        </template>
+                        <template #cell-parameter_peserta="slotProps">
+                            <slot name="cell-parameter_peserta" v-bind="slotProps" />
                         </template>
                     </DataTable>
                 </div>

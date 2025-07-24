@@ -59,25 +59,78 @@ class PemeriksaanPesertaRepository
             });
         }
         
-        $query->orderBy('id', 'desc');
-
+        $sortField = request('sort');
+        $order     = request('order', 'asc');
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
-        
-        // Pastikan relasi peserta dimuat dengan benar
-        $query->with(['peserta']);
-        
-        // Log query SQL untuk debugging
-        Log::info('SQL Query: ' . $query->toSql());
-        Log::info('SQL Bindings: ' . json_encode($query->getBindings()));
-        
-        $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
-        
-        // Log hasil query untuk debugging
-        Log::info('Query result count: ' . count($items));
 
+        // Handle sort kolom relasi peserta.nama
+        if ($sortField === 'peserta.nama') {
+            $jenis = request('jenis_peserta');
+            $table = match ($jenis) {
+                'atlet' => 'atlets',
+                'pelatih' => 'pelatihs',
+                'tenaga-pendukung' => 'tenaga_pendukungs',
+                default => null,
+            };
+            if ($table) {
+                $query->leftJoin($table, 'pemeriksaan_peserta.peserta_id', '=', "$table.id")
+                      ->orderBy("$table.nama", $order)
+                      ->select('pemeriksaan_peserta.*');
+            }
+        } elseif ($sortField) {
+            $query->orderBy($sortField, $order);
+        } else {
+            $query->orderBy('id', 'desc');
+        }
+
+        $query->with(['peserta']);
+
+        // Handle show entries all
+        if ($perPage == -1) {
+            $all = $query->get();
+            $transformed = collect($all)->map(function ($item) {
+                $peserta = $item->peserta;
+                if (is_object($peserta)) {
+                    $pesertaData = [
+                        'id' => $peserta->id,
+                        'nama' => $peserta->nama ?? null,
+                        'tempat_lahir' => $peserta->tempat_lahir ?? null,
+                        'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
+                        'foto' => $peserta->foto ?? null,
+                    ];
+                } else {
+                    $pesertaData = null;
+                }
+                return [
+                    'id' => $item->id,
+                    'pemeriksaan_id' => $item->pemeriksaan_id,
+                    'peserta_type' => $item->peserta_type,
+                    'peserta_id' => $item->peserta_id,
+                    'peserta' => $pesertaData,
+                    'status' => $item->status,
+                    'catatan_umum' => $item->catatan_umum,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                    'parameter_peserta' => true,
+                    'jumlah_parameter' => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
+                ];
+            });
+            return [
+                'data' => $transformed,
+                'meta' => [
+                    'total'        => $transformed->count(),
+                    'current_page' => 1,
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => $sortField ?: '',
+                    'order'        => $order,
+                ],
+            ];
+        }
+
+        $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
-            // Pastikan peserta adalah objek dengan field penting, bukan true/null
             $peserta = $item->peserta;
             if (is_object($peserta)) {
                 $pesertaData = [
@@ -100,17 +153,20 @@ class PemeriksaanPesertaRepository
                 'catatan_umum' => $item->catatan_umum,
                 'created_at' => $item->created_at,
                 'updated_at' => $item->updated_at,
+                'parameter_peserta' => true,
+                'jumlah_parameter' => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
             ];
         });
-
         return [
-            'data'        => $transformed,
-            'total'       => $items->total(),
-            'currentPage' => $items->currentPage(),
-            'perPage'     => $items->perPage(),
-            'search'      => request('search', ''),
-            'sort'        => request('sort', ''),
-            'order'       => request('order', 'asc'),
+            'data' => $transformed,
+            'meta' => [
+                'total'        => $items->total(),
+                'current_page' => $items->currentPage(),
+                'per_page'     => $items->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => $sortField ?: '',
+                'order'        => $order,
+            ],
         ];
     }
 

@@ -5,6 +5,8 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
+import BadgeGroup  from '../components/BadgeGroup.vue';
+
 
 interface Pemeriksaan {
     id: number;
@@ -129,6 +131,10 @@ const baseColumns = [
         label: 'Catatan',
         format: (row: any) => row.catatan_umum || '-',
     },
+    {
+        key: 'parameter_peserta',
+        label: 'Parameter',
+    },
 ];
 
 const specificLabel: Record<string, string> = {
@@ -248,6 +254,18 @@ const getPesertaLabel = computed(() => {
                     </div>
                 </div>
             </div>
+        </template>
+        <template #cell-parameter_peserta="{ row }">
+            <BadgeGroup
+            :badges="[
+                    {
+                        label: 'Parameter',
+                        value: row.jumlah_parameter || 0,
+                        colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+                        onClick: () =>  router.visit(`/pemeriksaan/${pemeriksaan.id}/peserta/${row.id}/parameter`),
+                    },
+                ]"
+            />
         </template>
     </PageIndex>
 </template>
