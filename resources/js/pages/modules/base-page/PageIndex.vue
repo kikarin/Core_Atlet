@@ -205,9 +205,9 @@ defineExpose({ fetchData });
 <template>
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="min-h-screen w-full bg-gray-100 pt-4 dark:bg-neutral-950">
-            <div class="container mx-auto max-w-5xl md:max-w-6xl lg:max-w-7xl px-4 md:px-6 lg:px-14">
-                <div class="mx-auto p-2 py-4">
+        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950">
+            <div class="container mx-auto max-w-5xl">
+                <div class="mx-auto px-4 py-4">
                     <slot name="header-extra"></slot>
                     <HeaderActions
                         :title="title"
@@ -224,7 +224,7 @@ defineExpose({ fetchData });
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
                 </div>
-                <div class="rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
+                <div class="rounded-xl bg-white mx-4 pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"
                         :rows="rowsWithCustom"
