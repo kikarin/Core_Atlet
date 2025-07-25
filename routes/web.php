@@ -52,6 +52,7 @@ use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PemeriksaanParameterController;
 use App\Http\Controllers\PemeriksaanPesertaController;
 use App\Http\Controllers\PemeriksaanPesertaParameterController;
+use App\Http\Controllers\RefStatusPemeriksaanController;
 
 // =====================
 // ROUTE UTAMA
@@ -456,7 +457,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{id}', [PemeriksaanPesertaParameterController::class, 'destroy'])->name('pemeriksaan.peserta.parameter.destroy');
         Route::post('/destroy-selected', [PemeriksaanPesertaParameterController::class, 'destroy_selected'])->name('pemeriksaan.peserta.parameter.destroy_selected');
     });
+
+    // Tambahkan setelah nested pemeriksaan peserta parameter
+    Route::get('/pemeriksaan/{pemeriksaan}/peserta-parameter/kelola', [PemeriksaanPesertaParameterController::class, 'massEdit'])->name('pemeriksaan.peserta.parameter.mass-edit');
+    Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate'])->name('pemeriksaan.peserta.parameter.bulk-update');
 });
+
 // API nested
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
 
@@ -467,6 +473,7 @@ Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanP
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');
 Route::put('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
 Route::delete('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
+Route::post('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'update']);
 
 
  // API untuk detail atlet, pelatih, dan tenaga pendukung
@@ -478,6 +485,11 @@ Route::get('/api/tenaga-pendukung/{id}', [TenagaPendukungController::class, 'api
 Route::get('/api/cabor-kategori-atlet/available-for-pemeriksaan', [CaborKategoriAtletController::class, 'apiAvailableForPemeriksaan']);
 Route::get('/api/cabor-kategori-pelatih/available-for-pemeriksaan', [CaborKategoriPelatihController::class, 'apiAvailableForPemeriksaan']);
 Route::get('/api/cabor-kategori-tenaga-pendukung/available-for-pemeriksaan', [CaborKategoriTenagaPendukungController::class, 'apiAvailableForPemeriksaan']);
+
+// Route untuk ref status pemeriksaan (untuk MassEdit)
+Route::get('/api/ref-status-pemeriksaan', [RefStatusPemeriksaanController::class, 'index']);
+// Route untuk bulk update parameter peserta (untuk MassEdit)
+Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

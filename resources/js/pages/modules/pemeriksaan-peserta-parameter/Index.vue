@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
-import { router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/toast/useToast';
+import axios from 'axios';
+
+const { toast } = useToast();
 
 const props = defineProps<{
     pemeriksaan: any;
@@ -14,10 +18,33 @@ const props = defineProps<{
     search: string;
 }>();
 
+const page = usePage();
+const dataTable = computed<any[]>(() => Array.isArray(page.props.data) ? page.props.data : []);
+const pesertaFromProps = computed<string | null>(() => {
+    const peserta = page.props.peserta as any;
+    if (peserta && typeof peserta === 'object') {
+        return peserta.peserta?.nama || peserta.nama || null;
+    }
+    return null;
+});
+const pesertaName = computed(() => {
+    if (pesertaFromProps.value) return pesertaFromProps.value;
+    if (dataTable.value.length > 0 && dataTable.value[0]?.peserta) return dataTable.value[0].peserta;
+    return '-';
+});
+
+const jenisPeserta = computed(() => {
+    return page.props.jenis_peserta || (
+        typeof window !== 'undefined'
+            ? (new URLSearchParams(window.location.search).get('jenis_peserta') || 'atlet')
+            : 'atlet'
+    );
+});
+
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
-    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta` },
-    { title: 'Parameter Peserta', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter` },
+    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}` },
+    { title: 'Parameter Peserta', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter?jenis_peserta=${jenisPeserta.value}` },
 ];
 
 const columns = [
@@ -34,12 +61,38 @@ const columns = [
 const selected = ref<number[]>([]);
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}`) },
-    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}/edit`) },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}?jenis_peserta=${jenisPeserta.value}`) },
+    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`) },
+    { label: 'Delete', onClick: () => handleDeleteRow(row) },
 ];
 
 const pageIndex = ref();
+
+const handleDeleteRow = async (row: any) => {
+    await router.delete(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}?jenis_peserta=${jenisPeserta.value}`, {
+        onSuccess: () => {
+            toast({ title: 'Data parameter peserta berhasil dihapus', variant: 'success' });
+            if (pageIndex.value && pageIndex.value.fetchData) pageIndex.value.fetchData();
+        },
+        onError: () => {
+            toast({ title: 'Gagal menghapus data parameter peserta', variant: 'destructive' });
+        },
+    });
+};
+
+const handleDeleteSelected = async () => {
+    if (!selected.value.length) {
+        return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
+    }
+    try {
+        const response = await axios.post(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/destroy-selected?jenis_peserta=${jenisPeserta.value}`, { ids: selected.value });
+        selected.value = [];
+        if (pageIndex.value && pageIndex.value.fetchData) pageIndex.value.fetchData();
+        toast({ title: response.data?.message || 'Data berhasil dihapus', variant: 'success' });
+    } catch (error: any) {
+        toast({ title: error.response?.data?.message || 'Gagal menghapus data', variant: 'destructive' });
+    }
+};
 </script>
 
 <template>
@@ -47,38 +100,40 @@ const pageIndex = ref();
         title="Parameter Peserta"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
-        :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/${peserta.id}/parameter/create`"
+        :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/${peserta.id}/parameter/create?jenis_peserta=${jenisPeserta}`"
         :actions="actions"
         :selected="selected"
-        @update:selected="(val) => (selected = val)"
-        :on-delete-selected="() => {}"
+        @update:selected="(val: number[]) => (selected = val)"
+        :on-delete-selected="handleDeleteSelected"
         :api-endpoint="`/api/pemeriksaan/${pemeriksaan.id}/peserta/${peserta.id}/parameter`"
         ref="pageIndex"
         :showImport="false"
+        :on-delete-row="handleDeleteRow"
+        :on-toast="toast"
     >
         <template #header-extra>
             <div class="bg-card mb-4 rounded-lg border p-4">
-                <h3 class="mb-2 text-lg font-semibold">Informasi Pemeriksaan & Peserta</h3>
+                <h3 class="mb-2 text-lg font-semibold">Informasi Pemeriksaan</h3>
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Nama Pemeriksaan:</span>
-                        <Badge variant="secondary">{{ pemeriksaan.nama_pemeriksaan }}</Badge>
+                        <Badge variant="secondary">{{ page.props.pemeriksaan?.nama_pemeriksaan }}</Badge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                        <Badge variant="outline">{{ pemeriksaan.cabor?.nama }}</Badge>
+                        <Badge variant="outline">{{ page.props.pemeriksaan?.cabor?.nama }}</Badge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
-                        <Badge variant="outline">{{ pemeriksaan.cabor_kategori?.nama }}</Badge>
+                        <Badge variant="outline">{{ page.props.pemeriksaan?.cabor_kategori?.nama }}</Badge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Tenaga Pendukung:</span>
-                        <Badge variant="outline">{{ pemeriksaan.tenaga_pendukung?.nama }}</Badge>
+                        <Badge variant="outline">{{ page.props.pemeriksaan?.tenaga_pendukung?.nama }}</Badge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Peserta:</span>
-                        <Badge variant="outline">{{ peserta.peserta?.nama || '-' }}</Badge>
+                        <Badge variant="outline">{{ pesertaName }}</Badge>
                     </div>
                 </div>
             </div>

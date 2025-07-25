@@ -78,6 +78,8 @@ const props = defineProps<{
     showMultipleButton?: boolean;
     createMultipleUrl?: string;
     showKehadiran?: boolean;
+    showKelola?: boolean;
+    kelolaUrl?: string;
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
@@ -170,14 +172,19 @@ const handleSort = debounce((val: { key: string; order: 'asc' | 'desc' }) => {
     sort.value.key = val.key;
     sort.value.order = val.order;
     page.value = 1;
-    fetchData();
 }, 300);
 
 const handlePageChange = debounce((val) => {
     handleSearch({ page: val });
 }, 300);
 
-const slotCustomKeys = ['peserta', 'rencana_latihan', 'target_individu', 'target_kelompok', 'parameter', 'pemeriksaan-peserta', 'parameter_peserta'];
+const slotCustomKeys = [
+  'rencana_latihan',
+  'target_individu',
+  'target_kelompok',
+  'pemeriksaan-peserta',
+  'parameter_peserta'
+];
 
 const rowsWithCustom = computed(() => {
     return tableRows.value.map((row) => {
@@ -199,7 +206,7 @@ defineExpose({ fetchData });
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="min-h-screen w-full bg-gray-100 pt-4 dark:bg-neutral-950">
-            <div class="mx-auto max-w-5xl">
+            <div class="container mx-auto max-w-5xl md:max-w-6xl lg:max-w-7xl px-4 md:px-6 lg:px-14">
                 <div class="mx-auto p-2 py-4">
                     <slot name="header-extra"></slot>
                     <HeaderActions
@@ -211,6 +218,8 @@ defineExpose({ fetchData });
                         :showMultipleButton="props.showMultipleButton"
                         :createMultipleUrl="props.createMultipleUrl"
                         :showKehadiran="props.showKehadiran"
+                        :showKelola="props.showKelola"
+                        :kelolaUrl="props.kelolaUrl"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />

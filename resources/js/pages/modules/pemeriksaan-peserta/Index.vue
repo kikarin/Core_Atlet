@@ -18,7 +18,7 @@ interface Pemeriksaan {
 
 const page = usePage();
 const jenisPeserta = computed(() => (page.props.jenis_peserta as string) || 'atlet');
-const pemeriksaan = computed(() => (page.props.pemeriksaan as Pemeriksaan) || ({} as Pemeriksaan));
+const pemeriksaanData = computed(() => (page.props.pemeriksaan as Pemeriksaan) || ({} as Pemeriksaan));
 
 const props = defineProps<{
     pemeriksaan: any;
@@ -67,7 +67,7 @@ const deleteSelected = async () => {
 
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
-    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta` },
+    { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${pemeriksaanData.value.id}/peserta?jenis_peserta=${jenisPeserta.value}` },
 ];
 
 const pesertaCache = ref<Record<string, any>>({});
@@ -194,7 +194,7 @@ const actions = (row: any) => [
     {
         label: 'Edit',
         icon: 'pencil',
-        onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit?jenis_peserta=${jenisPeserta}`),
+        onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`),
     },
     {
         label: 'Hapus',
@@ -231,6 +231,8 @@ const getPesertaLabel = computed(() => {
         ref="pageIndex"
         :on-toast="toast"
         :showImport="false"
+        :showKelola="true"
+        :kelolaUrl="`/pemeriksaan/${pemeriksaan.id}/peserta-parameter/kelola?jenis_peserta=${jenisPeserta}`"
     >
         <template #header-extra>
             <div class="bg-card mb-4 rounded-lg border p-4">
@@ -257,12 +259,12 @@ const getPesertaLabel = computed(() => {
         </template>
         <template #cell-parameter_peserta="{ row }">
             <BadgeGroup
-            :badges="[
+                :badges="[
                     {
                         label: 'Parameter',
                         value: row.jumlah_parameter || 0,
                         colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
-                        onClick: () =>  router.visit(`/pemeriksaan/${pemeriksaan.id}/peserta/${row.id}/parameter`),
+                        onClick: () => router.visit(`/pemeriksaan/${pemeriksaan.id}/peserta/${row.id}/parameter?jenis_peserta=${jenisPeserta}`),
                     },
                 ]"
             />

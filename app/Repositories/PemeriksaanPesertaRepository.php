@@ -21,7 +21,7 @@ class PemeriksaanPesertaRepository
     public function __construct(PemeriksaanPeserta $model)
     {
         $this->model = $model;
-        $this->with  = ['pemeriksaan', 'status', 'peserta', 'created_by_user', 'updated_by_user'];
+        $this->with  = ['pemeriksaan', 'status', 'peserta', 'created_by_user', 'updated_by_user', 'pemeriksaanPesertaParameter'];
     }
 
     public function customIndex($data)
@@ -64,8 +64,7 @@ class PemeriksaanPesertaRepository
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
 
-        // Handle sort kolom relasi peserta.nama
-        if ($sortField === 'peserta.nama') {
+        if ($sortField) {
             $jenis = request('jenis_peserta');
             $table = match ($jenis) {
                 'atlet' => 'atlets',
@@ -73,13 +72,21 @@ class PemeriksaanPesertaRepository
                 'tenaga-pendukung' => 'tenaga_pendukungs',
                 default => null,
             };
-            if ($table) {
-                $query->leftJoin($table, 'pemeriksaan_peserta.peserta_id', '=', "$table.id")
-                      ->orderBy("$table.nama", $order)
+            if (str_starts_with($sortField, 'peserta.')) {
+                $field = explode('.', $sortField)[1];
+                if ($field !== 'foto' && $table) { 
+                    $query->leftJoin($table, 'pemeriksaan_peserta.peserta_id', '=', "$table.id")
+                          ->orderBy("$table.$field", $order)
+                          ->select('pemeriksaan_peserta.*');
+                }
+            } elseif ($sortField === 'status') {
+                $query->leftJoin('ref_status_pemeriksaan', 'pemeriksaan_peserta.ref_status_pemeriksaan_id', '=', 'ref_status_pemeriksaan.id')
+                      ->orderBy('ref_status_pemeriksaan.nama', $order)
                       ->select('pemeriksaan_peserta.*');
+            } elseif ($sortField === 'jumlah_parameter') {
+            } else {
+                $query->orderBy($sortField, $order);
             }
-        } elseif ($sortField) {
-            $query->orderBy($sortField, $order);
         } else {
             $query->orderBy('id', 'desc');
         }
@@ -97,6 +104,7 @@ class PemeriksaanPesertaRepository
                         'nama' => $peserta->nama ?? null,
                         'tempat_lahir' => $peserta->tempat_lahir ?? null,
                         'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
+                        'tanggal_lahir' => $peserta->tanggal_lahir ?? null,
                         'foto' => $peserta->foto ?? null,
                     ];
                 } else {
@@ -108,7 +116,10 @@ class PemeriksaanPesertaRepository
                     'peserta_type' => $item->peserta_type,
                     'peserta_id' => $item->peserta_id,
                     'peserta' => $pesertaData,
-                    'status' => $item->status,
+                    'status' => [
+                        'id' => $item->status?->id ?? '',
+                        'nama' => $item->status?->nama ?? '',
+                    ],
                     'catatan_umum' => $item->catatan_umum,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
@@ -116,6 +127,11 @@ class PemeriksaanPesertaRepository
                     'jumlah_parameter' => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
                 ];
             });
+            if ($sortField === 'jumlah_parameter') {
+                $transformed = $order === 'asc'
+                    ? $transformed->sortBy('jumlah_parameter')->values()
+                    : $transformed->sortByDesc('jumlah_parameter')->values();
+            }
             return [
                 'data' => $transformed,
                 'meta' => [
@@ -138,10 +154,22 @@ class PemeriksaanPesertaRepository
                     'nama' => $peserta->nama ?? null,
                     'tempat_lahir' => $peserta->tempat_lahir ?? null,
                     'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
+                    'tanggal_lahir' => $peserta->tanggal_lahir ?? null,
                     'foto' => $peserta->foto ?? null,
                 ];
             } else {
                 $pesertaData = null;
+            }
+            $parameterPeserta = [];
+            if ($item->relationLoaded('pemeriksaanPesertaParameter')) {
+                $parameterPeserta = $item->pemeriksaanPesertaParameter->map(function($pp) {
+                    return [
+                        'id' => $pp->id,
+                        'pemeriksaan_parameter_id' => $pp->pemeriksaan_parameter_id,
+                        'nilai' => $pp->nilai,
+                        'trend' => $pp->trend,
+                    ];
+                })->toArray();
             }
             return [
                 'id' => $item->id,
@@ -149,12 +177,16 @@ class PemeriksaanPesertaRepository
                 'peserta_type' => $item->peserta_type,
                 'peserta_id' => $item->peserta_id,
                 'peserta' => $pesertaData,
-                'status' => $item->status,
+                'status' => [
+                    'id' => $item->status?->id ?? '',
+                    'nama' => $item->status?->nama ?? '',
+                ],
                 'catatan_umum' => $item->catatan_umum,
                 'created_at' => $item->created_at,
                 'updated_at' => $item->updated_at,
                 'parameter_peserta' => true,
-                'jumlah_parameter' => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
+                'jumlah_parameter' => $item->pemeriksaanPesertaParameter ? $item->pemeriksaanPesertaParameter->count() : 0,
+                'pemeriksaanPesertaParameter' => $parameterPeserta,
             ];
         });
         return [

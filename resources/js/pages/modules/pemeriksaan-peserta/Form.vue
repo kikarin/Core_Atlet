@@ -15,7 +15,7 @@ const props = defineProps<{
 console.log('pemeriksaan:', props.pemeriksaan);
 console.log('cabor_kategori_id:', props.pemeriksaan?.cabor_kategori_id);
 
-const page = usePage();
+usePage();
 const jenisPeserta = computed(() => props.jenisPeserta || 'atlet');
 
 // Mapping config untuk SelectTableMultiple

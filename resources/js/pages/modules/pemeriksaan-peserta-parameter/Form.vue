@@ -11,7 +11,11 @@ const props = defineProps<{
     pemeriksaan: any;
     peserta: any;
     parameters: any[];
+    jenis_peserta?: string; // Added this line to match the new_code
 }>();
+
+// Ganti akses props.jenisPeserta menjadi props.jenis_peserta (snake_case) agar sesuai dengan props yang dikirim dari parent
+const jenisPeserta = computed(() => props.jenis_peserta || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('jenis_peserta') : 'atlet'));
 
 const selectedParameterId = ref(props.initialData?.pemeriksaan_parameter_id || '');
 
@@ -53,21 +57,21 @@ const formInputs = computed(() => [
 ]);
 
 const handleSave = (form: any, setFormErrors: (errors: Record<string, string>) => void) => {
+    const pemeriksaanId = props.pemeriksaan.id;
+    const pesertaId = props.peserta.id;
+    const id = props.initialData?.id;
     const dataToSave: Record<string, any> = {
         ...form,
-        pemeriksaan_id: props.pemeriksaan.id,
-        pemeriksaan_peserta_id: props.peserta.id,
+        pemeriksaan_id: pemeriksaanId,
+        pemeriksaan_peserta_id: pesertaId,
     };
-    if (props.mode === 'edit' && props.initialData?.id) {
-        dataToSave.id = props.initialData.id;
-    }
     save(dataToSave, {
-        url: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter`,
+        url: `/pemeriksaan/${pemeriksaanId}/peserta/${pesertaId}/parameter`,
         mode: props.mode,
-        id: props.initialData?.id,
+        id,
         successMessage: props.mode === 'create' ? 'Parameter peserta berhasil ditambahkan' : 'Parameter peserta berhasil diperbarui',
         errorMessage: props.mode === 'create' ? 'Gagal menyimpan parameter peserta' : 'Gagal memperbarui parameter peserta',
-        redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter`,
+        redirectUrl: `/pemeriksaan/${pemeriksaanId}/peserta/${pesertaId}/parameter?jenis_peserta=${jenisPeserta.value}`,
         onError: setFormErrors,
     });
 };

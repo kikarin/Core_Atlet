@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Models\RefStatusPemeriksaan;
+use App\Models\PemeriksaanPesertaParameter;
 
 class PemeriksaanPeserta extends Model
 {
@@ -41,6 +42,11 @@ class PemeriksaanPeserta extends Model
     public function peserta()
     {
         return $this->morphTo()->withTrashed();
+    }
+
+    public function pemeriksaanPesertaParameter()
+    {
+        return $this->hasMany(PemeriksaanPesertaParameter::class, 'pemeriksaan_peserta_id');
     }
 
     public function created_by_user()

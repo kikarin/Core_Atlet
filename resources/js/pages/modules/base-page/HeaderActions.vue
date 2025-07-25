@@ -12,6 +12,8 @@ const props = defineProps<{
     onDeleteSelected: () => void;
     showImport: boolean;
     showKehadiran?: boolean;
+    showKelola?: boolean;
+    kelolaUrl?: string;
 }>();
 </script>
 
@@ -27,6 +29,11 @@ const props = defineProps<{
             <!-- Button Tambah Multiple -->
             <Link v-if="props.showMultipleButton && props.createMultipleUrl" :href="props.createMultipleUrl">
                 <Button variant="outline" size="sm">+ Tambah Multiple</Button>
+            </Link>
+
+            <!-- Button Kelola -->
+            <Link v-if="props.showKelola && props.kelolaUrl" :href="props.kelolaUrl">
+                <Button variant="outline" size="sm">Kelola</Button>
             </Link>
 
             <Link v-if="props.createUrl" :href="props.createUrl">

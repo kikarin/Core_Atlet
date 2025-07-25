@@ -11,6 +11,7 @@ import { AlertCircle, CalendarIcon, Eye, EyeOff, Upload, X, XIcon } from 'lucide
 import { computed, ref, watch } from 'vue';
 import { Alert, AlertDescription, AlertTitle } from '../../../components/ui/alert';
 import ButtonsForm from './ButtonsForm.vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     formInputs: {
@@ -265,6 +266,14 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
     if (ext === 'pdf') return 'pdf';
     return 'other';
 }
+
+const handleCancel = () => {
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    window.history.back();
+  } else {
+    router.visit('/');
+  }
+};
 </script>
 
 <template>
@@ -602,7 +611,7 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
             <div class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>
                 <div class="col-span-full md:col-span-9">
-                    <ButtonsForm :showSave="true" :showCancel="true" @save="handleSubmit" @cancel="emit('cancel')" />
+                    <ButtonsForm :showSave="true" :showCancel="true" @save="handleSubmit" @cancel="handleCancel" />
                 </div>
             </div>
         </form>
