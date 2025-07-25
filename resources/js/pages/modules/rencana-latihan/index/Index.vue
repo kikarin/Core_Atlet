@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast/useToast';
@@ -174,18 +173,18 @@ const confirmSetKehadiran = async () => {
                         <div class="space-y-2">
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Nama Program:</span>
-                                <Badge variant="secondary">{{ info.nama_program }}</Badge>
+                                <span class="text-sm font-medium">{{ info.nama_program }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                                <Badge variant="outline"
+                                <span class="text-sm font-medium"
                                     >{{ info.cabor_nama
-                                    }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></Badge
+                                    }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></span
                                 >
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Periode:</span>
-                                <Badge variant="outline">{{ info.periode_mulai }} s/d {{ info.periode_selesai }}</Badge>
+                                <span class="text-sm font-medium">{{ info.periode_mulai }} s/d {{ info.periode_selesai }}</span>
                             </div>
                         </div>
                     </div>
@@ -195,23 +194,23 @@ const confirmSetKehadiran = async () => {
                         <div class="space-y-2">
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Tanggal:</span>
-                                <Badge variant="secondary">{{
+                                <span class="text-sm font-medium">{{
                                     infoRencana.tanggal ? new Date(infoRencana.tanggal).toLocaleDateString('id-ID') : '-'
-                                }}</Badge>
+                                }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Materi:</span>
-                                <Badge variant="outline">{{ infoRencana.materi }}</Badge>
+                                <span class="text-sm font-medium">{{ infoRencana.materi }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Lokasi:</span>
-                                <Badge variant="outline">{{ infoRencana.lokasi_latihan }}</Badge>
+                                <span class="text-sm font-medium">{{ infoRencana.lokasi_latihan }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Target Latihan:</span>
-                                <Badge variant="outline">{{
+                                <span class="text-sm font-medium">{{
                                     infoRencana.target_latihan && infoRencana.target_latihan.length ? infoRencana.target_latihan.join(', ') : '-'
-                                }}</Badge>
+                                }}</span>
                             </div>
                         </div>
                     </div>
@@ -240,7 +239,7 @@ const confirmSetKehadiran = async () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline" @click="showConfirmKehadiran = false">Batal</Button>
+                    <Button class="text-sm font-medium" @click="showConfirmKehadiran = false">Batal</Button>
                     <Button variant="default" @click="confirmSetKehadiran">Ya, Set Kehadiran</Button>
                 </DialogFooter>
             </DialogContent>

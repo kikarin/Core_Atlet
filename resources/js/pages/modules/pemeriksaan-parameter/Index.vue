@@ -4,7 +4,6 @@ import { router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
-import { Badge } from '@/components/ui/badge';
 
 interface Pemeriksaan {
     id: number;
@@ -87,19 +86,19 @@ const deleteRow = async (row: any) => {
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Nama Pemeriksaan:</span>
-                        <Badge variant="secondary">{{ pemeriksaan.nama_pemeriksaan }}</Badge>
+                        <span class="text-sm font-medium">{{ pemeriksaan.nama_pemeriksaan }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                        <Badge variant="outline">{{ pemeriksaan.cabor?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ pemeriksaan.cabor?.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
-                        <Badge variant="outline">{{ pemeriksaan.cabor_kategori?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ pemeriksaan.cabor_kategori?.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Tenaga Pendukung:</span>
-                        <Badge variant="outline">{{ pemeriksaan.tenaga_pendukung?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ pemeriksaan.tenaga_pendukung?.nama }}</span>
                     </div>
                 </div>
             </div>

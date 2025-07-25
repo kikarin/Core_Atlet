@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useToast } from '@/components/ui/toast/useToast';
-import { Badge } from '@/components/ui/badge';
 import SimpleSelect from '@/components/ui/select/SimpleSelect.vue';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
@@ -143,19 +142,19 @@ const handleSave = async () => {
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <span class="text-muted-foreground text-sm font-medium">Nama Pemeriksaan:</span>
-              <Badge variant="secondary">{{ props.pemeriksaan.nama }}</Badge>
+              <span class="text-sm font-medium">{{ props.pemeriksaan.nama }}</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-              <Badge variant="outline">{{ props.pemeriksaan.cabor }}</Badge>
+              <span class="text-sm font-medium">{{ props.pemeriksaan.cabor }}</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
-              <Badge variant="outline">{{ props.pemeriksaan.kategori }}</Badge>
+              <span class="text-sm font-medium">{{ props.pemeriksaan.kategori }}</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-muted-foreground text-sm font-medium">Tenaga Pendukung:</span>
-              <Badge variant="outline">{{ props.pemeriksaan.tenaga_pendukung }}</Badge>
+              <span class="text-sm font-medium">{{ props.pemeriksaan.tenaga_pendukung }}</span>
             </div>
           </div>
         </div>

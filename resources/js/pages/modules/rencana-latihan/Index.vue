@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
@@ -102,17 +101,17 @@ const deleteRow = async (row: any) => {
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Nama Program:</span>
-                            <Badge variant="secondary">{{ info.nama_program }}</Badge>
+                            <span class="text-sm font-medium">{{ info.nama_program }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                            <Badge variant="outline"
-                                >{{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></Badge
+                            <span class="text-sm font-medium"
+                                >{{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></span
                             >
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Periode:</span>
-                            <Badge variant="outline">{{ info.periode_mulai }} s/d {{ info.periode_selesai }}</Badge>
+                            <span class="text-sm font-medium">{{ info.periode_mulai }} s/d {{ info.periode_selesai }}</span>
                         </div>
                     </div>
                 </div>

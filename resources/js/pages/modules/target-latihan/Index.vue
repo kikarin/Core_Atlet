@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
@@ -89,23 +88,23 @@ const info = computed(() => props.infoHeader || {});
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Nama Program:</span>
-                            <Badge variant="secondary">{{ info.nama_program }}</Badge>
+                            <span class="text-sm font-medium">{{ info.nama_program }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                            <Badge variant="outline">
+                            <span class="text-sm font-medium">
                                 {{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template>
-                            </Badge>
+                            </span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Periode:</span>
-                            <Badge variant="secondary">{{
+                            <span class="text-sm font-medium">{{
                                 info.periode_mulai && info.periode_selesai ? `${info.periode_mulai} s/d ${info.periode_selesai}` : '-'
-                            }}</Badge>
+                            }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Jenis Target:</span>
-                            <Badge variant="outline">{{ info.jenis_target }}</Badge>
+                            <span class="text-sm font-medium">{{ info.jenis_target }}</span>
                         </div>
                     </div>
                 </div>

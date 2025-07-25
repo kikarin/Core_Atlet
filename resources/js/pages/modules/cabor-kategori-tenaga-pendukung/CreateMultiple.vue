@@ -231,7 +231,7 @@ fetchJenisTenagaPendukung();
 
 <!-- Template tetap, hanya pastikan binding dan variabel konsisten dengan pelatih -->
 <template>
-    <PageCreate title="Tambah Multiple Tenaga Pendukung" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori">
+    <PageCreate title="Tambah Multiple Tenaga Pendukung" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori" :use-grid="true">
         <div class="space-y-6">
             <!-- Informasi Kategori -->
             <div class="bg-card rounded-lg border p-4">

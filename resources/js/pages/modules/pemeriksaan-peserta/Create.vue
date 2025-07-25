@@ -36,6 +36,7 @@ const breadcrumbs = [
         :title="`Tambah ${pesertaLabel}`" 
         :breadcrumbs="breadcrumbs" 
         :back-url="`/pemeriksaan/${pemeriksaanId}/peserta?jenis_peserta=${jenisPeserta}`"
+        :use-grid="true"
     >
         <Form 
             mode="create" 

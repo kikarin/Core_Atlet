@@ -2,7 +2,6 @@
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
 
@@ -117,23 +116,23 @@ const handleDeleteSelected = async () => {
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Nama Pemeriksaan:</span>
-                        <Badge variant="secondary">{{ page.props.pemeriksaan?.nama_pemeriksaan }}</Badge>
+                        <span class="text-sm font-medium">{{ page.props.pemeriksaan?.nama_pemeriksaan }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                        <Badge variant="outline">{{ page.props.pemeriksaan?.cabor?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ page.props.pemeriksaan?.cabor?.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
-                        <Badge variant="outline">{{ page.props.pemeriksaan?.cabor_kategori?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ page.props.pemeriksaan?.cabor_kategori?.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Tenaga Pendukung:</span>
-                        <Badge variant="outline">{{ page.props.pemeriksaan?.tenaga_pendukung?.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ page.props.pemeriksaan?.tenaga_pendukung?.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Peserta:</span>
-                        <Badge variant="outline">{{ pesertaName }}</Badge>
+                        <span class="text-sm font-medium">{{ pesertaName }}</span>
                     </div>
                 </div>
             </div>

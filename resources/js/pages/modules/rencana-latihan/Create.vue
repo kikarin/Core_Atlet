@@ -16,6 +16,7 @@ const breadcrumbs = [
         title="Tambah Rencana Latihan"
         :breadcrumbs="breadcrumbs"
         :back-url="`/program-latihan/${props.infoHeader.program_latihan_id}/rencana-latihan`"
+        :use-grid="true"
     >
         <Form mode="create" :info-header="infoHeader" />
     </PageCreate>

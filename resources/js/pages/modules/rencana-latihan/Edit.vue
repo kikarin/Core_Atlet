@@ -16,6 +16,7 @@ const breadcrumbs = [
         title="Rencana Latihan"
         :breadcrumbs="breadcrumbs"
         :back-url="`/program-latihan/${props.infoHeader.program_latihan_id}/rencana-latihan`"
+        :use-grid="true"
     >
         <Form mode="edit" :info-header="infoHeader" :initial-data="item" />
     </PageEdit>

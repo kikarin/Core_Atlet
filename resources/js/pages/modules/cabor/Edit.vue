@@ -11,7 +11,7 @@ const breadcrumbs = [
 </script>
 
 <template>
-    <PageEdit title="Edit Cabor" :breadcrumbs="breadcrumbs" back-url="/cabor">
+    <PageEdit title="Cabor" :breadcrumbs="breadcrumbs" back-url="/cabor">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
 </template>

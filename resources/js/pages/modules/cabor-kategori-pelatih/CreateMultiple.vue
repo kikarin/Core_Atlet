@@ -233,7 +233,7 @@ fetchJenisPelatih();
 </script>
 
 <template>
-    <PageCreate title="Tambah Multiple Pelatih" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori">
+    <PageCreate title="Tambah Multiple Pelatih" :breadcrumbs="breadcrumbs" back-url="/cabor-kategori" :use-grid="true">
         <div class="space-y-6">
             <!-- Informasi Kategori -->
             <div class="bg-card rounded-lg border p-4">

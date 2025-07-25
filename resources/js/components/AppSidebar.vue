@@ -46,6 +46,8 @@ const iconMap: Record<string, any> = {
     CalendarCheck: LucideIcons.CalendarCheck,
     CalendarSync: LucideIcons.CalendarSync,
     ClipboardCheck: LucideIcons.ClipboardCheck,
+    HeartHandshake: LucideIcons.HeartHandshake,
+    HandHeart: LucideIcons.HandHeart,
 };
 
 const fetchMenus = async () => {
@@ -167,7 +169,7 @@ onUnmounted(() => {
 
             <NavMain v-if="atletNavItems.length > 0" :items="atletNavItems" section-title="Data Peserta" section-id="atlet" />
 
-            <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabor" section-id="cabor" />
+            <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabang Olahraga" section-id="cabor" />
 
             <NavMain
                 v-if="trainingNavItems.length > 0"
