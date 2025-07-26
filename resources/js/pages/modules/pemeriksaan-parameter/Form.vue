@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const { save } = useHandleFormSave();
 const page = usePage();
@@ -56,4 +56,4 @@ const handleSave = (form: any, setFormErrors: (errors: Record<string, string>) =
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formInitialData" @save="handleSave" />
-</template> 
+</template>

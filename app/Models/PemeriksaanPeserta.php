@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Models\RefStatusPemeriksaan;
-use App\Models\PemeriksaanPesertaParameter;
 
 class PemeriksaanPeserta extends Model
 {
-    use HasFactory, SoftDeletes, Blameable, LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+    use Blameable;
+    use LogsActivity;
 
-    protected $table = 'pemeriksaan_peserta';
+    protected $table   = 'pemeriksaan_peserta';
     protected $guarded = [];
 
     protected $fillable = [
@@ -66,4 +67,4 @@ class PemeriksaanPeserta extends Model
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn () => 'Pemeriksaan Peserta');
     }
-} 
+}

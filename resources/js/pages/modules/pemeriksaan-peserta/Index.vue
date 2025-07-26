@@ -4,8 +4,7 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
-import BadgeGroup  from '../components/BadgeGroup.vue';
-
+import BadgeGroup from '../components/BadgeGroup.vue';
 
 interface Pemeriksaan {
     id: number;
@@ -93,7 +92,7 @@ const getPesertaData = (row: any) => {
     const cacheKey = `${jenis}_${row.peserta_id}`;
     if (!pesertaCache.value[cacheKey]) {
         fetchPesertaDetail(jenis, row.peserta_id);
-        return {  };
+        return {};
     }
     return pesertaCache.value[cacheKey];
 };

@@ -53,9 +53,9 @@ class PemeriksaanPesertaParameterRepository
             $query->leftJoin('pemeriksaan_parameter', 'pemeriksaan_peserta_parameter.pemeriksaan_parameter_id', '=', 'pemeriksaan_parameter.id')
                   ->orderBy('pemeriksaan_parameter.nama_parameter', $order)
                   ->select('pemeriksaan_peserta_parameter.*');
-        } else if (in_array($sortField, ['nilai', 'trend'])) {
+        } elseif (in_array($sortField, ['nilai', 'trend'])) {
             $query->orderBy('pemeriksaan_peserta_parameter.' . $sortField, $order);
-        } else if ($sortField) {
+        } elseif ($sortField) {
             $query->orderBy('pemeriksaan_peserta_parameter.' . $sortField, $order);
         } else {
             $query->orderBy('pemeriksaan_peserta_parameter.id', $order);
@@ -64,22 +64,22 @@ class PemeriksaanPesertaParameterRepository
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'pemeriksaan_id' => $item->pemeriksaan_id,
-                    'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
+                    'id'                       => $item->id,
+                    'pemeriksaan_id'           => $item->pemeriksaan_id,
+                    'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
                     'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                    'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-                    'nilai' => $item->nilai,
-                    'trend' => $item->trend,
-                    'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-                    'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-                    'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at,
-                    'created_by_user' => $item->created_by_user?->name ?? '-',
-                    'updated_by_user' => $item->updated_by_user?->name ?? '-',
+                    'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                    'nilai'                    => $item->nilai,
+                    'trend'                    => $item->trend,
+                    'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+                    'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+                    'created_at'               => $item->created_at,
+                    'updated_at'               => $item->updated_at,
+                    'created_by_user'          => $item->created_by_user?->name ?? '-',
+                    'updated_by_user'          => $item->updated_by_user?->name ?? '-',
                 ];
             });
             $data += [
@@ -93,22 +93,22 @@ class PemeriksaanPesertaParameterRepository
             ];
             return $data;
         }
-        $items   = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        $items       = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
-                'pemeriksaan_id' => $item->pemeriksaan_id,
-                'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
+                'id'                       => $item->id,
+                'pemeriksaan_id'           => $item->pemeriksaan_id,
+                'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
                 'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-                'nilai' => $item->nilai,
-                'trend' => $item->trend,
-                'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-                'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
-                'created_by_user' => $item->created_by_user?->name ?? '-',
-                'updated_by_user' => $item->updated_by_user?->name ?? '-',
+                'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                'nilai'                    => $item->nilai,
+                'trend'                    => $item->trend,
+                'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+                'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+                'created_at'               => $item->created_at,
+                'updated_at'               => $item->updated_at,
+                'created_by_user'          => $item->created_by_user?->name ?? '-',
+                'updated_by_user'          => $item->updated_by_user?->name ?? '-',
             ];
         });
         $data += [
@@ -155,19 +155,19 @@ class PemeriksaanPesertaParameterRepository
     {
         $item = $this->model->with($this->with)->findOrFail($id);
         return [
-            'id' => $item->id,
-            'pemeriksaan_id' => $item->pemeriksaan_id,
-            'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
+            'id'                       => $item->id,
+            'pemeriksaan_id'           => $item->pemeriksaan_id,
+            'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
             'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-            'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-            'nilai' => $item->nilai,
-            'trend' => $item->trend,
-            'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-            'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-            'created_at' => $item->created_at,
-            'updated_at' => $item->updated_at,
-            'created_by_user' => $item->created_by_user?->name ?? '-',
-            'updated_by_user' => $item->updated_by_user?->name ?? '-',
+            'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+            'nilai'                    => $item->nilai,
+            'trend'                    => $item->trend,
+            'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+            'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+            'created_at'               => $item->created_at,
+            'updated_at'               => $item->updated_at,
+            'created_by_user'          => $item->created_by_user?->name ?? '-',
+            'updated_by_user'          => $item->updated_by_user?->name ?? '-',
         ];
     }
 
@@ -175,4 +175,4 @@ class PemeriksaanPesertaParameterRepository
     {
         return $this->model->with($this->with)->findOrFail($id);
     }
-} 
+}

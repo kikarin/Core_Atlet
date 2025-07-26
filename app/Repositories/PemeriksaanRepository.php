@@ -6,6 +6,7 @@ use App\Models\Pemeriksaan;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PemeriksaanRequest;
+
 class PemeriksaanRepository
 {
     use RepositoryTrait;
@@ -14,9 +15,9 @@ class PemeriksaanRepository
 
     public function __construct(Pemeriksaan $model)
     {
-        $this->model = $model;
+        $this->model   = $model;
         $this->request = PemeriksaanRequest::createFromBase(request());
-        $this->with  = [
+        $this->with    = [
             'cabor',
             'caborKategori',
             'tenagaPendukung',
@@ -76,48 +77,48 @@ class PemeriksaanRepository
         $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'cabor' => $item->cabor?->nama ?? '-',
-                    'cabor_kategori' => $item->caborKategori?->nama ?? '-',
-                    'tenaga_pendukung' => $item->tenagaPendukung?->nama ?? '-',
-                    'nama_pemeriksaan' => $item->nama_pemeriksaan,
-                    'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
-                    'status' => $item->status,
-                    'jumlah_parameter' => $item->jumlah_parameter ?? 0,
-                    'jumlah_peserta' => $item->jumlah_peserta ?? 0,
-                    'jumlah_atlet' => $item->jumlah_atlet ?? 0,
-                    'jumlah_pelatih' => $item->jumlah_pelatih ?? 0,
+                    'id'                      => $item->id,
+                    'cabor'                   => $item->cabor?->nama           ?? '-',
+                    'cabor_kategori'          => $item->caborKategori?->nama   ?? '-',
+                    'tenaga_pendukung'        => $item->tenagaPendukung?->nama ?? '-',
+                    'nama_pemeriksaan'        => $item->nama_pemeriksaan,
+                    'tanggal_pemeriksaan'     => $item->tanggal_pemeriksaan,
+                    'status'                  => $item->status,
+                    'jumlah_parameter'        => $item->jumlah_parameter        ?? 0,
+                    'jumlah_peserta'          => $item->jumlah_peserta          ?? 0,
+                    'jumlah_atlet'            => $item->jumlah_atlet            ?? 0,
+                    'jumlah_pelatih'          => $item->jumlah_pelatih          ?? 0,
                     'jumlah_tenaga_pendukung' => $item->jumlah_tenaga_pendukung ?? 0,
                 ];
             });
             $data += [
                 'pemeriksaan' => $transformed,
-                'total' => $transformed->count(),
+                'total'       => $transformed->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
             return $data;
         }
-        $items   = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        $items       = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
-                'cabor' => $item->cabor?->nama ?? '-',
-                'cabor_kategori' => $item->caborKategori?->nama ?? '-',
-                'tenaga_pendukung' => $item->tenagaPendukung?->nama ?? '-',
-                'nama_pemeriksaan' => $item->nama_pemeriksaan,
-                'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
-                'status' => $item->status,
-                'jumlah_parameter' => $item->jumlah_parameter ?? 0,
-                'jumlah_peserta' => $item->jumlah_peserta ?? 0,
-                'jumlah_atlet' => $item->jumlah_atlet ?? 0,
-                'jumlah_pelatih' => $item->jumlah_pelatih ?? 0,
+                'id'                      => $item->id,
+                'cabor'                   => $item->cabor?->nama           ?? '-',
+                'cabor_kategori'          => $item->caborKategori?->nama   ?? '-',
+                'tenaga_pendukung'        => $item->tenagaPendukung?->nama ?? '-',
+                'nama_pemeriksaan'        => $item->nama_pemeriksaan,
+                'tanggal_pemeriksaan'     => $item->tanggal_pemeriksaan,
+                'status'                  => $item->status,
+                'jumlah_parameter'        => $item->jumlah_parameter        ?? 0,
+                'jumlah_peserta'          => $item->jumlah_peserta          ?? 0,
+                'jumlah_atlet'            => $item->jumlah_atlet            ?? 0,
+                'jumlah_pelatih'          => $item->jumlah_pelatih          ?? 0,
                 'jumlah_tenaga_pendukung' => $item->jumlah_tenaga_pendukung ?? 0,
             ];
         });
@@ -158,4 +159,4 @@ class PemeriksaanRepository
     {
         return $this->model->with($this->with)->findOrFail($id);
     }
-} 
+}

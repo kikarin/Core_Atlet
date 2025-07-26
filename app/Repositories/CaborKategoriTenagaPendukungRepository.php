@@ -112,11 +112,12 @@ class CaborKategoriTenagaPendukungRepository
                 'is_active'                   => $record->is_active,
                 'is_active_badge'             => $record->is_active_badge,
                 'created_at'                  => $record->created_at,
-                'jenis_kelamin'               => $record->tenagaPendukung->jenis_kelamin ?? '-',
-                'tempat_lahir'                => $record->tenagaPendukung->tempat_lahir  ?? '-',
-                'tanggal_lahir'               => $record->tenagaPendukung->tanggal_lahir ?? '-',
-                'foto'                        => $record->tenagaPendukung->foto          ?? null,
-                'no_hp'                       => $record->tenagaPendukung->no_hp         ?? '-',
+                'jenis_kelamin'               => $record->tenagaPendukung->jenis_kelamin     ?? '-',
+                'tempat_lahir'                => $record->tenagaPendukung->tempat_lahir      ?? '-',
+                'tanggal_lahir'               => $record->tenagaPendukung->tanggal_lahir     ?? '-',
+                'tanggal_bergabung'           => $record->tenagaPendukung->tanggal_bergabung ?? '-',
+                'foto'                        => $record->tenagaPendukung->foto              ?? null,
+                'no_hp'                       => $record->tenagaPendukung->no_hp             ?? '-',
             ];
         });
         $data += [

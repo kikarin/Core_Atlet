@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
-import Form from './Form.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import Form from './Form.vue';
 
 const page = usePage();
 const pemeriksaan = computed(() => page.props.pemeriksaan || {});
@@ -21,10 +21,14 @@ const jenisPeserta = computed(() => {
 // Label untuk jenis peserta
 const pesertaLabel = computed(() => {
     switch (jenisPeserta.value) {
-        case 'atlet': return 'Atlet';
-        case 'pelatih': return 'Pelatih';
-        case 'tenaga-pendukung': return 'Tenaga Pendukung';
-        default: return 'Peserta';
+        case 'atlet':
+            return 'Atlet';
+        case 'pelatih':
+            return 'Pelatih';
+        case 'tenaga-pendukung':
+            return 'Tenaga Pendukung';
+        default:
+            return 'Peserta';
     }
 });
 
@@ -36,16 +40,7 @@ const breadcrumbs = [
 </script>
 
 <template>
-    <PageEdit 
-        :title="`${pesertaLabel}`" 
-        :breadcrumbs="breadcrumbs" 
-        :back-url="`/pemeriksaan/${pemeriksaanId}/peserta?jenis_peserta=${jenisPeserta}`"
-    >
-        <Form 
-            mode="edit" 
-            :pemeriksaan="pemeriksaan"
-            :initial-data="item"
-            :jenis-peserta="jenisPeserta"
-        />
+    <PageEdit :title="`${pesertaLabel}`" :breadcrumbs="breadcrumbs" :back-url="`/pemeriksaan/${pemeriksaanId}/peserta?jenis_peserta=${jenisPeserta}`">
+        <Form mode="edit" :pemeriksaan="pemeriksaan" :initial-data="item" :jenis-peserta="jenisPeserta" />
     </PageEdit>
 </template>

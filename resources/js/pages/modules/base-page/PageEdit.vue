@@ -3,8 +3,8 @@ import AppTabs from '@/components/AppTabs.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import HeaderForm from './HeaderForm.vue';
 import { computed } from 'vue';
+import HeaderForm from './HeaderForm.vue';
 
 const props = withDefaults(
     defineProps<{
@@ -35,12 +35,12 @@ const handleTabChange = (value: string) => {
     emit('update:activeTabValue', value);
 };
 
-const useGrid = computed(() => props.useGrid !== true); 
+const useGrid = computed(() => props.useGrid !== true);
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="px-11 space-y-4 p-4">
+        <div class="space-y-4 p-4 px-11">
             <div v-if="useGrid" class="grid grid-cols-1 lg:grid-cols-12">
                 <div class="col-span-1 lg:col-span-7 lg:col-start-1">
                     <div v-if="tabsConfig?.length" class="mb-4">
@@ -69,7 +69,7 @@ const useGrid = computed(() => props.useGrid !== true);
                     </Card>
                 </div>
             </div>
-                        <div v-else>
+            <div v-else>
                 <!-- Navigasi Tabs di luar Card -->
                 <div v-if="tabsConfig && tabsConfig.length > 0" class="mb-4">
                     <AppTabs

@@ -4,13 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class () extends Migration {
     public function up(): void
     {
         Schema::create('pemeriksaan_peserta', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pemeriksaan_id');
-            $table->morphs('peserta'); 
+            $table->morphs('peserta');
             $table->unsignedBigInteger('ref_status_pemeriksaan_id');
             $table->text('catatan_umum')->nullable();
             $table->timestamps();
@@ -28,4 +28,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('pemeriksaan_peserta');
     }
-}; 
+};

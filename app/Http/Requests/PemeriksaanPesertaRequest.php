@@ -50,4 +50,4 @@ class PemeriksaanPesertaRequest extends FormRequest
             'atlet_ids.required'                 => 'Minimal pilih satu peserta (atlet, pelatih, atau tenaga pendukung).',
         ];
     }
-} 
+}

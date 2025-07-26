@@ -170,15 +170,15 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pemeriksaan Parameter',
+                'name'       => 'Pemeriksaan Parameter',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pemeriksaan Peserta',
+                'name'       => 'Pemeriksaan Peserta',
                 'permission' => 'CRUD',
             ],
             [
-                'name' => 'Pemeriksaan Peserta Parameter',
+                'name'       => 'Pemeriksaan Peserta Parameter',
                 'permission' => 'CRUD',
             ],
         ];

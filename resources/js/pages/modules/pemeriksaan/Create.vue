@@ -12,4 +12,4 @@ const breadcrumbs = [
     <PageCreate title="Tambah Pemeriksaan" :breadcrumbs="breadcrumbs" back-url="/pemeriksaan">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

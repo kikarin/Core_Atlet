@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const { toast } = useToast();
 
@@ -54,4 +54,4 @@ const handleDelete = () => {
         :on-edit="() => router.visit(`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter/${props.item.id}/edit`)"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

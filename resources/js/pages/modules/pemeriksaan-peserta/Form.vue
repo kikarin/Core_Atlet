@@ -81,17 +81,17 @@ const formState = ref({
 
 const formInputs = computed(() => {
     const inputs: any[] = [
-        { 
-            name: 'ref_status_pemeriksaan_id', 
-            label: 'Status Pemeriksaan', 
-            type: 'select' as const, 
-            required: true, 
-            options: (usePage().props.ref_status_pemeriksaan as any[] || []).map(s => ({ value: s.id, label: s.nama })) 
+        {
+            name: 'ref_status_pemeriksaan_id',
+            label: 'Status Pemeriksaan',
+            type: 'select' as const,
+            required: true,
+            options: ((usePage().props.ref_status_pemeriksaan as any[]) || []).map((s) => ({ value: s.id, label: s.nama })),
         },
-        { 
-            name: 'catatan_umum', 
-            label: 'Catatan Umum', 
-            type: 'textarea' as const 
+        {
+            name: 'catatan_umum',
+            label: 'Catatan Umum',
+            type: 'textarea' as const,
         },
     ];
     return inputs;
@@ -105,14 +105,11 @@ const handleSave = (form: any) => {
 
     if (props.mode === 'create') {
         dataToSave = { ...form, [pesertaConfig.value.stateKey]: selectionState.value[pesertaConfig.value.stateKey] };
-        save(
-            dataToSave,
-            {
-                url,
-                mode: 'create',
-                redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
-            },
-        );
+        save(dataToSave, {
+            url,
+            mode: 'create',
+            redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
+        });
     } else {
         dataToSave = {
             ref_status_pemeriksaan_id: form.ref_status_pemeriksaan_id,
@@ -122,14 +119,11 @@ const handleSave = (form: any) => {
         };
     }
 
-    save(
-        dataToSave,
-        {
-            url: props.mode === 'edit' ? `${url}/${props.initialData.id}` : url,
-            mode: props.mode,
-            redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
-        },
-    );
+    save(dataToSave, {
+        url: props.mode === 'edit' ? `${url}/${props.initialData.id}` : url,
+        mode: props.mode,
+        redirectUrl: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}`,
+    });
 };
 
 const columns = [

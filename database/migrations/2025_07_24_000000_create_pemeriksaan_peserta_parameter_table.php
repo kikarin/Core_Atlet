@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class () extends Migration {
     public function up(): void
     {
         Schema::create('pemeriksaan_peserta_parameter', function (Blueprint $table) {
@@ -12,8 +12,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('pemeriksaan_id');
             $table->unsignedBigInteger('pemeriksaan_peserta_id');
             $table->unsignedBigInteger('pemeriksaan_parameter_id');
-            $table->decimal('nilai', 10, 2);
-            $table->enum('trend', ['stabil', 'penurunan', 'kenaikan'])->default('stabil');
+            $table->decimal('nilai', 10, 2)->nullable();
+            $table->enum('trend', ['stabil', 'penurunan', 'kenaikan'])->default('stabil')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
@@ -30,4 +30,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('pemeriksaan_peserta_parameter');
     }
-}; 
+};

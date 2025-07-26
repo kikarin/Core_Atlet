@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const { toast } = useToast();
 
@@ -46,7 +46,6 @@ const fields = computed(() => {
     ];
 });
 
-
 const actionFields = [
     { label: 'Created At', value: new Date(props.item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },
     { label: 'Created By', value: props.item.created_by_user?.name || '-' },
@@ -77,4 +76,4 @@ const handleDelete = () => {
         :on-edit="() => router.visit(`/pemeriksaan/${props.item.id}/edit`)"
         :on-delete="handleDelete"
     />
-</template> 
+</template>

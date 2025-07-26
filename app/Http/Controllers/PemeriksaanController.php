@@ -125,4 +125,4 @@ class PemeriksaanController extends Controller implements HasMiddleware
             ],
         ]);
     }
-} 
+}

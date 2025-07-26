@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
-import Form from './Form.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import Form from './Form.vue';
 
 interface Pemeriksaan {
     id: number;
@@ -10,7 +10,7 @@ interface Pemeriksaan {
 }
 
 const page = usePage();
-const pemeriksaan = computed(() => page.props.pemeriksaan as Pemeriksaan || {} as Pemeriksaan);
+const pemeriksaan = computed(() => (page.props.pemeriksaan as Pemeriksaan) || ({} as Pemeriksaan));
 const pemeriksaanId = computed(() => pemeriksaan.value?.id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
 
 const props = defineProps<{ item: Record<string, any> }>();
@@ -26,4 +26,4 @@ const breadcrumbs = [
     <PageEdit title="Parameter Pemeriksaan" :breadcrumbs="breadcrumbs" :back-url="`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter`">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
-</template> 
+</template>

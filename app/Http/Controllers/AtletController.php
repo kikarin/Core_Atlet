@@ -73,7 +73,7 @@ class AtletController extends Controller implements HasMiddleware
             ]);
 
             $item = $this->repository->getDetailWithRelations($id);
-            
+
             if (!$item) {
                 return response()->json([
                     'success' => false,
@@ -83,14 +83,14 @@ class AtletController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'data' => $item,
+                'data'    => $item,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching atlet detail: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data atlet',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

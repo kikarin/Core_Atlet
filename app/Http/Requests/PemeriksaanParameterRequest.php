@@ -30,4 +30,4 @@ class PemeriksaanParameterRequest extends FormRequest
             'satuan.max'              => 'Satuan maksimal 100 karakter.',
         ];
     }
-} 
+}

@@ -5,13 +5,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/toast/useToast';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import * as LucideIcons from 'lucide-vue-next';
 import { AlertCircle, CalendarIcon, Eye, EyeOff, Upload, X, XIcon } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { Alert, AlertDescription, AlertTitle } from '../../../components/ui/alert';
 import ButtonsForm from './ButtonsForm.vue';
-import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     formInputs: {
@@ -268,11 +267,11 @@ function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
 }
 
 const handleCancel = () => {
-  if (typeof window !== 'undefined' && window.history.length > 1) {
-    window.history.back();
-  } else {
-    router.visit('/');
-  }
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+        window.history.back();
+    } else {
+        router.visit('/');
+    }
 };
 </script>
 

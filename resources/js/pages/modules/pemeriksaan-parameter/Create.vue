@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PageCreate from '@/pages/modules/base-page/PageCreate.vue';
-import Form from './Form.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import Form from './Form.vue';
 
 const page = usePage();
 const pemeriksaan = computed(() => page.props.pemeriksaan || {});
@@ -19,4 +19,4 @@ const breadcrumbs = [
     <PageCreate title="Tambah Pemeriksaan Parameter" :breadcrumbs="breadcrumbs" :back-url="`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter`">
         <Form mode="create" />
     </PageCreate>
-</template> 
+</template>

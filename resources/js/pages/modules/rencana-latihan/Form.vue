@@ -12,6 +12,35 @@ const props = defineProps<{
     infoHeader: any;
 }>();
 
+const calculateAge = (birthDate: string | null | undefined): number | string => {
+    if (!birthDate) return '-';
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+};
+
+function getLamaBergabung(tanggalBergabung: string) {
+    if (!tanggalBergabung) return '-';
+    const start = new Date(tanggalBergabung);
+    const now = new Date();
+    let tahun = now.getFullYear() - start.getFullYear();
+    let bulan = now.getMonth() - start.getMonth();
+    if (bulan < 0) {
+        tahun--;
+        bulan += 12;
+    }
+    let result = '';
+    if (tahun > 0) result += tahun + ' tahun ';
+    if (bulan > 0) result += bulan + ' bulan';
+    if (!result) result = 'Kurang dari 1 bulan';
+    return result.trim();
+}
+
 const formData = ref({
     tanggal: props.initialData?.tanggal || '',
     materi: props.initialData?.materi || '',
@@ -71,76 +100,66 @@ const handleSave = (form: any) => {
 };
 
 const columnsAtlet = [
-    {
-        key: 'foto',
-        label: 'Foto',
-        format: (row: any) =>
-            row.foto
-                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-    },
     { key: 'nama', label: 'Nama' },
     {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',
         format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
     },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) =>
-            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            return calculateAge(row.tanggal_lahir);
+        },
     },
-    { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
+    },
 ];
 const columnsPelatih = [
-    {
-        key: 'foto',
-        label: 'Foto',
-        format: (row: any) =>
-            row.foto
-                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-    },
     { key: 'nama', label: 'Nama' },
+    { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
     {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',
         format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
     },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) =>
-            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            return calculateAge(row.tanggal_lahir);
+        },
     },
-    { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
+    },
 ];
 const columnsTenagaPendukung = [
-    {
-        key: 'foto',
-        label: 'Foto',
-        format: (row: any) =>
-            row.foto
-                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-    },
     { key: 'nama', label: 'Nama' },
+    { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
     {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',
         format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
     },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) =>
-            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            return calculateAge(row.tanggal_lahir);
+        },
     },
-    { key: 'no_hp', label: 'No HP' },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
+    },
 ];
 </script>
 

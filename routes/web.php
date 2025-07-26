@@ -443,7 +443,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{id}/edit', [PemeriksaanPesertaController::class, 'edit'])->name('pemeriksaan.peserta.edit');
         Route::put('/{id}', [PemeriksaanPesertaController::class, 'update'])->name('pemeriksaan.peserta.update');
         Route::delete('/{id}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
-         Route::post('/destroy-selected', [PemeriksaanPesertaController::class, 'destroy_selected'])->name('pemeriksaan.peserta.destroy_selected');
+        Route::post('/destroy-selected', [PemeriksaanPesertaController::class, 'destroy_selected'])->name('pemeriksaan.peserta.destroy_selected');
     });
 
     // Nested Pemeriksaan Peserta Parameter - Web Routes
@@ -466,8 +466,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // API nested
 Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
 
-    // API untuk pemeriksaan peserta parameter
-    Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{peserta}/parameter', [PemeriksaanPesertaParameterController::class, 'apiIndex']);
+// API untuk pemeriksaan peserta parameter
+Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{peserta}/parameter', [PemeriksaanPesertaParameterController::class, 'apiIndex']);
 
 // API untuk Pemeriksaan Peserta
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{jenis_peserta?}', [PemeriksaanPesertaController::class, 'apiIndex'])->name('api.pemeriksaan.peserta.index');
@@ -476,7 +476,7 @@ Route::delete('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesert
 Route::post('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'update']);
 
 
- // API untuk detail atlet, pelatih, dan tenaga pendukung
+// API untuk detail atlet, pelatih, dan tenaga pendukung
 Route::get('/api/atlet/{id}', [AtletController::class, 'apiShow']);
 Route::get('/api/pelatih/{id}', [PelatihController::class, 'apiShow']);
 Route::get('/api/tenaga-pendukung/{id}', [TenagaPendukungController::class, 'apiShow']);

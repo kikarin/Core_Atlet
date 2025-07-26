@@ -237,7 +237,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
     public function apiAvailableForPemeriksaan(Request $request)
     {
         $caborKategoriId = $request->input('cabor_kategori_id');
-        $pemeriksaanId = $request->input('pemeriksaan_id');
+        $pemeriksaanId   = $request->input('pemeriksaan_id');
 
         // Ambil semua pelatih_id yang sudah jadi peserta di pemeriksaan ini
         $usedPelatihIds = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaanId)
@@ -252,7 +252,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
 
         if ($request->has('search')) {
             $search = $request->input('search');
-            $query->whereHas('pelatih', function($q) use ($search) {
+            $query->whereHas('pelatih', function ($q) use ($search) {
                 $q->where('nama', 'like', "%$search%")
                   ->orWhere('nik', 'like', "%$search%")
                   ->orWhere('no_hp', 'like', "%$search%")
@@ -261,31 +261,31 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
             });
         }
         $perPage = (int) $request->input('per_page', 10);
-        $page = (int) $request->input('page', 1);
-        $result = $query->paginate($perPage, ['*'], 'page', $page);
+        $page    = (int) $request->input('page', 1);
+        $result  = $query->paginate($perPage, ['*'], 'page', $page);
 
-        $data = $result->items();
-        $transformed = collect($data)->map(function($item) {
+        $data        = $result->items();
+        $transformed = collect($data)->map(function ($item) {
             return [
-                'id' => $item->id,
-                'pelatih_id' => $item->pelatih_id,
-                'pelatih_nama' => $item->pelatih->nama ?? '-',
-                'nik' => $item->pelatih->nik ?? '-',
+                'id'            => $item->id,
+                'pelatih_id'    => $item->pelatih_id,
+                'pelatih_nama'  => $item->pelatih->nama          ?? '-',
+                'nik'           => $item->pelatih->nik           ?? '-',
                 'jenis_kelamin' => $item->pelatih->jenis_kelamin ?? '-',
-                'tempat_lahir' => $item->pelatih->tempat_lahir ?? '-',
+                'tempat_lahir'  => $item->pelatih->tempat_lahir  ?? '-',
                 'tanggal_lahir' => $item->pelatih->tanggal_lahir ?? '-',
-                'no_hp' => $item->pelatih->no_hp ?? '-',
-                'foto' => $item->pelatih->foto ?? null,
+                'no_hp'         => $item->pelatih->no_hp         ?? '-',
+                'foto'          => $item->pelatih->foto          ?? null,
             ];
         });
 
         return response()->json([
             'data' => $transformed,
             'meta' => [
-                'total' => $result->total(),
+                'total'        => $result->total(),
                 'current_page' => $result->currentPage(),
-                'per_page' => $result->perPage(),
-                'search' => $request->input('search', ''),
+                'per_page'     => $result->perPage(),
+                'search'       => $request->input('search', ''),
             ],
         ]);
     }

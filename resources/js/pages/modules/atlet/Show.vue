@@ -173,6 +173,17 @@ const fields = computed(() => {
                   })
                 : '-',
         },
+        {
+            label: 'Tanggal Bergabung',
+            value: props.item?.tanggal_bergabung
+                ? new Date(props.item.tanggal_bergabung).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                  })
+                : '-',
+        },
+        { label: 'Lama Bergabung', value: props.item?.tanggal_bergabung ? getLamaBergabung(props.item.tanggal_bergabung) : '-' },
         { label: 'Alamat', value: props.item?.alamat || '-', className: 'sm:col-span-2' },
         { label: 'Kecamatan', value: props.item?.kecamatan?.nama || '-' },
         { label: 'Kelurahan', value: props.item?.kelurahan?.nama || '-' },
@@ -359,6 +370,23 @@ const currentOnDeleteHandler = computed(() => {
     }
     return undefined;
 });
+
+function getLamaBergabung(tanggalBergabung: string) {
+    if (!tanggalBergabung) return '-';
+    const start = new Date(tanggalBergabung);
+    const now = new Date();
+    let tahun = now.getFullYear() - start.getFullYear();
+    let bulan = now.getMonth() - start.getMonth();
+    if (bulan < 0) {
+        tahun--;
+        bulan += 12;
+    }
+    let result = '';
+    if (tahun > 0) result += tahun + ' tahun ';
+    if (bulan > 0) result += bulan + ' bulan';
+    if (!result) result = 'Kurang dari 1 bulan';
+    return result.trim();
+}
 </script>
 
 <template>

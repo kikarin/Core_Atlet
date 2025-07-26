@@ -17,6 +17,7 @@ return new class () extends Migration {
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('tempat_lahir', 100)->nullable();
             $table->date('tanggal_lahir')->nullable();
+            $table->date('tanggal_bergabung')->nullable();
             $table->text('alamat')->nullable();
             $table->unsignedBigInteger('kecamatan_id')->nullable();
             $table->unsignedBigInteger('kelurahan_id')->nullable();

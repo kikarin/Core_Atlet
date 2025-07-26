@@ -21,4 +21,4 @@ class RefStatusPemeriksaanSeeder extends Seeder
             RefStatusPemeriksaan::create($status);
         }
     }
-} 
+}

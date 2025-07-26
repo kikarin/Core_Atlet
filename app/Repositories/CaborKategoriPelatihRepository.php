@@ -114,10 +114,11 @@ class CaborKategoriPelatihRepository
                 'is_active'          => $record->is_active,
                 'is_active_badge'    => $record->is_active_badge,
                 'created_at'         => $record->created_at,
-                'jenis_kelamin'      => $record->pelatih->jenis_kelamin ?? '-',
-                'tempat_lahir'       => $record->pelatih->tempat_lahir  ?? '-',
-                'tanggal_lahir'      => $record->pelatih->tanggal_lahir ?? '-',
-                'foto'               => $record->pelatih->foto          ?? null,
+                'jenis_kelamin'      => $record->pelatih->jenis_kelamin     ?? '-',
+                'tempat_lahir'       => $record->pelatih->tempat_lahir      ?? '-',
+                'tanggal_lahir'      => $record->pelatih->tanggal_lahir     ?? '-',
+                'tanggal_bergabung'  => $record->pelatih->tanggal_bergabung ?? '-',
+                'foto'               => $record->pelatih->foto              ?? null,
             ];
         });
 

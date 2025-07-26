@@ -15,8 +15,8 @@ class Pemeriksaan extends Model
     use Blameable;
     use SoftDeletes;
     use LogsActivity;
-    protected $table = 'pemeriksaan';
-    protected $guarded = [];
+    protected $table    = 'pemeriksaan';
+    protected $guarded  = [];
     protected $fillable = [
         'cabor_id',
         'cabor_kategori_id',
@@ -71,5 +71,5 @@ class Pemeriksaan extends Model
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn () => 'Pemeriksaan');
     }
-    
-} 
+
+}

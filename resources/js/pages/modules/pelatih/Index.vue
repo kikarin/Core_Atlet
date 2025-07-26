@@ -9,6 +9,18 @@ import { ref } from 'vue';
 
 const breadcrumbs = [{ title: 'Pelatih', href: '/pelatih' }];
 
+const calculateAge = (birthDate: string | null | undefined): number | string => {
+    if (!birthDate) return '-';
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+};
+
 const columns = [
     { key: 'nama', label: 'Nama' },
     {
@@ -44,6 +56,32 @@ const columns = [
                 : '-';
         },
     },
+    {
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            return calculateAge(row.tanggal_lahir);
+        },
+    },
+    {
+        key: 'tanggal_bergabung',
+        label: 'Tanggal Bergabung',
+        format: (row: any) => {
+            return row.tanggal_bergabung
+                ? new Date(row.tanggal_bergabung).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'numeric',
+                      year: 'numeric',
+                  })
+                : '-';
+        },
+    },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
+    },
+
     { key: 'no_hp', label: 'No HP' },
     {
         key: 'is_active',
@@ -165,6 +203,23 @@ async function handleImport() {
     } finally {
         importLoading.value = false;
     }
+}
+
+function getLamaBergabung(tanggalBergabung: string) {
+    if (!tanggalBergabung) return '-';
+    const start = new Date(tanggalBergabung);
+    const now = new Date();
+    let tahun = now.getFullYear() - start.getFullYear();
+    let bulan = now.getMonth() - start.getMonth();
+    if (bulan < 0) {
+        tahun--;
+        bulan += 12;
+    }
+    let result = '';
+    if (tahun > 0) result += tahun + ' tahun ';
+    if (bulan > 0) result += bulan + ' bulan';
+    if (!result) result = 'Kurang dari 1 bulan';
+    return result.trim();
 }
 </script>
 

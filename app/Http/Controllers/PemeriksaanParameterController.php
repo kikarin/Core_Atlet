@@ -67,7 +67,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
 
     public function store(PemeriksaanParameterRequest $request, Pemeriksaan $pemeriksaan)
     {
-        $data = $this->repository->validateRequest($request);
+        $data                   = $this->repository->validateRequest($request);
         $data['pemeriksaan_id'] = $pemeriksaan->id;
         $this->repository->create($data);
         return redirect()->route('pemeriksaan.parameter.index', $pemeriksaan->id)->with('success', 'Parameter pemeriksaan berhasil ditambahkan!');
@@ -95,7 +95,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
 
     public function update(PemeriksaanParameterRequest $request, Pemeriksaan $pemeriksaan, $id)
     {
-        $data = $this->repository->validateRequest($request);
+        $data                   = $this->repository->validateRequest($request);
         $data['pemeriksaan_id'] = $pemeriksaan->id;
         $this->repository->update($id, $data);
         return redirect()->route('pemeriksaan.parameter.index', $pemeriksaan->id)->with('success', 'Parameter pemeriksaan berhasil diperbarui!');
@@ -133,4 +133,4 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
             ],
         ]);
     }
-} 
+}

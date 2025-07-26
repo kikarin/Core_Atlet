@@ -1,15 +1,13 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
-import BadgeGroup  from '../components/BadgeGroup.vue';
+import { ref } from 'vue';
+import BadgeGroup from '../components/BadgeGroup.vue';
 
 const { toast } = useToast();
-const breadcrumbs = [
-    { title: 'Pemeriksaan', href: '/pemeriksaan' },
-];
+const breadcrumbs = [{ title: 'Pemeriksaan', href: '/pemeriksaan' }];
 
 const columns = [
     { key: 'cabor', label: 'Cabor' },
@@ -22,10 +20,12 @@ const columns = [
         label: 'Status',
         format: (row: any) => {
             if (row.status === 'belum') return '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-300 rounded-full">Belum</span>';
-            if (row.status === 'sebagian') return '<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Sebagian</span>';
-            if (row.status === 'selesai') return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Selesai</span>';
+            if (row.status === 'sebagian')
+                return '<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Sebagian</span>';
+            if (row.status === 'selesai')
+                return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Selesai</span>';
             return row.status;
-        }
+        },
     },
     { key: 'parameter', label: 'Parameter' },
     { key: 'peserta', label: 'Peserta' },
@@ -116,4 +116,4 @@ const deleteSelected = async () => {
             />
         </template>
     </PageIndex>
-</template> 
+</template>

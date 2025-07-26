@@ -120,4 +120,4 @@ class PemeriksaanParameterRepository
     {
         return $this->model->with($this->with)->findOrFail($id);
     }
-} 
+}

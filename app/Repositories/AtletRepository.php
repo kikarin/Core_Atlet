@@ -136,6 +136,13 @@ class AtletRepository
         }
         $data['updated_by'] = $userId;
 
+        $nullableFields = ['kecamatan_id', 'kelurahan_id', 'tanggal_bergabung'];
+        foreach ($nullableFields as $field) {
+            if (isset($data[$field]) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
         Log::info('AtletRepository: customDataCreateUpdate', [
             'data'   => $data,
             'method' => is_null($record) ? 'create' : 'update',

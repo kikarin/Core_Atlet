@@ -118,11 +118,12 @@ class CaborKategoriAtletRepository
                 'is_active'         => $record->is_active,
                 'is_active_badge'   => $record->is_active_badge,
                 'created_at'        => $record->created_at,
-                'jenis_kelamin'     => $record->atlet->jenis_kelamin ?? '-',
-                'tempat_lahir'      => $record->atlet->tempat_lahir  ?? '-',
-                'tanggal_lahir'     => $record->atlet->tanggal_lahir ?? '-',
-                'foto'              => $record->atlet->foto          ?? null,
-                'posisi_atlet_nama' => $record->posisiAtlet?->nama   ?? '-',
+                'jenis_kelamin'     => $record->atlet->jenis_kelamin     ?? '-',
+                'tempat_lahir'      => $record->atlet->tempat_lahir      ?? '-',
+                'tanggal_lahir'     => $record->atlet->tanggal_lahir     ?? '-',
+                'tanggal_bergabung' => $record->atlet->tanggal_bergabung ?? '-',
+                'foto'              => $record->atlet->foto              ?? null,
+                'posisi_atlet_nama' => $record->posisiAtlet?->nama       ?? '-',
             ];
         });
 

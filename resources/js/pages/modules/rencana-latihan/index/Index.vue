@@ -16,7 +16,6 @@ const info = computed(() => infoHeader || {});
 const infoRencana = page.props.infoRencana as any;
 const keterangan = ref('');
 
-
 const jenisLabel: Record<string, string> = {
     atlet: 'Atlet',
     pelatih: 'Pelatih',
@@ -178,8 +177,7 @@ const confirmSetKehadiran = async () => {
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                                 <span class="text-sm font-medium"
-                                    >{{ info.cabor_nama
-                                    }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></span
+                                    >{{ info.cabor_nama }}<template v-if="info.cabor_kategori_nama"> - {{ info.cabor_kategori_nama }}</template></span
                                 >
                             </div>
                             <div class="flex items-center gap-2">

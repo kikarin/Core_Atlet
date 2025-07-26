@@ -24,7 +24,10 @@ const fetchCaborOptions = async () => {
     caborOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
 };
 const fetchKategoriOptions = async (caborId: number | string) => {
-    if (!caborId) { kategoriOptions.value = []; return; }
+    if (!caborId) {
+        kategoriOptions.value = [];
+        return;
+    }
     const res = await axios.get(`/api/cabor-kategori-by-cabor/${caborId}`);
     kategoriOptions.value = (res.data || []).map((item: any) => ({ value: item.id, label: item.nama }));
 };

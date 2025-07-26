@@ -16,8 +16,8 @@ class PemeriksaanParameter extends Model
     use SoftDeletes;
     use LogsActivity;
 
-    protected $table = 'pemeriksaan_parameter';
-    protected $guarded = [];
+    protected $table    = 'pemeriksaan_parameter';
+    protected $guarded  = [];
     protected $fillable = [
         'pemeriksaan_id',
         'nama_parameter',
@@ -48,4 +48,4 @@ class PemeriksaanParameter extends Model
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn () => 'Pemeriksaan Parameter');
     }
-} 
+}

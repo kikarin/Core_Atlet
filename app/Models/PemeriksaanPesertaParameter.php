@@ -11,10 +11,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PemeriksaanPesertaParameter extends Model
 {
-    use HasFactory, SoftDeletes, Blameable, LogsActivity;
+    use HasFactory;
+    use SoftDeletes;
+    use Blameable;
+    use LogsActivity;
 
-    protected $table = 'pemeriksaan_peserta_parameter';
-    protected $guarded = [];
+    protected $table    = 'pemeriksaan_peserta_parameter';
+    protected $guarded  = [];
     protected $fillable = [
         'pemeriksaan_id',
         'pemeriksaan_peserta_id',
@@ -58,4 +61,4 @@ class PemeriksaanPesertaParameter extends Model
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn () => 'Pemeriksaan Peserta Parameter');
     }
-} 
+}

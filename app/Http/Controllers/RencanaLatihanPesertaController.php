@@ -207,29 +207,29 @@ class RencanaLatihanPesertaController extends Controller
     public function setKehadiran(Request $request, $rencana_id, $jenis_peserta)
     {
         $request->validate([
-            'ids'       => 'required|array',
-            'kehadiran' => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
+            'ids'        => 'required|array',
+            'kehadiran'  => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
             'keterangan' => 'nullable|string|max:1000',
         ]);
-        $ids       = $request->input('ids');
-        $kehadiran = $request->input('kehadiran');
+        $ids        = $request->input('ids');
+        $kehadiran  = $request->input('kehadiran');
         $keterangan = $request->input('keterangan');
-        $rencana   = RencanaLatihan::findOrFail($rencana_id);
+        $rencana    = RencanaLatihan::findOrFail($rencana_id);
 
         if ($jenis_peserta === 'atlet') {
             foreach ($ids as $id) {
                 $rencana->atlets()->updateExistingPivot($id, ['kehadiran' => $kehadiran
-            , 'keterangan' => $keterangan ?? null]);
+            , 'keterangan'                                                => $keterangan ?? null]);
             }
         } elseif ($jenis_peserta === 'pelatih') {
             foreach ($ids as $id) {
                 $rencana->pelatihs()->updateExistingPivot($id, ['kehadiran' => $kehadiran
-            , 'keterangan' => $keterangan ?? null]);
+            , 'keterangan'                                                  => $keterangan ?? null]);
             }
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
             foreach ($ids as $id) {
                 $rencana->tenagaPendukung()->updateExistingPivot($id, ['kehadiran' => $kehadiran
-            , 'keterangan' => $keterangan ?? null]);
+            , 'keterangan'                                                         => $keterangan ?? null]);
             }
         } else {
             return response()->json(['message' => 'Jenis peserta tidak valid'], 400);

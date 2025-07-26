@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
+import { computed, ref } from 'vue';
 
 const { toast } = useToast();
 
@@ -18,7 +18,7 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-const dataTable = computed<any[]>(() => Array.isArray(page.props.data) ? page.props.data : []);
+const dataTable = computed<any[]>(() => (Array.isArray(page.props.data) ? page.props.data : []));
 const pesertaFromProps = computed<string | null>(() => {
     const peserta = page.props.peserta as any;
     if (peserta && typeof peserta === 'object') {
@@ -33,35 +33,53 @@ const pesertaName = computed(() => {
 });
 
 const jenisPeserta = computed(() => {
-    return page.props.jenis_peserta || (
-        typeof window !== 'undefined'
-            ? (new URLSearchParams(window.location.search).get('jenis_peserta') || 'atlet')
-            : 'atlet'
+    return (
+        page.props.jenis_peserta ||
+        (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('jenis_peserta') || 'atlet' : 'atlet')
     );
 });
 
 const breadcrumbs = [
     { title: 'Pemeriksaan', href: '/pemeriksaan' },
     { title: 'Peserta Pemeriksaan', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta?jenis_peserta=${jenisPeserta.value}` },
-    { title: 'Parameter Peserta', href: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter?jenis_peserta=${jenisPeserta.value}` },
+    {
+        title: 'Parameter Peserta',
+        href: `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter?jenis_peserta=${jenisPeserta.value}`,
+    },
 ];
 
 const columns = [
     { key: 'parameter', label: 'Parameter' },
     { key: 'nilai', label: 'Nilai' },
-    { key: 'trend', label: 'Trend', format: (row: any) => {
-        if (row.trend === 'stabil') return '<span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Stabil</span>';
-        if (row.trend === 'penurunan') return '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Penurunan</span>';
-        if (row.trend === 'kenaikan') return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Kenaikan</span>';
-        return row.trend;
-    }},
+    {
+        key: 'trend',
+        label: 'Trend',
+        format: (row: any) => {
+            if (row.trend === 'stabil') return '<span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Stabil</span>';
+            if (row.trend === 'penurunan')
+                return '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Penurunan</span>';
+            if (row.trend === 'kenaikan')
+                return '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Kenaikan</span>';
+            return row.trend;
+        },
+    },
 ];
 
 const selected = ref<number[]>([]);
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}?jenis_peserta=${jenisPeserta.value}`) },
-    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`) },
+    {
+        label: 'Detail',
+        onClick: () =>
+            router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}?jenis_peserta=${jenisPeserta.value}`),
+    },
+    {
+        label: 'Edit',
+        onClick: () =>
+            router.visit(
+                `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`,
+            ),
+    },
     { label: 'Delete', onClick: () => handleDeleteRow(row) },
 ];
 
@@ -84,7 +102,10 @@ const handleDeleteSelected = async () => {
         return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
     }
     try {
-        const response = await axios.post(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/destroy-selected?jenis_peserta=${jenisPeserta.value}`, { ids: selected.value });
+        const response = await axios.post(
+            `/pemeriksaan/${props.pemeriksaan.id}/peserta/${props.peserta.id}/parameter/destroy-selected?jenis_peserta=${jenisPeserta.value}`,
+            { ids: selected.value },
+        );
         selected.value = [];
         if (pageIndex.value && pageIndex.value.fetchData) pageIndex.value.fetchData();
         toast({ title: response.data?.message || 'Data berhasil dihapus', variant: 'success' });
@@ -138,4 +159,4 @@ const handleDeleteSelected = async () => {
             </div>
         </template>
     </PageIndex>
-</template> 
+</template>

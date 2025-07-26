@@ -178,13 +178,7 @@ const handlePageChange = debounce((val) => {
     handleSearch({ page: val });
 }, 300);
 
-const slotCustomKeys = [
-  'rencana_latihan',
-  'target_individu',
-  'target_kelompok',
-  'pemeriksaan-peserta',
-  'parameter_peserta'
-];
+const slotCustomKeys = ['rencana_latihan', 'target_individu', 'target_kelompok', 'pemeriksaan-peserta', 'parameter_peserta'];
 
 const rowsWithCustom = computed(() => {
     return tableRows.value.map((row) => {
@@ -224,7 +218,7 @@ defineExpose({ fetchData });
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
                 </div>
-                <div class="rounded-xl bg-white mx-4 pt-4 shadow dark:bg-neutral-900">
+                <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"
                         :rows="rowsWithCustom"

@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageShow from '@/pages/modules/base-page/PageShow.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const { toast } = useToast();
 
@@ -22,10 +22,14 @@ const jenisPeserta = computed(() => {
 
 const pesertaLabel = computed(() => {
     switch (jenisPeserta.value) {
-        case 'atlet': return 'Atlet';
-        case 'pelatih': return 'Pelatih';
-        case 'tenaga-pendukung': return 'Tenaga Pendukung';
-        default: return 'Peserta';
+        case 'atlet':
+            return 'Atlet';
+        case 'pelatih':
+            return 'Pelatih';
+        case 'tenaga-pendukung':
+            return 'Tenaga Pendukung';
+        default:
+            return 'Peserta';
     }
 });
 
@@ -48,99 +52,99 @@ const fields = computed(() => {
         pesertaFields.push(
             { label: 'NIK', value: peserta?.nik || '-' },
             { label: 'Nama', value: peserta?.nama || '-' },
-            { 
-                label: 'Jenis Kelamin', 
+            {
+                label: 'Jenis Kelamin',
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : '',
             },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
-            { 
-                label: 'Tanggal Lahir', 
+            {
+                label: 'Tanggal Lahir',
                 value: peserta?.tanggal_lahir
                     ? new Date(peserta.tanggal_lahir).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'numeric',
-                        year: 'numeric',
-                    })
-                    : '-'
+                          day: 'numeric',
+                          month: 'numeric',
+                          year: 'numeric',
+                      })
+                    : '-',
             },
             { label: 'No HP', value: peserta?.no_hp || '-' },
             { label: 'Email', value: peserta?.email || '-' },
-            { 
-                label: 'Foto', 
+            {
+                label: 'Foto',
                 value: peserta?.foto || '',
                 type: 'image' as const,
                 className: 'sm:col-span-2',
                 imageConfig: {
                     size: 'md' as const,
-                }
-            }
+                },
+            },
         );
     } else if (jenisPeserta.value === 'pelatih') {
         pesertaFields.push(
             { label: 'NIK', value: peserta?.nik || '-' },
             { label: 'Nama', value: peserta?.nama || '-' },
-            { 
-                label: 'Jenis Kelamin', 
+            {
+                label: 'Jenis Kelamin',
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : '',
             },
             { label: 'Jenis Pelatih', value: peserta?.jenis_pelatih?.nama || '-' },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
-            { 
-                label: 'Tanggal Lahir', 
+            {
+                label: 'Tanggal Lahir',
                 value: peserta?.tanggal_lahir
                     ? new Date(peserta.tanggal_lahir).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'numeric',
-                        year: 'numeric',
-                    })
-                    : '-'
+                          day: 'numeric',
+                          month: 'numeric',
+                          year: 'numeric',
+                      })
+                    : '-',
             },
             { label: 'No HP', value: peserta?.no_hp || '-' },
             { label: 'Email', value: peserta?.email || '-' },
-            { 
-                label: 'Foto', 
+            {
+                label: 'Foto',
                 value: peserta?.foto || '',
                 type: 'image' as const,
                 className: 'sm:col-span-2',
                 imageConfig: {
                     size: 'md' as const,
-                }
-            }
+                },
+            },
         );
     } else if (jenisPeserta.value === 'tenaga-pendukung') {
         pesertaFields.push(
             { label: 'NIK', value: peserta?.nik || '-' },
             { label: 'Nama', value: peserta?.nama || '-' },
-            { 
-                label: 'Jenis Kelamin', 
+            {
+                label: 'Jenis Kelamin',
                 value: peserta?.jenis_kelamin === 'L' ? 'Laki-laki' : peserta?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : ''
+                className: peserta?.jenis_kelamin === 'L' ? 'text-indigo-300' : peserta?.jenis_kelamin === 'P' ? 'text-pink-600' : '',
             },
             { label: 'Jenis Tenaga Pendukung', value: peserta?.jenis_tenaga_pendukung?.nama || '-' },
             { label: 'Tempat Lahir', value: peserta?.tempat_lahir || '-' },
-            { 
-                label: 'Tanggal Lahir', 
+            {
+                label: 'Tanggal Lahir',
                 value: peserta?.tanggal_lahir
                     ? new Date(peserta.tanggal_lahir).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'numeric',
-                        year: 'numeric',
-                    })
-                    : '-'
+                          day: 'numeric',
+                          month: 'numeric',
+                          year: 'numeric',
+                      })
+                    : '-',
             },
             { label: 'No HP', value: peserta?.no_hp || '-' },
             { label: 'Email', value: peserta?.email || '-' },
-            { 
-                label: 'Foto', 
+            {
+                label: 'Foto',
                 value: peserta?.foto || '',
                 type: 'image' as const,
                 className: 'sm:col-span-2',
                 imageConfig: {
                     size: 'md' as const,
-                }
-            }
+                },
+            },
         );
     }
 
@@ -175,7 +179,6 @@ const handleDelete = () => {
         },
     });
 };
-
 </script>
 
 <template>

@@ -28,6 +28,7 @@ class Pelatih extends Model implements HasMedia
         'jenis_kelamin',
         'tempat_lahir',
         'tanggal_lahir',
+        'tanggal_bergabung',
         'alamat',
         'kecamatan_id',
         'kelurahan_id',

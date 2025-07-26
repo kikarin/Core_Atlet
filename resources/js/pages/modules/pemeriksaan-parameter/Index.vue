@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
+import { computed, ref } from 'vue';
 
 interface Pemeriksaan {
     id: number;
@@ -15,7 +15,7 @@ interface Pemeriksaan {
 
 const { toast } = useToast();
 const page = usePage();
-const pemeriksaan = computed(() => page.props.pemeriksaan as Pemeriksaan || {} as Pemeriksaan);
+const pemeriksaan = computed(() => (page.props.pemeriksaan as Pemeriksaan) || ({} as Pemeriksaan));
 const pemeriksaanId = computed(() => pemeriksaan.value?.id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
 
 const breadcrumbs = [
@@ -52,15 +52,15 @@ const deleteSelected = async () => {
 };
 
 const deleteRow = async (row: any) => {
-  await router.delete(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`, {
-    onSuccess: () => {
-      toast({ title: 'Data berhasil dihapus', variant: 'success' });
-      pageIndex.value.fetchData();
-    },
-    onError: () => {
-      toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
-    },
-  });
+    await router.delete(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`, {
+        onSuccess: () => {
+            toast({ title: 'Data berhasil dihapus', variant: 'success' });
+            pageIndex.value.fetchData();
+        },
+        onError: () => {
+            toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
+        },
+    });
 };
 </script>
 
@@ -104,4 +104,4 @@ const deleteRow = async (row: any) => {
             </div>
         </template>
     </PageIndex>
-</template> 
+</template>

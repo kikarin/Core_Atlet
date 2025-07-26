@@ -15,7 +15,9 @@ const props = defineProps<{
 }>();
 
 // Ganti akses props.jenisPeserta menjadi props.jenis_peserta (snake_case) agar sesuai dengan props yang dikirim dari parent
-const jenisPeserta = computed(() => props.jenis_peserta || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('jenis_peserta') : 'atlet'));
+const jenisPeserta = computed(
+    () => props.jenis_peserta || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('jenis_peserta') : 'atlet'),
+);
 
 const selectedParameterId = ref(props.initialData?.pemeriksaan_parameter_id || '');
 
@@ -79,4 +81,4 @@ const handleSave = (form: any, setFormErrors: (errors: Record<string, string>) =
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formInitialData" @save="handleSave" />
-</template> 
+</template>
