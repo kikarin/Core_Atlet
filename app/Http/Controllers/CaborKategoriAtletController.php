@@ -256,7 +256,7 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
             ->toArray();
 
         // Query atlet yang belum jadi peserta
-        $query = CaborKategoriAtlet::with('atlet')
+        $query = CaborKategoriAtlet::with(['atlet', 'posisiAtlet'])
             ->where('cabor_kategori_id', $caborKategoriId)
             ->whereNotIn('atlet_id', $usedAtletIds);
 
@@ -279,15 +279,17 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         $data        = $result->items();
         $transformed = collect($data)->map(function ($item) {
             return [
-                'id'            => $item->id,
-                'atlet_id'      => $item->atlet_id,
-                'atlet_nama'    => $item->atlet->nama          ?? '-',
-                'nik'           => $item->atlet->nik           ?? '-',
-                'jenis_kelamin' => $item->atlet->jenis_kelamin ?? '-',
-                'tempat_lahir'  => $item->atlet->tempat_lahir  ?? '-',
-                'tanggal_lahir' => $item->atlet->tanggal_lahir ?? '-',
-                'no_hp'         => $item->atlet->no_hp         ?? '-',
-                'foto'          => $item->atlet->foto          ?? null,
+                'id'                => $item->id,
+                'atlet_id'          => $item->atlet_id,
+                'atlet_nama'        => $item->atlet->nama          ?? '-',
+                'nik'               => $item->atlet->nik           ?? '-',
+                'jenis_kelamin'     => $item->atlet->jenis_kelamin ?? '-',
+                'tempat_lahir'      => $item->atlet->tempat_lahir  ?? '-',
+                'tanggal_lahir'     => $item->atlet->tanggal_lahir ?? '-',
+                'tanggal_bergabung' => $item->atlet->tanggal_bergabung ?? '-',
+                'no_hp'             => $item->atlet->no_hp         ?? '-',
+                'foto'              => $item->atlet->foto          ?? null,
+                'posisi_atlet_nama' => $item->posisiAtlet?->nama   ?? '-',
             ];
         });
 

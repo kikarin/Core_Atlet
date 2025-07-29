@@ -33,7 +33,7 @@ const props = defineProps<{
 
             <!-- Button Kelola -->
             <Link v-if="props.showKelola && props.kelolaUrl" :href="props.kelolaUrl">
-                <Button variant="outline" size="sm">Kelola</Button>
+                <Button variant="outline" size="sm">Pemetaan</Button>
             </Link>
 
             <Link v-if="props.createUrl" :href="props.createUrl">

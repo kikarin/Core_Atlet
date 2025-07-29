@@ -244,7 +244,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
             ->toArray();
 
         // Query tenaga pendukung yang belum jadi peserta
-        $query = CaborKategoriTenagaPendukung::with('tenagaPendukung')
+        $query = CaborKategoriTenagaPendukung::with(['tenagaPendukung', 'jenisTenagaPendukung'])
             ->where('cabor_kategori_id', $caborKategoriId)
             ->whereNotIn('tenaga_pendukung_id', $usedTPIds);
 
@@ -265,15 +265,17 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         $data        = $result->items();
         $transformed = collect($data)->map(function ($item) {
             return [
-                'id'                    => $item->id,
-                'tenaga_pendukung_id'   => $item->tenaga_pendukung_id,
-                'tenaga_pendukung_nama' => $item->tenagaPendukung->nama          ?? '-',
-                'nik'                   => $item->tenagaPendukung->nik           ?? '-',
-                'jenis_kelamin'         => $item->tenagaPendukung->jenis_kelamin ?? '-',
-                'tempat_lahir'          => $item->tenagaPendukung->tempat_lahir  ?? '-',
-                'tanggal_lahir'         => $item->tenagaPendukung->tanggal_lahir ?? '-',
-                'no_hp'                 => $item->tenagaPendukung->no_hp         ?? '-',
-                'foto'                  => $item->tenagaPendukung->foto          ?? null,
+                'id'                        => $item->id,
+                'tenaga_pendukung_id'       => $item->tenaga_pendukung_id,
+                'tenaga_pendukung_nama'     => $item->tenagaPendukung->nama          ?? '-',
+                'nik'                       => $item->tenagaPendukung->nik           ?? '-',
+                'jenis_kelamin'             => $item->tenagaPendukung->jenis_kelamin ?? '-',
+                'tempat_lahir'              => $item->tenagaPendukung->tempat_lahir  ?? '-',
+                'tanggal_lahir'             => $item->tenagaPendukung->tanggal_lahir ?? '-',
+                'tanggal_bergabung'         => $item->tenagaPendukung->tanggal_bergabung ?? '-',
+                'no_hp'                     => $item->tenagaPendukung->no_hp         ?? '-',
+                'foto'                      => $item->tenagaPendukung->foto          ?? null,
+                'jenis_tenaga_pendukung_nama' => $item->jenisTenagaPendukung?->nama   ?? '-',
             ];
         });
 

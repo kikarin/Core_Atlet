@@ -128,7 +128,7 @@ const handleSave = async () => {
     <AppLayout
         :breadcrumbs="[
             { title: 'Pemeriksaan', href: '/pemeriksaan' },
-            { title: 'Kelola Parameter Peserta', href: '#' },
+            { title: 'Pemetaan Parameter Peserta', href: '#' },
         ]"
     >
         <div class="min-h-screen w-full bg-gray-100 pt-4 dark:bg-neutral-950">

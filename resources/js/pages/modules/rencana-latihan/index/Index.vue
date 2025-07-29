@@ -174,7 +174,7 @@ const confirmSetKehadiran = async () => {
             :columns="columns"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             :on-delete-row="deleteRow"
             :show-import="false"
@@ -186,6 +186,8 @@ const confirmSetKehadiran = async () => {
             :hide-pagination="true"
             :on-toast="toast"
             :showKehadiran="true"
+            :showKelola="true"
+            :kelolaUrl="`/program-latihan/${programId}/rencana-latihan/${rencanaId}/kelola/${jenisPeserta}`"
             @setKehadiran="handleSetKehadiran"
         >
             <template #header-extra>

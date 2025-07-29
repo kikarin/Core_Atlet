@@ -252,7 +252,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
             ->toArray();
 
         // Query pelatih yang belum jadi peserta
-        $query = CaborKategoriPelatih::with('pelatih')
+        $query = CaborKategoriPelatih::with(['pelatih', 'jenisPelatih'])
             ->where('cabor_kategori_id', $caborKategoriId)
             ->whereNotIn('pelatih_id', $usedPelatihIds);
 
@@ -273,15 +273,17 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         $data        = $result->items();
         $transformed = collect($data)->map(function ($item) {
             return [
-                'id'            => $item->id,
-                'pelatih_id'    => $item->pelatih_id,
-                'pelatih_nama'  => $item->pelatih->nama          ?? '-',
-                'nik'           => $item->pelatih->nik           ?? '-',
-                'jenis_kelamin' => $item->pelatih->jenis_kelamin ?? '-',
-                'tempat_lahir'  => $item->pelatih->tempat_lahir  ?? '-',
-                'tanggal_lahir' => $item->pelatih->tanggal_lahir ?? '-',
-                'no_hp'         => $item->pelatih->no_hp         ?? '-',
-                'foto'          => $item->pelatih->foto          ?? null,
+                'id'                => $item->id,
+                'pelatih_id'        => $item->pelatih_id,
+                'pelatih_nama'      => $item->pelatih->nama          ?? '-',
+                'nik'               => $item->pelatih->nik           ?? '-',
+                'jenis_kelamin'     => $item->pelatih->jenis_kelamin ?? '-',
+                'tempat_lahir'      => $item->pelatih->tempat_lahir  ?? '-',
+                'tanggal_lahir'     => $item->pelatih->tanggal_lahir ?? '-',
+                'tanggal_bergabung' => $item->pelatih->tanggal_bergabung ?? '-',
+                'no_hp'             => $item->pelatih->no_hp         ?? '-',
+                'foto'              => $item->pelatih->foto          ?? null,
+                'jenis_pelatih_nama' => $item->jenisPelatih?->nama   ?? '-',
             ];
         });
 

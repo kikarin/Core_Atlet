@@ -102,6 +102,15 @@ const handleSave = (form: any) => {
 const columnsAtlet = [
     { key: 'nama', label: 'Nama' },
     {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
+    { key: 'posisi_atlet_nama', label: 'Posisi' },
+    {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',
         format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
@@ -121,6 +130,14 @@ const columnsAtlet = [
 ];
 const columnsPelatih = [
     { key: 'nama', label: 'Nama' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
     { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
     {
         key: 'jenis_kelamin',
@@ -142,6 +159,14 @@ const columnsPelatih = [
 ];
 const columnsTenagaPendukung = [
     { key: 'nama', label: 'Nama' },
+    {
+        key: 'foto',
+        label: 'Foto',
+        format: (row: any) =>
+            row.foto
+                ? `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+    },
     { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
     {
         key: 'jenis_kelamin',

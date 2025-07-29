@@ -9,7 +9,7 @@ const props = defineProps<{
     mode: 'create' | 'edit';
     initialData?: any;
     pemeriksaan: any;
-    jenisPeserta?: string; // Tidak dipakai lagi, ambil dari query
+    jenisPeserta?: string; 
 }>();
 
 console.log('pemeriksaan:', props.pemeriksaan);
@@ -17,6 +17,35 @@ console.log('cabor_kategori_id:', props.pemeriksaan?.cabor_kategori_id);
 
 usePage();
 const jenisPeserta = computed(() => props.jenisPeserta || 'atlet');
+
+const calculateAge = (birthDate: string | null | undefined): number | string => {
+    if (!birthDate) return '-';
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+};
+
+function getLamaBergabung(tanggalBergabung: string) {
+    if (!tanggalBergabung) return '-';
+    const start = new Date(tanggalBergabung);
+    const now = new Date();
+    let tahun = now.getFullYear() - start.getFullYear();
+    let bulan = now.getMonth() - start.getMonth();
+    if (bulan < 0) {
+        tahun--;
+        bulan += 12;
+    }
+    let result = '';
+    if (tahun > 0) result += tahun + ' tahun ';
+    if (bulan > 0) result += bulan + ' bulan';
+    if (!result) result = 'Kurang dari 1 bulan';
+    return result.trim();
+}
 
 // Mapping config untuk SelectTableMultiple
 const pesertaConfig = computed(() => {
@@ -126,7 +155,6 @@ const handleSave = (form: any) => {
     });
 };
 
-// Columns yang disesuaikan dengan response API
 const columns = computed(() => {
     const baseColumns = [
         {
@@ -142,30 +170,37 @@ const columns = computed(() => {
             label: 'Jenis Kelamin',
             format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
         },
-        { key: 'tempat_lahir', label: 'Tempat Lahir' },
         {
-            key: 'tanggal_lahir',
-            label: 'Tanggal Lahir',
-            format: (row: any) =>
-                row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+            key: 'usia',
+            label: 'Usia',
+            format: (row: any) => {
+                return calculateAge(row.tanggal_lahir);
+            },
         },
-        { key: 'no_hp', label: 'No HP' },
+        {
+            key: 'lama_bergabung',
+            label: 'Lama Bergabung',
+            format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
+        },
     ];
 
     if (jenisPeserta.value === 'pelatih') {
         return [
             { key: 'pelatih_nama', label: 'Nama Pelatih' },
+            { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
             ...baseColumns
         ];
     } else if (jenisPeserta.value === 'tenaga-pendukung') {
         return [
             { key: 'tenaga_pendukung_nama', label: 'Nama Tenaga Pendukung' },
+            { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
             ...baseColumns
         ];
     } else {
         // Atlet
         return [
             { key: 'atlet_nama', label: 'Nama Atlet' },
+            { key: 'posisi_atlet_nama', label: 'Posisi' },
             ...baseColumns
         ];
     }

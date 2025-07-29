@@ -48,6 +48,7 @@ use App\Http\Controllers\ProgramLatihanController;
 use App\Http\Controllers\TargetLatihanController;
 use App\Http\Controllers\RencanaLatihanController;
 use App\Http\Controllers\RencanaLatihanPesertaController;
+use App\Http\Controllers\RencanaLatihanKelolaController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PemeriksaanParameterController;
 use App\Http\Controllers\PemeriksaanPesertaController;
@@ -385,6 +386,11 @@ Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [Rencana
 Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified']);
 Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified']);
 Route::post('/rencana-latihan/{rencana}/peserta/{jenis}/set-kehadiran', [RencanaLatihanPesertaController::class, 'setKehadiran'])->middleware(['auth', 'verified']);
+
+// Kelola Pemetaan Rencana Latihan
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}', [RencanaLatihanKelolaController::class, 'index'])->middleware(['auth', 'verified']);
+Route::post('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}/bulk-update', [RencanaLatihanKelolaController::class, 'bulkUpdate'])->middleware(['auth', 'verified']);
+Route::get('/api/rencana-latihan/{rencana_id}/target-mapping', [RencanaLatihanKelolaController::class, 'getTargetMapping'])->middleware(['auth', 'verified']);
 
 // =====================
 // DATA MASTER (CRUD)

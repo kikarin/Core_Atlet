@@ -23,7 +23,6 @@ import {
     HeartHandshake,
     Stethoscope,
     ClipboardCheck,
-    Users
 } from 'lucide-vue-next';
 
 const props = defineProps<{
