@@ -108,7 +108,13 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
-        return redirect()->route('cabor-kategori-tenaga-pendukung.index')->with('success', 'Cabor Kategori Tenaga Pendukung berhasil diperbarui!');
+
+        $item = $this->repository->getById($id);
+        $kategoriId = $item->cabor_kategori_id ?? null;
+        if ($kategoriId) {
+            return redirect()->route('cabor-kategori-tenaga-pendukung.tenaga-by-kategori', $kategoriId)
+                ->with('success', 'Jenis tenaga pendukung berhasil diperbarui!');
+        }
     }
 
     public function destroy($id)

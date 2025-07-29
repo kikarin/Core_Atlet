@@ -12,6 +12,10 @@ class CategoryPermissionSeeder extends Seeder
     {
         $categoryPermissions = [
             [
+                'name'       => 'Dashboard',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name'       => 'Users',
                 'permission' => 'CRUD',
             ],

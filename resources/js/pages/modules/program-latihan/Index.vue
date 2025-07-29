@@ -8,6 +8,35 @@ import BadgeGroup from '../components/BadgeGroup.vue';
 
 const breadcrumbs = [{ title: 'Program Latihan', href: '/program-latihan' }];
 
+const formatPeriode = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return '-';
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    const startDay = start.getDate();
+    const startMonth = start.toLocaleDateString('id-ID', { month: 'long' });
+    const startYear = start.getFullYear();
+    
+    const endDay = end.getDate();
+    const endMonth = end.toLocaleDateString('id-ID', { month: 'long' });
+    const endYear = end.getFullYear();
+    
+    // Jika tahun sama
+    if (startYear === endYear) {
+        // Jika bulan sama
+        if (startMonth === endMonth) {
+            return `${startDay}-${endDay} ${startMonth} ${startYear}`;
+        } else {
+            // Jika bulan berbeda
+            return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
+        }
+    } else {
+        // Jika tahun berbeda
+        return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+    }
+};
+
 const columns = [
     { key: 'nama_program', label: 'Nama Program' },
     { key: 'rencana_latihan', label: 'Rencana Latihan' },
@@ -20,9 +49,7 @@ const columns = [
     {
         key: 'periode',
         label: 'Periode',
-        format: (row: any) => {
-            return row.periode_mulai && row.periode_selesai ? `${row.periode_mulai} s/d ${row.periode_selesai}` : '-';
-        },
+        format: (row: any) => formatPeriode(row.periode_mulai, row.periode_selesai),
     },
     { key: 'target_individu', label: 'Target Individu' },
     { key: 'target_kelompok', label: 'Target Kelompok' },
@@ -83,7 +110,7 @@ const deleteProgram = async (row: any) => {
             :create-url="'/program-latihan/create'"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             api-endpoint="/api/program-latihan"
             ref="pageIndex"
@@ -95,7 +122,6 @@ const deleteProgram = async (row: any) => {
                 <BadgeGroup
                     :badges="[
                         {
-                            label: 'Rencana Latihan',
                             value: row.jumlah_rencana_latihan || 0,
                             colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
@@ -108,7 +134,6 @@ const deleteProgram = async (row: any) => {
                 <BadgeGroup
                     :badges="[
                         {
-                            label: 'Target Individu',
                             value: row.jumlah_target_individu || 0,
                             colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu`),
@@ -121,7 +146,6 @@ const deleteProgram = async (row: any) => {
                 <BadgeGroup
                     :badges="[
                         {
-                            label: 'Target Kelompok',
                             value: row.jumlah_target_kelompok || 0,
                             colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),

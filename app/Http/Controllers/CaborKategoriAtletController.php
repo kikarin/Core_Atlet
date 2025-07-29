@@ -108,7 +108,13 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
-        return redirect()->route('cabor-kategori-atlet.index')->with('success', 'Cabor Kategori Atlet berhasil diperbarui!');
+
+        $item = $this->repository->getById($id);
+        $kategoriId = $item->cabor_kategori_id ?? null;
+        if ($kategoriId) {
+            return redirect()->route('cabor-kategori-atlet.atlet-by-kategori', $kategoriId)
+                ->with('success', 'Posisi atlet berhasil diperbarui!');
+        }
     }
 
     public function destroy($id)

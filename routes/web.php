@@ -53,6 +53,7 @@ use App\Http\Controllers\PemeriksaanParameterController;
 use App\Http\Controllers\PemeriksaanPesertaController;
 use App\Http\Controllers\PemeriksaanPesertaParameterController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
+use App\Http\Controllers\DashboardController;
 
 // =====================
 // ROUTE UTAMA
@@ -61,9 +62,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // =====================
 // API MASTER (untuk datatable & select)

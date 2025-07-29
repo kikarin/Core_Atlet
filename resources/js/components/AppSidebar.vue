@@ -48,6 +48,8 @@ const iconMap: Record<string, any> = {
     ClipboardCheck: LucideIcons.ClipboardCheck,
     HeartHandshake: LucideIcons.HeartHandshake,
     HandHeart: LucideIcons.HandHeart,
+    Ungroup: LucideIcons.Ungroup,
+    Stethoscope: LucideIcons.Stethoscope,
 };
 
 const fetchMenus = async () => {

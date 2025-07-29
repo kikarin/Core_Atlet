@@ -115,6 +115,7 @@ class CaborKategoriAtletRepository
                 'atlet_id'          => $record->atlet_id,
                 'nama'              => $record->atlet->nama ?? '-',
                 'atlet_nama'        => $record->atlet->nama ?? '-',
+                'posisi_atlet_id'   => $record->posisi_atlet_id,
                 'is_active'         => $record->is_active,
                 'is_active_badge'   => $record->is_active_badge,
                 'created_at'        => $record->created_at,
@@ -247,13 +248,24 @@ class CaborKategoriAtletRepository
 
     public function validateRequest($request)
     {
-        $rules = [
-            'cabor_id'          => 'required|exists:cabor,id',
-            'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-            'atlet_ids'         => 'required|array|min:1',
-            'atlet_ids.*'       => 'required|exists:atlets,id',
-            'is_active'         => 'nullable|in:0,1',
-        ];
+        $rules = [];
+
+        if ($request->isMethod('patch') || $request->isMethod('put')) {
+            // Untuk update, hanya validasi posisi_atlet_id
+            $rules = [
+                'posisi_atlet_id' => 'required|exists:mst_posisi_atlet,id',
+            ];
+        } else {
+            // Untuk create/store, validasi semua field
+            $rules = [
+                'cabor_id'          => 'required|exists:cabor,id',
+                'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
+                'atlet_ids'         => 'required|array|min:1',
+                'atlet_ids.*'       => 'required|exists:atlets,id',
+                'is_active'         => 'nullable|in:0,1',
+                'posisi_atlet_id'   => 'required|exists:mst_posisi_atlet,id',
+            ];
+        }
 
         $messages = [
             'cabor_id.required'          => 'Cabor harus dipilih.',
@@ -265,6 +277,8 @@ class CaborKategoriAtletRepository
             'atlet_ids.min'              => 'Atlet harus dipilih minimal 1.',
             'atlet_ids.*.required'       => 'Atlet tidak boleh kosong.',
             'atlet_ids.*.exists'         => 'Atlet yang dipilih tidak valid.',
+            'posisi_atlet_id.required'   => 'Posisi atlet harus dipilih.',
+            'posisi_atlet_id.exists'     => 'Posisi atlet yang dipilih tidak valid.',
         ];
 
         return $request->validate($rules, $messages);

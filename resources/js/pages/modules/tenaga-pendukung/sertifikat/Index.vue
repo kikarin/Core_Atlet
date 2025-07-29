@@ -202,32 +202,45 @@ const idsToDelete = ref<number[]>([]);
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-4">
+        <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950">
+            <div class="container mx-auto">
+                <div class="mx-auto px-4 py-4">
+                    <!-- Tabs -->
+                    <div class="mb-4">
             <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'sertifikat-data'" />
-            <HeaderActions
+                    </div>
+                    
+                    <HeaderActions
                 title="Sertifikat"
                 :create-url="`/tenaga-pendukung/${props.tenagaPendukungId}/sertifikat/create`"
                 :selected="selected"
                 :on-delete-selected="deleteSelected"
             />
-            <DataTable
-                :columns="columns"
-                :rows="rows"
-                v-model:selected="selected"
-                :total="total"
-                :search="search"
-                :sort="sort"
-                :page="page"
-                :per-page="perPage"
-                :loading="loading"
-                :actions="actions"
-                @update:search="handleSearchDebounced"
-                @update:sort="handleSort"
-                @update:page="(val) => handleSearch({ page: val })"
-                @update:per-page="(val) => handleSearch({ limit: Number(val), page: 1 })"
-                @deleted="fetchData()"
-            />
+
+                </div>
+                
+                <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
+                    <DataTable
+                        :columns="columns"
+                        :rows="rows"
+                        v-model:selected="selected"
+                        :total="total"
+                        :search="search"
+                        :sort="sort"
+                        :page="page"
+                        :per-page="perPage"
+                        :loading="loading"
+                        :actions="actions"
+                        @update:search="handleSearchDebounced"
+                        @update:sort="handleSort"
+                        @update:page="(val: number) => handleSearch({ page: val })"
+                        @update:per-page="(val: number) => handleSearch({ limit: Number(val), page: 1 })"
+                        @deleted="fetchData()"
+                    />
+                </div>
+            </div>
         </div>
+
 
         <!-- Delete Confirmation Dialog -->
         <Dialog v-model:open="showDeleteDialog">

@@ -240,21 +240,21 @@ fetchJenisPelatih();
                 <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                        <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
-                        <Badge variant="secondary">{{ caborKategori.nama }}</Badge>
+                        <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
+                        <span class="text-sm font-medium">{{ caborKategori.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                        <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ caborKategori.cabor.nama }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Jenis Pelatih Selection -->
-            <div class="space-y-2">
-                <label class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"> Jenis Pelatih * </label>
-                <Select :model-value="selectedJenisPelatihId" @update:model-value="(val: any) => (selectedJenisPelatihId = val as number | null)">
-                    <SelectTrigger class="w-full">
+            <div class="flex items-center gap-4">
+                <span class="text-muted-foreground text-sm font-medium"> Jenis Pelatih: </span>
+                <Select :model-value="selectedJenisPelatihId" @update:model-value="(val: any) => (selectedJenisPelatihId = val as number | null)" class="w-64">
+                    <SelectTrigger>
                         <SelectValue placeholder="Pilih Jenis Pelatih" />
                     </SelectTrigger>
                     <SelectContent>

@@ -235,13 +235,23 @@ class CaborKategoriPelatihRepository
 
     public function validateRequest($request)
     {
-        $rules = [
-            'cabor_id'          => 'required|exists:cabor,id',
-            'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-            'pelatih_ids'       => 'required|array|min:1',
-            'pelatih_ids.*'     => 'required|exists:pelatihs,id',
-            'jenis_pelatih_id'  => 'required|exists:mst_jenis_pelatih,id',
-        ];
+        $rules = [];
+
+        if ($request->isMethod('patch') || $request->isMethod('put')) {
+            // Untuk update, hanya validasi jenis_pelatih_id
+            $rules = [
+                'jenis_pelatih_id' => 'required|exists:mst_jenis_pelatih,id',
+            ];
+        } else {
+            // Untuk create/store, validasi semua field
+            $rules = [
+                'cabor_id'          => 'required|exists:cabor,id',
+                'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
+                'pelatih_ids'       => 'required|array|min:1',
+                'pelatih_ids.*'     => 'required|exists:pelatihs,id',
+                'jenis_pelatih_id'  => 'required|exists:mst_jenis_pelatih,id',
+            ];
+        }
 
         $messages = [
             'cabor_id.required'          => 'Cabor harus dipilih.',

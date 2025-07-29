@@ -28,49 +28,73 @@ const breadcrumbs = [
     { title: `Peserta (${jenisLabel[jenisPeserta] || jenisPeserta})`, href: '#' },
 ];
 
-const columns = [
-    { key: 'nama', label: 'Nama' },
-    { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-' },
-    {
-        key: 'keterangan',
-        label: 'Keterangan',
-        format: (row: any) => row.keterangan || '-',
-    },
-    {
-        key: 'foto',
-        label: 'Foto',
-        format: (row: any) => {
-            if (row.foto) {
-                return `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')">
+const columns = computed(() => {
+    const baseColumns = [
+        { key: 'nama', label: 'Nama' },
+        { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-' },
+        {
+            key: 'keterangan',
+            label: 'Keterangan',
+            format: (row: any) => row.keterangan || '-',
+        },
+        {
+            key: 'foto',
+            label: 'Foto',
+            format: (row: any) => {
+                if (row.foto) {
+                    return `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')">
           <img src='${row.foto}' alt='Foto ${row.nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' />
         </div>`;
-            }
-            return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
+                }
+                return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
+            },
         },
-    },
-    { key: 'posisi_atlet_nama', label: 'Posisi', format: (row: any) => row.posisi_atlet_nama || '-' },
-    {
-        key: 'jenis_kelamin',
-        label: 'Jenis Kelamin',
-        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
-    },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
-    {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) =>
-            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
-    },
-    { key: 'no_hp', label: 'No HP' },
-    {
-        key: 'kategori_is_active',
-        label: 'Status',
-        format: (row: any) =>
-            row.kategori_is_active == 1
-                ? '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aktif</span>'
-                : '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Nonaktif</span>',
-    },
-];
+        {
+            key: 'jenis_kelamin',
+            label: 'Jenis Kelamin',
+            format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+        },
+        { key: 'tempat_lahir', label: 'Tempat Lahir' },
+        {
+            key: 'tanggal_lahir',
+            label: 'Tanggal Lahir',
+            format: (row: any) =>
+                row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+        },
+        { key: 'no_hp', label: 'No HP' },
+        {
+            key: 'kategori_is_active',
+            label: 'Status',
+            format: (row: any) =>
+                row.kategori_is_active == 1
+                    ? '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aktif</span>'
+                    : '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Nonaktif</span>',
+        },
+    ];
+
+    // Tambahkan kolom spesifik sesuai jenis peserta
+    if (jenisPeserta === 'atlet') {
+        return [
+            { key: 'nama', label: 'Nama' },
+            { key: 'posisi_atlet_nama', label: 'Posisi', format: (row: any) => row.posisi_atlet_nama || '-' },
+            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+        ];
+    } else if (jenisPeserta === 'pelatih') {
+        return [
+            { key: 'nama', label: 'Nama' },
+            { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih', format: (row: any) => row.jenis_pelatih_nama || '-' },
+            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+        ];
+    } else if (jenisPeserta === 'tenaga-pendukung') {
+        return [
+            { key: 'nama', label: 'Nama' },
+            { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung', format: (row: any) => row.jenis_tenaga_pendukung_nama || '-' },
+            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+        ];
+    }
+
+    return baseColumns;
+});
 
 const selected = ref<number[]>([]);
 const pageIndex = ref();

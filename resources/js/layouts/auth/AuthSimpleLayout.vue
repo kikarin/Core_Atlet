@@ -14,8 +14,8 @@ defineProps<{
             <div class="flex flex-col gap-8">
                 <div class="flex flex-col items-center gap-4">
                     <Link :href="route('home')" class="flex flex-col items-center gap-2 font-medium">
-                        <div class="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                            <AppLogoIcon class="size-9 fill-current text-[var(--foreground)] dark:text-white" />
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-blue-600 p-2">
+                            <AppLogoIcon class="size-8 fill-white" />
                         </div>
                         <span class="sr-only">{{ title }}</span>
                     </Link>
@@ -24,7 +24,11 @@ defineProps<{
                         <p class="text-muted-foreground text-center text-sm">{{ description }}</p>
                     </div>
                 </div>
-                <slot />
+                
+                <!-- Form container with simple background -->
+                <div class="rounded-xl bg-card border border-border shadow-sm p-6">
+                    <slot />
+                </div>
             </div>
         </div>
     </div>

@@ -238,26 +238,26 @@ fetchJenisTenagaPendukung();
                 <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                        <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
-                        <Badge variant="secondary">{{ caborKategori.nama }}</Badge>
+                        <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
+                        <span class="text-sm font-medium">{{ caborKategori.nama }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
-                        <Badge variant="outline">{{ caborKategori.cabor.nama }}</Badge>
+                        <span class="text-sm font-medium">{{ caborKategori.cabor.nama }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Jenis Tenaga Pendukung Selection -->
-            <div class="space-y-2">
-                <label class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Jenis Tenaga Pendukung *
-                </label>
+            <div class="flex items-center gap-4">
+                <span class="text-muted-foreground text-sm font-medium">
+                    Jenis Tenaga Pendukung:
+                </span>
                 <Select
                     :model-value="selectedJenisTenagaPendukungId"
                     @update:model-value="(val: any) => (selectedJenisTenagaPendukungId = val as number | null)"
                 >
-                    <SelectTrigger class="w-full">
+                    <SelectTrigger>
                         <SelectValue placeholder="Pilih Jenis Tenaga Pendukung" />
                     </SelectTrigger>
                     <SelectContent>

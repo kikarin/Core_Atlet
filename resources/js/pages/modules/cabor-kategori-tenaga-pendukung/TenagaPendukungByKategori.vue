@@ -39,6 +39,8 @@ const columns = [
             return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
         },
     },
+    { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
+
     {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',
@@ -60,7 +62,6 @@ const columns = [
                 : '-';
         },
     },
-    { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
     {
         key: 'is_active',
         label: 'Status',
@@ -100,6 +101,10 @@ const actions = (row: any) => [
     {
         label: 'Detail Tenaga Pendukung',
         onClick: () => router.visit(`/tenaga-pendukung/${row.tenaga_pendukung_id}`),
+    },
+    {
+        label: 'Edit Jenis Tenaga Pendukung',
+        onClick: () => router.visit(`/cabor-kategori-tenaga-pendukung/${row.id}/edit`),
     },
     {
         label: 'Hapus',
@@ -155,7 +160,7 @@ const deleteTenagaPendukung = async (row: any) => {
             :columns="columns"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             :api-endpoint="`/api/cabor-kategori-tenaga-pendukung?cabor_kategori_id=${caborKategori.id}`"
             ref="pageIndex"
@@ -172,7 +177,7 @@ const deleteTenagaPendukung = async (row: any) => {
                     <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
-                            <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
+                            <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
                             <span class="text-sm font-medium">{{ caborKategori.nama }}</span>
                         </div>
                         <div class="flex items-center gap-2">

@@ -102,6 +102,10 @@ const actions = (row: any) => [
         onClick: () => router.visit(`/atlet/${row.atlet_id}`),
     },
     {
+        label: 'Edit Posisi',
+        onClick: () => router.visit(`/cabor-kategori-atlet/${row.id}/edit`),
+    },
+    {
         label: 'Hapus',
         onClick: () => {
             rowToDelete.value = row;
@@ -155,7 +159,7 @@ const deleteAtlet = async (row: any) => {
             :columns="columns"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             :api-endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${caborKategori.id}`"
             ref="pageIndex"
@@ -171,7 +175,7 @@ const deleteAtlet = async (row: any) => {
                     <h3 class="mb-2 text-lg font-semibold">Informasi Kategori</h3>
                     <div class="space-y-2">
                         <div class="flex items-center gap-2">
-                            <span class="text-muted-foreground text-sm font-medium">Nama Kategori:</span>
+                            <span class="text-muted-foreground text-sm font-medium">Kategori:</span>
                             <span class="text-sm font-medium">{{ caborKategori.nama }}</span>
                         </div>
                         <div class="flex items-center gap-2">

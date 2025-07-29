@@ -9,6 +9,8 @@ use App\Models\Atlet;
 use App\Models\Pelatih;
 use App\Models\TenagaPendukung;
 use App\Models\MstPosisiAtlet;
+use App\Models\CaborKategoriPelatih;
+use App\Models\CaborKategoriTenagaPendukung;
 
 class RencanaLatihanPesertaController extends Controller
 {
@@ -55,11 +57,18 @@ class RencanaLatihanPesertaController extends Controller
                     'rencana_latihan_atlet.keterangan as keterangan'
                 );
         } elseif ($jenis_peserta === 'pelatih') {
+            $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
             $query = Pelatih::query()
                 ->join('rencana_latihan_pelatih', function ($join) use ($rencana_id) {
                     $join->on('pelatihs.id', '=', 'rencana_latihan_pelatih.pelatih_id')
                          ->where('rencana_latihan_pelatih.rencana_latihan_id', $rencana_id);
                 })
+                ->leftJoin('cabor_kategori_pelatih', function ($join) use ($caborKategoriId) {
+                    $join->on('pelatihs.id', '=', 'cabor_kategori_pelatih.pelatih_id')
+                         ->where('cabor_kategori_pelatih.cabor_kategori_id', $caborKategoriId)
+                         ->whereNull('cabor_kategori_pelatih.deleted_at');
+                })
+                ->leftJoin('mst_jenis_pelatih', 'cabor_kategori_pelatih.jenis_pelatih_id', '=', 'mst_jenis_pelatih.id')
                 ->select(
                     'pelatihs.id',
                     'pelatihs.nama',
@@ -68,16 +77,24 @@ class RencanaLatihanPesertaController extends Controller
                     'pelatihs.tempat_lahir',
                     'pelatihs.tanggal_lahir',
                     'pelatihs.no_hp',
-                    'pelatihs.is_active',
+                    'cabor_kategori_pelatih.is_active as kategori_is_active',
+                    'mst_jenis_pelatih.nama as jenis_pelatih_nama',
                     'rencana_latihan_pelatih.kehadiran as kehadiran',
                     'rencana_latihan_pelatih.keterangan as keterangan'
                 );
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
+            $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
             $query = TenagaPendukung::query()
                 ->join('rencana_latihan_tenaga_pendukung', function ($join) use ($rencana_id) {
                     $join->on('tenaga_pendukungs.id', '=', 'rencana_latihan_tenaga_pendukung.tenaga_pendukung_id')
                          ->where('rencana_latihan_tenaga_pendukung.rencana_latihan_id', $rencana_id);
                 })
+                ->leftJoin('cabor_kategori_tenaga_pendukung', function ($join) use ($caborKategoriId) {
+                    $join->on('tenaga_pendukungs.id', '=', 'cabor_kategori_tenaga_pendukung.tenaga_pendukung_id')
+                         ->where('cabor_kategori_tenaga_pendukung.cabor_kategori_id', $caborKategoriId)
+                         ->whereNull('cabor_kategori_tenaga_pendukung.deleted_at');
+                })
+                ->leftJoin('mst_jenis_tenaga_pendukung', 'cabor_kategori_tenaga_pendukung.jenis_tenaga_pendukung_id', '=', 'mst_jenis_tenaga_pendukung.id')
                 ->select(
                     'tenaga_pendukungs.id',
                     'tenaga_pendukungs.nama',
@@ -86,7 +103,8 @@ class RencanaLatihanPesertaController extends Controller
                     'tenaga_pendukungs.tempat_lahir',
                     'tenaga_pendukungs.tanggal_lahir',
                     'tenaga_pendukungs.no_hp',
-                    'tenaga_pendukungs.is_active',
+                    'cabor_kategori_tenaga_pendukung.is_active as kategori_is_active',
+                    'mst_jenis_tenaga_pendukung.nama as jenis_tenaga_pendukung_nama',
                     'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran',
                     'rencana_latihan_tenaga_pendukung.keterangan as keterangan'
                 );

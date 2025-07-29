@@ -21,17 +21,23 @@ class CaborKategoriAtletRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'cabor_id'          => 'required|exists:cabor,id',
-            'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-            'atlet_ids'         => 'required|array|min:1',
-            'atlet_ids.*'       => 'required|exists:atlets,id',
-            'is_active'         => 'required|boolean',
-            'posisi_atlet_id'   => 'required|exists:mst_posisi_atlet,id',
-        ];
+        $rules = [];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
-            $rules['id'] = 'required';
+            // Untuk update, hanya validasi posisi_atlet_id
+            $rules = [
+                'posisi_atlet_id' => 'required|exists:mst_posisi_atlet,id',
+            ];
+        } else {
+            // Untuk create/store, validasi semua field
+            $rules = [
+                'cabor_id'          => 'required|exists:cabor,id',
+                'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
+                'atlet_ids'         => 'required|array|min:1',
+                'atlet_ids.*'       => 'required|exists:atlets,id',
+                'is_active'         => 'required|boolean',
+                'posisi_atlet_id'   => 'required|exists:mst_posisi_atlet,id',
+            ];
         }
 
         return $rules;

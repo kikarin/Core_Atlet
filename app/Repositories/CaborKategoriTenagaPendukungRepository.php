@@ -218,13 +218,24 @@ class CaborKategoriTenagaPendukungRepository
 
     public function validateRequest($request)
     {
-        $rules = [
-            'cabor_id'                  => 'required|exists:cabor,id',
-            'cabor_kategori_id'         => 'required|exists:cabor_kategori,id',
-            'tenaga_pendukung_ids'      => 'required|array|min:1',
-            'tenaga_pendukung_ids.*'    => 'required|exists:tenaga_pendukungs,id',
-            'jenis_tenaga_pendukung_id' => 'required|exists:mst_jenis_tenaga_pendukung,id',
-        ];
+        $rules = [];
+
+        if ($request->isMethod('patch') || $request->isMethod('put')) {
+            // Untuk update, hanya validasi jenis_tenaga_pendukung_id
+            $rules = [
+                'jenis_tenaga_pendukung_id' => 'required|exists:mst_jenis_tenaga_pendukung,id',
+            ];
+        } else {
+            // Untuk create/store, validasi semua field
+            $rules = [
+                'cabor_id'                  => 'required|exists:cabor,id',
+                'cabor_kategori_id'         => 'required|exists:cabor_kategori,id',
+                'tenaga_pendukung_ids'      => 'required|array|min:1',
+                'tenaga_pendukung_ids.*'    => 'required|exists:tenaga_pendukungs,id',
+                'jenis_tenaga_pendukung_id' => 'required|exists:mst_jenis_tenaga_pendukung,id',
+            ];
+        }
+
         $messages = [
             'cabor_id.required'                  => 'Cabor harus dipilih.',
             'cabor_id.exists'                    => 'Cabor yang dipilih tidak valid.',
@@ -238,6 +249,7 @@ class CaborKategoriTenagaPendukungRepository
             'jenis_tenaga_pendukung_id.required' => 'Jenis tenaga pendukung harus dipilih.',
             'jenis_tenaga_pendukung_id.exists'   => 'Jenis tenaga pendukung yang dipilih tidak valid.',
         ];
+
         return $request->validate($rules, $messages);
     }
 

@@ -126,30 +126,50 @@ const handleSave = (form: any) => {
     });
 };
 
-const columns = [
-    {
-        key: 'foto',
-        label: 'Foto',
-        format: (row: any) =>
-            row.foto
-                ? `<div class='cursor-pointer' onclick=\"window.open('${row.foto}', '_blank')\"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
-                : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
-    },
-    { key: 'nama', label: 'Nama' },
-    {
-        key: 'jenis_kelamin',
-        label: 'Jenis Kelamin',
-        format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
-    },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
-    {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) =>
-            row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
-    },
-    { key: 'no_hp', label: 'No HP' },
-];
+// Columns yang disesuaikan dengan response API
+const columns = computed(() => {
+    const baseColumns = [
+        {
+            key: 'foto',
+            label: 'Foto',
+            format: (row: any) =>
+                row.foto
+                    ? `<div class='cursor-pointer' onclick=\"window.open('${row.foto}', '_blank')\"><img src='${row.foto}' alt='Foto' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' /></div>`
+                    : "<div class='w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs'>No</div>",
+        },
+        {
+            key: 'jenis_kelamin',
+            label: 'Jenis Kelamin',
+            format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+        },
+        { key: 'tempat_lahir', label: 'Tempat Lahir' },
+        {
+            key: 'tanggal_lahir',
+            label: 'Tanggal Lahir',
+            format: (row: any) =>
+                row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+        },
+        { key: 'no_hp', label: 'No HP' },
+    ];
+
+    if (jenisPeserta.value === 'pelatih') {
+        return [
+            { key: 'pelatih_nama', label: 'Nama Pelatih' },
+            ...baseColumns
+        ];
+    } else if (jenisPeserta.value === 'tenaga-pendukung') {
+        return [
+            { key: 'tenaga_pendukung_nama', label: 'Nama Tenaga Pendukung' },
+            ...baseColumns
+        ];
+    } else {
+        // Atlet
+        return [
+            { key: 'atlet_nama', label: 'Nama Atlet' },
+            ...baseColumns
+        ];
+    }
+});
 </script>
 
 <template>
