@@ -10,13 +10,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class CaborKategori extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'cabor_kategori';
-    protected $guarded  = [];
+    protected $table = 'cabor_kategori';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'cabor_id',
         'nama',

@@ -14,10 +14,10 @@ class TenagaPendukungDokumenRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'tenaga_pendukung_id'       => 'required|exists:tenaga_pendukungs,id',
-            'jenis_dokumen_id'          => 'nullable|integer',
-            'nomor'                     => 'nullable|string|max:255',
-            'file'                      => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'tenaga_pendukung_id' => 'required|exists:tenaga_pendukungs,id',
+            'jenis_dokumen_id' => 'nullable|integer',
+            'nomor' => 'nullable|string|max:255',
+            'file' => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -31,10 +31,10 @@ class TenagaPendukungDokumenRequest extends FormRequest
     {
         return [
             'tenaga_pendukung_id.required' => 'ID Tenaga Pendukung wajib diisi.',
-            'tenaga_pendukung_id.exists'   => 'ID Tenaga Pendukung tidak valid.',
-            'jenis_dokumen_id.exists'      => 'Jenis dokumen tidak valid.',
-            'file.mimes'                   => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
-            'file.max'                     => 'Ukuran file maksimal 4MB.',
+            'tenaga_pendukung_id.exists' => 'ID Tenaga Pendukung tidak valid.',
+            'jenis_dokumen_id.exists' => 'Jenis dokumen tidak valid.',
+            'file.mimes' => 'Format file tidak didukung. Gunakan JPG, PNG, JPEG, PDF, atau WEBP.',
+            'file.max' => 'Ukuran file maksimal 4MB.',
         ];
     }
 
@@ -44,7 +44,7 @@ class TenagaPendukungDokumenRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('tenaga_pendukung_id') && $this->route('tenaga_pendukung_id')) {
+        if (! $this->has('tenaga_pendukung_id') && $this->route('tenaga_pendukung_id')) {
             $this->merge(['tenaga_pendukung_id' => $this->route('tenaga_pendukung_id')]);
         }
 

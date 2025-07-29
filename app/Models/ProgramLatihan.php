@@ -10,13 +10,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class ProgramLatihan extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'program_latihan';
-    protected $guarded  = [];
+    protected $table = 'program_latihan';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'cabor_id',
         'nama_program',

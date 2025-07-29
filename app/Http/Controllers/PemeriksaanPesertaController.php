@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeriksaanPesertaRequest;
-use App\Models\Pemeriksaan;
 use App\Models\Atlet;
 use App\Models\Pelatih;
-use App\Models\TenagaPendukung;
+use App\Models\Pemeriksaan;
+use App\Models\PemeriksaanPeserta;
 use App\Models\RefStatusPemeriksaan;
+use App\Models\TenagaPendukung;
 use App\Repositories\PemeriksaanPesertaRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
-use App\Models\PemeriksaanPeserta;
+use Inertia\Inertia;
 
 class PemeriksaanPesertaController extends Controller
 {
     use BaseTrait;
+
     private $repository;
 
     public function __construct(PemeriksaanPesertaRepository $repository)
@@ -29,9 +30,10 @@ class PemeriksaanPesertaController extends Controller
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -39,7 +41,6 @@ class PemeriksaanPesertaController extends Controller
             new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
         ];
     }
-
 
     public function index(Pemeriksaan $pemeriksaan)
     {
@@ -54,18 +55,18 @@ class PemeriksaanPesertaController extends Controller
             'peserta_type' => request('jenis_peserta', 'atlet'),
         ];
 
-        Log::info('Index method called with jenis_peserta: ' . request('jenis_peserta', 'atlet'));
+        Log::info('Index method called with jenis_peserta: '.request('jenis_peserta', 'atlet'));
 
         $items = $this->repository->customIndex($data);
 
-        Log::info('Items count: ' . count($items['data']));
+        Log::info('Items count: '.count($items['data']));
         if (count($items['data']) > 0) {
-            Log::info('First item: ' . json_encode($items['data'][0]));
+            Log::info('First item: '.json_encode($items['data'][0]));
         }
 
         return Inertia::render('modules/pemeriksaan-peserta/Index', [
-            'items'         => $items,
-            'pemeriksaan'   => $pemeriksaan,
+            'items' => $items,
+            'pemeriksaan' => $pemeriksaan,
             'jenis_peserta' => request('jenis_peserta', 'atlet'),
         ]);
     }
@@ -76,17 +77,17 @@ class PemeriksaanPesertaController extends Controller
         $ref_status_pemeriksaan = RefStatusPemeriksaan::all();
 
         return Inertia::render('modules/pemeriksaan-peserta/Create', [
-            'pemeriksaan'            => $pemeriksaan,
+            'pemeriksaan' => $pemeriksaan,
             'ref_status_pemeriksaan' => $ref_status_pemeriksaan,
         ]);
 
         return inertia('modules/pemeriksaan-peserta/Create', [
-            'pemeriksaan'            => $pemeriksaan,
-            'atlets'                 => $atlets,
-            'pelatihs'               => $pelatihs,
-            'tenagaPendukung'        => $tenagaPendukung,
+            'pemeriksaan' => $pemeriksaan,
+            'atlets' => $atlets,
+            'pelatihs' => $pelatihs,
+            'tenagaPendukung' => $tenagaPendukung,
             'ref_status_pemeriksaan' => $ref_status_pemeriksaan,
-            'jenis_peserta'          => $request->query('jenis_peserta', 'atlet'),
+            'jenis_peserta' => $request->query('jenis_peserta', 'atlet'),
         ]);
     }
 
@@ -95,6 +96,7 @@ class PemeriksaanPesertaController extends Controller
         $data = $request->validated();
 
         $this->repository->createMultiple($pemeriksaan, $data);
+
         return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan->id)->with('success', 'Peserta berhasil ditambahkan.');
     }
 
@@ -102,9 +104,10 @@ class PemeriksaanPesertaController extends Controller
     {
         $item = $this->repository->getDetailWithRelations($peserta_id);
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
+
         return inertia('modules/pemeriksaan-peserta/Show', [
             'pemeriksaan' => $pemeriksaan,
-            'item'        => $item,
+            'item' => $item,
         ]);
     }
 
@@ -112,30 +115,31 @@ class PemeriksaanPesertaController extends Controller
     {
         $item = $this->repository->getById($peserta_id);
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
-        $atlets                 = Atlet::where('is_active', true)->get(['id', 'nama']);
-        $pelatihs               = Pelatih::where('is_active', true)->get(['id', 'nama']);
-        $tenagaPendukung        = TenagaPendukung::where('is_active', true)->get(['id', 'nama']);
+        $atlets = Atlet::where('is_active', true)->get(['id', 'nama']);
+        $pelatihs = Pelatih::where('is_active', true)->get(['id', 'nama']);
+        $tenagaPendukung = TenagaPendukung::where('is_active', true)->get(['id', 'nama']);
         $ref_status_pemeriksaan = RefStatusPemeriksaan::all();
 
         return inertia('modules/pemeriksaan-peserta/Edit', [
-            'pemeriksaan'            => $pemeriksaan,
-            'item'                   => $item,
-            'atlets'                 => $atlets,
-            'pelatihs'               => $pelatihs,
-            'tenagaPendukung'        => $tenagaPendukung,
+            'pemeriksaan' => $pemeriksaan,
+            'item' => $item,
+            'atlets' => $atlets,
+            'pelatihs' => $pelatihs,
+            'tenagaPendukung' => $tenagaPendukung,
             'ref_status_pemeriksaan' => $ref_status_pemeriksaan,
         ]);
     }
 
     public function update(Request $request, $pemeriksaan, $peserta)
     {
-        $item                            = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaan)->where('id', $peserta)->firstOrFail();
+        $item = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaan)->where('id', $peserta)->firstOrFail();
         $item->ref_status_pemeriksaan_id = $request->input('ref_status_pemeriksaan_id');
-        $item->catatan_umum              = $request->input('catatan_umum');
+        $item->catatan_umum = $request->input('catatan_umum');
         $item->save();
         if ($request->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Peserta berhasil diperbarui']);
         }
+
         return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan)->with('success', 'Peserta berhasil diperbarui!');
     }
 
@@ -146,6 +150,7 @@ class PemeriksaanPesertaController extends Controller
         if (request()->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Peserta berhasil dihapus']);
         }
+
         return redirect()->route('pemeriksaan.peserta.index', $pemeriksaan)->with('success', 'Peserta berhasil dihapus!');
     }
 
@@ -153,9 +158,10 @@ class PemeriksaanPesertaController extends Controller
     {
         request()->merge([
             'pemeriksaan_id' => $pemeriksaan->id,
-            'jenis_peserta'  => $jenis_peserta,
+            'jenis_peserta' => $jenis_peserta,
         ]);
         $data = $this->repository->customIndex([]);
+
         return response()->json($data);
     }
 }

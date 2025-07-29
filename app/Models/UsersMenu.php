@@ -10,10 +10,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class UsersMenu extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
+
     protected $guarded = [];
 
     protected $fillable = [

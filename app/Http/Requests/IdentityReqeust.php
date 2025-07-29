@@ -31,6 +31,7 @@ class IdentityReqeust extends FormRequest
         } else {
             $rules['category_identity_id'] = 'required';
         }
+
         return $rules;
     }
 }

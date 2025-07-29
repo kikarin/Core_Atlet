@@ -15,13 +15,13 @@ class TenagaPendukungKesehatanRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'tenaga_pendukung_id'       => 'required|exists:tenaga_pendukungs,id',
-            'tinggi_badan'              => 'nullable|numeric',
-            'berat_badan'               => 'nullable|numeric',
-            'penglihatan'               => 'nullable|string|max:255',
-            'pendengaran'               => 'nullable|string|max:255',
-            'riwayat_penyakit'          => 'nullable|string',
-            'alergi'                    => 'nullable|string',
+            'tenaga_pendukung_id' => 'required|exists:tenaga_pendukungs,id',
+            'tinggi_badan' => 'nullable|numeric',
+            'berat_badan' => 'nullable|numeric',
+            'penglihatan' => 'nullable|string|max:255',
+            'pendengaran' => 'nullable|string|max:255',
+            'riwayat_penyakit' => 'nullable|string',
+            'alergi' => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -35,9 +35,9 @@ class TenagaPendukungKesehatanRequest extends FormRequest
     {
         return [
             'tenaga_pendukung_id.required' => 'ID Tenaga Pendukung wajib diisi.',
-            'tenaga_pendukung_id.exists'   => 'ID Tenaga Pendukung tidak valid.',
-            'tinggi_badan.numeric'         => 'Tinggi badan harus berupa angka.',
-            'berat_badan.numeric'          => 'Berat badan harus berupa angka.',
+            'tenaga_pendukung_id.exists' => 'ID Tenaga Pendukung tidak valid.',
+            'tinggi_badan.numeric' => 'Tinggi badan harus berupa angka.',
+            'berat_badan.numeric' => 'Berat badan harus berupa angka.',
         ];
     }
 
@@ -47,7 +47,7 @@ class TenagaPendukungKesehatanRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('tenaga_pendukung_id') && $this->route('tenaga_pendukung_id')) {
+        if (! $this->has('tenaga_pendukung_id') && $this->route('tenaga_pendukung_id')) {
             $this->merge(['tenaga_pendukung_id' => $this->route('tenaga_pendukung_id')]);
         }
 

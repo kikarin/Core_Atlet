@@ -2,20 +2,27 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 trait RepositoryTrait
 {
-    public $with                = [];
-    public $withCount           = [];
-    public $orderDefault        = 'created_at';
-    public $orderDefaultSort    = 'desc';
+    public $with = [];
+
+    public $withCount = [];
+
+    public $orderDefault = 'created_at';
+
+    public $orderDefaultSort = 'desc';
+
     public $orderByColumnsArray = [];
-    public $selectColumn        = [];
-    public $whereHas            = [];
-    public $limit               = null;
+
+    public $selectColumn = [];
+
+    public $whereHas = [];
+
+    public $limit = null;
 
     public function getInstanceModel()
     {
@@ -59,6 +66,7 @@ trait RepositoryTrait
                 $record = $record->get();
             }
         }
+
         return $record;
     }
 
@@ -72,12 +80,14 @@ trait RepositoryTrait
         $record = $this->model::with($this->with)->withCount($this->withCount);
         $record = $this->customGetById($record);
         $record = $record->findOrFail($id);
+
         return $record;
     }
 
     public function getBySlug($slug)
     {
         $record = $this->model::with($this->with)->withCount($this->withCount)->where('slug', $slug)->first();
+
         return $record;
     }
 
@@ -86,6 +96,7 @@ trait RepositoryTrait
         $record = $this->model::with($this->with)->withCount($this->withCount);
         $record = $this->customGetById($record);
         $record = $record->find($id);
+
         return $record;
     }
 
@@ -102,6 +113,7 @@ trait RepositoryTrait
             $record = $this->model::create($data);
             $record = $this->callbackAfterStoreOrUpdate($record, $data);
             DB::commit();
+
             return $record;
         } catch (Exception $e) {
             DB::rollback();
@@ -113,9 +125,9 @@ trait RepositoryTrait
     {
         try {
             DB::beginTransaction();
-            $record            = $this->getById($id);
+            $record = $this->getById($id);
             $record_sebelumnya = clone $record;
-            $data              = $this->customDataCreateUpdate($data, $record);
+            $data = $this->customDataCreateUpdate($data, $record);
 
             // $data = array_map(function($value) {
             //     return is_string($value) ? trim($value) : $value;
@@ -124,6 +136,7 @@ trait RepositoryTrait
             $record->update($data);
             $record = $this->callbackAfterStoreOrUpdate($record, $data, 'update', $record_sebelumnya);
             DB::commit();
+
             return $record;
         } catch (Exception $e) {
             DB::rollback();
@@ -136,9 +149,10 @@ trait RepositoryTrait
         try {
             DB::beginTransaction();
             $record = $this->getById($id);
-            $model  = $record;
+            $model = $record;
             $model->delete();
             DB::commit();
+
             return $record;
         } catch (Exception $e) {
             DB::rollback();
@@ -148,7 +162,7 @@ trait RepositoryTrait
 
     public function delete_selected($array_id)
     {
-        if (!is_array($array_id)) {
+        if (! is_array($array_id)) {
             $array_id = [];
         }
 
@@ -166,8 +180,8 @@ trait RepositoryTrait
 
     public function getDataTable($data = [])
     {
-        $data   = $this->customDataDatatable($data);
-        $record = $this->model::select([$this->model->getTable() . '.*'])->with($this->with)->withCount($this->withCount);
+        $data = $this->customDataDatatable($data);
+        $record = $this->model::select([$this->model->getTable().'.*'])->with($this->with)->withCount($this->withCount);
         if (@$data['orderDefault'] == null) {
             if (count($this->orderByColumnsArray) > 0) {
                 foreach ($this->orderByColumnsArray as $column => $direction) {
@@ -186,6 +200,7 @@ trait RepositoryTrait
             $record = $record->filter($data);
         }
         $record = $this->customRecordDatatable($record, $data);
+
         return $record;
     }
 
@@ -194,6 +209,7 @@ trait RepositoryTrait
         $record = $this->model::query();
         $record = $record->with($this->with)->withCount($this->withCount);
         $record = $record->filter($request_get)->paginate($request_get['per_page'])->withQueryString();
+
         return $record;
     }
 
@@ -231,7 +247,7 @@ trait RepositoryTrait
     {
         return [
             'error' => 0,
-            'data'  => $data,
+            'data' => $data,
         ];
     }
 
@@ -243,6 +259,7 @@ trait RepositoryTrait
     public function customDataDatatable($data)
     {
         $data += request()->all();
+
         return $data;
     }
 
@@ -275,11 +292,12 @@ trait RepositoryTrait
     {
         if ($files = $file) {
             $destinationPath = "public/$direktori";
-            $profileImage    = date('YmdHis') . '-' . RandomString(20) . '.' . $files->getClientOriginalExtension();
+            $profileImage = date('YmdHis').'-'.RandomString(20).'.'.$files->getClientOriginalExtension();
             $file->storeAs($destinationPath, $profileImage);
-            $data_file['filename']  = $profileImage;
+            $data_file['filename'] = $profileImage;
             $data_file['type_file'] = $files->getClientOriginalExtension();
-            $data_file['size']      = Storage::size($destinationPath . '/' . $profileImage);
+            $data_file['size'] = Storage::size($destinationPath.'/'.$profileImage);
+
             return $data_file;
         } else {
             return [];
@@ -288,7 +306,7 @@ trait RepositoryTrait
 
     public function deleteFileCustom($file, $direktori)
     {
-        $file_path = "{$direktori}/" . $file;
+        $file_path = "{$direktori}/".$file;
         if (Storage::disk('public')->exists($file_path)) {
             Storage::disk('public')->delete($file_path);
         } else {

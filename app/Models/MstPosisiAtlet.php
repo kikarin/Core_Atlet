@@ -10,13 +10,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstPosisiAtlet extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'mst_posisi_atlet';
-    protected $guarded  = [];
+    protected $table = 'mst_posisi_atlet';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'nama',
         'created_by',

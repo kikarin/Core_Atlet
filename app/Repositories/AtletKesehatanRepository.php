@@ -22,6 +22,7 @@ class AtletKesehatanRepository
     {
         Log::info('AtletKesehatanRepository: create method called with data', $data);
         $data = $this->customDataCreateUpdate($data);
+
         return $this->model->create($data);
     }
 
@@ -34,10 +35,12 @@ class AtletKesehatanRepository
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             Log::info('AtletKesehatanRepository: update method - record updated', $record->toArray());
+
             return $record;
         }
 
         Log::warning('AtletKesehatanRepository: update method - record not found for update', ['id' => $id]);
+
         return null;
     }
 
@@ -49,10 +52,12 @@ class AtletKesehatanRepository
         if ($record) {
             $record->forceDelete();
             Log::info('AtletKesehatanRepository: record successfully hard-deleted', ['id' => $id]);
+
             return true;
         }
 
         Log::warning('AtletKesehatanRepository: record not found for deletion', ['id' => $id]);
+
         return false;
     }
 
@@ -66,6 +71,7 @@ class AtletKesehatanRepository
         $data['updated_by'] = $userId;
 
         Log::info('AtletKesehatanRepository: customDataCreateUpdate method - data after processing', $data);
+
         return $data;
     }
 
@@ -78,6 +84,7 @@ class AtletKesehatanRepository
         } else {
             Log::info('AtletKesehatanRepository: getByAtletId method - no data found');
         }
+
         return $data;
     }
 

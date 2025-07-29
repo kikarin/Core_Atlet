@@ -13,24 +13,27 @@ use Inertia\Inertia;
 class MstPosisiAtletController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(Request $request, MstPosisiAtletRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = MstPosisiAtletRequest::createFromBase($request);
+        $this->request = MstPosisiAtletRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'posisi-atlet';
-        $this->commonData['kode_first_menu']  = 'DATA-MASTER';
+        $this->route = 'posisi-atlet';
+        $this->commonData['kode_first_menu'] = 'DATA-MASTER';
         $this->commonData['kode_second_menu'] = 'DATA-MASTER-POSISI-ATLET';
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -42,15 +45,16 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['PosisiAtlets'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -63,6 +67,7 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customIndex($data);
+
         return inertia('modules/data-master/posisi-atlet/Index', $data);
     }
 
@@ -70,6 +75,7 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
+
         return redirect()->route('posisi-atlet.index')->with('success', 'Data posisi atlet berhasil ditambahkan!');
     }
 
@@ -77,13 +83,15 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
+
         return redirect()->route('posisi-atlet.index')->with('success', 'Data posisi atlet berhasil diperbarui!');
     }
 
     public function show($id)
     {
-        $item      = $this->repository->getById($id);
+        $item = $this->repository->getById($id);
         $itemArray = $item->toArray();
+
         return Inertia::render('modules/data-master/posisi-atlet/Show', [
             'item' => $itemArray,
         ]);
@@ -92,16 +100,18 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('posisi-atlet.index')->with('success', 'Data Posisi Atlet berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_posisi_atlet,id',
         ]);
         $this->repository->delete_selected($request->ids);
+
         return response()->json(['message' => 'Data posisi atlet berhasil dihapus!']);
     }
 
@@ -115,9 +125,10 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/data-master/posisi-atlet/Create', $data);
     }
 
@@ -132,9 +143,10 @@ class MstPosisiAtletController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data, $item);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/data-master/posisi-atlet/Edit', $data);
     }
 }

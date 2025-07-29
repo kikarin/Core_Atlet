@@ -11,12 +11,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PemeriksaanPeserta extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table   = 'pemeriksaan_peserta';
+    protected $table = 'pemeriksaan_peserta';
+
     protected $guarded = [];
 
     protected $fillable = [

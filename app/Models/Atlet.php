@@ -13,14 +13,15 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Atlet extends Model implements HasMedia
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
-    use LogsActivity;
+    use HasFactory;
     use InteractsWithMedia;
+    use LogsActivity;
+    use SoftDeletes;
 
     protected $guarded = [];
-    protected $table   = 'atlets';
+
+    protected $table = 'atlets';
 
     protected $fillable = [
         'nik',
@@ -56,7 +57,7 @@ class Atlet extends Model implements HasMedia
             ->singleFile();
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('webp')
             ->format('webp')
@@ -71,6 +72,7 @@ class Atlet extends Model implements HasMedia
         if ($media) {
             return $media->getUrl();
         }
+
         return null;
     }
 
@@ -81,6 +83,7 @@ class Atlet extends Model implements HasMedia
         if ($media) {
             return $media->getUrl('webp');
         }
+
         return null;
     }
 

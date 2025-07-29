@@ -8,10 +8,8 @@ class DashboardRepository
 {
     use RepositoryTrait;
 
-
     public function __construct(
-    ) {
-    }
+    ) {}
 
     public function customIndex($data)
     {

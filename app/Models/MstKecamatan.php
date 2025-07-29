@@ -9,10 +9,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstKecamatan extends Model
 {
-    use HasFactory;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
-    protected $table    = 'mst_kecamatan';
+
+    protected $table = 'mst_kecamatan';
+
     protected $fillable = [
         'nama',
         'longitude',
@@ -28,5 +30,4 @@ class MstKecamatan extends Model
     {
         return $this->hasMany(MstDesa::class, 'id_kecamatan');
     }
-
 }

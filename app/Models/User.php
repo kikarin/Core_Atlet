@@ -7,31 +7,31 @@ namespace App\Models;
 use App\Blameable;
 use App\Notifications\RegisterNotification;
 use Carbon\Carbon;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Permission\Traits\HasRoles;
-use Spatie\Sluggable\HasSlug;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Sluggable\SlugOptions;
-use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class User extends Authenticatable implements HasMedia
 {
+    use Blameable;
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
     use HasRoles;
-    use LogsActivity;
     use HasSlug;
     use InteractsWithMedia;
-    use Blameable;
+    use LogsActivity;
+    use Notifiable;
     use SoftDeletes;
 
     protected $guarded = [];
@@ -82,7 +82,7 @@ class User extends Authenticatable implements HasMedia
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
@@ -95,7 +95,6 @@ class User extends Authenticatable implements HasMedia
             unset($user->role_id);
         });
     }
-
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -116,7 +115,7 @@ class User extends Authenticatable implements HasMedia
             ->singleFile();
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('webp')
             ->format('webp')
@@ -145,9 +144,7 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-
     // Todo: End Relation
-
 
     // Todo: Attribute
     public function getCreatedAtDiffAttribute()
@@ -165,10 +162,11 @@ class User extends Authenticatable implements HasMedia
             } else {
                 $file_url = $media->getUrl();
             }
-            return '<img src="' . $file_url . '" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" loading="lazy">';
+
+            return '<img src="'.$file_url.'" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" loading="lazy">';
         } else {
             return '<div class="avatar avatar-sm d-block flex-shrink-0 me-sm-3 me-2">
-			<span class="avatar-initial rounded-circle bg-label-success">' . InitialName($this->name) . '</span>
+			<span class="avatar-initial rounded-circle bg-label-success">'.InitialName($this->name).'</span>
 		  </div>';
         }
     }
@@ -189,6 +187,7 @@ class User extends Authenticatable implements HasMedia
         } else {
             $file_url = asset('assets/img/no-image.jpeg');
         }
+
         return $file_url;
     }
 
@@ -199,8 +198,9 @@ class User extends Authenticatable implements HasMedia
 
     public function getIsActiveBadgeAttribute()
     {
-        $text     = ($this->is_active == 1) ? 'Aktif' : 'Nonaktif';
+        $text = ($this->is_active == 1) ? 'Aktif' : 'Nonaktif';
         $badge_bg = ($this->is_active == 0) ? 'bg-label-danger' : 'bg-label-primary';
+
         return "<span class='badge $badge_bg'>$text</span>";
     }
 
@@ -220,10 +220,10 @@ class User extends Authenticatable implements HasMedia
         foreach ($this->users_role as $key => $value) {
             $role_name_array[] = $value->role->name;
         }
+
         return implode(', ', $role_name_array);
     }
     // Todo: End Attribute
-
 
     // Todo: Scope
     public function scopeIdInNotIn($query, $data)
@@ -261,7 +261,7 @@ class User extends Authenticatable implements HasMedia
 
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new RegisterNotification()); // Ini akan mengirim email verifikasi
+        $this->notify(new RegisterNotification); // Ini akan mengirim email verifikasi
     }
 
     public function sendPasswordResetNotification($token)

@@ -5,16 +5,17 @@ namespace App\Models;
 use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Support\Facades\Storage;
 
 class CategoryIdentity extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
+
     protected $table = 'category_identity';
 
     protected $fillable = [
@@ -39,11 +40,12 @@ class CategoryIdentity extends Model
 
     public function getFileFotoAttribute()
     {
-        $file_path = 'category-identity/photo/' . $this->file;
-        $result    = asset('assets/img/no-image.jpeg');
+        $file_path = 'category-identity/photo/'.$this->file;
+        $result = asset('assets/img/no-image.jpeg');
         if ($this->file != '' and Storage::disk('public')->exists($file_path)) {
             $result = url(Storage::url($file_path));
         }
+
         return $result;
     }
 }

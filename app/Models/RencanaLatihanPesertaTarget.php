@@ -10,7 +10,7 @@ class RencanaLatihanPesertaTarget extends Model
     use HasFactory;
 
     protected $table = 'rencana_latihan_peserta_target';
-    
+
     protected $fillable = [
         'rencana_latihan_id',
         'target_latihan_id',

@@ -9,8 +9,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class UsersRole extends Model
 {
-    use HasFactory;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
 
     protected $guarded = [];

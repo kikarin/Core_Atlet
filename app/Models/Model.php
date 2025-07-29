@@ -20,7 +20,6 @@ class Model extends BaseModel
 
     // Todo: End Relation
 
-
     // Todo: Attribute
 
     public function getIsActiveBadgeAttribute()
@@ -36,6 +35,7 @@ class Model extends BaseModel
     public function getCheckFileAttribute()
     {
         $media = $this->getFirstMedia('images');
+
         return $media
             ? ($media->hasGeneratedConversion('webp') ? $media->getUrl('webp') : $media->getUrl())
             : null;
@@ -57,5 +57,4 @@ class Model extends BaseModel
             $query->whereIn('id', $data['id_in']);
         }
     }
-
 }

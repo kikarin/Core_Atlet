@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('rencana_latihan_target_kelompok', function (Blueprint $table) {
             $table->id();
-            $table->string("nama")->nullable();
+            $table->string('nama')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

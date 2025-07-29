@@ -8,6 +8,7 @@ use App\Traits\RepositoryTrait;
 class UsersRoleRepository
 {
     use RepositoryTrait;
+
     protected $model;
 
     public function __construct(UsersRole $model)
@@ -18,8 +19,8 @@ class UsersRoleRepository
     /**
      * Set roles untuk user
      *
-     * @param int $userId
-     * @param array $roleIds
+     * @param  int  $userId
+     * @param  array  $roleIds
      * @return void
      */
     public function setRole($userId, $roleIds)
@@ -28,12 +29,12 @@ class UsersRoleRepository
         $this->model->where('users_id', $userId)->delete();
 
         // Insert role baru
-        if (!empty($roleIds) && is_array($roleIds)) {
+        if (! empty($roleIds) && is_array($roleIds)) {
             $data = [];
             foreach ($roleIds as $roleId) {
                 $data[] = [
-                    'users_id'   => $userId,
-                    'role_id'    => $roleId,
+                    'users_id' => $userId,
+                    'role_id' => $roleId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -46,7 +47,7 @@ class UsersRoleRepository
     /**
      * Get roles untuk user tertentu
      *
-     * @param int $userId
+     * @param  int  $userId
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getUserRoles($userId)
@@ -59,8 +60,8 @@ class UsersRoleRepository
     /**
      * Check apakah user memiliki role tertentu
      *
-     * @param int $userId
-     * @param int|array $roleId
+     * @param  int  $userId
+     * @param  int|array  $roleId
      * @return bool
      */
     public function hasRole($userId, $roleId)
@@ -77,8 +78,8 @@ class UsersRoleRepository
     /**
      * Add role ke user (tanpa menghapus role lama)
      *
-     * @param int $userId
-     * @param int|array $roleId
+     * @param  int  $userId
+     * @param  int|array  $roleId
      * @return void
      */
     public function addRole($userId, $roleId)
@@ -91,10 +92,10 @@ class UsersRoleRepository
                 ->where('role_id', $role)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 $this->model->create([
                     'users_id' => $userId,
-                    'role_id'  => $role,
+                    'role_id' => $role,
                 ]);
             }
         }
@@ -103,8 +104,8 @@ class UsersRoleRepository
     /**
      * Remove role dari user
      *
-     * @param int $userId
-     * @param int|array $roleId
+     * @param  int  $userId
+     * @param  int|array  $roleId
      * @return void
      */
     public function removeRole($userId, $roleId)

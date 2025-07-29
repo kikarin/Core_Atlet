@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\MstJenisTenagaPendukung;
+use Illuminate\Database\Seeder;
 
 class MstJenisTenagaPendukungSeeder extends Seeder
 {

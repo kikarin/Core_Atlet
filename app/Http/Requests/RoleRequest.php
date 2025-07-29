@@ -22,14 +22,15 @@ class RoleRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name'            => 'required',
+            'name' => 'required',
             'init_page_login' => 'required',
-            'bg'              => 'required',
-            'is_allow_login'  => 'required',
+            'bg' => 'required',
+            'is_allow_login' => 'required',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
             $rules['id'] = 'required';
         }
+
         return $rules;
     }
 }

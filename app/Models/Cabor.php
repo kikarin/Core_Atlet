@@ -10,13 +10,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Cabor extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'cabor';
-    protected $guarded  = [];
+    protected $table = 'cabor';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'nama',
         'deskripsi',

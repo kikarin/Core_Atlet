@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         if (Schema::hasTable('users')) {
-            if (!Schema::hasColumn('users', 'slug')) {
+            if (! Schema::hasColumn('users', 'slug')) {
                 Schema::table('users', function (Blueprint $table) {
                     $table->text('slug')->nullable();
                     $table->text('deskripsi')->nullable();

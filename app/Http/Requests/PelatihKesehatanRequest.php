@@ -23,13 +23,13 @@ class PelatihKesehatanRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'pelatih_id'       => 'required|exists:pelatihs,id',
-            'tinggi_badan'     => 'nullable|numeric',
-            'berat_badan'      => 'nullable|numeric',
-            'penglihatan'      => 'nullable|string|max:255',
-            'pendengaran'      => 'nullable|string|max:255',
+            'pelatih_id' => 'required|exists:pelatihs,id',
+            'tinggi_badan' => 'nullable|numeric',
+            'berat_badan' => 'nullable|numeric',
+            'penglihatan' => 'nullable|string|max:255',
+            'pendengaran' => 'nullable|string|max:255',
             'riwayat_penyakit' => 'nullable|string',
-            'alergi'           => 'nullable|string',
+            'alergi' => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -47,10 +47,10 @@ class PelatihKesehatanRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'pelatih_id.required'  => 'ID Pelatih wajib diisi.',
-            'pelatih_id.exists'    => 'ID Pelatih tidak valid.',
+            'pelatih_id.required' => 'ID Pelatih wajib diisi.',
+            'pelatih_id.exists' => 'ID Pelatih tidak valid.',
             'tinggi_badan.numeric' => 'Tinggi badan harus berupa angka.',
-            'berat_badan.numeric'  => 'Berat badan harus berupa angka.',
+            'berat_badan.numeric' => 'Berat badan harus berupa angka.',
         ];
     }
 
@@ -65,7 +65,7 @@ class PelatihKesehatanRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('pelatih_id') && $this->route('pelatih_id')) {
+        if (! $this->has('pelatih_id') && $this->route('pelatih_id')) {
             $this->merge(['pelatih_id' => $this->route('pelatih_id')]);
         }
 

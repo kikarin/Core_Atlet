@@ -10,13 +10,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstJenisDokumen extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
     protected $guarded = [];
-    protected $table   = 'mst_jenis_dokumen';
+
+    protected $table = 'mst_jenis_dokumen';
 
     protected $fillable = [
         'nama',

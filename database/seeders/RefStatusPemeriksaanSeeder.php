@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\RefStatusPemeriksaan;
+use Illuminate\Database\Seeder;
 
 class RefStatusPemeriksaanSeeder extends Seeder
 {

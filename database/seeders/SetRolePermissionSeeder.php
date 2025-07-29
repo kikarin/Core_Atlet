@@ -15,6 +15,7 @@ class SetRolePermissionSeeder extends Seeder
     {
         $this->repository = $repository;
     }
+
     /**
      * Run the database seeds.
      */
@@ -68,7 +69,7 @@ class SetRolePermissionSeeder extends Seeder
         $permission_user_api_default = Permission::whereIn('name', ['API Menu Show'])->get()->pluck('id')->toArray();
 
         $list_permission_pimpinan = array_merge($permission_wajib_ada, ['Laporan Sidebar Show']);
-        $permission_pimpinan      = Permission::whereIn(
+        $permission_pimpinan = Permission::whereIn(
             'name',
             $list_permission_pimpinan
         )->get()->pluck('id')->toArray();

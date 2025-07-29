@@ -26,7 +26,7 @@ class MstJenisTenagaPendukungRequest extends FormRequest
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
-            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_tenaga_pendukung,nama,' . $this->id;
+            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_tenaga_pendukung,nama,'.$this->id;
         } else {
             $rules['nama'] = 'required|string|max:255|unique:mst_jenis_tenaga_pendukung,nama';
         }
@@ -38,9 +38,9 @@ class MstJenisTenagaPendukungRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis tenaga pendukung wajib diisi.',
-            'nama.string'   => 'Nama jenis tenaga pendukung harus berupa teks.',
-            'nama.max'      => 'Nama jenis tenaga pendukung tidak boleh lebih dari 255 karakter.',
-            'nama.unique'   => 'Nama jenis tenaga pendukung sudah ada.',
+            'nama.string' => 'Nama jenis tenaga pendukung harus berupa teks.',
+            'nama.max' => 'Nama jenis tenaga pendukung tidak boleh lebih dari 255 karakter.',
+            'nama.unique' => 'Nama jenis tenaga pendukung sudah ada.',
         ];
     }
 }

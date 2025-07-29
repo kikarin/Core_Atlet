@@ -30,6 +30,7 @@ class CategoryIdentityRequest extends FormRequest
         if ($this->hasFile('file')) {
             $rules['file'] = 'mimes:jpg,png,jpeg,webp|max:2048';
         }
+
         return $rules;
     }
 }

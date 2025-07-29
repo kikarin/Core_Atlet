@@ -16,15 +16,15 @@ class PemeriksaanPesertaRequest extends FormRequest
     {
         $rules = [
             'ref_status_pemeriksaan_id' => 'required|exists:ref_status_pemeriksaan,id',
-            'catatan_umum'              => 'nullable|string',
+            'catatan_umum' => 'nullable|string',
         ];
 
         if ($this->isMethod('post')) {
-            $rules['atlet_ids']              = 'nullable|array';
-            $rules['atlet_ids.*']            = 'exists:atlets,id';
-            $rules['pelatih_ids']            = 'nullable|array';
-            $rules['pelatih_ids.*']          = 'exists:pelatihs,id';
-            $rules['tenaga_pendukung_ids']   = 'nullable|array';
+            $rules['atlet_ids'] = 'nullable|array';
+            $rules['atlet_ids.*'] = 'exists:atlets,id';
+            $rules['pelatih_ids'] = 'nullable|array';
+            $rules['pelatih_ids.*'] = 'exists:pelatihs,id';
+            $rules['tenaga_pendukung_ids'] = 'nullable|array';
             $rules['tenaga_pendukung_ids.*'] = 'exists:tenaga_pendukungs,id';
 
             // Ensure at least one participant is selected
@@ -37,7 +37,7 @@ class PemeriksaanPesertaRequest extends FormRequest
             ];
         } else { // For PUT/PATCH to update a single participant
             $rules['peserta_type'] = ['required', Rule::in(['App\\Models\\Atlet', 'App\\Models\\Pelatih', 'App\\Models\\TenagaPendukung'])];
-            $rules['peserta_id']   = 'required|integer';
+            $rules['peserta_id'] = 'required|integer';
         }
 
         return $rules;
@@ -47,7 +47,7 @@ class PemeriksaanPesertaRequest extends FormRequest
     {
         return [
             'ref_status_pemeriksaan_id.required' => 'Status pemeriksaan wajib dipilih.',
-            'atlet_ids.required'                 => 'Minimal pilih satu peserta (atlet, pelatih, atau tenaga pendukung).',
+            'atlet_ids.required' => 'Minimal pilih satu peserta (atlet, pelatih, atau tenaga pendukung).',
         ];
     }
 }

@@ -11,45 +11,55 @@ use Spatie\Permission\Models\Role as ModelsRole;
 
 class Role extends ModelsRole
 {
+    use Blameable;
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
-    use Blameable;
+
     public $guard_name = 'web';
 
-    public const BG_PRIMARY   = 'bg-primary';
-    public const BG_WARNING   = 'bg-warning';
-    public const BG_INFO      = 'bg-info';
-    public const BG_DANGER    = 'bg-danger';
-    public const BG_SECONDARY = 'bg-secondary';
-    public const BG_SUCCESS   = 'bg-success';
-    public const BG_DARK      = 'bg-dark';
-    public const BG_LIGHT     = 'bg-light text-dark';
+    public const BG_PRIMARY = 'bg-primary';
 
-    public const INIT_PAGE_PROFILE   = 'profile';
+    public const BG_WARNING = 'bg-warning';
+
+    public const BG_INFO = 'bg-info';
+
+    public const BG_DANGER = 'bg-danger';
+
+    public const BG_SECONDARY = 'bg-secondary';
+
+    public const BG_SUCCESS = 'bg-success';
+
+    public const BG_DARK = 'bg-dark';
+
+    public const BG_LIGHT = 'bg-light text-dark';
+
+    public const INIT_PAGE_PROFILE = 'profile';
+
     public const INIT_PAGE_DASHBOARD = 'dashboard';
-    public const INIT_PAGE_USERS     = 'users';
+
+    public const INIT_PAGE_USERS = 'users';
 
     public function listBg(): array
     {
         return [
-            self::BG_PRIMARY   => self::BG_PRIMARY,
-            self::BG_WARNING   => self::BG_WARNING,
-            self::BG_INFO      => self::BG_INFO,
-            self::BG_DANGER    => self::BG_DANGER,
+            self::BG_PRIMARY => self::BG_PRIMARY,
+            self::BG_WARNING => self::BG_WARNING,
+            self::BG_INFO => self::BG_INFO,
+            self::BG_DANGER => self::BG_DANGER,
             self::BG_SECONDARY => self::BG_SECONDARY,
-            self::BG_SUCCESS   => self::BG_SUCCESS,
-            self::BG_DARK      => self::BG_DARK,
-            self::BG_LIGHT     => self::BG_LIGHT,
+            self::BG_SUCCESS => self::BG_SUCCESS,
+            self::BG_DARK => self::BG_DARK,
+            self::BG_LIGHT => self::BG_LIGHT,
         ];
     }
 
     public function listInitPage()
     {
         return [
-            self::INIT_PAGE_PROFILE   => self::INIT_PAGE_PROFILE,
+            self::INIT_PAGE_PROFILE => self::INIT_PAGE_PROFILE,
             self::INIT_PAGE_DASHBOARD => self::INIT_PAGE_DASHBOARD,
-            self::INIT_PAGE_USERS     => self::INIT_PAGE_USERS,
+            self::INIT_PAGE_USERS => self::INIT_PAGE_USERS,
         ];
     }
 
@@ -71,7 +81,6 @@ class Role extends ModelsRole
     }
     // Todo: End Relation
 
-
     // Todo: Attribute
 
     public function getBgBadgeAttribute()
@@ -89,7 +98,6 @@ class Role extends ModelsRole
         return convertTrueFalse($this->is_vertical_menu, ['Horizontal', 'Vertical']);
     }
     // Todo: End Attribute
-
 
     // Todo: Scope
     public function scopeIdInNotIn($query, $data)

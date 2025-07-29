@@ -11,13 +11,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PemeriksaanParameter extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'pemeriksaan_parameter';
-    protected $guarded  = [];
+    protected $table = 'pemeriksaan_parameter';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'pemeriksaan_id',
         'nama_parameter',

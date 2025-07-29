@@ -14,10 +14,10 @@ class AtletDokumenRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id'         => 'required|exists:atlets,id',
+            'atlet_id' => 'required|exists:atlets,id',
             'jenis_dokumen_id' => 'nullable|integer',
-            'nomor'            => 'nullable|string|max:255',
-            'file'             => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'nomor' => 'nullable|string|max:255',
+            'file' => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -31,7 +31,7 @@ class AtletDokumenRequest extends FormRequest
     {
         return [
             'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists'   => 'ID Atlet tidak valid.',
+            'atlet_id.exists' => 'ID Atlet tidak valid.',
         ];
     }
 
@@ -41,7 +41,7 @@ class AtletDokumenRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('atlet_id') && $this->route('atlet_id')) {
+        if (! $this->has('atlet_id') && $this->route('atlet_id')) {
             $this->merge(['atlet_id' => $this->route('atlet_id')]);
         }
 

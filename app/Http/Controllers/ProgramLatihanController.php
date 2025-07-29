@@ -13,24 +13,27 @@ use Inertia\Inertia;
 class ProgramLatihanController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(Request $request, ProgramLatihanRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = ProgramLatihanRequest::createFromBase($request);
+        $this->request = ProgramLatihanRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'program-latihan';
-        $this->commonData['kode_first_menu']  = 'PROGRAM-LATIHAN';
+        $this->route = 'program-latihan';
+        $this->commonData['kode_first_menu'] = 'PROGRAM-LATIHAN';
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -42,15 +45,16 @@ class ProgramLatihanController extends Controller implements HasMiddleware
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['data'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -63,6 +67,7 @@ class ProgramLatihanController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customIndex($data);
+
         return inertia('modules/program-latihan/Index', $data);
     }
 
@@ -76,6 +81,7 @@ class ProgramLatihanController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data);
+
         return inertia('modules/program-latihan/Create', $data);
     }
 
@@ -83,6 +89,7 @@ class ProgramLatihanController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
+
         return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil ditambahkan!');
     }
 
@@ -97,6 +104,7 @@ class ProgramLatihanController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data, $item);
+
         return inertia('modules/program-latihan/Edit', $data);
     }
 
@@ -104,12 +112,14 @@ class ProgramLatihanController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
+
         return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil diperbarui!');
     }
 
     public function show($id)
     {
         $item = $this->repository->getDetailWithRelations($id);
+
         return Inertia::render('modules/program-latihan/Show', [
             'item' => $item,
         ]);
@@ -118,16 +128,18 @@ class ProgramLatihanController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('program-latihan.index')->with('success', 'Program latihan berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|integer|exists:program_latihan,id',
         ]);
         $this->repository->delete_selected($request->ids);
+
         return response()->json(['message' => 'Program latihan terpilih berhasil dihapus!']);
     }
 }

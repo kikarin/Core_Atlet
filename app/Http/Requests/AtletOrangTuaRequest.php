@@ -24,27 +24,27 @@ class AtletOrangTuaRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id'          => 'required|exists:atlets,id',
-            'nama_ibu_kandung'  => 'nullable|string|max:255',
-            'tempat_lahir_ibu'  => 'nullable|string|max:255',
+            'atlet_id' => 'required|exists:atlets,id',
+            'nama_ibu_kandung' => 'nullable|string|max:255',
+            'tempat_lahir_ibu' => 'nullable|string|max:255',
             'tanggal_lahir_ibu' => 'nullable|date',
-            'alamat_ibu'        => 'nullable|string',
-            'no_hp_ibu'         => 'nullable|string|max:20',
-            'pekerjaan_ibu'     => 'nullable|string|max:255',
+            'alamat_ibu' => 'nullable|string',
+            'no_hp_ibu' => 'nullable|string|max:20',
+            'pekerjaan_ibu' => 'nullable|string|max:255',
 
-            'nama_ayah_kandung'  => 'nullable|string|max:255',
-            'tempat_lahir_ayah'  => 'nullable|string|max:255',
+            'nama_ayah_kandung' => 'nullable|string|max:255',
+            'tempat_lahir_ayah' => 'nullable|string|max:255',
             'tanggal_lahir_ayah' => 'nullable|date',
-            'alamat_ayah'        => 'nullable|string',
-            'no_hp_ayah'         => 'nullable|string|max:20',
-            'pekerjaan_ayah'     => 'nullable|string|max:255',
+            'alamat_ayah' => 'nullable|string',
+            'no_hp_ayah' => 'nullable|string|max:20',
+            'pekerjaan_ayah' => 'nullable|string|max:255',
 
-            'nama_wali'          => 'nullable|string|max:255',
-            'tempat_lahir_wali'  => 'nullable|string|max:255',
+            'nama_wali' => 'nullable|string|max:255',
+            'tempat_lahir_wali' => 'nullable|string|max:255',
             'tanggal_lahir_wali' => 'nullable|date',
-            'alamat_wali'        => 'nullable|string',
-            'no_hp_wali'         => 'nullable|string|max:20',
-            'pekerjaan_wali'     => 'nullable|string|max:255',
+            'alamat_wali' => 'nullable|string',
+            'no_hp_wali' => 'nullable|string|max:20',
+            'pekerjaan_wali' => 'nullable|string|max:255',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -63,7 +63,7 @@ class AtletOrangTuaRequest extends FormRequest
     {
         return [
             'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists'   => 'ID Atlet tidak valid.',
+            'atlet_id.exists' => 'ID Atlet tidak valid.',
         ];
     }
 
@@ -78,7 +78,7 @@ class AtletOrangTuaRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('atlet_id') && $this->route('atlet_id')) {
+        if (! $this->has('atlet_id') && $this->route('atlet_id')) {
             $this->merge(['atlet_id' => $this->route('atlet_id')]);
         }
 

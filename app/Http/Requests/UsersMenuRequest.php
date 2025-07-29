@@ -23,22 +23,22 @@ class UsersMenuRequest extends FormRequest
     {
         $rules = [
             'nama' => 'required|string|max:200',
-            'kode' => 'required|string|max:200|unique:users_menus,kode,' . ($this->id ?? ''),
+            'kode' => 'required|string|max:200|unique:users_menus,kode,'.($this->id ?? ''),
             'icon' => 'nullable|string',
-            'rel'  => [
+            'rel' => [
                 'nullable',
                 'integer',
                 function ($attribute, $value, $fail) {
                     if ($value === 0) {
                         return true;
                     }
-                    if (!\App\Models\UsersMenu::where('id', $value)->exists()) {
+                    if (! \App\Models\UsersMenu::where('id', $value)->exists()) {
                         $fail('Menu parent tidak ditemukan');
                     }
                 },
             ],
-            'urutan'        => 'required|integer|min:1',
-            'url'           => 'required|string',
+            'urutan' => 'required|integer|min:1',
+            'url' => 'required|string',
             'permission_id' => 'required|integer|exists:permissions,id',
         ];
 
@@ -52,17 +52,17 @@ class UsersMenuRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nama.required'          => 'Nama menu harus diisi',
-            'nama.max'               => 'Nama menu maksimal 200 karakter',
-            'kode.required'          => 'Kode menu harus diisi',
-            'kode.unique'            => 'Kode menu sudah digunakan',
-            'kode.max'               => 'Kode menu maksimal 200 karakter',
-            'rel.integer'            => 'Menu parent harus berupa angka',
-            'urutan.required'        => 'Urutan harus diisi',
-            'urutan.min'             => 'Urutan minimal 1',
-            'url.required'           => 'URL harus diisi',
+            'nama.required' => 'Nama menu harus diisi',
+            'nama.max' => 'Nama menu maksimal 200 karakter',
+            'kode.required' => 'Kode menu harus diisi',
+            'kode.unique' => 'Kode menu sudah digunakan',
+            'kode.max' => 'Kode menu maksimal 200 karakter',
+            'rel.integer' => 'Menu parent harus berupa angka',
+            'urutan.required' => 'Urutan harus diisi',
+            'urutan.min' => 'Urutan minimal 1',
+            'url.required' => 'URL harus diisi',
             'permission_id.required' => 'Permission harus dipilih',
-            'permission_id.exists'   => 'Permission tidak ditemukan',
+            'permission_id.exists' => 'Permission tidak ditemukan',
         ];
     }
 }

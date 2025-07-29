@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\MstTingkat;
+use Illuminate\Database\Seeder;
 
 class MstTingkatSeeder extends Seeder
 {

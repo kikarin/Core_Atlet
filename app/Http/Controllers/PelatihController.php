@@ -2,37 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\PelatihRequest;
+use App\Imports\PelatihImport;
 use App\Repositories\PelatihRepository;
 use App\Traits\BaseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\PelatihImport;
 
 class PelatihController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(PelatihRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = PelatihRequest::createFromBase($request);
+        $this->request = PelatihRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu']  = $this->kode_menu;
+        $this->commonData['kode_first_menu'] = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store', 'import']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -44,15 +47,16 @@ class PelatihController extends Controller implements HasMiddleware
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['pelatihs'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -67,7 +71,7 @@ class PelatihController extends Controller implements HasMiddleware
 
             $item = $this->repository->getDetailWithRelations($id);
 
-            if (!$item) {
+            if (! $item) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Pelatih tidak ditemukan',
@@ -76,23 +80,24 @@ class PelatihController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'data'    => $item,
+                'data' => $item,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching pelatih detail: ' . $e->getMessage());
+            Log::error('Error fetching pelatih detail: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data pelatih',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-
     public function store(PelatihRequest $request)
     {
-        $data  = $this->repository->validateRequest($request);
+        $data = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
+
         return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil ditambahkan!');
     }
 
@@ -101,8 +106,8 @@ class PelatihController extends Controller implements HasMiddleware
         try {
             // Debug logging
             Log::info('PelatihController: update method called', [
-                'id'             => $id,
-                'all_data'       => $request->all(),
+                'id' => $id,
+                'all_data' => $request->all(),
                 'validated_data' => $request->validated(),
             ]);
 
@@ -124,7 +129,8 @@ class PelatihController extends Controller implements HasMiddleware
             return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil diperbarui!');
 
         } catch (\Exception $e) {
-            Log::error('Error updating pelatih: ' . $e->getMessage());
+            Log::error('Error updating pelatih: '.$e->getMessage());
+
             return redirect()
                 ->back()
                 ->withInput()
@@ -135,6 +141,7 @@ class PelatihController extends Controller implements HasMiddleware
     public function show($id)
     {
         $item = $this->repository->getDetailWithRelations($id);
+
         return Inertia::render('modules/pelatih/Show', [
             'item' => $item,
         ]);
@@ -158,13 +165,14 @@ class PelatihController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('pelatih.index')->with('success', 'Pelatih berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|integer|exists:pelatihs,id',
         ]);
 
@@ -185,13 +193,13 @@ class PelatihController extends Controller implements HasMiddleware
         ]);
 
         try {
-            $import = new PelatihImport();
+            $import = new PelatihImport;
             Excel::import($import, $request->file('file'));
 
             Log::info('PelatihController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count'  => $import->getSuccessCount(),
-                'error_count'    => $import->getErrorCount(),
+                'success_count' => $import->getSuccessCount(),
+                'error_count' => $import->getErrorCount(),
             ]);
 
             $message = 'Import berhasil! ';
@@ -205,11 +213,11 @@ class PelatihController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data'    => [
-                    'total_rows'    => $import->getRowCount(),
+                'data' => [
+                    'total_rows' => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count'   => $import->getErrorCount(),
-                    'errors'        => $import->getErrors(),
+                    'error_count' => $import->getErrorCount(),
+                    'errors' => $import->getErrors(),
                 ],
             ]);
 
@@ -221,8 +229,8 @@ class PelatihController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal import: ' . $e->getMessage(),
-                'error'   => $e->getMessage(),
+                'message' => 'Gagal import: '.$e->getMessage(),
+                'error' => $e->getMessage(),
             ], 422);
         }
     }

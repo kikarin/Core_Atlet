@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Atlet;
-use App\Models\Pelatih;
-use App\Models\TenagaPendukung;
 use App\Models\Cabor;
 use App\Models\CaborKategori;
-use App\Models\ProgramLatihan;
+use App\Models\Pelatih;
 use App\Models\Pemeriksaan;
-use App\Models\ActivityLog;
+use App\Models\ProgramLatihan;
+use App\Models\TenagaPendukung;
 use App\Traits\BaseTrait;
+use Carbon\Carbon;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Inertia\Inertia;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class DashboardController extends Controller implements HasMiddleware
 {
@@ -24,16 +24,17 @@ class DashboardController extends Controller implements HasMiddleware
     public function __construct()
     {
         $this->initialize();
-        $this->route                          = 'dashboard';
-        $this->commonData['kode_first_menu']  = 'DASHBOARD';
+        $this->route = 'dashboard';
+        $this->commonData['kode_first_menu'] = 'DASHBOARD';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -49,7 +50,7 @@ class DashboardController extends Controller implements HasMiddleware
         $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
         $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
 
-        $stat = function($model, $label, $icon, $href) use ($startOfMonth, $now, $startOfLastMonth, $endOfLastMonth) {
+        $stat = function ($model, $label, $icon, $href) use ($startOfMonth, $now, $startOfLastMonth, $endOfLastMonth) {
             $thisMonth = $model::whereBetween('created_at', [$startOfMonth, $now])->count();
             $lastMonth = $model::whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
 
@@ -65,14 +66,14 @@ class DashboardController extends Controller implements HasMiddleware
                     $changeLabel = 'Baru';
                     $trend = 'up';
                     $changeAbs = $thisMonth;
-                    $changeAbsLabel = '+' . $thisMonth . ' data';
+                    $changeAbsLabel = '+'.$thisMonth.' data';
                 }
             } else {
                 $change = round((($thisMonth - $lastMonth) / $lastMonth) * 100, 1);
-                $changeLabel = ($change > 0 ? '+' : '') . $change . '%';
+                $changeLabel = ($change > 0 ? '+' : '').$change.'%';
                 $trend = $change > 0 ? 'up' : ($change < 0 ? 'down' : 'up');
                 $changeAbs = $thisMonth - $lastMonth;
-                $changeAbsLabel = ($changeAbs > 0 ? '+' : '') . $changeAbs . ' data';
+                $changeAbsLabel = ($changeAbs > 0 ? '+' : '').$changeAbs.' data';
             }
 
             return [
@@ -111,28 +112,28 @@ class DashboardController extends Controller implements HasMiddleware
             ->orderByDesc('created_at')
             ->take(5)
             ->get()
-            ->map(function($item) {
+            ->map(function ($item) {
                 // Hitung durasi periode
                 $durasi = '-';
                 if ($item->periode_mulai && $item->periode_selesai) {
                     $startDate = Carbon::parse($item->periode_mulai);
                     $endDate = Carbon::parse($item->periode_selesai);
                     $diffInDays = $startDate->diffInDays($endDate) + 1; // +1 karena inclusive
-                    
+
                     if ($diffInDays <= 30) {
-                        $durasi = $diffInDays . ' hari';
+                        $durasi = $diffInDays.' hari';
                     } else {
                         $months = floor($diffInDays / 30);
                         $remainingDays = $diffInDays % 30;
-                        
+
                         if ($remainingDays == 0) {
-                            $durasi = $months . ' bulan';
+                            $durasi = $months.' bulan';
                         } else {
-                            $durasi = $months . ' bulan ' . $remainingDays . ' hari';
+                            $durasi = $months.' bulan '.$remainingDays.' hari';
                         }
                     }
                 }
-                
+
                 return [
                     'id' => $item->id,
                     'nama_program' => $item->nama_program,
@@ -140,7 +141,7 @@ class DashboardController extends Controller implements HasMiddleware
                     'cabor_kategori_nama' => $item->caborKategori?->nama ?? '-',
                     'periode' => $durasi,
                     'jumlah_rencana_latihan' => $item->rencanaLatihan()->count(),
-                    'rencana_latihan_list' => $item->rencanaLatihan()->orderByDesc('tanggal')->limit(3)->pluck('materi')->map(function($materi) {
+                    'rencana_latihan_list' => $item->rencanaLatihan()->orderByDesc('tanggal')->limit(3)->pluck('materi')->map(function ($materi) {
                         return Str::limit($materi, 30);
                     })->toArray(),
                 ];
@@ -151,12 +152,12 @@ class DashboardController extends Controller implements HasMiddleware
             ->orderByDesc('created_at')
             ->take(5)
             ->get()
-            ->map(function($item) {
+            ->map(function ($item) {
                 // Hitung jumlah peserta berdasarkan jenis menggunakan peserta_type
                 $pesertaAtlet = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Atlet')->count();
                 $pesertaPelatih = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Pelatih')->count();
                 $pesertaTenagaPendukung = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\TenagaPendukung')->count();
-                
+
                 return [
                     'id' => $item->id,
                     'nama_pemeriksaan' => $item->nama_pemeriksaan,
@@ -168,7 +169,7 @@ class DashboardController extends Controller implements HasMiddleware
                     'jumlah_peserta' => $item->pemeriksaanPeserta()->count(),
                     'cabor_nama' => $item->cabor?->nama ?? '-',
                     'parameter_list' => $item->pemeriksaanParameter()->limit(3)->pluck('nama_parameter')->toArray(),
-                    'peserta_list' => $item->pemeriksaanPeserta()->with('peserta')->limit(3)->get()->map(function($peserta) {
+                    'peserta_list' => $item->pemeriksaanPeserta()->with('peserta')->limit(3)->get()->map(function ($peserta) {
                         // Cek field nama di model morph (Atlet, Pelatih, TenagaPendukung)
                         return $peserta->peserta?->nama ?? '-';
                     })->toArray(),
@@ -183,20 +184,20 @@ class DashboardController extends Controller implements HasMiddleware
             ->orderByDesc('created_at')
             ->take(8)
             ->get()
-            ->map(function($item) {
+            ->map(function ($item) {
                 $causerName = $item->causer ? $item->causer->name : 'System';
                 $roleName = $item->causer && $item->causer->role ? $item->causer->role->name : '';
                 $userInfo = $roleName ? "$causerName - $roleName" : $causerName;
-                
+
                 // Gunakan getFileUrlAttribute untuk avatar
                 $avatar = $item->causer ? $item->causer->getFileUrlAttribute() : null;
-                
+
                 // Perbaiki format waktu dengan timezone yang benar dan bahasa Indonesia
                 $time = '-';
                 if ($item->created_at) {
                     $time = $this->formatTimeAgo($item->created_at);
                 }
-                
+
                 return [
                     'id' => $item->id,
                     'title' => $this->getActivityTitle($item),
@@ -219,9 +220,7 @@ class DashboardController extends Controller implements HasMiddleware
     {
         $createdAt = Carbon::parse($datetime);
         $now = Carbon::now();
-        
 
-        
         // Perbaiki logika perhitungan waktu - gunakan abs() untuk nilai absolut dan format yang rapi
         $diffInSeconds = abs($now->diffInSeconds($createdAt));
         $diffInMinutes = abs($now->diffInMinutes($createdAt));
@@ -234,17 +233,17 @@ class DashboardController extends Controller implements HasMiddleware
         if ($diffInSeconds < 60) {
             return 'Baru saja';
         } elseif ($diffInMinutes < 60) {
-            return round($diffInMinutes) . ' menit yang lalu';
+            return round($diffInMinutes).' menit yang lalu';
         } elseif ($diffInHours < 24) {
-            return round($diffInHours) . ' jam yang lalu';
+            return round($diffInHours).' jam yang lalu';
         } elseif ($diffInDays < 7) {
-            return round($diffInDays) . ' hari yang lalu';
+            return round($diffInDays).' hari yang lalu';
         } elseif ($diffInWeeks < 4) {
-            return round($diffInWeeks) . ' minggu yang lalu';
+            return round($diffInWeeks).' minggu yang lalu';
         } elseif ($diffInMonths < 12) {
-            return round($diffInMonths) . ' bulan yang lalu';
+            return round($diffInMonths).' bulan yang lalu';
         } else {
-            return round($diffInYears) . ' tahun yang lalu';
+            return round($diffInYears).' tahun yang lalu';
         }
     }
 
@@ -252,7 +251,7 @@ class DashboardController extends Controller implements HasMiddleware
     {
         $subjectType = class_basename($activity->subject_type);
         $event = $activity->event;
-        
+
         switch ($subjectType) {
             case 'Atlet':
                 return $event === 'created' ? 'Atlet baru ditambahkan' : 'Data atlet diperbarui';
@@ -277,7 +276,8 @@ class DashboardController extends Controller implements HasMiddleware
                 if ($activity->description) {
                     return $activity->description;
                 }
-                return ucfirst(strtolower(str_replace('_', ' ', $subjectType))) . ' ' . ($event === 'created' ? 'ditambahkan' : 'diperbarui');
+
+                return ucfirst(strtolower(str_replace('_', ' ', $subjectType))).' '.($event === 'created' ? 'ditambahkan' : 'diperbarui');
         }
     }
-} 
+}

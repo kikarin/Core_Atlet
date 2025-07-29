@@ -9,6 +9,7 @@ class RefStatusPemeriksaan extends Model
 {
     use HasFactory;
 
-    protected $table   = 'ref_status_pemeriksaan';
+    protected $table = 'ref_status_pemeriksaan';
+
     protected $guarded = [];
 }

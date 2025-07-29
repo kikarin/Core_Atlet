@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\RencanaLatihan;
-use App\Models\TargetLatihan;
-use App\Models\RencanaLatihanPesertaTarget;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 {
@@ -19,16 +17,17 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
     public function __construct()
     {
         $this->initialize();
-        $this->route                          = 'rencana-latihan-kelola';
-        $this->commonData['kode_first_menu']  = 'RENCANA-LATIHAN';
+        $this->route = 'rencana-latihan-kelola';
+        $this->commonData['kode_first_menu'] = 'RENCANA-LATIHAN';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -63,7 +62,7 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                     'nama_program' => $rencanaLatihan->programLatihan->nama_program,
                     'cabor_nama' => $rencanaLatihan->programLatihan->cabor->nama,
                     'cabor_kategori_nama' => $rencanaLatihan->programLatihan->caborKategori->nama,
-                ]
+                ],
             ],
             'jenis_peserta' => $jenis_peserta,
             'target_latihan' => $targetLatihan,
@@ -151,14 +150,15 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data pemetaan berhasil disimpan!'
+                'message' => 'Data pemetaan berhasil disimpan!',
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+                'message' => 'Gagal menyimpan data: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -173,8 +173,8 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                 $query = $rencanaLatihan->atlets()
                     ->join('cabor_kategori_atlet', function ($join) use ($caborKategoriId) {
                         $join->on('atlets.id', '=', 'cabor_kategori_atlet.atlet_id')
-                             ->where('cabor_kategori_atlet.cabor_kategori_id', $caborKategoriId)
-                             ->whereNull('cabor_kategori_atlet.deleted_at');
+                            ->where('cabor_kategori_atlet.cabor_kategori_id', $caborKategoriId)
+                            ->whereNull('cabor_kategori_atlet.deleted_at');
                     })
                     ->leftJoin('mst_posisi_atlet', 'cabor_kategori_atlet.posisi_atlet_id', '=', 'mst_posisi_atlet.id')
                     ->select(
@@ -199,8 +199,8 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                 $query = $rencanaLatihan->pelatihs()
                     ->join('cabor_kategori_pelatih', function ($join) use ($caborKategoriId) {
                         $join->on('pelatihs.id', '=', 'cabor_kategori_pelatih.pelatih_id')
-                             ->where('cabor_kategori_pelatih.cabor_kategori_id', $caborKategoriId)
-                             ->whereNull('cabor_kategori_pelatih.deleted_at');
+                            ->where('cabor_kategori_pelatih.cabor_kategori_id', $caborKategoriId)
+                            ->whereNull('cabor_kategori_pelatih.deleted_at');
                     })
                     ->leftJoin('mst_jenis_pelatih', 'cabor_kategori_pelatih.jenis_pelatih_id', '=', 'mst_jenis_pelatih.id')
                     ->select(
@@ -225,8 +225,8 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                 $query = $rencanaLatihan->tenagaPendukung()
                     ->join('cabor_kategori_tenaga_pendukung', function ($join) use ($caborKategoriId) {
                         $join->on('tenaga_pendukungs.id', '=', 'cabor_kategori_tenaga_pendukung.tenaga_pendukung_id')
-                             ->where('cabor_kategori_tenaga_pendukung.cabor_kategori_id', $caborKategoriId)
-                             ->whereNull('cabor_kategori_tenaga_pendukung.deleted_at');
+                            ->where('cabor_kategori_tenaga_pendukung.cabor_kategori_id', $caborKategoriId)
+                            ->whereNull('cabor_kategori_tenaga_pendukung.deleted_at');
                     })
                     ->leftJoin('mst_jenis_tenaga_pendukung', 'cabor_kategori_tenaga_pendukung.jenis_tenaga_pendukung_id', '=', 'mst_jenis_tenaga_pendukung.id')
                     ->select(
@@ -254,12 +254,14 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
     private function calculateAge($birthDate)
     {
-        if (!$birthDate) return '-';
-        
-        $today = new \DateTime();
+        if (! $birthDate) {
+            return '-';
+        }
+
+        $today = new \DateTime;
         $birth = new \DateTime($birthDate);
         $age = $today->diff($birth);
-        
+
         return $age->y;
     }
 
@@ -276,4 +278,4 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                 return 'App\\Models\\Atlet';
         }
     }
-} 
+}

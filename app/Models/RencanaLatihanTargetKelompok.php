@@ -10,13 +10,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class RencanaLatihanTargetKelompok extends Model
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity;
-    
+    use Blameable, HasFactory, LogsActivity, SoftDeletes;
+
     protected $guarded = [];
-    protected $table = "{{ table }}";
+
+    protected $table = '{{ table }}';
 
     protected $fillable = [
-        "nama",
+        'nama',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -24,6 +25,6 @@ class RencanaLatihanTargetKelompok extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => "RencanaLatihanTargetKelompok");
+            ->setDescriptionForEvent(fn (string $eventName) => 'RencanaLatihanTargetKelompok');
     }
 }

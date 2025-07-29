@@ -3,34 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CaborKategoriRequest;
+use App\Models\CaborKategori;
 use App\Repositories\CaborKategoriRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use App\Models\CaborKategori;
 
 class CaborKategoriController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(Request $request, CaborKategoriRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = CaborKategoriRequest::createFromBase($request);
+        $this->request = CaborKategoriRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'cabor-kategori';
-        $this->commonData['kode_first_menu']  = 'CABOR';
+        $this->route = 'cabor-kategori';
+        $this->commonData['kode_first_menu'] = 'CABOR';
         $this->commonData['kode_second_menu'] = 'KATEGORI';
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -42,15 +45,16 @@ class CaborKategoriController extends Controller implements HasMiddleware
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['kategori'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -63,6 +67,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customIndex($data);
+
         return inertia('modules/cabor-kategori/Index', $data);
     }
 
@@ -70,6 +75,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
+
         return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil ditambahkan!');
     }
 
@@ -77,6 +83,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
+
         return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil diperbarui!');
     }
 
@@ -88,16 +95,18 @@ class CaborKategoriController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('cabor-kategori.index')->with('success', 'Data kategori berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|numeric|exists:cabor_kategori,id',
         ]);
         $this->repository->delete_selected($request->ids);
+
         return response()->json(['message' => 'Data kategori berhasil dihapus!']);
     }
 
@@ -111,9 +120,10 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/cabor-kategori/Create', $data);
     }
 
@@ -128,15 +138,17 @@ class CaborKategoriController extends Controller implements HasMiddleware
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data, $item);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/cabor-kategori/Edit', $data);
     }
 
     public function list()
     {
         $data = CaborKategori::select('id', 'nama')->orderBy('nama')->get();
+
         return response()->json($data);
     }
 
@@ -146,6 +158,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
             ->select('id', 'nama')
             ->orderBy('nama')
             ->get();
+
         return response()->json($data);
     }
 }

@@ -10,12 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstTingkat extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table   = 'mst_tingkat';
+    protected $table = 'mst_tingkat';
+
     protected $guarded = [];
 
     // Kolom yang dapat diisi secara massal

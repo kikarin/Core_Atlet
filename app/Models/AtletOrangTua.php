@@ -10,12 +10,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class AtletOrangTua extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table   = 'atlet_orang_tua';
+    protected $table = 'atlet_orang_tua';
+
     protected $guarded = [];
 
     protected $fillable = [
@@ -55,5 +56,4 @@ class AtletOrangTua extends Model
     {
         return $this->belongsTo(Atlet::class, 'atlet_id');
     }
-
 }

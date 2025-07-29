@@ -13,6 +13,7 @@ class RoleSeeder extends Seeder
     {
         $this->repository = $repository;
     }
+
     /**
      * Run the database seeds.
      */
@@ -20,41 +21,41 @@ class RoleSeeder extends Seeder
     {
         $listData = [
             [
-                'id'               => 1,
-                'name'             => 'Admin',
-                'bg'               => 'bg-info',
-                'init_page_login'  => 'dashboard',
-                'is_allow_login'   => 1,
+                'id' => 1,
+                'name' => 'Admin',
+                'bg' => 'bg-info',
+                'init_page_login' => 'dashboard',
+                'is_allow_login' => 1,
                 'is_vertical_menu' => true,
             ],
             [
-                'id'               => 2,
-                'name'             => 'User',
-                'bg'               => 'bg-dark',
-                'init_page_login'  => 'dashboard',
-                'is_allow_login'   => 1,
+                'id' => 2,
+                'name' => 'User',
+                'bg' => 'bg-dark',
+                'init_page_login' => 'dashboard',
+                'is_allow_login' => 1,
                 'is_vertical_menu' => true,
             ],
             [
-                'id'               => 10,
-                'name'             => 'Pimpinan',
-                'bg'               => 'bg-info',
-                'init_page_login'  => 'dashboard',
-                'is_allow_login'   => 1,
+                'id' => 10,
+                'name' => 'Pimpinan',
+                'bg' => 'bg-info',
+                'init_page_login' => 'dashboard',
+                'is_allow_login' => 1,
                 'is_vertical_menu' => true,
             ], [
-                'id'               => 11,
-                'name'             => 'Super Admin',
-                'bg'               => 'bg-danger',
-                'init_page_login'  => 'dashboard',
-                'is_allow_login'   => 1,
+                'id' => 11,
+                'name' => 'Super Admin',
+                'bg' => 'bg-danger',
+                'init_page_login' => 'dashboard',
+                'is_allow_login' => 1,
                 'is_vertical_menu' => true,
             ], [
-                'id'               => 34,
-                'name'             => 'User API',
-                'bg'               => 'bg-secondary',
-                'init_page_login'  => 'dashboard',
-                'is_allow_login'   => 1,
+                'id' => 34,
+                'name' => 'User API',
+                'bg' => 'bg-secondary',
+                'init_page_login' => 'dashboard',
+                'is_allow_login' => 1,
                 'is_vertical_menu' => true,
             ],
         ];

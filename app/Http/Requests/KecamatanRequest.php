@@ -22,13 +22,14 @@ class KecamatanRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nama'      => 'required',
-            'latitude'  => 'required',
+            'nama' => 'required',
+            'latitude' => 'required',
             'longitude' => 'required',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
             $rules['id'] = 'required';
         }
+
         return $rules;
     }
 }

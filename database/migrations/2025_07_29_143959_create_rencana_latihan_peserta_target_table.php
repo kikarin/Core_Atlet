@@ -16,14 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('rencana_latihan_id');
             $table->unsignedBigInteger('target_latihan_id');
             $table->unsignedBigInteger('peserta_id');
-            $table->string('peserta_type'); 
+            $table->string('peserta_type');
             $table->string('nilai')->nullable();
             $table->enum('trend', ['naik', 'stabil', 'turun'])->default('stabil');
             $table->timestamps();
 
             $table->foreign('rencana_latihan_id')->references('id')->on('rencana_latihan')->onDelete('cascade');
             $table->foreign('target_latihan_id')->references('id')->on('target_latihan')->onDelete('cascade');
-            
+
             $table->unique(['rencana_latihan_id', 'target_latihan_id', 'peserta_id', 'peserta_type'], 'unique_peserta_target');
         });
     }

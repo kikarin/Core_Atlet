@@ -4,20 +4,22 @@ namespace App\Models;
 
 use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class RencanaLatihan extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
-    protected $table    = 'rencana_latihan';
-    protected $guarded  = [];
+    protected $table = 'rencana_latihan';
+
+    protected $guarded = [];
+
     protected $fillable = [
         'program_latihan_id',
         'tanggal',

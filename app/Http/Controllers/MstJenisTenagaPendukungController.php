@@ -13,24 +13,27 @@ use Inertia\Inertia;
 class MstJenisTenagaPendukungController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(Request $request, MstJenisTenagaPendukungRepository $repository)
     {
         $this->repository = $repository;
-        $this->request    = MstJenisTenagaPendukungRequest::createFromBase($request);
+        $this->request = MstJenisTenagaPendukungRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'jenis-tenaga-pendukung';
-        $this->commonData['kode_first_menu']  = 'DATA-MASTER';
+        $this->route = 'jenis-tenaga-pendukung';
+        $this->commonData['kode_first_menu'] = 'DATA-MASTER';
         $this->commonData['kode_second_menu'] = 'DATA-MASTER-JENIS-TENAGA-PENDUKUNG';
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -42,15 +45,16 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['jenisTenagaPendukung'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -63,6 +67,7 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customIndex($data);
+
         return inertia('modules/data-master/jenis-tenaga-pendukung/Index', $data);
     }
 
@@ -70,6 +75,7 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->create($data);
+
         return redirect()->route('jenis-tenaga-pendukung.index')->with('success', 'Data jenis tenaga pendukung berhasil ditambahkan!');
     }
 
@@ -77,13 +83,15 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
     {
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
+
         return redirect()->route('jenis-tenaga-pendukung.index')->with('success', 'Data jenis tenaga pendukung berhasil diperbarui!');
     }
 
     public function show($id)
     {
-        $item      = $this->repository->getById($id);
+        $item = $this->repository->getById($id);
         $itemArray = $item->toArray();
+
         return Inertia::render('modules/data-master/jenis-tenaga-pendukung/Show', [
             'item' => $itemArray,
         ]);
@@ -92,16 +100,18 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('jenis-tenaga-pendukung.index')->with('success', 'Data jenis tenaga pendukung berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_jenis_tenaga_pendukung,id',
         ]);
         $this->repository->delete_selected($request->ids);
+
         return response()->json(['message' => 'Data jenis tenaga pendukung berhasil dihapus!']);
     }
 
@@ -115,9 +125,10 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/data-master/jenis-tenaga-pendukung/Create', $data);
     }
 
@@ -132,9 +143,10 @@ class MstJenisTenagaPendukungController extends Controller implements HasMiddlew
             $data = array_merge($data, $this->getPermission());
         }
         $data = $this->repository->customCreateEdit($data, $item);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
+
         return inertia('modules/data-master/jenis-tenaga-pendukung/Edit', $data);
     }
 }

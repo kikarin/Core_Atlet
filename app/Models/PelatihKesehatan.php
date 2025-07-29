@@ -10,13 +10,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PelatihKesehatan extends Model
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
+    use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
     protected $guarded = [];
-    protected $table   = 'pelatih_kesehatan';
+
+    protected $table = 'pelatih_kesehatan';
 
     protected $fillable = [
         'pelatih_id',

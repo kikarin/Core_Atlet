@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\MstPosisiAtlet;
+use Illuminate\Database\Seeder;
 
 class MstPosisiAtletSeeder extends Seeder
 {

@@ -9,11 +9,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class CategoryPermission extends Model
 {
-    use HasFactory;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
 
-    protected $table    = 'category_permissions';
+    protected $table = 'category_permissions';
+
     protected $fillable = [
         'name',
         'sequence',

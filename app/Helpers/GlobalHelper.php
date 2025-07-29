@@ -2,22 +2,22 @@
 
 use App\Models\Role;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 if (! function_exists('set_date')) {
     function set_date($timestamp = '', $date_format = 'l, j F Y')
     {
         if (trim($timestamp) == '') {
             $timestamp = time();
-        } elseif (!ctype_digit($timestamp)) {
+        } elseif (! ctype_digit($timestamp)) {
             $timestamp = strtotime($timestamp);
         }
-        # remove S (st,nd,rd,th) there are no such things in indonesia :p
+        // remove S (st,nd,rd,th) there are no such things in indonesia :p
         $date_format = preg_replace('/S/', '', $date_format);
-        $pattern     = [
+        $pattern = [
             '/Mon[^day]/',
             '/Tue[^sday]/',
             '/Wed[^nesday]/',
@@ -98,10 +98,10 @@ if (! function_exists('set_date')) {
         $date = date($date_format, $timestamp);
         $date = preg_replace($pattern, $replace, $date);
         $date = "{$date}";
+
         return $date;
     }
 }
-
 
 function ConvertBulan($value = '')
 {
@@ -134,12 +134,13 @@ function ConvertBulan($value = '')
 
 function ConvertRpTitik($angka)
 {
-    return 'Rp. ' . strrev(implode('.', str_split(strrev(strval($angka)), 3)));
+    return 'Rp. '.strrev(implode('.', str_split(strrev(strval($angka)), 3)));
 }
 
 function RandomString($qty, $is_number = false)
 {
     $chars = ($is_number == false) ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' : '0123456789';
+
     return substr(str_shuffle($chars), 0, $qty);
 }
 
@@ -147,12 +148,12 @@ function addMonthswithdate($date, $days)
 {
     $time = set_date($date, 'H:i:s');
     $date = set_date($date, 'Y-m-d');
-    $date = strtotime('+' . $days . ' months', strtotime($date));
+    $date = strtotime('+'.$days.' months', strtotime($date));
     $date = date('Y-m-d', $date);
-    $date = $date . ' ' . $time;
+    $date = $date.' '.$time;
+
     return $date;
 }
-
 
 function str_slug($value)
 {
@@ -168,6 +169,7 @@ function sisaHari($date)
         } else {
             $diff .= ' Hari';
         }
+
         return $diff;
     } else {
         return 'Berakhir';
@@ -177,8 +179,8 @@ function sisaHari($date)
 function sisaJamMenit($date)
 {
     if (Carbon::now() <= $date) {
-        $diff    = Carbon::parse($date)->diffInMinutes();
-        $hours   = floor($diff / 60); // Menghitung jam dengan membagi selisih menit dengan 60
+        $diff = Carbon::parse($date)->diffInMinutes();
+        $hours = floor($diff / 60); // Menghitung jam dengan membagi selisih menit dengan 60
         $minutes = $diff % 60; // Menghitung menit dengan menggunakan sisa pembagian
         if ($hours == 0) {
             return "$minutes menit";
@@ -193,23 +195,22 @@ function sisaJamMenit($date)
 function InitialName($string)
 {
     $string = $string;
-    $words  = explode(' ', $string); // Memisahkan kata dengan spasi
+    $words = explode(' ', $string); // Memisahkan kata dengan spasi
 
     $char1 = substr($words[0], 0, 1); // Mengambil karakter pertama dari kata pertama
     $char2 = isset($words[1]) ? substr($words[1], 0, 1) : ''; // Mengambil karakter pertama dari kata kedua jika ada
 
-    $char_pertama_dua_kata = $char1 . $char2;
+    $char_pertama_dua_kata = $char1.$char2;
 
     return $char_pertama_dua_kata;
 }
 
-
 function ListPerPage()
 {
     return [
-        12  => 12,
-        25  => 25,
-        50  => 50,
+        12 => 12,
+        25 => 25,
+        50 => 50,
         100 => 100,
     ];
 }
@@ -218,15 +219,17 @@ function ListBulanBelajar()
 {
     $bulanOptions = [];
     for ($i = 1; $i < 13; $i++) {
-        $angka                = ($i < 10) ? '0' . $i : $i;
+        $angka = ($i < 10) ? '0'.$i : $i;
         $bulanOptions[$angka] = set_date(date("Y-$angka-01"), 'F');
     }
+
     return $bulanOptions;
 }
 
 function Ymd()
 {
     $sekarang = Carbon::now();
+
     return $sekarang->format('Y-m-d');
 }
 
@@ -238,7 +241,7 @@ function DateNow()
 function DateForHuman($tanggal)
 {
     $tanggalCarbon = Carbon::parse($tanggal);
-    $now           = Carbon::now();
+    $now = Carbon::now();
 
     // Mengecek selisih hari
     $diffInDays = $tanggalCarbon->diffInDays($now);
@@ -252,7 +255,7 @@ function DateForHuman($tanggal)
     }
 }
 
-if (!function_exists('saparator')) {
+if (! function_exists('saparator')) {
 
     function saparator($value)
     {
@@ -260,18 +263,19 @@ if (!function_exists('saparator')) {
     }
 }
 
-if (!function_exists('removeSaparator')) {
+if (! function_exists('removeSaparator')) {
     function removeSaparator($value)
     {
         // Hilangkan tanda titik (.) yang digunakan sebagai pemisah ribuan
         $value = str_replace('.', '', $value);
         // Ganti tanda koma (,) yang digunakan sebagai pemisah desimal dengan tanda titik (.)
         $value = str_replace(',', '.', $value);
+
         return $value;
     }
 }
 
-if (!function_exists('listTrueFalse')) {
+if (! function_exists('listTrueFalse')) {
     function listTrueFalse($type = 'Ya Tidak')
     {
         if ($type == 'Ya Tidak') {
@@ -293,7 +297,7 @@ if (!function_exists('listTrueFalse')) {
     }
 }
 
-if (!function_exists('listTrueFalseBg')) {
+if (! function_exists('listTrueFalseBg')) {
     function listTrueFalseBg($type = 'Ya Tidak')
     {
         if ($type == 'Ya Tidak') {
@@ -315,15 +319,14 @@ if (!function_exists('listTrueFalseBg')) {
     }
 }
 
-
-if (!function_exists('makeResponse')) {
+if (! function_exists('makeResponse')) {
 
     function makeResponse($error = 0, $message = 'success', $data = [], $status_code = 200)
     {
         return [
-            'error'       => $error,
-            'message'     => $message,
-            'data'        => $data,
+            'error' => $error,
+            'message' => $message,
+            'data' => $data,
             'status_code' => $status_code,
         ];
     }
@@ -335,27 +338,29 @@ function getFirstNWords($string, $wordLimit)
     if (count($words) <= $wordLimit) {
         return $string;
     }
+
     return implode(' ', array_slice($words, 0, $wordLimit));
 }
 
-if (!function_exists('getFileUrlAndPath')) {
+if (! function_exists('getFileUrlAndPath')) {
     function getFileUrlAndPath($fileName, $directory, $common_direktori = '')
     {
         $filePath = "{$common_direktori}/{$directory}/{$fileName}";
-        if (!empty($fileName) && Storage::disk('public')->exists($filePath)) {
+        if (! empty($fileName) && Storage::disk('public')->exists($filePath)) {
             $url = route('general.akses-file', [
                 'direktori' => Crypt::encrypt($directory),
                 'file_name' => Crypt::encrypt($fileName),
             ]);
             $path = storage_path("app/public/$filePath");
+
             return compact('url', 'path');
         }
+
         return ['url' => null, 'path' => null];
     }
 }
 
-
-if (!function_exists('convertTrueFalse')) {
+if (! function_exists('convertTrueFalse')) {
     function convertTrueFalse($value, $type = ['Tidak', 'Ya'], $using_badge = true)
     {
         $listWarna = [
@@ -367,31 +372,33 @@ if (!function_exists('convertTrueFalse')) {
             return $text;
         }
         $badge_bg = $listWarna[$value];
+
         return "<span class='badge $badge_bg'>$text</span>";
     }
 }
 
-if (!function_exists('listPerPageAlbum')) {
+if (! function_exists('listPerPageAlbum')) {
     function listPerPageAlbum()
     {
         return [
-            12  => 12,
-            25  => 25,
-            50  => 50,
+            12 => 12,
+            25 => 25,
+            50 => 50,
             100 => 100,
         ];
     }
 }
 
-if (!function_exists('extractLatLong')) {
+if (! function_exists('extractLatLong')) {
     function extractLatLong($url)
     {
         // Cari pola latitude dan longitude dalam URL
         preg_match('/!3d(-?\d+\.\d+)!2d(-?\d+\.\d+)/', $url, $coords);
 
         if (isset($coords[1]) && isset($coords[2])) {
-            $latitude  = $coords[1];
+            $latitude = $coords[1];
             $longitude = $coords[2];
+
             return ['latitude' => $latitude, 'longitude' => $longitude];
         }
 
@@ -403,37 +410,36 @@ if (!function_exists('extractLatLong')) {
     }
 }
 
-if (!function_exists('checkPermission')) {
+if (! function_exists('checkPermission')) {
     function checkPermission($permission_name)
     {
-        $auth       = Auth::user();
-        $role       = Role::find($auth->current_role_id);
+        $auth = Auth::user();
+        $role = Role::find($auth->current_role_id);
         $permission = $role->hasPermissionTo($permission_name);
+
         return $permission;
     }
 }
 
-
-if (!function_exists('getRole')) {
+if (! function_exists('getRole')) {
     function getRole($id)
     {
         return Role::find($id);
     }
 }
 
-
-if (!function_exists('periodeTanggal')) {
+if (! function_exists('periodeTanggal')) {
     function periodeTanggal($tanggal_mulai, $tanggal_selesai)
     {
         if ($tanggal_mulai != '' and $tanggal_selesai != '') {
             if (set_date($tanggal_mulai, 'Y') == set_date($tanggal_selesai, 'Y')) {
                 if (set_date($tanggal_mulai, 'm') == set_date($tanggal_selesai, 'm')) {
-                    return set_date($tanggal_mulai, 'd') . ' - ' . set_date($tanggal_selesai, 'd F Y');
+                    return set_date($tanggal_mulai, 'd').' - '.set_date($tanggal_selesai, 'd F Y');
                 } else {
-                    return set_date($tanggal_mulai, 'd F') . ' - ' . set_date($tanggal_selesai, 'd F Y');
+                    return set_date($tanggal_mulai, 'd F').' - '.set_date($tanggal_selesai, 'd F Y');
                 }
             } else {
-                return set_date($tanggal_mulai, 'd F Y') . ' - ' . set_date($tanggal_selesai, 'd F Y');
+                return set_date($tanggal_mulai, 'd F Y').' - '.set_date($tanggal_selesai, 'd F Y');
             }
         } else {
             return null;
@@ -441,14 +447,14 @@ if (!function_exists('periodeTanggal')) {
     }
 }
 
-if (!function_exists('toDate')) {
+if (! function_exists('toDate')) {
     function toDate($date)
     {
         return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(intval($date))->format('Y-m-d');
     }
 }
 
-if (!function_exists('getFirstParagraph')) {
+if (! function_exists('getFirstParagraph')) {
     function getFirstParagraph($input, $maxWords = 20)
     {
         // Menghapus tag HTML
@@ -465,33 +471,32 @@ if (!function_exists('getFirstParagraph')) {
     }
 }
 
-
-if (!function_exists('formatFileSize')) {
+if (! function_exists('formatFileSize')) {
     function formatFileSize($size)
     {
         if ($size >= 1048576) { // Lebih dari 1MB
-            return number_format($size / 1048576, 2) . ' MB';
+            return number_format($size / 1048576, 2).' MB';
         } elseif ($size >= 1024) { // Lebih dari 1KB
-            return number_format($size / 1024, 2) . ' KB';
+            return number_format($size / 1024, 2).' KB';
         }
-        return $size . ' B';
+
+        return $size.' B';
     }
 }
 
-
-
-if (!function_exists('isNavbarTransparent')) {
+if (! function_exists('isNavbarTransparent')) {
     function isNavbarTransparent($is_style_padding = false)
     {
         $is_navbar_transparent = false;
         if ($is_style_padding == true and $is_navbar_transparent == true) {
             return 'padding-navbar-transparent';
         }
+
         return $is_navbar_transparent;
     }
 }
 
-if (!function_exists('getIdentity')) {
+if (! function_exists('getIdentity')) {
     function getIdentity($identity = null)
     {
         $identityRepository = app()->make(\App\Repositories\IdentityRepository::class);
@@ -503,7 +508,7 @@ if (!function_exists('getIdentity')) {
     }
 }
 
-if (!function_exists('generateCaptcha')) {
+if (! function_exists('generateCaptcha')) {
     function generateCaptcha($name = 'captcha')
     {
         $num1 = rand(1, 10);
@@ -515,14 +520,14 @@ if (!function_exists('generateCaptcha')) {
     }
 }
 
-if (!function_exists('verifyCaptcha')) {
+if (! function_exists('verifyCaptcha')) {
     function verifyCaptcha($name = 'captcha', $answer = '')
     {
         return session($name) == $answer;
     }
 }
 
-if (!function_exists('listBulan')) {
+if (! function_exists('listBulan')) {
     function listBulan()
     {
         return [

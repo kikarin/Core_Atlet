@@ -31,12 +31,12 @@ class CaborKategoriAtletRequest extends FormRequest
         } else {
             // Untuk create/store, validasi semua field
             $rules = [
-                'cabor_id'          => 'required|exists:cabor,id',
+                'cabor_id' => 'required|exists:cabor,id',
                 'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-                'atlet_ids'         => 'required|array|min:1',
-                'atlet_ids.*'       => 'required|exists:atlets,id',
-                'is_active'         => 'required|boolean',
-                'posisi_atlet_id'   => 'required|exists:mst_posisi_atlet,id',
+                'atlet_ids' => 'required|array|min:1',
+                'atlet_ids.*' => 'required|exists:atlets,id',
+                'is_active' => 'required|boolean',
+                'posisi_atlet_id' => 'required|exists:mst_posisi_atlet,id',
             ];
         }
 
@@ -49,17 +49,17 @@ class CaborKategoriAtletRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'cabor_id.required'          => 'Cabor harus dipilih.',
-            'cabor_id.exists'            => 'Cabor yang dipilih tidak valid.',
+            'cabor_id.required' => 'Cabor harus dipilih.',
+            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
             'cabor_kategori_id.required' => 'Kategori harus dipilih.',
-            'cabor_kategori_id.exists'   => 'Kategori yang dipilih tidak valid.',
-            'atlet_ids.required'         => 'Atlet harus dipilih minimal 1.',
-            'atlet_ids.array'            => 'Atlet harus berupa array.',
-            'atlet_ids.min'              => 'Atlet harus dipilih minimal 1.',
-            'atlet_ids.*.required'       => 'Atlet tidak boleh kosong.',
-            'atlet_ids.*.exists'         => 'Atlet yang dipilih tidak valid.',
-            'posisi_atlet_id.required'   => 'Posisi atlet harus dipilih.',
-            'posisi_atlet_id.exists'     => 'Posisi atlet yang dipilih tidak valid.',
+            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
+            'atlet_ids.required' => 'Atlet harus dipilih minimal 1.',
+            'atlet_ids.array' => 'Atlet harus berupa array.',
+            'atlet_ids.min' => 'Atlet harus dipilih minimal 1.',
+            'atlet_ids.*.required' => 'Atlet tidak boleh kosong.',
+            'atlet_ids.*.exists' => 'Atlet yang dipilih tidak valid.',
+            'posisi_atlet_id.required' => 'Posisi atlet harus dipilih.',
+            'posisi_atlet_id.exists' => 'Posisi atlet yang dipilih tidak valid.',
         ];
     }
 }

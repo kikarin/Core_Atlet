@@ -9,12 +9,13 @@ use Illuminate\Support\Facades\Auth;
 class PemeriksaanPesertaParameterRepository
 {
     use RepositoryTrait;
+
     protected $model;
 
     public function __construct(PemeriksaanPesertaParameter $model)
     {
         $this->model = $model;
-        $this->with  = [
+        $this->with = [
             'pemeriksaan',
             'pemeriksaanPeserta.peserta',
             'pemeriksaanParameter',
@@ -33,8 +34,8 @@ class PemeriksaanPesertaParameterRepository
             $query->where('pemeriksaan_peserta_parameter.pemeriksaan_peserta_id', request('pemeriksaan_peserta_id'));
         }
         $sortField = request('sort');
-        $order     = request('order', 'asc');
-        $search    = request('search');
+        $order = request('order', 'asc');
+        $search = request('search');
 
         // Handle search kolom relasi
         if ($search) {
@@ -51,81 +52,84 @@ class PemeriksaanPesertaParameterRepository
         // Handle sort kolom relasi dan kolom utama
         if ($sortField === 'parameter') {
             $query->leftJoin('pemeriksaan_parameter', 'pemeriksaan_peserta_parameter.pemeriksaan_parameter_id', '=', 'pemeriksaan_parameter.id')
-                  ->orderBy('pemeriksaan_parameter.nama_parameter', $order)
-                  ->select('pemeriksaan_peserta_parameter.*');
+                ->orderBy('pemeriksaan_parameter.nama_parameter', $order)
+                ->select('pemeriksaan_peserta_parameter.*');
         } elseif (in_array($sortField, ['nilai', 'trend'])) {
-            $query->orderBy('pemeriksaan_peserta_parameter.' . $sortField, $order);
+            $query->orderBy('pemeriksaan_peserta_parameter.'.$sortField, $order);
         } elseif ($sortField) {
-            $query->orderBy('pemeriksaan_peserta_parameter.' . $sortField, $order);
+            $query->orderBy('pemeriksaan_peserta_parameter.'.$sortField, $order);
         } else {
             $query->orderBy('pemeriksaan_peserta_parameter.id', $order);
         }
 
         $perPage = (int) request('per_page', 10);
-        $page    = (int) request('page', 1);
+        $page = (int) request('page', 1);
         if ($perPage === -1) {
-            $all         = $query->get();
+            $all = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id'                       => $item->id,
-                    'pemeriksaan_id'           => $item->pemeriksaan_id,
-                    'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
+                    'id' => $item->id,
+                    'pemeriksaan_id' => $item->pemeriksaan_id,
+                    'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
                     'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                    'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-                    'nilai'                    => $item->nilai,
-                    'trend'                    => $item->trend,
-                    'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-                    'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-                    'created_at'               => $item->created_at,
-                    'updated_at'               => $item->updated_at,
-                    'created_by_user'          => $item->created_by_user?->name ?? '-',
-                    'updated_by_user'          => $item->updated_by_user?->name ?? '-',
+                    'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                    'nilai' => $item->nilai,
+                    'trend' => $item->trend,
+                    'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+                    'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                    'created_by_user' => $item->created_by_user?->name ?? '-',
+                    'updated_by_user' => $item->updated_by_user?->name ?? '-',
                 ];
             });
             $data += [
-                'data'        => $transformed,
-                'total'       => $transformed->count(),
+                'data' => $transformed,
+                'total' => $transformed->count(),
                 'currentPage' => 1,
-                'perPage'     => -1,
-                'search'      => request('search', ''),
-                'sort'        => request('sort', ''),
-                'order'       => request('order', 'asc'),
+                'perPage' => -1,
+                'search' => request('search', ''),
+                'sort' => request('sort', ''),
+                'order' => request('order', 'asc'),
             ];
+
             return $data;
         }
-        $items       = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return [
-                'id'                       => $item->id,
-                'pemeriksaan_id'           => $item->pemeriksaan_id,
-                'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
+                'id' => $item->id,
+                'pemeriksaan_id' => $item->pemeriksaan_id,
+                'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
                 'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-                'nilai'                    => $item->nilai,
-                'trend'                    => $item->trend,
-                'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-                'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-                'created_at'               => $item->created_at,
-                'updated_at'               => $item->updated_at,
-                'created_by_user'          => $item->created_by_user?->name ?? '-',
-                'updated_by_user'          => $item->updated_by_user?->name ?? '-',
+                'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                'nilai' => $item->nilai,
+                'trend' => $item->trend,
+                'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+                'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'created_by_user' => $item->created_by_user?->name ?? '-',
+                'updated_by_user' => $item->updated_by_user?->name ?? '-',
             ];
         });
         $data += [
-            'data'        => $transformed,
-            'total'       => $items->total(),
+            'data' => $transformed,
+            'total' => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage'     => $items->perPage(),
-            'search'      => request('search', ''),
-            'sort'        => request('sort', ''),
-            'order'       => request('order', 'asc'),
+            'perPage' => $items->perPage(),
+            'search' => request('search', ''),
+            'sort' => request('sort', ''),
+            'order' => request('order', 'asc'),
         ];
+
         return $data;
     }
 
     public function customCreateEdit($data, $item = null)
     {
         $data['item'] = $item;
+
         return $data;
     }
 
@@ -136,13 +140,15 @@ class PemeriksaanPesertaParameterRepository
             $data['created_by'] = $userId;
         }
         $data['updated_by'] = $userId;
+
         return $data;
     }
 
     public function validateRequest($request)
     {
-        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
+
         return $request->validate($rules, $messages);
     }
 
@@ -154,20 +160,21 @@ class PemeriksaanPesertaParameterRepository
     public function getByIdArray($id)
     {
         $item = $this->model->with($this->with)->findOrFail($id);
+
         return [
-            'id'                       => $item->id,
-            'pemeriksaan_id'           => $item->pemeriksaan_id,
-            'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
+            'id' => $item->id,
+            'pemeriksaan_id' => $item->pemeriksaan_id,
+            'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
             'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-            'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
-            'nilai'                    => $item->nilai,
-            'trend'                    => $item->trend,
-            'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
-            'status'                   => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
-            'created_at'               => $item->created_at,
-            'updated_at'               => $item->updated_at,
-            'created_by_user'          => $item->created_by_user?->name ?? '-',
-            'updated_by_user'          => $item->updated_by_user?->name ?? '-',
+            'parameter' => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+            'nilai' => $item->nilai,
+            'trend' => $item->trend,
+            'peserta' => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
+            'status' => $item->pemeriksaanPeserta && $item->pemeriksaanPeserta->status ? $item->pemeriksaanPeserta->status->nama : '-',
+            'created_at' => $item->created_at,
+            'updated_at' => $item->updated_at,
+            'created_by_user' => $item->created_by_user?->name ?? '-',
+            'updated_by_user' => $item->updated_by_user?->name ?? '-',
         ];
     }
 

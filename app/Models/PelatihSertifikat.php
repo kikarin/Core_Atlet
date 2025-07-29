@@ -13,13 +13,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PelatihSertifikat extends Model implements HasMedia
 {
-    use HasFactory;
     use Blameable;
-    use SoftDeletes;
-    use LogsActivity;
+    use HasFactory;
     use InteractsWithMedia;
+    use LogsActivity;
+    use SoftDeletes;
 
-    protected $table   = 'pelatih_sertifikat';
+    protected $table = 'pelatih_sertifikat';
+
     protected $guarded = [];
 
     protected $fillable = [
@@ -55,7 +56,7 @@ class PelatihSertifikat extends Model implements HasMedia
             ->singleFile();
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('webp')
             ->format('webp')
@@ -73,6 +74,7 @@ class PelatihSertifikat extends Model implements HasMedia
                 return $media->getUrl();
             }
         }
+
         return null;
     }
 }

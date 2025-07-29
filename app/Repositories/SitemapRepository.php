@@ -10,20 +10,17 @@ class SitemapRepository
 {
     use RepositoryTrait;
 
-
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function generateSitemap()
     {
-        $sitemap   = Sitemap::create();
-        $baseUrl   = url('');
+        $sitemap = Sitemap::create();
+        $baseUrl = url('');
         $endpoints = [
         ];
         foreach ($endpoints as $endpoint) {
             $sitemap->add(
-                Url::create($baseUrl . $endpoint)
+                Url::create($baseUrl.$endpoint)
                     ->setLastModificationDate(now())
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                     ->setPriority(0.8)

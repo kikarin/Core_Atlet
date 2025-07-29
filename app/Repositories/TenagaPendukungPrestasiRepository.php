@@ -17,7 +17,7 @@ class TenagaPendukungPrestasiRepository
     public function __construct(TenagaPendukungPrestasi $model)
     {
         $this->model = $model;
-        $this->with  = [
+        $this->with = [
             'created_by_user',
             'updated_by_user',
             'tingkat',
@@ -27,8 +27,9 @@ class TenagaPendukungPrestasiRepository
     public function create(array $data)
     {
         Log::info('TenagaPendukungPrestasiRepository: create', $data);
-        $data  = $this->customDataCreateUpdate($data);
+        $data = $this->customDataCreateUpdate($data);
         $model = $this->model->create($data);
+
         return $model;
     }
 
@@ -40,9 +41,11 @@ class TenagaPendukungPrestasiRepository
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             Log::info('TenagaPendukungPrestasiRepository: updated', $record->toArray());
+
             return $record;
         }
         Log::warning('TenagaPendukungPrestasiRepository: not found for update', ['id' => $id]);
+
         return null;
     }
 
@@ -53,9 +56,11 @@ class TenagaPendukungPrestasiRepository
         if ($record) {
             $record->forceDelete();
             Log::info('TenagaPendukungPrestasiRepository: deleted', ['id' => $id]);
+
             return true;
         }
         Log::warning('TenagaPendukungPrestasiRepository: not found for delete', ['id' => $id]);
+
         return false;
     }
 
@@ -66,6 +71,7 @@ class TenagaPendukungPrestasiRepository
             $data['created_by'] = $userId;
         }
         $data['updated_by'] = $userId;
+
         return $data;
     }
 
@@ -85,15 +91,15 @@ class TenagaPendukungPrestasiRepository
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nama_event', 'like', '%' . $search . '%')
-                  ->orWhere('peringkat', 'like', '%' . $search . '%')
-                  ->orWhere('keterangan', 'like', '%' . $search . '%')
-                  ->orWhere('tanggal', 'like', '%' . $search . '%');
+                $q->where('nama_event', 'like', '%'.$search.'%')
+                    ->orWhere('peringkat', 'like', '%'.$search.'%')
+                    ->orWhere('keterangan', 'like', '%'.$search.'%')
+                    ->orWhere('tanggal', 'like', '%'.$search.'%');
             });
         }
         if (request('sort')) {
-            $order        = request('order', 'asc');
-            $sortField    = request('sort');
+            $order = request('order', 'asc');
+            $sortField = request('sort');
             $validColumns = ['id', 'nama_event', 'tingkat_id', 'tanggal', 'peringkat', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -104,52 +110,54 @@ class TenagaPendukungPrestasiRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page    = (int) request('page', 1);
+        $page = (int) request('page', 1);
         if ($perPage === -1) {
-            $all         = $query->with($this->with)->get();
+            $all = $query->with($this->with)->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id'         => $item->id,
+                    'id' => $item->id,
                     'nama_event' => $item->nama_event,
-                    'tingkat'    => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
-                    'tanggal'    => $item->tanggal,
-                    'peringkat'  => $item->peringkat,
+                    'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
+                    'tanggal' => $item->tanggal,
+                    'peringkat' => $item->peringkat,
                     'keterangan' => $item->keterangan,
                 ];
             });
+
             return [
                 'data' => $transformed,
                 'meta' => [
-                    'total'        => $transformed->count(),
+                    'total' => $transformed->count(),
                     'current_page' => 1,
-                    'per_page'     => -1,
-                    'search'       => request('search', ''),
-                    'sort'         => request('sort', ''),
-                    'order'        => request('order', 'asc'),
+                    'per_page' => -1,
+                    'search' => request('search', ''),
+                    'sort' => request('sort', ''),
+                    'order' => request('order', 'asc'),
                 ],
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items           = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed     = collect($items->items())->map(function ($item) {
+        $items = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed = collect($items->items())->map(function ($item) {
             return [
-                'id'         => $item->id,
+                'id' => $item->id,
                 'nama_event' => $item->nama_event,
-                'tingkat'    => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
-                'tanggal'    => $item->tanggal,
-                'peringkat'  => $item->peringkat,
+                'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
+                'tanggal' => $item->tanggal,
+                'peringkat' => $item->peringkat,
                 'keterangan' => $item->keterangan,
             ];
         });
+
         return [
             'data' => $transformed,
             'meta' => [
-                'total'        => $items->total(),
+                'total' => $items->total(),
                 'current_page' => $items->currentPage(),
-                'per_page'     => $items->perPage(),
-                'search'       => request('search', ''),
-                'sort'         => request('sort', ''),
-                'order'        => request('order', 'asc'),
+                'per_page' => $items->perPage(),
+                'search' => request('search', ''),
+                'sort' => request('sort', ''),
+                'order' => request('order', 'asc'),
             ],
         ];
     }
@@ -164,13 +172,13 @@ class TenagaPendukungPrestasiRepository
     public function handleEdit($tenagaPendukungId, $id)
     {
         $prestasi = $this->getById($id);
-        if (!$prestasi) {
+        if (! $prestasi) {
             return redirect()->back()->with('error', 'Prestasi tidak ditemukan');
         }
 
         return Inertia::render('modules/tenaga-pendukung/prestasi/Edit', [
             'tenagaPendukungId' => (int) $tenagaPendukungId,
-            'item'              => $prestasi,
+            'item' => $prestasi,
         ]);
     }
 

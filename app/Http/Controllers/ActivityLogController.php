@@ -11,25 +11,29 @@ use Illuminate\Routing\Controllers\Middleware;
 class ActivityLogController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $categoryPermissionRepository;
+
     private $request;
 
     public function __construct(ActivityLogRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = $request;
-        $this->with       = ['causer', 'causer.role'];
+        $this->request = $request;
+        $this->with = ['causer', 'causer.role'];
         $this->initialize();
-        $this->commonData['kode_first_menu']  = 'USERS-MANAGEMENT';
+        $this->commonData['kode_first_menu'] = 'USERS-MANAGEMENT';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
@@ -43,12 +47,12 @@ class ActivityLogController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['logs'],
             'meta' => [
-                'total'        => $data['meta']['total'],
+                'total' => $data['meta']['total'],
                 'current_page' => $data['meta']['current_page'],
-                'per_page'     => $data['meta']['per_page'],
-                'search'       => $data['meta']['search'],
-                'sort'         => $data['meta']['sort'],
-                'order'        => $data['meta']['order'],
+                'per_page' => $data['meta']['per_page'],
+                'search' => $data['meta']['search'],
+                'sort' => $data['meta']['sort'],
+                'order' => $data['meta']['order'],
             ],
         ]);
     }
@@ -56,7 +60,7 @@ class ActivityLogController extends Controller implements HasMiddleware
     public function show($id)
     {
         $item = $this->repository->getDetailWithUserTrack($id);
-        if (!$item) {
+        if (! $item) {
             return redirect()->back()->with('error', 'Log not found');
         }
 
@@ -76,9 +80,9 @@ class ActivityLogController extends Controller implements HasMiddleware
         ];
 
         return inertia('modules/activity-logs/Show', [
-            'fields'       => $fields,
+            'fields' => $fields,
             'actionFields' => $actionFields,
-            'backUrl'      => '/menu-permissions/logs',
+            'backUrl' => '/menu-permissions/logs',
         ]);
     }
 
@@ -105,9 +109,10 @@ class ActivityLogController extends Controller implements HasMiddleware
         $log = $this->repository->getById($id);
         if ($log) {
             $log->delete();
+
             return redirect()->route('access-control.logs.index')->with('success', 'Log deleted successfully');
         }
+
         return redirect()->back()->with('error', 'Log not found');
     }
-
 }

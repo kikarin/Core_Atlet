@@ -9,19 +9,20 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class MstDesa extends Model
 {
-    use HasFactory;
     use Blameable;
+    use HasFactory;
     use LogsActivity;
 
-    protected $table    = 'mst_desa';
+    protected $table = 'mst_desa';
+
     protected $fillable = [
         'nama',
         'id_kecamatan',
         'latitude',
         'longitude',
     ];
-    protected $guarded = [];
 
+    protected $guarded = [];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -32,7 +33,6 @@ class MstDesa extends Model
     {
         return $this->belongsTo(MstKecamatan::class, 'id_kecamatan')->select('id', 'nama');
     }
-
 
     // Todo: Scope
     public function scopeFilter($query, $data)

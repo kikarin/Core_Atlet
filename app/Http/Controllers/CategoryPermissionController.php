@@ -12,22 +12,25 @@ use Illuminate\Routing\Controllers\Middleware;
 class CategoryPermissionController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(CategoryPermissionRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = CategoryPermissionRequest::createFromBase($request);
+        $this->request = CategoryPermissionRequest::createFromBase($request);
         $this->initialize();
-        $this->route                          = 'permissions';
-        $this->commonData['kode_first_menu']  = 'USERS-MANAGEMENT';
+        $this->route = 'permissions';
+        $this->commonData['kode_first_menu'] = 'USERS-MANAGEMENT';
         $this->commonData['kode_second_menu'] = 'PERMISSION';
     }
 
     public static function middleware(): array
     {
         $permission = 'Permission';
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -40,12 +43,15 @@ class CategoryPermissionController extends Controller implements HasMiddleware
     {
         $data = $this->repository->validateCategoryRequest($request);
         $this->repository->create($data);
+
         return redirect()->route('permissions.index')->with('success', 'Category Permission created successfully');
     }
+
     public function update(CategoryPermissionRequest $request, $id)
     {
         $data = $this->repository->validateCategoryRequest($request);
         $this->repository->update($id, $data);
+
         return redirect()->route('permissions.index')->with('success', 'Category Permission updated successfully');
     }
 }

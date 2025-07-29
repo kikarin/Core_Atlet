@@ -2,36 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\TenagaPendukungRequest;
+use App\Imports\TenagaPendukungImport;
 use App\Repositories\TenagaPendukungRepository;
 use App\Traits\BaseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use App\Imports\TenagaPendukungImport;
 
 class TenagaPendukungController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(TenagaPendukungRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = TenagaPendukungRequest::createFromBase($request);
+        $this->request = TenagaPendukungRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu']  = $this->kode_menu;
+        $this->commonData['kode_first_menu'] = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store', 'import']),
             new Middleware("can:$permission Detail", only: ['show']),
@@ -43,15 +46,16 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function apiIndex()
     {
         $data = $this->repository->customIndex([]);
+
         return response()->json([
             'data' => $data['tenaga_pendukungs'],
             'meta' => [
-                'total'        => $data['total'],
+                'total' => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page'     => $data['perPage'],
-                'search'       => $data['search'],
-                'sort'         => $data['sort'],
-                'order'        => $data['order'],
+                'per_page' => $data['perPage'],
+                'search' => $data['search'],
+                'sort' => $data['sort'],
+                'order' => $data['order'],
             ],
         ]);
     }
@@ -66,7 +70,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
             $item = $this->repository->getDetailWithRelations($id);
 
-            if (!$item) {
+            if (! $item) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Tenaga Pendukung  tidak ditemukan',
@@ -75,23 +79,24 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'data'    => $item,
+                'data' => $item,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching Tenaga Pendukung  detail: ' . $e->getMessage());
+            Log::error('Error fetching Tenaga Pendukung  detail: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data Tenaga Pendukung ',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-
     public function store(TenagaPendukungRequest $request)
     {
-        $data  = $this->repository->validateRequest($request);
+        $data = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
+
         return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil ditambahkan!');
     }
 
@@ -99,8 +104,8 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     {
         try {
             Log::info('TenagaPendukungController: update method called', [
-                'id'             => $id,
-                'all_data'       => $request->all(),
+                'id' => $id,
+                'all_data' => $request->all(),
                 'validated_data' => $request->validated(),
             ]);
             $data = $this->repository->validateRequest($request);
@@ -111,9 +116,11 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 'data' => $data,
             ]);
             $model = $this->repository->update($id, $data);
+
             return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil diperbarui!');
         } catch (\Exception $e) {
-            Log::error('Error updating tenaga pendukung: ' . $e->getMessage());
+            Log::error('Error updating tenaga pendukung: '.$e->getMessage());
+
             return redirect()
                 ->back()
                 ->withInput()
@@ -124,6 +131,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function show($id)
     {
         $item = $this->repository->getDetailWithRelations($id);
+
         return Inertia::render('modules/tenaga-pendukung/Show', [
             'item' => $item,
         ]);
@@ -147,16 +155,18 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function destroy($id)
     {
         $this->repository->delete($id);
+
         return redirect()->route('tenaga-pendukung.index')->with('success', 'Tenaga Pendukung berhasil dihapus!');
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|integer|exists:tenaga_pendukungs,id',
         ]);
         $this->repository->delete_selected($request->ids);
+
         return response()->json(['message' => 'Tenaga Pendukung terpilih berhasil dihapus!']);
     }
 
@@ -170,12 +180,12 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             'file' => 'required|mimes:xlsx,xls',
         ]);
         try {
-            $import = new TenagaPendukungImport();
+            $import = new TenagaPendukungImport;
             \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
             Log::info('TenagaPendukungController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count'  => $import->getSuccessCount(),
-                'error_count'    => $import->getErrorCount(),
+                'success_count' => $import->getSuccessCount(),
+                'error_count' => $import->getErrorCount(),
             ]);
             $message = 'Import berhasil! ';
             if ($import->getSuccessCount() > 0) {
@@ -184,14 +194,15 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             if ($import->getErrorCount() > 0) {
                 $message .= " {$import->getErrorCount()} data gagal diimport.";
             }
+
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data'    => [
-                    'total_rows'    => $import->getRowCount(),
+                'data' => [
+                    'total_rows' => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count'   => $import->getErrorCount(),
-                    'errors'        => $import->getErrors(),
+                    'error_count' => $import->getErrorCount(),
+                    'errors' => $import->getErrors(),
                 ],
             ]);
         } catch (\Exception $e) {
@@ -199,10 +210,11 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal import: ' . $e->getMessage(),
-                'error'   => $e->getMessage(),
+                'message' => 'Gagal import: '.$e->getMessage(),
+                'error' => $e->getMessage(),
             ], 422);
         }
     }

@@ -8,6 +8,7 @@ use App\Traits\RepositoryTrait;
 class CategoryPermissionRepository
 {
     use RepositoryTrait;
+
     protected $model;
 
     public function __construct(CategoryPermission $model)
@@ -19,11 +20,12 @@ class CategoryPermissionRepository
     {
         if ($record == null) {
             if (empty($data['sequence'])) {
-                $last_sequence    = $this->getLastSequence();
-                $last_sequence    = ($last_sequence == null) ? 1 : $last_sequence->sequence + 1;
+                $last_sequence = $this->getLastSequence();
+                $last_sequence = ($last_sequence == null) ? 1 : $last_sequence->sequence + 1;
                 $data['sequence'] = $last_sequence;
             }
         }
+
         return $data;
     }
 
@@ -38,6 +40,7 @@ class CategoryPermissionRepository
         if ($model) {
             $model->permission()->delete();
         }
+
         return redirect()->route('permissions.index')->with('success', trans('message.success_delete'));
     }
 
@@ -49,6 +52,7 @@ class CategoryPermissionRepository
     public function getLastSequence()
     {
         $record = $this->model::orderBy('sequence', 'desc')->first();
+
         return $record;
     }
 
@@ -66,26 +70,29 @@ class CategoryPermissionRepository
                 ->get()
                 ->map(function ($cat) {
                     return [
-                        'id'          => $cat->id,
-                        'name'        => $cat->name,
-                        'sequence'    => $cat->sequence,
+                        'id' => $cat->id,
+                        'name' => $cat->name,
+                        'sequence' => $cat->sequence,
                         'permissions' => $cat->permission->map(function ($perm) {
                             return [
-                                'id'   => $perm->id,
+                                'id' => $perm->id,
                                 'name' => $perm->name,
                             ];
                         }),
                     ];
                 }),
         ];
+
         return $data;
     }
+
     /**
      * Validasi request untuk create/edit
      */
     public function validateCategoryRequest($request)
     {
         $rules = method_exists($request, 'rules') ? $request->rules() : [];
+
         return $request->validate($rules);
     }
 }

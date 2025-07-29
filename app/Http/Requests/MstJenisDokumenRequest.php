@@ -26,7 +26,7 @@ class MstJenisDokumenRequest extends FormRequest
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
-            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_dokumen,nama,' . $this->id;
+            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_dokumen,nama,'.$this->id;
         } else {
             $rules['nama'] = 'required|string|max:255|unique:mst_jenis_dokumen,nama';
         }
@@ -43,9 +43,9 @@ class MstJenisDokumenRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis dokumen wajib diisi.',
-            'nama.string'   => 'Nama jenis dokumen harus berupa teks.',
-            'nama.max'      => 'Nama jenis dokumen tidak boleh lebih dari 255 karakter.',
-            'nama.unique'   => 'Nama jenis dokumen sudah ada.',
+            'nama.string' => 'Nama jenis dokumen harus berupa teks.',
+            'nama.max' => 'Nama jenis dokumen tidak boleh lebih dari 255 karakter.',
+            'nama.unique' => 'Nama jenis dokumen sudah ada.',
         ];
     }
 }

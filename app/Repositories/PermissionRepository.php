@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\DB;
 class PermissionRepository
 {
     use RepositoryTrait;
+
     protected $model;
+
     protected $categoryPermissionRepository;
 
     public function __construct(Permission $model, CategoryPermissionRepository $categoryPermissionRepository)
     {
-        $this->model                        = $model;
+        $this->model = $model;
         $this->categoryPermissionRepository = $categoryPermissionRepository;
     }
 
@@ -26,13 +28,14 @@ class PermissionRepository
                 ->get()
                 ->map(function ($perm) {
                     return [
-                        'id'                     => $perm->id,
-                        'name'                   => $perm->name,
+                        'id' => $perm->id,
+                        'name' => $perm->name,
                         'category_permission_id' => $perm->category_permission_id,
-                        'category_permission'    => optional($perm->category_permission)->name,
+                        'category_permission' => optional($perm->category_permission)->name,
                     ];
                 }),
         ];
+
         return $data;
     }
 
@@ -40,31 +43,34 @@ class PermissionRepository
     {
         // Jika POST dan is_crud == 'ya', generate CRUD
         if (request()->isMethod('post') && request('is_crud') === 'ya') {
-            $baseName   = request('name');
+            $baseName = request('name');
             $categoryId = request('category_permission_id');
-            $crudList   = ['Show', 'Detail', 'Add', 'Edit', 'Delete'];
+            $crudList = ['Show', 'Detail', 'Add', 'Edit', 'Delete'];
             foreach ($crudList as $crud) {
                 Permission::create([
-                    'name'                   => $baseName . ' ' . $crud,
+                    'name' => $baseName.' '.$crud,
                     'category_permission_id' => $categoryId,
-                    'guard_name'             => 'web',
+                    'guard_name' => 'web',
                 ]);
             }
+
             return redirect()->route('permissions.index')->with('success', 'Berhasil generate permission CRUD!');
         }
         // Jika tidak, buat satu permission saja (POST)
         if (request()->isMethod('post')) {
             Permission::create([
-                'name'                   => request('name'),
+                'name' => request('name'),
                 'category_permission_id' => request('category_permission_id'),
-                'guard_name'             => 'web',
+                'guard_name' => 'web',
             ]);
+
             return redirect()->route('permissions.index')->with('success', 'Berhasil menambah permission!');
         }
         $data += [
             'category_permission_id' => request()->input('category_permission_id'),
             'get_CategoryPermission' => $this->categoryPermissionRepository->getAll_OrderSequence()->pluck('name', 'id'),
         ];
+
         return $data;
     }
 
@@ -76,9 +82,10 @@ class PermissionRepository
         try {
             DB::beginTransaction();
             $record = $this->getById($id);
-            $model  = $record;
+            $model = $record;
             $model->delete();
             DB::commit();
+
             return $record;
         } catch (\Exception $e) {
             DB::rollback();

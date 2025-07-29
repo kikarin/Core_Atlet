@@ -22,6 +22,7 @@ class TenagaPendukungKesehatanRepository
     {
         Log::info('TenagaPendukungKesehatanRepository: create method called with data', $data);
         $data = $this->customDataCreateUpdate($data);
+
         return $this->model->create($data);
     }
 
@@ -33,9 +34,11 @@ class TenagaPendukungKesehatanRepository
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             Log::info('TenagaPendukungKesehatanRepository: update method - record updated', $record->toArray());
+
             return $record;
         }
         Log::warning('TenagaPendukungKesehatanRepository: update method - record not found for update', ['id' => $id]);
+
         return null;
     }
 
@@ -46,9 +49,11 @@ class TenagaPendukungKesehatanRepository
         if ($record) {
             $record->forceDelete();
             Log::info('TenagaPendukungKesehatanRepository: record successfully hard-deleted', ['id' => $id]);
+
             return true;
         }
         Log::warning('TenagaPendukungKesehatanRepository: record not found for deletion', ['id' => $id]);
+
         return false;
     }
 
@@ -61,6 +66,7 @@ class TenagaPendukungKesehatanRepository
         }
         $data['updated_by'] = $userId;
         Log::info('TenagaPendukungKesehatanRepository: customDataCreateUpdate method - data after processing', $data);
+
         return $data;
     }
 
@@ -73,6 +79,7 @@ class TenagaPendukungKesehatanRepository
         } else {
             Log::info('TenagaPendukungKesehatanRepository: getByTenagaPendukungId method - no data found');
         }
+
         return $data;
     }
 

@@ -26,7 +26,7 @@ class MstPosisiAtletRequest extends FormRequest
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
-            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_pelatih,nama,' . $this->id;
+            $rules['nama'] = 'required|string|max:255|unique:mst_jenis_pelatih,nama,'.$this->id;
         } else {
             $rules['nama'] = 'required|string|max:255|unique:mst_jenis_pelatih,nama';
         }
@@ -38,9 +38,9 @@ class MstPosisiAtletRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis pelatih wajib diisi.',
-            'nama.string'   => 'Nama jenis pelatih harus berupa teks.',
-            'nama.max'      => 'Nama jenis pelatih tidak boleh lebih dari 255 karakter.',
-            'nama.unique'   => 'Nama jenis pelatih sudah ada.',
+            'nama.string' => 'Nama jenis pelatih harus berupa teks.',
+            'nama.max' => 'Nama jenis pelatih tidak boleh lebih dari 255 karakter.',
+            'nama.unique' => 'Nama jenis pelatih sudah ada.',
         ];
     }
 }

@@ -17,7 +17,7 @@ class CaborKategoriAtletRepository
     public function __construct(CaborKategoriAtlet $model)
     {
         $this->model = $model;
-        $this->with  = ['cabor', 'caborKategori', 'atlet', 'created_by_user', 'updated_by_user'];
+        $this->with = ['cabor', 'caborKategori', 'atlet', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -47,14 +47,14 @@ class CaborKategoriAtletRepository
         if (request('search')) {
             $search = request('search');
             $query->whereHas('atlet', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%')
-                    ->orWhere('nik', 'like', '%' . $search . '%');
+                $q->where('nama', 'like', '%'.$search.'%')
+                    ->orWhere('nik', 'like', '%'.$search.'%');
             });
         }
 
         // Sort
         if (request('sort')) {
-            $order     = request('order', 'asc');
+            $order = request('order', 'asc');
             $sortField = request('sort');
 
             if ($sortField === 'atlet_nama') {
@@ -63,7 +63,7 @@ class CaborKategoriAtletRepository
             } else {
                 $validColumns = ['id', 'cabor_id', 'cabor_kategori_id', 'atlet_id', 'created_at'];
                 if (in_array($sortField, $validColumns)) {
-                    $query->orderBy('cabor_kategori_atlet.' . $sortField, $order);
+                    $query->orderBy('cabor_kategori_atlet.'.$sortField, $order);
                 } else {
                     $query->orderBy('cabor_kategori_atlet.id', 'desc');
                 }
@@ -74,68 +74,69 @@ class CaborKategoriAtletRepository
 
         // Pagination
         $perPage = (int) request('per_page', 10);
-        $page    = (int) request('page', 1);
+        $page = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allRecords         = $query->get();
+            $allRecords = $query->get();
             $transformedRecords = collect($allRecords)->map(function ($record) {
                 return [
-                    'id'                  => $record->id,
-                    'cabor_id'            => $record->cabor_id,
-                    'cabor_nama'          => $record->cabor->nama ?? '-',
-                    'cabor_kategori_id'   => $record->cabor_kategori_id,
+                    'id' => $record->id,
+                    'cabor_id' => $record->cabor_id,
+                    'cabor_nama' => $record->cabor->nama ?? '-',
+                    'cabor_kategori_id' => $record->cabor_kategori_id,
                     'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
-                    'atlet_id'            => $record->atlet_id,
-                    'atlet_nama'          => $record->atlet->nama ?? '-',
-                    'atlet_nik'           => $record->atlet->nik  ?? '-',
-                    'is_active'           => $record->is_active,
-                    'is_active_badge'     => $record->is_active_badge,
-                    'created_at'          => $record->created_at,
+                    'atlet_id' => $record->atlet_id,
+                    'atlet_nama' => $record->atlet->nama ?? '-',
+                    'atlet_nik' => $record->atlet->nik ?? '-',
+                    'is_active' => $record->is_active,
+                    'is_active_badge' => $record->is_active_badge,
+                    'created_at' => $record->created_at,
                 ];
             });
 
             $data += [
-                'records'     => $transformedRecords,
-                'total'       => $transformedRecords->count(),
+                'records' => $transformedRecords,
+                'total' => $transformedRecords->count(),
                 'currentPage' => 1,
-                'perPage'     => -1,
-                'search'      => request('search', ''),
-                'sort'        => request('sort', ''),
-                'order'       => request('order', 'asc'),
+                'perPage' => -1,
+                'search' => request('search', ''),
+                'sort' => request('sort', ''),
+                'order' => request('order', 'asc'),
             ];
+
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $records         = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $records = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedRecords = collect($records->items())->map(function ($record) {
             return [
-                'id'                => $record->id,
-                'atlet_id'          => $record->atlet_id,
-                'nama'              => $record->atlet->nama ?? '-',
-                'atlet_nama'        => $record->atlet->nama ?? '-',
-                'posisi_atlet_id'   => $record->posisi_atlet_id,
-                'is_active'         => $record->is_active,
-                'is_active_badge'   => $record->is_active_badge,
-                'created_at'        => $record->created_at,
-                'jenis_kelamin'     => $record->atlet->jenis_kelamin     ?? '-',
-                'tempat_lahir'      => $record->atlet->tempat_lahir      ?? '-',
-                'tanggal_lahir'     => $record->atlet->tanggal_lahir     ?? '-',
+                'id' => $record->id,
+                'atlet_id' => $record->atlet_id,
+                'nama' => $record->atlet->nama ?? '-',
+                'atlet_nama' => $record->atlet->nama ?? '-',
+                'posisi_atlet_id' => $record->posisi_atlet_id,
+                'is_active' => $record->is_active,
+                'is_active_badge' => $record->is_active_badge,
+                'created_at' => $record->created_at,
+                'jenis_kelamin' => $record->atlet->jenis_kelamin ?? '-',
+                'tempat_lahir' => $record->atlet->tempat_lahir ?? '-',
+                'tanggal_lahir' => $record->atlet->tanggal_lahir ?? '-',
                 'tanggal_bergabung' => $record->atlet->tanggal_bergabung ?? '-',
-                'foto'              => $record->atlet->foto              ?? null,
-                'posisi_atlet_nama' => $record->posisiAtlet?->nama       ?? '-',
+                'foto' => $record->atlet->foto ?? null,
+                'posisi_atlet_nama' => $record->posisiAtlet?->nama ?? '-',
             ];
         });
 
         $data += [
-            'records'     => $transformedRecords,
-            'total'       => $records->total(),
+            'records' => $transformedRecords,
+            'total' => $records->total(),
             'currentPage' => $records->currentPage(),
-            'perPage'     => $records->perPage(),
-            'search'      => request('search', ''),
-            'sort'        => request('sort', ''),
-            'order'       => request('order', 'asc'),
+            'perPage' => $records->perPage(),
+            'search' => request('search', ''),
+            'sort' => request('sort', ''),
+            'order' => request('order', 'asc'),
         ];
 
         return $data;
@@ -157,11 +158,11 @@ class CaborKategoriAtletRepository
     {
         Log::info('BatchInsert Data', $data);
 
-        $userId     = Auth::id();
+        $userId = Auth::id();
         $insertData = [];
 
         // Restore data yang sudah soft deleted
-        if (!empty($data['atlet_ids'])) {
+        if (! empty($data['atlet_ids'])) {
             foreach ($data['atlet_ids'] as $atletId) {
                 $restore = $this->model->withTrashed()
                     ->where('cabor_id', $data['cabor_id'])
@@ -199,19 +200,19 @@ class CaborKategoriAtletRepository
             } else {
                 // Insert baru
                 $insertData[] = [
-                    'cabor_id'          => $data['cabor_id'],
+                    'cabor_id' => $data['cabor_id'],
                     'cabor_kategori_id' => $data['cabor_kategori_id'],
-                    'atlet_id'          => $atletId,
-                    'posisi_atlet_id'   => $data['posisi_atlet_id'] ?? null,
-                    'is_active'         => (int) $data['is_active'],
-                    'created_by'        => $userId,
-                    'updated_by'        => $userId,
-                    'created_at'        => now(),
-                    'updated_at'        => now(),
+                    'atlet_id' => $atletId,
+                    'posisi_atlet_id' => $data['posisi_atlet_id'] ?? null,
+                    'is_active' => (int) $data['is_active'],
+                    'created_by' => $userId,
+                    'updated_by' => $userId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
         }
-        if (!empty($insertData)) {
+        if (! empty($insertData)) {
             DB::table('cabor_kategori_atlet')->insert($insertData);
         }
 
@@ -220,6 +221,7 @@ class CaborKategoriAtletRepository
             // Insert batch dengan ignore untuk menghindari duplicate entry
             DB::table('cabor_kategori_atlet')->insertOrIgnore($insertData);
             DB::commit();
+
             return true;
         } catch (\Exception $e) {
             DB::rollback();
@@ -239,7 +241,7 @@ class CaborKategoriAtletRepository
     {
         $query = $this->model->where('cabor_kategori_id', $caborKategoriId);
 
-        if (!empty($atletIds)) {
+        if (! empty($atletIds)) {
             $query->whereIn('atlet_id', $atletIds);
         }
 
@@ -258,27 +260,27 @@ class CaborKategoriAtletRepository
         } else {
             // Untuk create/store, validasi semua field
             $rules = [
-                'cabor_id'          => 'required|exists:cabor,id',
+                'cabor_id' => 'required|exists:cabor,id',
                 'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-                'atlet_ids'         => 'required|array|min:1',
-                'atlet_ids.*'       => 'required|exists:atlets,id',
-                'is_active'         => 'nullable|in:0,1',
-                'posisi_atlet_id'   => 'required|exists:mst_posisi_atlet,id',
+                'atlet_ids' => 'required|array|min:1',
+                'atlet_ids.*' => 'required|exists:atlets,id',
+                'is_active' => 'nullable|in:0,1',
+                'posisi_atlet_id' => 'required|exists:mst_posisi_atlet,id',
             ];
         }
 
         $messages = [
-            'cabor_id.required'          => 'Cabor harus dipilih.',
-            'cabor_id.exists'            => 'Cabor yang dipilih tidak valid.',
+            'cabor_id.required' => 'Cabor harus dipilih.',
+            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
             'cabor_kategori_id.required' => 'Kategori harus dipilih.',
-            'cabor_kategori_id.exists'   => 'Kategori yang dipilih tidak valid.',
-            'atlet_ids.required'         => 'Atlet harus dipilih minimal 1.',
-            'atlet_ids.array'            => 'Atlet harus berupa array.',
-            'atlet_ids.min'              => 'Atlet harus dipilih minimal 1.',
-            'atlet_ids.*.required'       => 'Atlet tidak boleh kosong.',
-            'atlet_ids.*.exists'         => 'Atlet yang dipilih tidak valid.',
-            'posisi_atlet_id.required'   => 'Posisi atlet harus dipilih.',
-            'posisi_atlet_id.exists'     => 'Posisi atlet yang dipilih tidak valid.',
+            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
+            'atlet_ids.required' => 'Atlet harus dipilih minimal 1.',
+            'atlet_ids.array' => 'Atlet harus berupa array.',
+            'atlet_ids.min' => 'Atlet harus dipilih minimal 1.',
+            'atlet_ids.*.required' => 'Atlet tidak boleh kosong.',
+            'atlet_ids.*.exists' => 'Atlet yang dipilih tidak valid.',
+            'posisi_atlet_id.required' => 'Posisi atlet harus dipilih.',
+            'posisi_atlet_id.exists' => 'Posisi atlet yang dipilih tidak valid.',
         ];
 
         return $request->validate($rules, $messages);

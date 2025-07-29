@@ -1,60 +1,60 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\UsersMenuController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\CategoryPermissionController;
 use App\Http\Controllers\AtletController;
-use App\Http\Controllers\AtletOrangTuaController;
-use App\Models\MstKecamatan;
-use App\Models\MstDesa;
-use App\Models\MstTingkat;
-use App\Models\MstJenisDokumen;
-use App\Models\MstJenisPelatih;
-use App\Models\MstJenisTenagaPendukung;
-use App\Models\MstPosisiAtlet;
-use App\Models\Cabor;
-use App\Http\Controllers\AtletSertifikatController;
-use App\Http\Controllers\AtletPrestasiController;
 use App\Http\Controllers\AtletDokumenController;
 use App\Http\Controllers\AtletKesehatanController;
-use App\Http\Controllers\PelatihController;
-use App\Http\Controllers\PelatihSertifikatController;
-use App\Http\Controllers\PelatihPrestasiController;
-use App\Http\Controllers\PelatihKesehatanController;
-use App\Http\Controllers\PelatihDokumenController;
-use App\Http\Controllers\MstTingkatController;
-use App\Http\Controllers\MstJenisDokumenController;
-use App\Http\Controllers\KecamatanController;
-use App\Http\Controllers\DesaController;
-use App\Http\Controllers\MstPosisiAtletController;
-use App\Http\Controllers\MstJenisPelatihController;
+use App\Http\Controllers\AtletOrangTuaController;
+use App\Http\Controllers\AtletPrestasiController;
+use App\Http\Controllers\AtletSertifikatController;
 use App\Http\Controllers\CaborController;
-use App\Http\Controllers\CaborKategoriController;
 use App\Http\Controllers\CaborKategoriAtletController;
+use App\Http\Controllers\CaborKategoriController;
 use App\Http\Controllers\CaborKategoriPelatihController;
-use App\Http\Controllers\TenagaPendukungController;
-use App\Http\Controllers\TenagaPendukungSertifikatController;
-use App\Http\Controllers\TenagaPendukungPrestasiController;
-use App\Http\Controllers\TenagaPendukungKesehatanController;
-use App\Http\Controllers\TenagaPendukungDokumenController;
-use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\CaborKategoriTenagaPendukungController;
-use App\Http\Controllers\ProgramLatihanController;
-use App\Http\Controllers\TargetLatihanController;
-use App\Http\Controllers\RencanaLatihanController;
-use App\Http\Controllers\RencanaLatihanPesertaController;
-use App\Http\Controllers\RencanaLatihanKelolaController;
+use App\Http\Controllers\CategoryPermissionController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DesaController;
+use App\Http\Controllers\KecamatanController;
+use App\Http\Controllers\MstJenisDokumenController;
+use App\Http\Controllers\MstJenisPelatihController;
+use App\Http\Controllers\MstJenisTenagaPendukungController;
+use App\Http\Controllers\MstPosisiAtletController;
+use App\Http\Controllers\MstTingkatController;
+use App\Http\Controllers\PelatihController;
+use App\Http\Controllers\PelatihDokumenController;
+use App\Http\Controllers\PelatihKesehatanController;
+use App\Http\Controllers\PelatihPrestasiController;
+use App\Http\Controllers\PelatihSertifikatController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PemeriksaanParameterController;
 use App\Http\Controllers\PemeriksaanPesertaController;
 use App\Http\Controllers\PemeriksaanPesertaParameterController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProgramLatihanController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RencanaLatihanController;
+use App\Http\Controllers\RencanaLatihanKelolaController;
+use App\Http\Controllers\RencanaLatihanPesertaController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TargetLatihanController;
+use App\Http\Controllers\TenagaPendukungController;
+use App\Http\Controllers\TenagaPendukungDokumenController;
+use App\Http\Controllers\TenagaPendukungKesehatanController;
+use App\Http\Controllers\TenagaPendukungPrestasiController;
+use App\Http\Controllers\TenagaPendukungSertifikatController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\UsersMenuController;
+use App\Models\Cabor;
+use App\Models\MstDesa;
+use App\Models\MstJenisDokumen;
+use App\Models\MstJenisPelatih;
+use App\Models\MstJenisTenagaPendukung;
+use App\Models\MstKecamatan;
+use App\Models\MstPosisiAtlet;
+use App\Models\MstTingkat;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 // =====================
 // ROUTE UTAMA
@@ -480,7 +480,6 @@ Route::put('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaCo
 Route::delete('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'destroy'])->name('pemeriksaan.peserta.destroy');
 Route::post('/pemeriksaan/{pemeriksaan}/peserta/{peserta}', [PemeriksaanPesertaController::class, 'update']);
 
-
 // API untuk detail atlet, pelatih, dan tenaga pendukung
 Route::get('/api/atlet/{id}', [AtletController::class, 'apiShow']);
 Route::get('/api/pelatih/{id}', [PelatihController::class, 'apiShow']);
@@ -496,5 +495,5 @@ Route::get('/api/ref-status-pemeriksaan', [RefStatusPemeriksaanController::class
 // Route untuk bulk update parameter peserta (untuk MassEdit)
 Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate']);
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

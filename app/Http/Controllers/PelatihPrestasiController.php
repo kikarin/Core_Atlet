@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\PelatihPrestasiRequest;
 use App\Repositories\PelatihPrestasiRepository;
 use App\Traits\BaseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
@@ -13,23 +13,26 @@ use Inertia\Inertia;
 class PelatihPrestasiController extends Controller implements HasMiddleware
 {
     use BaseTrait;
+
     private $repository;
+
     private $request;
 
     public function __construct(PelatihPrestasiRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request    = $request;
+        $this->request = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu']  = $this->kode_menu;
+        $this->commonData['kode_first_menu'] = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className  = class_basename(__CLASS__);
+        $className = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
+
         return [
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['getByPelatihId']),
@@ -41,12 +44,13 @@ class PelatihPrestasiController extends Controller implements HasMiddleware
     public function getByPelatihId($pelatihId)
     {
         $prestasi = $this->repository->getByPelatihId($pelatihId);
+
         return response()->json($prestasi);
     }
 
     public function store(PelatihPrestasiRequest $request, $pelatih_id)
     {
-        $data  = $request->validated();
+        $data = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -59,7 +63,7 @@ class PelatihPrestasiController extends Controller implements HasMiddleware
 
     public function update(PelatihPrestasiRequest $request, $pelatih_id, $id)
     {
-        $data  = $request->validated();
+        $data = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -107,7 +111,7 @@ class PelatihPrestasiController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids'   => 'required|array',
+            'ids' => 'required|array',
             'ids.*' => 'required|integer|exists:pelatih_prestasi,id',
         ]);
 
@@ -119,12 +123,13 @@ class PelatihPrestasiController extends Controller implements HasMiddleware
     public function show($pelatih_id, $id)
     {
         $prestasi = $this->repository->getById($id);
-        if (!$prestasi) {
+        if (! $prestasi) {
             return redirect()->back()->with('error', 'Prestasi tidak ditemukan');
         }
+
         return Inertia::render('modules/pelatih/prestasi/Show', [
             'pelatihId' => (int) $pelatih_id,
-            'item'      => $prestasi,
+            'item' => $prestasi,
         ]);
     }
 }

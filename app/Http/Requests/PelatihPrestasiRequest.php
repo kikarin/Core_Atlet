@@ -14,12 +14,12 @@ class PelatihPrestasiRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'pelatih_id'        => 'required|exists:pelatihs,id',
-            'nama_event'        => 'required|string|max:255',
-            'tingkat_id'        => 'nullable|integer',
-            'tanggal'           => 'nullable|date',
-            'peringkat'         => 'nullable|string|max:255',
-            'keterangan'        => 'nullable|string',
+            'pelatih_id' => 'required|exists:pelatihs,id',
+            'nama_event' => 'required|string|max:255',
+            'tingkat_id' => 'nullable|integer',
+            'tanggal' => 'nullable|date',
+            'peringkat' => 'nullable|string|max:255',
+            'keterangan' => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -33,7 +33,7 @@ class PelatihPrestasiRequest extends FormRequest
     {
         return [
             'pelatih_id.required' => 'ID Pelatih wajib diisi.',
-            'pelatih_id.exists'   => 'ID Pelatih tidak valid.',
+            'pelatih_id.exists' => 'ID Pelatih tidak valid.',
             'nama_event.required' => 'Nama event wajib diisi.',
         ];
     }
@@ -44,7 +44,7 @@ class PelatihPrestasiRequest extends FormRequest
             return $value === '' ? null : $value;
         }, $this->all()));
 
-        if (!$this->has('pelatih_id') && $this->route('pelatih_id')) {
+        if (! $this->has('pelatih_id') && $this->route('pelatih_id')) {
             $this->merge(['pelatih_id' => $this->route('pelatih_id')]);
         }
 

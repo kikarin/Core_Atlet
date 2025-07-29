@@ -22,6 +22,7 @@ class AtletOrangTuaRepository
     {
         Log::info('AtletOrangTuaRepository: create method called with data', $data);
         $data = $this->customDataCreateUpdate($data);
+
         return $this->model->create($data);
     }
 
@@ -34,10 +35,12 @@ class AtletOrangTuaRepository
             $processedData = $this->customDataCreateUpdate($data, $record);
             $record->update($processedData);
             Log::info('AtletOrangTuaRepository: update method - record updated', $record->toArray());
+
             return $record;
         }
 
         Log::warning('AtletOrangTuaRepository: update method - record not found for update', ['id' => $id]);
+
         return null;
     }
 
@@ -49,10 +52,12 @@ class AtletOrangTuaRepository
         if ($record) {
             $record->forceDelete();
             Log::info('AtletOrangTuaRepository: record successfully hard-deleted', ['id' => $id]);
+
             return true;
         }
 
         Log::warning('AtletOrangTuaRepository: record not found for deletion', ['id' => $id]);
+
         return false;
     }
 
@@ -66,6 +71,7 @@ class AtletOrangTuaRepository
         $data['updated_by'] = $userId;
 
         Log::info('AtletOrangTuaRepository: customDataCreateUpdate method - data after processing', $data);
+
         return $data;
     }
 
@@ -78,6 +84,7 @@ class AtletOrangTuaRepository
         } else {
             Log::info('AtletOrangTuaRepository: getByAtletId method - no data found');
         }
+
         return $data;
     }
 
