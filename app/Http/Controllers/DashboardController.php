@@ -84,7 +84,7 @@ class DashboardController extends Controller implements HasMiddleware
                 'trend' => $trend,
                 'icon' => $icon,
                 'href' => $href,
-                'compare_label' => 'dibanding bulan lalu',
+                'compare_label' => '',
             ];
         };
 

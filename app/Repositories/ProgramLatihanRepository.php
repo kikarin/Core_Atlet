@@ -88,6 +88,9 @@ class ProgramLatihanRepository
                 'keterangan' => $item->keterangan,
                 'jumlah_target_individu' => $item->targetLatihan()->where('jenis_target', 'individu')->count(),
                 'jumlah_target_kelompok' => $item->targetLatihan()->where('jenis_target', 'kelompok')->count(),
+                'jumlah_target_atlet' => $item->targetLatihan()->where('peruntukan', 'atlet')->count(),
+                'jumlah_target_pelatih' => $item->targetLatihan()->where('peruntukan', 'pelatih')->count(),
+                'jumlah_target_tenaga_pendukung' => $item->targetLatihan()->where('peruntukan', 'tenaga-pendukung')->count(),
                 'jumlah_rencana_latihan' => $item->rencana_latihan_count,
             ];
         });

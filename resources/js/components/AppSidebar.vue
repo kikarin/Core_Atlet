@@ -50,6 +50,7 @@ const iconMap: Record<string, any> = {
     HandHeart: LucideIcons.HandHeart,
     Ungroup: LucideIcons.Ungroup,
     Stethoscope: LucideIcons.Stethoscope,
+    Wrench: LucideIcons.Wrench,
 };
 
 const fetchMenus = async () => {

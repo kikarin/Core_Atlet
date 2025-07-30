@@ -48,7 +48,7 @@ const confirmDelete = () => {
 <template>
     <Head :title="`Detail ${title}`" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="bg-gray-100 dark:bg-neutral-950 space-y-4 p-4">
+        <div class="min-h-screen bg-gray-100 dark:bg-neutral-950 space-y-4 p-4">
             <!-- Header & Action Buttons -->
             <HeaderShow :title="`Detail ${title}`">
                 <slot name="custom-action" />

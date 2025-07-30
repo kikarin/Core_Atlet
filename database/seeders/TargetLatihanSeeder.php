@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\ProgramLatihan;
 use App\Models\TargetLatihan;
 use Illuminate\Database\Seeder;
 
@@ -10,40 +9,71 @@ class TargetLatihanSeeder extends Seeder
 {
     public function run(): void
     {
-        $program = ProgramLatihan::first();
-        if (! $program) {
-            return;
-        }
+        // Target latihan untuk atlet
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'atlet',
+            'deskripsi' => 'Kecepatan Lari 100m',
+            'satuan' => 'detik',
+            'nilai_target' => '12.5',
+        ]);
 
-        $data = [
-            [
-                'program_latihan_id' => $program->id,
-                'jenis_target' => 'individu',
-                'deskripsi' => 'Menguasai teknik smash',
-                'satuan' => 'kali',
-                'nilai_target' => '10',
-            ],
-            [
-                'program_latihan_id' => $program->id,
-                'jenis_target' => 'kelompok',
-                'deskripsi' => 'Kerjasama tim dalam latihan passing',
-                'satuan' => 'set',
-                'nilai_target' => '5',
-            ],
-            [
-                'program_latihan_id' => $program->id,
-                'jenis_target' => 'individu',
-                'deskripsi' => 'Meningkatkan kecepatan lari',
-                'satuan' => 'detik',
-                'nilai_target' => '12',
-            ],
-        ];
-        foreach ($data as $item) {
-            TargetLatihan::firstOrCreate([
-                'program_latihan_id' => $item['program_latihan_id'],
-                'jenis_target' => $item['jenis_target'],
-                'deskripsi' => $item['deskripsi'],
-            ], $item);
-        }
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'atlet',
+            'deskripsi' => 'Kekuatan Angkat Berat',
+            'satuan' => 'kg',
+            'nilai_target' => '80',
+        ]);
+
+        // Target latihan untuk pelatih
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'pelatih',
+            'deskripsi' => 'Kemampuan Analisis Teknik',
+            'satuan' => 'skala 1-10',
+            'nilai_target' => '8',
+        ]);
+
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'pelatih',
+            'deskripsi' => 'Kemampuan Komunikasi',
+            'satuan' => 'skala 1-10',
+            'nilai_target' => '9',
+        ]);
+
+        // Target latihan untuk tenaga pendukung
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'tenaga-pendukung',
+            'deskripsi' => 'Kemampuan Fisioterapi',
+            'satuan' => 'skala 1-10',
+            'nilai_target' => '8.5',
+        ]);
+
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'individu',
+            'peruntukan' => 'tenaga-pendukung',
+            'deskripsi' => 'Pengetahuan Nutrisi',
+            'satuan' => 'skala 1-10',
+            'nilai_target' => '9',
+        ]);
+
+        // Target latihan kelompok
+        TargetLatihan::create([
+            'program_latihan_id' => 1,
+            'jenis_target' => 'kelompok',
+            'peruntukan' => null,
+            'deskripsi' => 'Kerjasama Tim',
+            'satuan' => 'skala 1-10',
+            'nilai_target' => '8',
+        ]);
     }
 }

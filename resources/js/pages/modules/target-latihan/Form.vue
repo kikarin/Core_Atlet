@@ -15,38 +15,60 @@ const formData = computed(() => ({
     deskripsi: props.initialData?.deskripsi || '',
     satuan: props.initialData?.satuan || '',
     nilai_target: props.initialData?.nilai_target || '',
+    peruntukan: props.initialData?.peruntukan || (props.infoHeader?.jenis_target === 'individu' ? 'atlet' : null),
     id: props.initialData?.id || undefined,
 }));
 
-const formInputs = [
-    {
-        name: 'deskripsi',
-        label: 'Deskripsi Target',
-        type: 'text' as const,
-        placeholder: 'Masukkan deskripsi target',
-        required: true,
-    },
-    {
-        name: 'satuan',
-        label: 'Satuan',
-        type: 'text' as const,
-        placeholder: 'Masukkan satuan (opsional)',
-        required: false,
-    },
-    {
-        name: 'nilai_target',
-        label: 'Nilai Target',
-        type: 'text' as const,
-        placeholder: 'Masukkan nilai target (opsional)',
-        required: false,
-    },
-];
+const formInputs = computed(() => {
+    const baseInputs: any[] = [
+        {
+            name: 'deskripsi',
+            label: 'Deskripsi Target',
+            type: 'text',
+            placeholder: 'Masukkan deskripsi target',
+            required: true,
+        },
+        {
+            name: 'satuan',
+            label: 'Satuan',
+            type: 'text',
+            placeholder: 'Masukkan satuan (opsional)',
+            required: false,
+        },
+        {
+            name: 'nilai_target',
+            label: 'Nilai Target',
+            type: 'text',
+            placeholder: 'Masukkan nilai target (opsional)',
+            required: false,
+        },
+    ];
+
+    // Peruntukan hanya untuk target individu
+    if (props.infoHeader?.jenis_target === 'individu') {
+        baseInputs.splice(1, 0, {
+            name: 'peruntukan',
+            label: 'Peruntukan',
+            type: 'select',
+            options: [
+                { value: 'atlet', label: 'Atlet' },
+                { value: 'pelatih', label: 'Pelatih' },
+                { value: 'tenaga-pendukung', label: 'Tenaga Pendukung' },
+            ],
+            placeholder: 'Pilih peruntukan',
+            required: true,
+        });
+    }
+
+    return baseInputs;
+});
 
 const handleSave = (form: any) => {
     const dataToSave: Record<string, any> = {
         deskripsi: form.deskripsi,
         satuan: form.satuan,
         nilai_target: form.nilai_target,
+        peruntukan: form.peruntukan,
         program_latihan_id: props.infoHeader?.program_latihan_id,
         jenis_target: props.infoHeader?.jenis_target,
     };

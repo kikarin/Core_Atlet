@@ -56,5 +56,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PemeriksaanSeeder::class);
         $this->call(PemeriksaanParameterSeeder::class);
         $this->call(RefStatusPemeriksaanSeeder::class);
+        $this->call(MstJenisUnitPendukungSeeder::class);
     }
 }

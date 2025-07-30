@@ -35,6 +35,7 @@ use App\Http\Controllers\ProgramLatihanController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
 use App\Http\Controllers\RencanaLatihanController;
 use App\Http\Controllers\RencanaLatihanKelolaController;
+use App\Http\Controllers\RencanaLatihanKelolaKelompokController;
 use App\Http\Controllers\RencanaLatihanPesertaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TargetLatihanController;
@@ -45,6 +46,8 @@ use App\Http\Controllers\TenagaPendukungPrestasiController;
 use App\Http\Controllers\TenagaPendukungSertifikatController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UsersMenuController;
+use App\Http\Controllers\MstJenisUnitPendukungController;
+use App\Http\Controllers\UnitPendukungController;
 use App\Models\Cabor;
 use App\Models\MstDesa;
 use App\Models\MstJenisDokumen;
@@ -53,6 +56,7 @@ use App\Models\MstJenisTenagaPendukung;
 use App\Models\MstKecamatan;
 use App\Models\MstPosisiAtlet;
 use App\Models\MstTingkat;
+use App\Models\MstJenisUnitPendukung;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -76,6 +80,7 @@ Route::get('/api/desa', [DesaController::class, 'apiIndex']);
 Route::get('/api/posisi-atlet', [MstPosisiAtletController::class, 'apiIndex']);
 Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex']);
 Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
+Route::get('/api/jenis-unit-pendukung', [MstJenisUnitPendukungController::class, 'apiIndex']);
 
 // select
 Route::get('/api/tingkat-list', function () {
@@ -98,6 +103,9 @@ Route::get('/api/jenis-pelatih-list', function () {
 });
 Route::get('/api/jenis-tenaga-pendukung-list', function () {
     return MstJenisTenagaPendukung::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/jenis-unit-pendukung-list', function () {
+    return MstJenisUnitPendukung::select('id', 'nama')->orderBy('nama')->get();
 });
 
 // =====================
@@ -259,6 +267,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('dokumen/destroy-selected', [TenagaPendukungDokumenController::class, 'destroy_selected'])->name('tenaga-pendukung.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [TenagaPendukungDokumenController::class, 'show'])->name('tenaga-pendukung.dokumen.show');
     });
+    // Unit Pendukung
+    Route::resource('/unit-pendukung', UnitPendukungController::class)->names('unit-pendukung');
+    Route::get('/api/unit-pendukung', [UnitPendukungController::class, 'apiIndex']);
+    Route::post('/unit-pendukung/destroy-selected', [UnitPendukungController::class, 'destroy_selected'])->name('unit-pendukung.destroy_selected');
+    
+
     // CABOR
     Route::resource('/cabor', CaborController::class)->names('cabor');
     Route::get('/api/cabor', [CaborController::class, 'apiIndex']);
@@ -331,6 +345,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/rencana-latihan', [RencanaLatihanController::class, 'apiIndex']);
     Route::post('/program-latihan/destroy-selected', [ProgramLatihanController::class, 'destroy_selected'])->name('program-latihan.destroy_selected');
 });
+// Kelola Target Kelompok Rencana Latihan
+Route::get('/program-latihan/{program_id}/rencana-latihan/kelola-target-kelompok', [RencanaLatihanKelolaKelompokController::class, 'index'])->name('rencana-latihan.kelola-target-kelompok');
+Route::post('/program-latihan/{program_id}/rencana-latihan/kelola-target-kelompok/bulk-update', [RencanaLatihanKelolaKelompokController::class, 'bulkUpdate'])->name('rencana-latihan.kelola-target-kelompok.bulk-update');
+Route::get('/api/rencana-latihan/{rencana_id}/target-kelompok-mapping', [RencanaLatihanKelolaKelompokController::class, 'getTargetKelompokMapping']);
+
 
 // =====================
 // TARGET LATIHAN (NESTED MODULAR)
@@ -417,6 +436,10 @@ Route::prefix('data-master')->group(function () {
     // Master Jenis Tenaga Pendukung
     Route::resource('/jenis-tenaga-pendukung', MstJenisTenagaPendukungController::class)->names('jenis-tenaga-pendukung');
     Route::post('/jenis-tenaga-pendukung/destroy-selected', [MstJenisTenagaPendukungController::class, 'destroy_selected'])->name('jenis-tenaga-pendukung.destroy_selected');
+    // Master Jenis Unit Pendukung
+    Route::resource('/jenis-unit-pendukung', MstJenisUnitPendukungController::class)->names('jenis-unit-pendukung');
+    Route::post('/jenis-unit-pendukung/destroy-selected', [MstJenisUnitPendukungController::class, 'destroy_selected'])->name('jenis-unit-pendukung.destroy_selected');
+
 });
 
 // =====================

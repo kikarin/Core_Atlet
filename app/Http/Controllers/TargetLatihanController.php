@@ -113,6 +113,12 @@ class TargetLatihanController extends Controller implements HasMiddleware
     public function store(TargetLatihanRequest $request)
     {
         $data = $this->repository->validateRequest($request);
+        
+        // Untuk target kelompok, set peruntukan ke null
+        if ($data['jenis_target'] === 'kelompok') {
+            $data['peruntukan'] = null;
+        }
+        
         $this->repository->create($data);
 
         return redirect()->route('target-latihan.index')->with('success', 'Target latihan berhasil ditambahkan!');
@@ -136,6 +142,12 @@ class TargetLatihanController extends Controller implements HasMiddleware
     public function update(TargetLatihanRequest $request, $id)
     {
         $data = $this->repository->validateRequest($request);
+        
+        // Untuk target kelompok, set peruntukan ke null
+        if ($data['jenis_target'] === 'kelompok') {
+            $data['peruntukan'] = null;
+        }
+        
         $this->repository->update($id, $data);
 
         return redirect()->route('target-latihan.index')->with('success', 'Target latihan berhasil diperbarui!');
@@ -180,6 +192,17 @@ class TargetLatihanController extends Controller implements HasMiddleware
         }
         // Filter by program_id & jenis_target
         $request->merge(['program_latihan_id' => $program_id, 'jenis_target' => $jenis_target]);
+        
+        // Filter by peruntukan only for target individu
+        $peruntukan = $request->get('peruntukan');
+        if ($peruntukan && $jenis_target === 'individu') {
+            $request->merge(['peruntukan' => $peruntukan]);
+        }
+        
+        // Set default peruntukan if not provided for target individu
+        if (!$peruntukan && $jenis_target === 'individu') {
+            $request->merge(['peruntukan' => 'atlet']);
+        }
         $data = $this->repository->customIndex($data);
         $data['infoHeader'] = [
             'program_latihan_id' => $programLatihan->id,
@@ -189,6 +212,7 @@ class TargetLatihanController extends Controller implements HasMiddleware
             'periode_mulai' => $programLatihan->periode_mulai,
             'periode_selesai' => $programLatihan->periode_selesai,
             'jenis_target' => $jenis_target,
+            'peruntukan' => $jenis_target === 'individu' ? ($peruntukan ?: 'atlet') : null,
         ];
 
         return inertia('modules/target-latihan/Index', $data);
@@ -223,6 +247,12 @@ class TargetLatihanController extends Controller implements HasMiddleware
             'jenis_target' => $jenis_target,
         ]);
         $data = $this->repository->validateRequest($request);
+        
+        // Untuk target kelompok, set peruntukan ke null
+        if ($jenis_target === 'kelompok') {
+            $data['peruntukan'] = null;
+        }
+        
         $this->repository->create($data);
 
         return redirect()->route('program-latihan.target-latihan.index', [$program_id, $jenis_target])->with('success', 'Target latihan berhasil ditambahkan!');
@@ -264,6 +294,12 @@ class TargetLatihanController extends Controller implements HasMiddleware
             'jenis_target' => $jenis_target,
         ]);
         $data = $this->repository->validateRequest($request);
+        
+        // Untuk target kelompok, set peruntukan ke null
+        if ($jenis_target === 'kelompok') {
+            $data['peruntukan'] = null;
+        }
+        
         $this->repository->update($target_id, $data);
 
         return redirect()->route('program-latihan.target-latihan.index', [$program_id, $jenis_target])->with('success', 'Target latihan berhasil diperbarui!');

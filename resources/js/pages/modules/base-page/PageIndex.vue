@@ -174,7 +174,7 @@ const handleSort = debounce((val: { key: string; order: 'asc' | 'desc' }) => {
     page.value = 1;
 }, 300);
 
-const handlePageChange = debounce((val) => {
+const handlePageChange = debounce((val: number) => {
     handleSearch({ page: val });
 }, 300);
 
@@ -233,7 +233,7 @@ defineExpose({ fetchData });
                         @update:search="handleSearchDebounced"
                         @update:sort="handleSort"
                         @update:page="handlePageChange"
-                        @update:perPage="(val) => handleSearch({ limit: Number(val), page: 1 })"
+                        @update:perPage="(val: any) => handleSearch({ limit: Number(val), page: 1 })"
                         @deleted="fetchData()"
                         :on-delete-row="handleDeleteRow"
                         :hide-pagination="props.hidePagination"

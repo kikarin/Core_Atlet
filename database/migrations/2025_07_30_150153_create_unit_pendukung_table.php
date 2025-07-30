@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rencana_latihan_target_kelompok', function (Blueprint $table) {
+        Schema::create('unit_pendukung', function (Blueprint $table) {
             $table->id();
-            $table->string('nama')->nullable();
+            $table->string("nama")->nullable();
+            $table->unsignedBigInteger("jenis_unit_pendukung_id")->nullable();
+            $table->string("deskripsi")->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rencana_latihan_target_kelompok');
+        Schema::dropIfExists('unit_pendukung');
     }
 };

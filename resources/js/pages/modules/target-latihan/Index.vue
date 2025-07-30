@@ -6,9 +6,22 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 
 const page = usePage();
-const routeParams = computed(() => page.props.ziggy?.route_parameters || {});
-const programId = computed(() => routeParams.value.program_id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
-const jenisTarget = computed(() => routeParams.value.jenis_target || (typeof window !== 'undefined' ? window.location.pathname.split('/')[4] : ''));
+const routeParams = computed(() => {
+    if (page.props && page.props.ziggy && page.props.ziggy.route_parameters) {
+        return page.props.ziggy.route_parameters;
+    }
+    // fallback: parse dari URL
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname.split('/');
+        return {
+            program_id: path[2],
+            jenis_target: path[4],
+        };
+    }
+    return {};
+});
+const programId = computed(() => routeParams.value.program_id);
+const jenisTarget = computed(() => routeParams.value.jenis_target);
 
 const props = defineProps<{
     infoHeader?: any;
@@ -19,11 +32,20 @@ const breadcrumbs = [
     { title: 'Target Latihan', href: `/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}` },
 ];
 
-const columns = [
-    { key: 'deskripsi', label: 'Deskripsi Target' },
-    { key: 'satuan', label: 'Satuan' },
-    { key: 'nilai_target', label: 'Nilai Target' },
-];
+const columns = computed(() => {
+    const baseColumns = [
+        { key: 'deskripsi', label: 'Deskripsi Target' },
+        { key: 'satuan', label: 'Satuan' },
+        { key: 'nilai_target', label: 'Nilai Target' },
+    ];
+
+    // Kolom peruntukan hanya untuk target individu
+    if (info.value.jenis_target === 'individu') {
+        baseColumns.splice(1, 0, { key: 'peruntukan', label: 'Peruntukan' });
+    }
+
+    return baseColumns;
+});
 
 const selected = ref<number[]>([]);
 const pageIndex = ref();
@@ -63,6 +85,15 @@ const deleteRow = async (row: any) => {
 };
 
 const info = computed(() => props.infoHeader || {});
+
+// Perbaiki endpoint API agar mengirimkan peruntukan jika ada
+const defaultApiEndpoint = computed(() => {
+    let url = `/api/target-latihan?program_latihan_id=${info.value.program_latihan_id}&jenis_target=${info.value.jenis_target}`;
+    if (info.value.peruntukan) {
+        url += `&peruntukan=${info.value.peruntukan}`;
+    }
+    return url;
+});
 </script>
 
 <template>
@@ -74,9 +105,9 @@ const info = computed(() => props.infoHeader || {});
             :create-url="`/program-latihan/${info.program_latihan_id}/target-latihan/${info.jenis_target}/create`"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
-            :api-endpoint="`/api/target-latihan?program_latihan_id=${info.program_latihan_id}&jenis_target=${info.jenis_target}`"
+            :api-endpoint="defaultApiEndpoint"
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row-confirm="deleteRow"
@@ -105,6 +136,10 @@ const info = computed(() => props.infoHeader || {});
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Jenis Target:</span>
                             <span class="text-sm font-medium">{{ info.jenis_target }}</span>
+                        </div>
+                        <div v-if="info.jenis_target === 'individu' && info.peruntukan" class="flex items-center gap-2">
+                            <span class="text-muted-foreground text-sm font-medium">Peruntukan:</span>
+                            <span class="text-sm font-medium">{{ info.peruntukan }}</span>
                         </div>
                     </div>
                 </div>

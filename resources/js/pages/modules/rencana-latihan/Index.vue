@@ -87,13 +87,15 @@ const deleteRow = async (row: any) => {
             :create-url="`/program-latihan/${info.program_latihan_id}/rencana-latihan/create`"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             :api-endpoint="`/api/rencana-latihan?program_latihan_id=${info.program_latihan_id}`"
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row="deleteRow"
             :show-import="false"
+            :showKelola="true"
+            :kelolaUrl="`/program-latihan/${info.program_latihan_id}/rencana-latihan/kelola-target-kelompok`"
         >
             <template #header-extra>
                 <div class="bg-card mb-4 rounded-lg border p-4">

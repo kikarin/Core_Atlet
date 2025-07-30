@@ -41,10 +41,11 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
         $rencanaLatihan = RencanaLatihan::with(['programLatihan.cabor', 'programLatihan.caborKategori', 'targetLatihan'])
             ->findOrFail($rencana_id);
 
-        // Ambil target latihan individu dari rencana latihan yang dipilih
+        // Ambil target latihan individu dari rencana latihan yang dipilih berdasarkan peruntukan
         $targetLatihan = $rencanaLatihan->targetLatihan()
             ->where('jenis_target', 'individu')
-            ->select('target_latihan.id', 'target_latihan.deskripsi', 'target_latihan.satuan', 'target_latihan.nilai_target')
+            ->where('peruntukan', $jenis_peserta)
+            ->select('target_latihan.id', 'target_latihan.deskripsi', 'target_latihan.satuan', 'target_latihan.nilai_target', 'target_latihan.peruntukan')
             ->get();
 
         // Ambil peserta berdasarkan jenis

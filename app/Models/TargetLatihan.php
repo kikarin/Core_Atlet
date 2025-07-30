@@ -23,6 +23,7 @@ class TargetLatihan extends Model
     protected $fillable = [
         'program_latihan_id',
         'jenis_target',
+        'peruntukan',
         'deskripsi',
         'satuan',
         'nilai_target',
@@ -33,6 +34,7 @@ class TargetLatihan extends Model
 
     protected $casts = [
         'jenis_target' => 'string',
+        'peruntukan' => 'string',
     ];
 
     public function programLatihan()

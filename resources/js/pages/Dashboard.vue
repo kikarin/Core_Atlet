@@ -135,12 +135,12 @@ const quickActions = computed(() => {
             <!-- Stats Cards -->
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
                 <Card v-for="stat in stats" :key="stat.title" class="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" @click="router.visit(stat.href)">
-                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-1">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0">
                         <CardTitle class="text-sm font-medium">
                             {{ stat.title }}
                         </CardTitle>
-                        <div :class="[stat.bgColor, 'rounded-full p-2']">
-                            <component :is="iconMap[stat.icon]" :class="stat.color" class="h-4 w-4" />
+                        <div :class="[stat.bgColor, 'rounded-full']">
+                            <component :is="iconMap[stat.icon]" :class="stat.color" class="h-5 w-5" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -167,7 +167,7 @@ const quickActions = computed(() => {
             <!-- Main Content -->
             <div class="grid grid-cols-5 gap-6">
                 <!-- Recent Activities -->
-                <Card class="col-span-3">
+                <!-- <Card class="col-span-3">
                     <CardHeader>
                         <CardTitle>Aktivitas Terbaru</CardTitle>
                         <CardDescription>Update terbaru dari sistem</CardDescription>
@@ -190,10 +190,10 @@ const quickActions = computed(() => {
                     <CardFooter>
                         <Button variant="outline" class="w-full" @click="router.visit('/menu-permissions/logs')"> Lihat Semua Aktivitas </Button>
                     </CardFooter>
-                </Card>
+                </Card> -->
 
                 <!-- Quick Actions -->
-                <Card class="col-span-2">
+                <!-- <Card class="col-span-2">
                     <CardHeader>
                         <CardTitle>Aksi Cepat</CardTitle>
                         <CardDescription>Tugas umum dan pintasan</CardDescription>
@@ -210,37 +210,37 @@ const quickActions = computed(() => {
                             </Button>
                         </div>
                     </CardContent>
-                </Card>
+                </Card> -->
             </div>
 
 
 
             <!-- Dua Card Tabel dalam Grid 2 Kolom -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Card Program Latihan -->
-                <Card>
+                <div>
                     <CardHeader>
-                        <CardTitle>Program Latihan Terbaru</CardTitle>
+                        <CardTitle class="mb-5">Program Latihan Terbaru</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div class="space-y-4">
+                        <div class="space-y-1">
                             <Card v-for="row in props.latest_programs" :key="row.id" class="shadow-sm border">
                                 <CardContent class="space-y-3 py-4">
                                     <div class="flex flex-col gap-2">
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Nama:</span>
+                                            <span class="font-medium min-w-[135px]">Nama:</span>
                                             <span class="text-foreground">{{ row.nama_program }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Cabor:</span>
+                                            <span class="font-medium min-w-[135px]">Cabor:</span>
                                             <span class="text-foreground">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Periode:</span>
+                                            <span class="font-medium min-w-[135px]">Periode:</span>
                                             <span class="text-foreground">{{ row.periode }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[120px]">Rencana Latihan:</span>
+                                            <span class="font-medium min-w-[135px]">Rencana Latihan:</span>
                                             <div class="flex flex-wrap gap-2 items-center">
                                                 <Badge variant="secondary" class="text-foreground">
                                                     {{ row.jumlah_rencana_latihan }}
@@ -256,42 +256,42 @@ const quickActions = computed(() => {
                             </Card>
                         </div>
                     </CardContent>
-                </Card>
+                </div>
 
                 <!-- Card Pemeriksaan -->
-                <Card>
+                <div>
                     <CardHeader>
-                        <CardTitle>Pemeriksaan Terbaru</CardTitle>
+                        <CardTitle class="mb-5">Pemeriksaan Terbaru</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div class="space-y-4">
+                        <div class="space-y-1">
                             <Card v-for="row in props.latest_pemeriksaan" :key="row.id" class="shadow-sm border">
                                 <CardContent class="space-y-3 py-4">
                                     <div class="flex flex-col gap-2">
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Nama:</span>
+                                            <span class="font-medium min-w-[150px]">Nama:</span>
                                             <span class="text-foreground">{{ row.nama_pemeriksaan }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Cabor:</span>
+                                            <span class="font-medium min-w-[150px]">Cabor:</span>
                                             <span class="text-foreground">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Tenaga Pendukung:</span>
+                                            <span class="font-medium min-w-[150px]">Tenaga Pendukung:</span>
                                             <span class="text-foreground">{{ row.tenaga_pendukung_nama }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[120px]">Tanggal:</span>
+                                            <span class="font-medium min-w-[150px]">Tanggal:</span>
                                             <span class="text-foreground">{{ row.tanggal_pemeriksaan }}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[120px]">Status:</span>
+                                            <span class="font-medium min-w-[150px]">Status:</span>
                                             <Badge :variant="row.status === 'selesai' ? 'success' : row.status === 'sebagian' ? 'warning' : 'destructive'">
                                                 {{ row.status }}
                                             </Badge>
                                         </div>
                                         <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[120px]">Parameter:</span>
+                                            <span class="font-medium min-w-[150px]">Parameter:</span>
                                             <div class="flex flex-wrap gap-2 items-center">
                                                 <Badge variant="secondary" class="text-foreground">
                                                     {{ row.jumlah_parameter }}
@@ -303,7 +303,7 @@ const quickActions = computed(() => {
                                             </div>
                                         </div>
                                         <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[120px]">Peserta:</span>
+                                            <span class="font-medium min-w-[150px]">Peserta:</span>
                                             <BadgeGroup
                                                 :badges="[
                                                     {
@@ -329,7 +329,7 @@ const quickActions = computed(() => {
                             </Card>
                         </div>
                     </CardContent>
-                </Card>
+                </div>
             </div>
         </div>
     </AppLayout>

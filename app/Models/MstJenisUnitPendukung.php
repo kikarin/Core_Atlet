@@ -8,16 +8,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class RencanaLatihanTargetKelompok extends Model
+class MstJenisUnitPendukung extends Model
 {
-    use Blameable, HasFactory, LogsActivity, SoftDeletes;
+    use Blameable;
+    use HasFactory;
+    use LogsActivity;
+    use SoftDeletes;
+
+    protected $table = 'mst_jenis_unit_pendukung';
 
     protected $guarded = [];
 
-    protected $table = '{{ table }}';
-
     protected $fillable = [
         'nama',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -25,6 +31,6 @@ class RencanaLatihanTargetKelompok extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => 'RencanaLatihanTargetKelompok');
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Jenis Unit Pendukung');
     }
 }

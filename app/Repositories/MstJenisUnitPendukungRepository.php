@@ -2,48 +2,41 @@
 
 namespace App\Repositories;
 
-use App\Models\TargetLatihan;
+use App\Http\Requests\MstJenisUnitPendukungRequest;
+use App\Models\MstJenisUnitPendukung;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 
-class TargetLatihanRepository
+class MstJenisUnitPendukungRepository
 {
     use RepositoryTrait;
 
     protected $model;
 
-    public function __construct(TargetLatihan $model)
+    protected $request;
+
+    public function __construct(MstJenisUnitPendukung $model)
     {
         $this->model = $model;
-        $this->with = ['programLatihan', 'created_by_user', 'updated_by_user'];
+        $this->request = MstJenisUnitPendukungRequest::createFromBase(request());
+        $this->with = ['created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
     {
-        $query = $this->model->with($this->with);
+        $query = $this->model->select('id', 'nama');
 
-        if (request('program_latihan_id')) {
-            $query->where('program_latihan_id', request('program_latihan_id'));
-        }
-        if (request('jenis_target')) {
-            $query->where('jenis_target', request('jenis_target'));
-        }
-        // Filter peruntukan hanya untuk target individu
-        if (request('peruntukan') && request('jenis_target') === 'individu') {
-            $query->where('peruntukan', request('peruntukan'));
-        }
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('deskripsi', 'like', "%$search%")
-                    ->orWhere('satuan', 'like', "%$search%")
-                    ->orWhere('nilai_target', 'like', "%$search%");
+                $q->where('nama', 'like', '%'.$search.'%');
             });
         }
+
         if (request('sort')) {
             $order = request('order', 'asc');
             $sortField = request('sort');
-            $validColumns = ['id', 'deskripsi', 'satuan', 'nilai_target', 'created_at', 'updated_at'];
+            $validColumns = ['id', 'nama', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
             } else {
@@ -52,25 +45,21 @@ class TargetLatihanRepository
         } else {
             $query->orderBy('id', 'desc');
         }
+
         $perPage = (int) request('per_page', 10);
         $page = (int) request('page', 1);
+
         if ($perPage === -1) {
-            $all = $query->get();
-            $transformed = collect($all)->map(function ($item) {
+            $allData = $query->get();
+            $transformedData = $allData->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'program_latihan_id' => $item->program_latihan_id,
-                    'program_latihan_nama' => $item->programLatihan?->nama_program,
-                    'jenis_target' => $item->jenis_target,
-                    'peruntukan' => $item->peruntukan,
-                    'deskripsi' => $item->deskripsi,
-                    'satuan' => $item->satuan,
-                    'nilai_target' => $item->nilai_target,
+                    'nama' => $item->nama,
                 ];
             });
             $data += [
-                'data' => $transformed,
-                'total' => $transformed->count(),
+                'jenisUnitPendukungs' => $transformedData,
+                'total' => $transformedData->count(),
                 'currentPage' => 1,
                 'perPage' => -1,
                 'search' => request('search', ''),
@@ -80,22 +69,19 @@ class TargetLatihanRepository
 
             return $data;
         }
+
         $pageForPaginate = $page < 1 ? 1 : $page;
         $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+
+        $transformedData = collect($items->items())->map(function ($item) {
             return [
                 'id' => $item->id,
-                'program_latihan_id' => $item->program_latihan_id,
-                'program_latihan_nama' => $item->programLatihan?->nama_program,
-                'jenis_target' => $item->jenis_target,
-                'peruntukan' => $item->peruntukan,
-                'deskripsi' => $item->deskripsi,
-                'satuan' => $item->satuan,
-                'nilai_target' => $item->nilai_target,
+                'nama' => $item->nama,
             ];
         });
+
         $data += [
-            'data' => $transformed,
+            'jenisUnitPendukungs' => $transformedData,
             'total' => $items->total(),
             'currentPage' => $items->currentPage(),
             'perPage' => $items->perPage(),
@@ -110,6 +96,7 @@ class TargetLatihanRepository
     public function customDataCreateUpdate($data, $record = null)
     {
         $userId = Auth::id();
+
         if (is_null($record)) {
             $data['created_by'] = $userId;
         }
@@ -123,9 +110,27 @@ class TargetLatihanRepository
         return $this->model->whereIn('id', $ids)->delete();
     }
 
-    public function getDetailWithRelations($id)
+    public function getDetailWithUserTrack($id)
     {
-        return $this->model->with($this->with)->findOrFail($id);
+        return $this->model
+            ->with(['created_by_user', 'updated_by_user'])
+            ->where('id', $id)
+            ->first();
+    }
+
+    public function handleShow($id)
+    {
+        $item = $this->getDetailWithUserTrack($id);
+
+        if (! $item) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
+        }
+
+        $itemArray = $item->toArray();
+
+        return \Inertia\Inertia::render('modules/data-master/jenis-unit-pendukung/Show', [
+            'item' => $itemArray,
+        ]);
     }
 
     public function validateRequest($request)

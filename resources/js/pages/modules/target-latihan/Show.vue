@@ -24,20 +24,29 @@ const breadcrumbs = [
     { title: 'Detail Target', href: `/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${props.item.id}` },
 ];
 
-const fields = computed(() => [
-    { label: 'Deskripsi Target', value: dataItem.value?.deskripsi || '-' },
-    { label: 'Satuan', value: dataItem.value?.satuan || '-' },
-    { label: 'Nilai Target', value: dataItem.value?.nilai_target || '-' },
-    { label: 'Jenis Target', value: dataItem.value?.jenis_target || '-' },
-    { label: 'Nama Program', value: dataItem.value?.program_latihan?.nama_program || '-' },
-    {
-        label: 'Periode',
-        value:
-            dataItem.value?.program_latihan?.periode_mulai && dataItem.value?.program_latihan?.periode_selesai
-                ? `${dataItem.value.program_latihan.periode_mulai} s/d ${dataItem.value.program_latihan.periode_selesai}`
-                : '-',
-    },
-]);
+const fields = computed(() => {
+    const baseFields = [
+        { label: 'Deskripsi Target', value: dataItem.value?.deskripsi || '-' },
+        { label: 'Satuan', value: dataItem.value?.satuan || '-' },
+        { label: 'Nilai Target', value: dataItem.value?.nilai_target || '-' },
+        { label: 'Jenis Target', value: dataItem.value?.jenis_target || '-' },
+        { label: 'Nama Program', value: dataItem.value?.program_latihan?.nama_program || '-' },
+        {
+            label: 'Periode',
+            value:
+                dataItem.value?.program_latihan?.periode_mulai && dataItem.value?.program_latihan?.periode_selesai
+                    ? `${dataItem.value.program_latihan.periode_mulai} s/d ${dataItem.value.program_latihan.periode_selesai}`
+                    : '-',
+        },
+    ];
+
+    // Field peruntukan hanya untuk target individu
+    if (dataItem.value?.jenis_target === 'individu') {
+        baseFields.splice(1, 0, { label: 'Peruntukan', value: dataItem.value?.peruntukan || '-' });
+    }
+
+    return baseFields;
+});
 
 const actionFields = [
     { label: 'Created At', value: new Date(props.item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },

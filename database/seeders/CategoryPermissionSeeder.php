@@ -109,6 +109,10 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name' => 'Unit Pendukung',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name' => 'Mst Tingkat',
                 'permission' => 'CRUD',
             ],
@@ -130,6 +134,10 @@ class CategoryPermissionSeeder extends Seeder
             ],
             [
                 'name' => 'Mst Jenis Pelatih',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name' => 'Mst Jenis Unit Pendukung',
                 'permission' => 'CRUD',
             ],
             [
