@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
 import BadgeGroup from '@/pages/modules/components/BadgeGroup.vue';
 import { 
     ArrowDownRight, 
     ArrowUpRight, 
     Bell, 
     Ungroup, 
-    Plus, 
     Search, 
     Settings, 
     UserCircle2,
@@ -51,58 +48,55 @@ const iconMap = {
     Stethoscope,
 };
 
-const recentActivities = props.latest_activities || [];
 
+// const showMoreActions = ref(false);
 
+// const defaultActions = [
+//     {
+//         title: 'Tambah Atlet',
+//         icon: UserCircle2,
+//         href: '/atlet/create',
+//     },
+//     {
+//         title: 'Tambah Pelatih',
+//         icon: HandHeart,
+//         href: '/pelatih/create',
+//     },
+//     {
+//         title: 'Tambah Tenaga Pendukung',
+//         icon: HeartHandshake,
+//         href: '/tenaga-pendukung/create',
+//     },
+// ];
 
-const showMoreActions = ref(false);
+// const additionalActions = [
+//     {
+//         title: 'Buat Program Latihan',
+//         icon: ClipboardCheck,
+//         href: '/program-latihan/create',
+//     },
+//     {
+//         title: 'Buat Pemeriksaan',
+//         icon: Stethoscope,
+//         href: '/pemeriksaan/create',
+//     },
+//     {
+//         title: 'Tambah Cabor',
+//         icon: Flag,
+//         href: '/cabor/create',
+//     },
+//     {
+//         title: 'Tambah Kategori Cabor',
+//         icon: Ungroup,
+//         href: '/cabor-kategori/create',
+//     },
+// ];
 
-const defaultActions = [
-    {
-        title: 'Tambah Atlet',
-        icon: UserCircle2,
-        href: '/atlet/create',
-    },
-    {
-        title: 'Tambah Pelatih',
-        icon: HandHeart,
-        href: '/pelatih/create',
-    },
-    {
-        title: 'Tambah Tenaga Pendukung',
-        icon: HeartHandshake,
-        href: '/tenaga-pendukung/create',
-    },
-];
-
-const additionalActions = [
-    {
-        title: 'Buat Program Latihan',
-        icon: ClipboardCheck,
-        href: '/program-latihan/create',
-    },
-    {
-        title: 'Buat Pemeriksaan',
-        icon: Stethoscope,
-        href: '/pemeriksaan/create',
-    },
-    {
-        title: 'Tambah Cabor',
-        icon: Flag,
-        href: '/cabor/create',
-    },
-    {
-        title: 'Tambah Kategori Cabor',
-        icon: Ungroup,
-        href: '/cabor-kategori/create',
-    },
-];
-
-const quickActions = computed(() => {
-    return showMoreActions.value 
-        ? [...defaultActions, ...additionalActions]
-        : defaultActions;
-});
+// const quickActions = computed(() => {
+//     return showMoreActions.value 
+//         ? [...defaultActions, ...additionalActions]
+//         : defaultActions;
+// });
 </script>
 
 <template>
