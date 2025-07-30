@@ -48,7 +48,6 @@ const iconMap = {
     Stethoscope,
 };
 
-
 // const showMoreActions = ref(false);
 
 // const defaultActions = [
@@ -159,7 +158,7 @@ const iconMap = {
             </div>
 
             <!-- Main Content -->
-            <div class="grid grid-cols-5 gap-6">
+            <!-- <div class="grid grid-cols-5 gap-6"> -->
                 <!-- Recent Activities -->
                 <!-- <Card class="col-span-3">
                     <CardHeader>
@@ -205,124 +204,110 @@ const iconMap = {
                         </div>
                     </CardContent>
                 </Card> -->
-            </div>
+            <!-- </div> -->
 
-
-
-            <!-- Dua Card Tabel dalam Grid 2 Kolom -->
+            <!-- Dua Section dalam Grid 2 Kolom -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Card Program Latihan -->
-                <div>
-                    <CardHeader>
-                        <CardTitle class="mb-5">Program Latihan Terbaru</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="space-y-1">
-                            <Card v-for="row in props.latest_programs" :key="row.id" class="shadow-sm border">
-                                <CardContent class="space-y-3 py-4">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[135px]">Nama:</span>
-                                            <span class="text-foreground">{{ row.nama_program }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[135px]">Cabor:</span>
-                                            <span class="text-foreground">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[135px]">Periode:</span>
-                                            <span class="text-foreground">{{ row.periode }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[135px]">Rencana Latihan:</span>
-                                            <div class="flex flex-wrap gap-2 items-center">
-                                                <Badge variant="secondary" class="text-foreground">
-                                                    {{ row.jumlah_rencana_latihan }}
-                                                </Badge>
-                                                <span v-if="row.rencana_latihan_list && row.rencana_latihan_list.length > 0" class="text-muted-foreground">
-                                                    {{ row.rencana_latihan_list.join(', ') }}
-                                                </span>
-                                                <span v-else class="text-muted-foreground">-</span>
-                                            </div>
-                                        </div>
+                <!-- Section Program Latihan -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold">Program Latihan Terbaru</h3>
+                    <div class="space-y-3">
+                        <div v-for="row in props.latest_programs" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[125px] text-sm">Nama:</span>
+                                    <span class="text-foreground text-sm">{{ row.nama_program }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[125px] text-sm">Cabor:</span>
+                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[125px] text-sm">Periode:</span>
+                                    <span class="text-foreground text-sm">{{ row.periode }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <span class="font-medium min-w-[125px] text-sm">Rencana Latihan:</span>
+                                    <div class="flex flex-wrap gap-2 items-center text-sm">
+                                        <Badge variant="secondary" class="text-foreground ">
+                                            {{ row.jumlah_rencana_latihan }}
+                                        </Badge>
+                                        <span v-if="row.rencana_latihan_list && row.rencana_latihan_list.length > 0" class="text-muted-foreground">
+                                            {{ row.rencana_latihan_list.join(', ') }}
+                                        </span>
+                                        <span v-else class="text-muted-foreground">-</span>
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         </div>
-                    </CardContent>
+                    </div>
                 </div>
 
-                <!-- Card Pemeriksaan -->
-                <div>
-                    <CardHeader>
-                        <CardTitle class="mb-5">Pemeriksaan Terbaru</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="space-y-1">
-                            <Card v-for="row in props.latest_pemeriksaan" :key="row.id" class="shadow-sm border">
-                                <CardContent class="space-y-3 py-4">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[150px]">Nama:</span>
-                                            <span class="text-foreground">{{ row.nama_pemeriksaan }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[150px]">Cabor:</span>
-                                            <span class="text-foreground">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[150px]">Tenaga Pendukung:</span>
-                                            <span class="text-foreground">{{ row.tenaga_pendukung_nama }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="font-medium min-w-[150px]">Tanggal:</span>
-                                            <span class="text-foreground">{{ row.tanggal_pemeriksaan }}</span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[150px]">Status:</span>
-                                            <Badge :variant="row.status === 'selesai' ? 'success' : row.status === 'sebagian' ? 'warning' : 'destructive'">
-                                                {{ row.status }}
-                                            </Badge>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[150px]">Parameter:</span>
-                                            <div class="flex flex-wrap gap-2 items-center">
-                                                <Badge variant="secondary" class="text-foreground">
-                                                    {{ row.jumlah_parameter }}
-                                                </Badge>
-                                                <span v-if="row.parameter_list && row.parameter_list.length > 0" class="text-muted-foreground">
-                                                    {{ row.parameter_list.join(', ') }}
-                                                </span>
-                                                <span v-else class="text-muted-foreground">-</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-wrap gap-2 items-center">
-                                            <span class="font-medium min-w-[150px]">Peserta:</span>
-                                            <BadgeGroup
-                                                :badges="[
-                                                    {
-                                                        label: 'Atlet',
-                                                        value: row.jumlah_atlet || 0,
-                                                        colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                                                    },
-                                                    {
-                                                        label: 'Pelatih',
-                                                        value: row.jumlah_pelatih || 0,
-                                                        colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                                                    },
-                                                    {
-                                                        label: 'Tenaga Pendukung',
-                                                        value: row.jumlah_tenaga_pendukung || 0,
-                                                        colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                                                    },
-                                                ]"
-                                            />
-                                        </div>
+                <!-- Section Pemeriksaan -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold">Pemeriksaan Terbaru</h3>
+                    <div class="space-y-3">
+                        <div v-for="row in props.latest_pemeriksaan" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[145px] text-sm">Nama:</span>
+                                    <span class="text-foreground text-sm">{{ row.nama_pemeriksaan }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[145px] text-sm">Cabor:</span>
+                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[145px] text-sm">Tenaga Pendukung:</span>
+                                    <span class="text-foreground text-sm">{{ row.tenaga_pendukung_nama }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-medium min-w-[145px] text-sm">Tanggal:</span>
+                                    <span class="text-foreground text-sm">{{ row.tanggal_pemeriksaan }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <span class="font-medium min-w-[145px] text-sm">Status:</span>
+                                    <Badge :variant="row.status === 'selesai' ? 'success' : row.status === 'sebagian' ? 'warning' : 'destructive'">
+                                        {{ row.status }}
+                                    </Badge>
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <span class="font-medium min-w-[145px] text-sm">Parameter:</span>
+                                    <div class="flex flex-wrap gap-2 items-center text-sm">
+                                        <Badge variant="secondary" class="text-foreground">
+                                            {{ row.jumlah_parameter }}
+                                        </Badge>
+                                        <span v-if="row.parameter_list && row.parameter_list.length > 0" class="text-muted-foreground">
+                                            {{ row.parameter_list.join(', ') }}
+                                        </span>
+                                        <span v-else class="text-muted-foreground">-</span>
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <span class="font-medium min-w-[145px] text-sm">Peserta:</span>
+                                    <BadgeGroup
+                                        :badges="[
+                                            {
+                                                label: 'Atlet',
+                                                value: row.jumlah_atlet || 0,
+                                                colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                                            },
+                                            {
+                                                label: 'Pelatih',
+                                                value: row.jumlah_pelatih || 0,
+                                                colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                                            },
+                                            {
+                                                label: 'Tenaga Pendukung',
+                                                value: row.jumlah_tenaga_pendukung || 0,
+                                                colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                                            },
+                                        ]"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </CardContent>
+                    </div>
                 </div>
             </div>
         </div>

@@ -207,6 +207,7 @@ const columnsTenagaPendukung = [
                     :endpoint="`/api/target-latihan?program_latihan_id=${props.infoHeader?.program_latihan_id}`"
                     :columns="[
                         { key: 'deskripsi', label: 'Deskripsi' },
+                        { key: 'peruntukan', label: 'Peruntukan' },
                         { key: 'jenis_target', label: 'Jenis' },
                     ]"
                     id-key="id"
