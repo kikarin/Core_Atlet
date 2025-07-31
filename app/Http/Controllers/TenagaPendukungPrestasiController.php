@@ -21,15 +21,15 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
     public function __construct(TenagaPendukungPrestasiRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -50,7 +50,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
 
     public function store(TenagaPendukungPrestasiRequest $request, $tenaga_pendukung_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -63,7 +63,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
 
     public function update(TenagaPendukungPrestasiRequest $request, $tenaga_pendukung_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -111,7 +111,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|integer|exists:tenaga_pendukung_prestasi,id',
         ]);
 
@@ -129,7 +129,7 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
 
         return Inertia::render('modules/tenaga-pendukung/prestasi/Show', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $prestasi,
+            'item'              => $prestasi,
         ]);
     }
 }

@@ -62,7 +62,10 @@ const deleteSelected = async () => {
         return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
     }
     try {
-        const response = await axios.post(`/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/destroy-selected`, { ids: selected.value });
+        const response = await axios.post(
+            `/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/destroy-selected`,
+            { ids: selected.value },
+        );
         selected.value = [];
         pageIndex.value.fetchData();
         toast({ title: response.data?.message, variant: 'success' });
@@ -76,7 +79,7 @@ const deleteRow = async (row: any) => {
     const deleteUrl = `/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/${row.id}`;
     console.log('Delete URL:', deleteUrl);
     console.log('program_latihan_id:', info.value.program_latihan_id, 'jenis_target:', info.value.jenis_target, 'row.id:', row.id);
-    
+
     await router.delete(deleteUrl, {
         onSuccess: () => {
             toast({ title: 'Data berhasil dihapus', variant: 'success' });

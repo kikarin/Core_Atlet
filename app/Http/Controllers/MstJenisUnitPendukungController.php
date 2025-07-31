@@ -21,16 +21,16 @@ class MstJenisUnitPendukungController extends Controller implements HasMiddlewar
     public function __construct(Request $request, MstJenisUnitPendukungRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = MstJenisUnitPendukungRequest::createFromBase($request);
+        $this->request    = MstJenisUnitPendukungRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'jenis-unit-pendukung';
-        $this->commonData['kode_first_menu'] = 'DATA-MASTER';
+        $this->route                          = 'jenis-unit-pendukung';
+        $this->commonData['kode_first_menu']  = 'DATA-MASTER';
         $this->commonData['kode_second_menu'] = 'DATA-MASTER-JENIS-UNIT-PENDUKUNG';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -49,12 +49,12 @@ class MstJenisUnitPendukungController extends Controller implements HasMiddlewar
         return response()->json([
             'data' => $data['jenisUnitPendukungs'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -89,7 +89,7 @@ class MstJenisUnitPendukungController extends Controller implements HasMiddlewar
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
 
         return Inertia::render('modules/data-master/jenis-unit-pendukung/Show', [
@@ -107,7 +107,7 @@ class MstJenisUnitPendukungController extends Controller implements HasMiddlewar
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:mst_jenis_unit_pendukung,id',
         ]);
         $this->repository->delete_selected($request->ids);

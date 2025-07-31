@@ -16,14 +16,14 @@ class ProfileRepository
     public function __construct(UsersRepository $usersRepository, RoleRepository $roleRepository)
     {
         $this->usersRepository = $usersRepository;
-        $this->roleRepository = $roleRepository;
+        $this->roleRepository  = $roleRepository;
     }
 
     public function update($userId, $data)
     {
         $user = $this->usersRepository->getById($userId);
         if (! empty($data['file'])) {
-            $uploadFile = $this->uploadFileCustom($data['file'], 'users');
+            $uploadFile   = $this->uploadFileCustom($data['file'], 'users');
             $data['file'] = @$uploadFile['filename'];
         }
         $file_lama = $user->file;
@@ -51,11 +51,11 @@ class ProfileRepository
 
     public function changeRole($userId, $role_id)
     {
-        $user = $this->usersRepository->getById($userId);
+        $user          = $this->usersRepository->getById($userId);
         $role_id_array = $user->users_role->pluck('role_id')->toArray();
         if (! in_array($role_id, $role_id_array)) {
             return [
-                'error' => 1,
+                'error'   => 1,
                 'message' => 'Role tidak terdaftar pada user',
             ];
         }
@@ -68,8 +68,8 @@ class ProfileRepository
         activity()->event('Change Role')->performedOn($user)->withProperties($properties)->log('Profile');
 
         return [
-            'error' => 0,
-            'message' => 'Success change role',
+            'error'           => 0,
+            'message'         => 'Success change role',
             'init_page_login' => $properties['attributes']->init_page_login,
         ];
     }

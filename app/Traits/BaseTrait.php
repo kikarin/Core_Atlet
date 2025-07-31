@@ -32,18 +32,18 @@ trait BaseTrait
 
     public function initialize()
     {
-        $usersMenuRepository = app(UsersMenuRepository::class);
-        $this->controllerName = $this->getControllerName();
-        $this->route = $this->convertToDashSeparated($this->controllerName);
-        $this->kode_menu = strtoupper($this->convertToDashSeparated($this->controllerName));
+        $usersMenuRepository   = app(UsersMenuRepository::class);
+        $this->controllerName  = $this->getControllerName();
+        $this->route           = $this->convertToDashSeparated($this->controllerName);
+        $this->kode_menu       = strtoupper($this->convertToDashSeparated($this->controllerName));
         $this->permission_main = $this->convertToTitle($this->controllerName);
-        $this->titlePage = @$usersMenuRepository->getCacheByKode($this->kode_menu)->nama ?? $this->convertToTitle($this->controllerName);
-        $this->commonData = [
-            'titlePage' => $this->titlePage,
-            'route' => $this->route,
-            'kode_first_menu' => $this->kode_menu,
+        $this->titlePage       = @$usersMenuRepository->getCacheByKode($this->kode_menu)->nama ?? $this->convertToTitle($this->controllerName);
+        $this->commonData      = [
+            'titlePage'        => $this->titlePage,
+            'route'            => $this->route,
+            'kode_first_menu'  => $this->kode_menu,
             'kode_second_menu' => $this->kode_second_menu,
-            'permission_main' => $this->permission_main,
+            'permission_main'  => $this->permission_main,
         ];
     }
 
@@ -112,8 +112,8 @@ trait BaseTrait
     {
         $this->request = $request;
         $this->repository->customProperty(__FUNCTION__);
-        $data = $this->request->validate($this->getValidationRules());
-        $data = $this->request->all();
+        $data   = $this->request->validate($this->getValidationRules());
+        $data   = $this->request->all();
         $before = $this->repository->callbackBeforeStoreOrUpdate($data, 'store');
         if ($before['error'] != 0) {
             return redirect()->back()->with('error', $before['message'])->withInput();
@@ -140,8 +140,8 @@ trait BaseTrait
     public function update()
     {
         $this->repository->customProperty(__FUNCTION__, ['id' => $this->request->id]);
-        $data = $this->request->validate($this->request->rules());
-        $data = $this->request->all();
+        $data   = $this->request->validate($this->request->rules());
+        $data   = $this->request->all();
         $before = $this->repository->callbackBeforeStoreOrUpdate($data, 'update');
         if ($before['error'] != 0) {
             return redirect()->back()->with('error', $before['message'])->withInput();
@@ -159,7 +159,7 @@ trait BaseTrait
     public function destroy($id)
     {
         $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
-        $model = $this->repository->delete($id);
+        $model    = $this->repository->delete($id);
         $callback = $this->repository->callbackAfterDelete($model, $id);
         if (! ($callback instanceof \Illuminate\Database\Eloquent\Model)) {
             return $callback;
@@ -190,7 +190,7 @@ trait BaseTrait
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus data.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -200,8 +200,8 @@ trait BaseTrait
         $request = [
             'orderDefault' => request()->input('order') ?? null,
         ];
-        $route = $this->route;
-        $role = getRole(Auth::user()->current_role_id);
+        $route           = $this->route;
+        $role            = getRole(Auth::user()->current_role_id);
         $permission_main = $this->permission_main;
         try {
             $permission_create = $role->hasPermissionTo($this->permission_main.' Add');
@@ -226,7 +226,7 @@ trait BaseTrait
         $param = [
             'route' => $route,
         ]; // ini untuk parameter
-        $data = $this->repository->getDataTable($request);
+        $data  = $this->repository->getDataTable($request);
         $table = DataTables::of($data)
             ->addColumn('options', function ($d) use ($route, $permission_main, $permission_create, $permission_detail, $permission_edit, $permission_delete) {
                 return view($route.'.buttons', compact('d', 'route', 'permission_main', 'permission_create', 'permission_detail', 'permission_edit', 'permission_delete'));
@@ -248,8 +248,8 @@ trait BaseTrait
 
         return [
             'can' => [
-                'Add' => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Add') : false,
-                'Edit' => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Edit') : false,
+                'Add'    => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Add') : false,
+                'Edit'   => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Edit') : false,
                 'Delete' => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Delete') : false,
                 'Detail' => $auth_user && method_exists($auth_user, 'can') ? $auth_user->can($this->permission_main.' Detail') : false,
             ],

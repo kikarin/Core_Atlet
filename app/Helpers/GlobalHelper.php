@@ -17,7 +17,7 @@ if (! function_exists('set_date')) {
         }
         // remove S (st,nd,rd,th) there are no such things in indonesia :p
         $date_format = preg_replace('/S/', '', $date_format);
-        $pattern = [
+        $pattern     = [
             '/Mon[^day]/',
             '/Tue[^sday]/',
             '/Wed[^nesday]/',
@@ -179,8 +179,8 @@ function sisaHari($date)
 function sisaJamMenit($date)
 {
     if (Carbon::now() <= $date) {
-        $diff = Carbon::parse($date)->diffInMinutes();
-        $hours = floor($diff / 60); // Menghitung jam dengan membagi selisih menit dengan 60
+        $diff    = Carbon::parse($date)->diffInMinutes();
+        $hours   = floor($diff / 60); // Menghitung jam dengan membagi selisih menit dengan 60
         $minutes = $diff % 60; // Menghitung menit dengan menggunakan sisa pembagian
         if ($hours == 0) {
             return "$minutes menit";
@@ -195,7 +195,7 @@ function sisaJamMenit($date)
 function InitialName($string)
 {
     $string = $string;
-    $words = explode(' ', $string); // Memisahkan kata dengan spasi
+    $words  = explode(' ', $string); // Memisahkan kata dengan spasi
 
     $char1 = substr($words[0], 0, 1); // Mengambil karakter pertama dari kata pertama
     $char2 = isset($words[1]) ? substr($words[1], 0, 1) : ''; // Mengambil karakter pertama dari kata kedua jika ada
@@ -208,9 +208,9 @@ function InitialName($string)
 function ListPerPage()
 {
     return [
-        12 => 12,
-        25 => 25,
-        50 => 50,
+        12  => 12,
+        25  => 25,
+        50  => 50,
         100 => 100,
     ];
 }
@@ -219,7 +219,7 @@ function ListBulanBelajar()
 {
     $bulanOptions = [];
     for ($i = 1; $i < 13; $i++) {
-        $angka = ($i < 10) ? '0'.$i : $i;
+        $angka                = ($i < 10) ? '0'.$i : $i;
         $bulanOptions[$angka] = set_date(date("Y-$angka-01"), 'F');
     }
 
@@ -241,7 +241,7 @@ function DateNow()
 function DateForHuman($tanggal)
 {
     $tanggalCarbon = Carbon::parse($tanggal);
-    $now = Carbon::now();
+    $now           = Carbon::now();
 
     // Mengecek selisih hari
     $diffInDays = $tanggalCarbon->diffInDays($now);
@@ -324,9 +324,9 @@ if (! function_exists('makeResponse')) {
     function makeResponse($error = 0, $message = 'success', $data = [], $status_code = 200)
     {
         return [
-            'error' => $error,
-            'message' => $message,
-            'data' => $data,
+            'error'       => $error,
+            'message'     => $message,
+            'data'        => $data,
             'status_code' => $status_code,
         ];
     }
@@ -381,9 +381,9 @@ if (! function_exists('listPerPageAlbum')) {
     function listPerPageAlbum()
     {
         return [
-            12 => 12,
-            25 => 25,
-            50 => 50,
+            12  => 12,
+            25  => 25,
+            50  => 50,
             100 => 100,
         ];
     }
@@ -396,7 +396,7 @@ if (! function_exists('extractLatLong')) {
         preg_match('/!3d(-?\d+\.\d+)!2d(-?\d+\.\d+)/', $url, $coords);
 
         if (isset($coords[1]) && isset($coords[2])) {
-            $latitude = $coords[1];
+            $latitude  = $coords[1];
             $longitude = $coords[2];
 
             return ['latitude' => $latitude, 'longitude' => $longitude];
@@ -413,8 +413,8 @@ if (! function_exists('extractLatLong')) {
 if (! function_exists('checkPermission')) {
     function checkPermission($permission_name)
     {
-        $auth = Auth::user();
-        $role = Role::find($auth->current_role_id);
+        $auth       = Auth::user();
+        $role       = Role::find($auth->current_role_id);
         $permission = $role->hasPermissionTo($permission_name);
 
         return $permission;

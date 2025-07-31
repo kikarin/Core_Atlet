@@ -84,10 +84,10 @@ onMounted(async () => {
 const handleSave = async () => {
     try {
         loading.value = true;
-        
+
         // Flatten data untuk setiap rencana latihan dan target
         const flattenedData: any[] = [];
-        
+
         tableState.value.forEach((rencana) => {
             rencana.targets.forEach((target: any) => {
                 flattenedData.push({
@@ -98,16 +98,13 @@ const handleSave = async () => {
                 });
             });
         });
-        
+
         const payload = {
             data: flattenedData,
         };
-        
-        const response = await axios.post(
-            `/program-latihan/${props.program_id}/rencana-latihan/kelola-target-kelompok/bulk-update`, 
-            payload
-        );
-        
+
+        const response = await axios.post(`/program-latihan/${props.program_id}/rencana-latihan/kelola-target-kelompok/bulk-update`, payload);
+
         if (response.data?.success) {
             toast({ title: response.data?.message || 'Data berhasil disimpan', variant: 'success' });
         }
@@ -176,7 +173,7 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                         <div class="flex items-center gap-2">
                             <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                             <span class="text-sm font-medium">
-                                {{ props.program_latihan.cabor_nama }} - 
+                                {{ props.program_latihan.cabor_nama }} -
                                 {{ props.program_latihan.cabor_kategori_nama }}
                             </span>
                         </div>
@@ -191,9 +188,7 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                 </div>
 
                 <!-- Table Section -->
-                <div class="text-foreground mb-2 text-lg font-semibold">
-                    Target Latihan Kelompok
-                </div>
+                <div class="text-foreground mb-2 text-lg font-semibold">Target Latihan Kelompok</div>
 
                 <!-- Table -->
                 <div v-if="tableState.length && getUniqueTargets().length" class="overflow-x-auto rounded-xl bg-white shadow dark:bg-neutral-900">
@@ -213,19 +208,19 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                 </template>
                             </tr>
                             <tr class="bg-muted">
-                                    <th class="border-b px-2 py-1"></th> 
-                                    <th class="border-b px-2 py-1"></th> 
-                                    <th class="border-b px-2 py-1"></th>
-                                    <th class="border-b px-2 py-1"></th> 
+                                <th class="border-b px-2 py-1"></th>
+                                <th class="border-b px-2 py-1"></th>
+                                <th class="border-b px-2 py-1"></th>
+                                <th class="border-b px-2 py-1"></th>
                                 <template v-for="target in getUniqueTargets()" :key="'target-subheader-' + target.id">
-                                    <th class="text-foreground border-b px-2 py-1  whitespace-nowrap">Nilai</th>
-                                    <th class="text-foreground border-b px-2 py-1  whitespace-nowrap">Trend</th>
+                                    <th class="text-foreground border-b px-2 py-1 whitespace-nowrap">Nilai</th>
+                                    <th class="text-foreground border-b px-2 py-1 whitespace-nowrap">Trend</th>
                                 </template>
                             </tr>
                         </thead>
                         <tbody>
                             <tr
-                                v-for="(rencana) in tableState"
+                                v-for="rencana in tableState"
                                 :key="'rencana-row-' + rencana.rencana_id"
                                 class="hover:bg-muted/40 border-t transition"
                             >
@@ -266,7 +261,7 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                                     :model-value="getTargetNilai(rencana, uniqueTarget.id)"
                                                     @update:model-value="(val: string) => updateTargetNilai(rencana, uniqueTarget.id, val)"
                                                     :placeholder="getTargetValue(uniqueTarget)"
-                                                    style="text-align: center;"
+                                                    style="text-align: center"
                                                 />
                                             </div>
                                         </td>
@@ -282,11 +277,11 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                         </td>
                                     </template>
                                     <template v-else>
-                                        <td class="border-b px-2 py-1 text-center whitespace-nowrap bg-gray-50">
-                                            <span class="text-gray-400 text-xs">-</span>
+                                        <td class="border-b bg-gray-50 px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-xs text-gray-400">-</span>
                                         </td>
-                                        <td class="border-b px-2 py-1 text-center whitespace-nowrap bg-gray-50">
-                                            <span class="text-gray-400 text-xs">-</span>
+                                        <td class="border-b bg-gray-50 px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-xs text-gray-400">-</span>
                                         </td>
                                     </template>
                                 </template>
@@ -299,17 +294,21 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                     class="text-muted-foreground flex flex-col items-center gap-4 py-10 text-center"
                 >
                     <div>Program latihan ini belum memiliki rencana latihan.</div>
-                    <Button variant="outline" @click="router.visit(`/program-latihan/${props.program_id}/rencana-latihan/create`)"> Buat Rencana Latihan </Button>
+                    <Button variant="outline" @click="router.visit(`/program-latihan/${props.program_id}/rencana-latihan/create`)">
+                        Buat Rencana Latihan
+                    </Button>
                 </div>
                 <div
                     v-else-if="!loading && getUniqueTargets().length === 0"
                     class="text-muted-foreground flex flex-col items-center gap-4 py-10 text-center"
                 >
                     <div>Program latihan ini belum memiliki target latihan kelompok.</div>
-                    <Button variant="outline" @click="router.visit(`/program-latihan/${props.program_id}/target-latihan/kelompok`)"> Buat Target Kelompok </Button>
+                    <Button variant="outline" @click="router.visit(`/program-latihan/${props.program_id}/target-latihan/kelompok`)">
+                        Buat Target Kelompok
+                    </Button>
                 </div>
                 <div v-else class="text-muted-foreground py-10 text-center">Loading data...</div>
             </div>
         </div>
     </AppLayout>
-</template> 
+</template>

@@ -22,10 +22,10 @@ class DesaRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nama' => 'required',
+            'nama'         => 'required',
             'id_kecamatan' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'latitude'     => 'required',
+            'longitude'    => 'required',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
             $rules['id'] = 'required';

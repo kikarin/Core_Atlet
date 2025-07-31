@@ -21,15 +21,15 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
     public function __construct(TenagaPendukungSertifikatRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -50,7 +50,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
     public function store(TenagaPendukungSertifikatRequest $request, $tenaga_pendukung_id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->create($data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -63,7 +63,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
     public function update(TenagaPendukungSertifikatRequest $request, $tenaga_pendukung_id, $id)
     {
-        $data = $request->validated();
+        $data  = $request->validated();
         $model = $this->repository->update($id, $data);
 
         if ($request->expectsJson() || $request->wantsJson()) {
@@ -114,14 +114,14 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
         return Inertia::render('modules/tenaga-pendukung/sertifikat/Edit', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $sertifikat,
+            'item'              => $sertifikat,
         ]);
     }
 
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|integer|exists:tenaga_pendukung_sertifikat,id',
         ]);
 
@@ -139,7 +139,7 @@ class TenagaPendukungSertifikatController extends Controller implements HasMiddl
 
         return Inertia::render('modules/tenaga-pendukung/sertifikat/Show', [
             'tenagaPendukungId' => (int) $tenaga_pendukung_id,
-            'item' => $sertifikat,
+            'item'              => $sertifikat,
         ]);
     }
 }

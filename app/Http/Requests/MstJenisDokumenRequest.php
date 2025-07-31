@@ -43,9 +43,9 @@ class MstJenisDokumenRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis dokumen wajib diisi.',
-            'nama.string' => 'Nama jenis dokumen harus berupa teks.',
-            'nama.max' => 'Nama jenis dokumen tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama jenis dokumen sudah ada.',
+            'nama.string'   => 'Nama jenis dokumen harus berupa teks.',
+            'nama.max'      => 'Nama jenis dokumen tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama jenis dokumen sudah ada.',
         ];
     }
 }

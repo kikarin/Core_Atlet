@@ -43,9 +43,9 @@ class MstTingkatRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama tingkat wajib diisi.',
-            'nama.string' => 'Nama tingkat harus berupa teks.',
-            'nama.max' => 'Nama tingkat tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama tingkat sudah ada.',
+            'nama.string'   => 'Nama tingkat harus berupa teks.',
+            'nama.max'      => 'Nama tingkat tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama tingkat sudah ada.',
         ];
     }
 }

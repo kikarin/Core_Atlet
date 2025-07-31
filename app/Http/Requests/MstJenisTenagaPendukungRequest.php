@@ -38,9 +38,9 @@ class MstJenisTenagaPendukungRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis tenaga pendukung wajib diisi.',
-            'nama.string' => 'Nama jenis tenaga pendukung harus berupa teks.',
-            'nama.max' => 'Nama jenis tenaga pendukung tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama jenis tenaga pendukung sudah ada.',
+            'nama.string'   => 'Nama jenis tenaga pendukung harus berupa teks.',
+            'nama.max'      => 'Nama jenis tenaga pendukung tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama jenis tenaga pendukung sudah ada.',
         ];
     }
 }

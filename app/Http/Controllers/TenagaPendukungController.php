@@ -27,15 +27,15 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function __construct(TenagaPendukungRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = TenagaPendukungRequest::createFromBase($request);
+        $this->request    = TenagaPendukungRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -54,12 +54,12 @@ class TenagaPendukungController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['tenaga_pendukungs'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -83,7 +83,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'data' => $item,
+                'data'    => $item,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching Tenaga Pendukung  detail: '.$e->getMessage());
@@ -91,14 +91,14 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data Tenaga Pendukung ',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
 
     public function store(TenagaPendukungRequest $request)
     {
-        $data = $this->repository->validateRequest($request);
+        $data  = $this->repository->validateRequest($request);
         $model = $this->repository->create($data);
 
         return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil ditambahkan!');
@@ -108,8 +108,8 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     {
         try {
             Log::info('TenagaPendukungController: update method called', [
-                'id' => $id,
-                'all_data' => $request->all(),
+                'id'             => $id,
+                'all_data'       => $request->all(),
                 'validated_data' => $request->validated(),
             ]);
             $data = $this->repository->validateRequest($request);
@@ -166,7 +166,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|integer|exists:tenaga_pendukungs,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -184,12 +184,12 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             'file' => 'required|mimes:xlsx,xls',
         ]);
         try {
-            $import = new TenagaPendukungImport;
+            $import = new TenagaPendukungImport();
             \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
             Log::info('TenagaPendukungController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count' => $import->getSuccessCount(),
-                'error_count' => $import->getErrorCount(),
+                'success_count'  => $import->getSuccessCount(),
+                'error_count'    => $import->getErrorCount(),
             ]);
             $message = 'Import berhasil! ';
             if ($import->getSuccessCount() > 0) {
@@ -202,11 +202,11 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => [
-                    'total_rows' => $import->getRowCount(),
+                'data'    => [
+                    'total_rows'    => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count' => $import->getErrorCount(),
-                    'errors' => $import->getErrors(),
+                    'error_count'   => $import->getErrorCount(),
+                    'errors'        => $import->getErrors(),
                 ],
             ]);
         } catch (\Exception $e) {
@@ -218,7 +218,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal import: '.$e->getMessage(),
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -235,7 +235,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     public function parameterDetail($tenagaPendukungId, $pemeriksaanId)
     {
         $tenagaPendukung = $this->repository->getDetailWithRelations($tenagaPendukungId);
-        
+
         // Ambil data pemeriksaan
         $pemeriksaan = Pemeriksaan::with(['tenagaPendukung'])
             ->findOrFail($pemeriksaanId);
@@ -253,22 +253,22 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 ->get()
                 ->map(function ($item) {
                     return [
-                        'id' => $item->id,
+                        'id'             => $item->id,
                         'nama_parameter' => $item->pemeriksaanParameter->nama_parameter ?? '-',
-                        'nilai' => $item->nilai,
-                        'trend' => $item->trend,
+                        'nilai'          => $item->nilai,
+                        'trend'          => $item->trend,
                     ];
                 });
         }
 
         return Inertia::render('modules/tenaga-pendukung/ParameterDetail', [
             'tenagaPendukung' => $tenagaPendukung,
-            'pemeriksaan' => [
-                'id' => $pemeriksaan->id,
-                'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+            'pemeriksaan'     => [
+                'id'                  => $pemeriksaan->id,
+                'nama_pemeriksaan'    => $pemeriksaan->nama_pemeriksaan,
                 'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
-                'tenaga_pendukung' => $pemeriksaan->tenagaPendukung->nama ?? '-',
-                'status' => $pemeriksaan->status,
+                'tenaga_pendukung'    => $pemeriksaan->tenagaPendukung->nama ?? '-',
+                'status'              => $pemeriksaan->status,
             ],
             'parameters' => $parameters,
         ]);
@@ -287,24 +287,24 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
             $riwayat = $pemeriksaanPeserta->map(function ($item) {
                 return [
-                    'id' => $item->pemeriksaan->id,
-                    'nama_pemeriksaan' => $item->pemeriksaan->nama_pemeriksaan,
+                    'id'                  => $item->pemeriksaan->id,
+                    'nama_pemeriksaan'    => $item->pemeriksaan->nama_pemeriksaan,
                     'tanggal_pemeriksaan' => $item->pemeriksaan->tanggal_pemeriksaan,
-                    'tenaga_pendukung' => $item->pemeriksaan->tenagaPendukung->nama ?? '-',
-                    'status' => $item->pemeriksaan->status,
-                    'jumlah_parameter' => $item->pemeriksaanPesertaParameter->count(),
+                    'tenaga_pendukung'    => $item->pemeriksaan->tenagaPendukung->nama ?? '-',
+                    'status'              => $item->pemeriksaan->status,
+                    'jumlah_parameter'    => $item->pemeriksaanPesertaParameter->count(),
                 ];
             });
 
             return response()->json([
                 'data' => $riwayat,
                 'meta' => [
-                    'total' => $riwayat->count(),
+                    'total'        => $riwayat->count(),
                     'current_page' => 1,
-                    'per_page' => $riwayat->count(),
-                    'search' => '',
-                    'sort' => '',
-                    'order' => 'asc',
+                    'per_page'     => $riwayat->count(),
+                    'search'       => '',
+                    'sort'         => '',
+                    'order'        => 'asc',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -313,7 +313,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data riwayat pemeriksaan',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

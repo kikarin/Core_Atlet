@@ -272,7 +272,11 @@ fetchJenisPelatih();
             <!-- Jenis Pelatih Selection -->
             <div class="flex items-center gap-4">
                 <span class="text-muted-foreground text-sm font-medium"> Jenis Pelatih: </span>
-                <Select :model-value="selectedJenisPelatihId" @update:model-value="(val: any) => (selectedJenisPelatihId = val as number | null)" class="w-64">
+                <Select
+                    :model-value="selectedJenisPelatihId"
+                    @update:model-value="(val: any) => (selectedJenisPelatihId = val as number | null)"
+                    class="w-64"
+                >
                     <SelectTrigger>
                         <SelectValue placeholder="Pilih Jenis Pelatih" />
                     </SelectTrigger>

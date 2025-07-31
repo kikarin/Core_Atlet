@@ -35,10 +35,11 @@ const formInputs = [
         type: 'select' as const,
         placeholder: 'Pilih jenis unit pendukung',
         required: true,
-        options: props.jenisUnitPendukungs?.map(item => ({
-            value: item.id,
-            label: item.nama,
-        })) || [],
+        options:
+            props.jenisUnitPendukungs?.map((item) => ({
+                value: item.id,
+                label: item.nama,
+            })) || [],
     },
     {
         name: 'deskripsi',

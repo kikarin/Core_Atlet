@@ -59,7 +59,9 @@ const columns = computed(() => {
             key: 'tanggal_lahir',
             label: 'Tanggal Lahir',
             format: (row: any) =>
-                row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '-',
+                row.tanggal_lahir
+                    ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' })
+                    : '-',
         },
         { key: 'no_hp', label: 'No HP' },
         {
@@ -77,19 +79,19 @@ const columns = computed(() => {
         return [
             { key: 'nama', label: 'Nama' },
             { key: 'posisi_atlet_nama', label: 'Posisi', format: (row: any) => row.posisi_atlet_nama || '-' },
-            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+            ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     } else if (jenisPeserta === 'pelatih') {
         return [
             { key: 'nama', label: 'Nama' },
             { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih', format: (row: any) => row.jenis_pelatih_nama || '-' },
-            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+            ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     } else if (jenisPeserta === 'tenaga-pendukung') {
         return [
             { key: 'nama', label: 'Nama' },
             { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung', format: (row: any) => row.jenis_tenaga_pendukung_nama || '-' },
-            ...baseColumns.slice(1) // Skip nama karena sudah ada di atas
+            ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     }
 

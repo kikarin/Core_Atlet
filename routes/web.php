@@ -191,7 +191,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('kesehatan', [AtletKesehatanController::class, 'store'])->name('atlet.kesehatan.store');
         Route::put('kesehatan/{id}', [AtletKesehatanController::class, 'update'])->name('atlet.kesehatan.update');
         Route::delete('kesehatan/{id}', [AtletKesehatanController::class, 'destroy'])->name('atlet.kesehatan.destroy');
-        
+
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [AtletController::class, 'riwayatPemeriksaan'])->name('atlet.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [AtletController::class, 'parameterDetail'])->name('atlet.riwayat-pemeriksaan.parameter');
@@ -230,7 +230,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('dokumen/{id}', [PelatihDokumenController::class, 'destroy'])->name('pelatih.dokumen.destroy');
         Route::post('dokumen/destroy-selected', [PelatihDokumenController::class, 'destroy_selected'])->name('pelatih.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [PelatihDokumenController::class, 'show'])->name('pelatih.dokumen.show');
-        
+
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [PelatihController::class, 'riwayatPemeriksaan'])->name('pelatih.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [PelatihController::class, 'parameterDetail'])->name('pelatih.riwayat-pemeriksaan.parameter');
@@ -274,7 +274,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('dokumen/{id}', [TenagaPendukungDokumenController::class, 'destroy'])->name('tenaga-pendukung.dokumen.destroy');
         Route::post('dokumen/destroy-selected', [TenagaPendukungDokumenController::class, 'destroy_selected'])->name('tenaga-pendukung.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [TenagaPendukungDokumenController::class, 'show'])->name('tenaga-pendukung.dokumen.show');
-        
+
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [TenagaPendukungController::class, 'riwayatPemeriksaan'])->name('tenaga-pendukung.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [TenagaPendukungController::class, 'parameterDetail'])->name('tenaga-pendukung.riwayat-pemeriksaan.parameter');
@@ -283,7 +283,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/unit-pendukung', UnitPendukungController::class)->names('unit-pendukung');
     Route::get('/api/unit-pendukung', [UnitPendukungController::class, 'apiIndex']);
     Route::post('/unit-pendukung/destroy-selected', [UnitPendukungController::class, 'destroy_selected'])->name('unit-pendukung.destroy_selected');
-    
+
 
     // CABOR
     Route::resource('/cabor', CaborController::class)->names('cabor');

@@ -21,16 +21,16 @@ class RencanaLatihanController extends Controller implements HasMiddleware
     public function __construct(Request $request, RencanaLatihanRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->route = 'rencana-latihan';
-        $this->commonData['kode_first_menu'] = 'PROGRAM-LATIHAN';
+        $this->route                          = 'rencana-latihan';
+        $this->commonData['kode_first_menu']  = 'PROGRAM-LATIHAN';
         $this->commonData['kode_second_menu'] = 'RENCANA-LATIHAN';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -45,20 +45,20 @@ class RencanaLatihanController extends Controller implements HasMiddleware
     public function nestedIndex($program_id, Request $request)
     {
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + [];
+        $data           = $this->commonData + [];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $request->merge(['program_latihan_id' => $program_id]);
-        $data = $this->repository->customIndex($data);
+        $data               = $this->repository->customIndex($data);
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor?->nama,
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
-            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
+            'cabor_kategori_id'   => $programLatihan->cabor_kategori_id,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
         ];
 
         return inertia('modules/rencana-latihan/Index', $data);
@@ -67,18 +67,18 @@ class RencanaLatihanController extends Controller implements HasMiddleware
     public function nestedCreate($program_id)
     {
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + ['item' => null];
+        $data           = $this->commonData + ['item' => null];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor?->nama,
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
-            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
+            'cabor_kategori_id'   => $programLatihan->cabor_kategori_id,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
         ];
 
         return inertia('modules/rencana-latihan/Create', $data);
@@ -95,20 +95,20 @@ class RencanaLatihanController extends Controller implements HasMiddleware
 
     public function nestedShow($program_id, $rencana_id)
     {
-        $item = $this->repository->getDetailWithRelations($rencana_id);
+        $item           = $this->repository->getDetailWithRelations($rencana_id);
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + ['item' => $item];
+        $data           = $this->commonData + ['item' => $item];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor?->nama,
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
-            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
+            'cabor_kategori_id'   => $programLatihan->cabor_kategori_id,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
         ];
 
         return inertia('modules/rencana-latihan/Show', $data);
@@ -116,20 +116,20 @@ class RencanaLatihanController extends Controller implements HasMiddleware
 
     public function nestedEdit($program_id, $rencana_id)
     {
-        $item = $this->repository->getDetailWithRelations($rencana_id);
+        $item           = $this->repository->getDetailWithRelations($rencana_id);
         $programLatihan = ProgramLatihan::with(['cabor', 'caborKategori'])->findOrFail($program_id);
-        $data = $this->commonData + ['item' => $item];
+        $data           = $this->commonData + ['item' => $item];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
         $data['infoHeader'] = [
-            'program_latihan_id' => $programLatihan->id,
-            'nama_program' => $programLatihan->nama_program,
-            'cabor_nama' => $programLatihan->cabor?->nama,
+            'program_latihan_id'  => $programLatihan->id,
+            'nama_program'        => $programLatihan->nama_program,
+            'cabor_nama'          => $programLatihan->cabor?->nama,
             'cabor_kategori_nama' => $programLatihan->caborKategori?->nama,
-            'cabor_kategori_id' => $programLatihan->cabor_kategori_id,
-            'periode_mulai' => $programLatihan->periode_mulai,
-            'periode_selesai' => $programLatihan->periode_selesai,
+            'cabor_kategori_id'   => $programLatihan->cabor_kategori_id,
+            'periode_mulai'       => $programLatihan->periode_mulai,
+            'periode_selesai'     => $programLatihan->periode_selesai,
         ];
 
         return inertia('modules/rencana-latihan/Edit', $data);
@@ -154,7 +154,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request, $program_id)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:rencana_latihan,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -169,12 +169,12 @@ class RencanaLatihanController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['data'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }

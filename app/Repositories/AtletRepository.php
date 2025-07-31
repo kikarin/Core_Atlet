@@ -18,9 +18,9 @@ class AtletRepository
 
     public function __construct(Atlet $model, AtletOrangTuaRepository $atletOrangTuaRepository)
     {
-        $this->model = $model;
+        $this->model                   = $model;
         $this->atletOrangTuaRepository = $atletOrangTuaRepository;
-        $this->with = [
+        $this->with                    = [
             'media',
             'created_by_user',
             'updated_by_user',
@@ -75,8 +75,8 @@ class AtletRepository
             });
         }
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nik', 'nama', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'no_hp', 'email', 'is_active', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -87,37 +87,37 @@ class AtletRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return $item->toArray();
             });
             $data += [
-                'atlets' => $transformed,
-                'total' => $transformed->count(),
+                'atlets'      => $transformed,
+                'total'       => $transformed->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return $item->toArray();
         });
         $data += [
-            'atlets' => $transformed,
-            'total' => $items->total(),
+            'atlets'      => $transformed,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $items->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -147,7 +147,7 @@ class AtletRepository
         }
 
         Log::info('AtletRepository: customDataCreateUpdate', [
-            'data' => $data,
+            'data'   => $data,
             'method' => is_null($record) ? 'create' : 'update',
         ]);
 
@@ -160,9 +160,9 @@ class AtletRepository
             DB::beginTransaction();
 
             Log::info('AtletRepository: Starting file upload process', [
-                'method' => $method,
-                'has_file' => isset($data['file']),
-                'file_data' => $data['file'] ? 'File exists' : 'No file',
+                'method'         => $method,
+                'has_file'       => isset($data['file']),
+                'file_data'      => $data['file'] ? 'File exists' : 'No file',
                 'is_delete_foto' => @$data['is_delete_foto'],
             ]);
 
@@ -176,7 +176,7 @@ class AtletRepository
                 Log::info('AtletRepository: Adding media file', [
                     'file_name' => $data['file']->getClientOriginalName(),
                     'file_size' => $data['file']->getSize(),
-                    'model_id' => $model->id,
+                    'model_id'  => $model->id,
                 ]);
 
                 $media = $model->addMedia($data['file'])
@@ -184,15 +184,15 @@ class AtletRepository
                     ->toMediaCollection('images');
 
                 Log::info('AtletRepository: Media added successfully', [
-                    'media_id' => $media->id,
+                    'media_id'  => $media->id,
                     'file_name' => $media->file_name,
-                    'disk' => $media->disk,
-                    'path' => $media->getPath(),
+                    'disk'      => $media->disk,
+                    'path'      => $media->getPath(),
                 ]);
             }
 
             // Handle AtletOrangTua data
-            $atletOrangTuaData = [];
+            $atletOrangTuaData   = [];
             $atletOrangTuaFields = [
                 'nama_ibu_kandung', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'alamat_ibu', 'no_hp_ibu', 'pekerjaan_ibu',
                 'nama_ayah_kandung', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'alamat_ayah', 'no_hp_ayah', 'pekerjaan_ayah',
@@ -233,7 +233,7 @@ class AtletRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

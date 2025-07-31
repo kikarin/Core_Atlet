@@ -22,15 +22,15 @@ class UnitPendukungController extends Controller implements HasMiddleware
     public function __construct(Request $request, UnitPendukungRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = UnitPendukungRequest::createFromBase($request);
+        $this->request    = UnitPendukungRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -49,12 +49,12 @@ class UnitPendukungController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['unitPendukungs'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -89,7 +89,7 @@ class UnitPendukungController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
 
         return Inertia::render('modules/unit-pendukung/Show', [
@@ -107,7 +107,7 @@ class UnitPendukungController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:unit_pendukung,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -119,7 +119,7 @@ class UnitPendukungController extends Controller implements HasMiddleware
     {
         $this->repository->customProperty(__FUNCTION__);
         $data = $this->commonData + [
-            'item' => null,
+            'item'                => null,
             'jenisUnitPendukungs' => MstJenisUnitPendukung::select('id', 'nama')->get(),
         ];
         if ($this->check_permission == true) {
@@ -138,7 +138,7 @@ class UnitPendukungController extends Controller implements HasMiddleware
         $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
-            'item' => $item,
+            'item'                => $item,
             'jenisUnitPendukungs' => MstJenisUnitPendukung::select('id', 'nama')->get(),
         ];
         if ($this->check_permission == true) {

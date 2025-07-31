@@ -13,21 +13,21 @@ class CaborKategoriPelatihSeeder extends Seeder
     public function run(): void
     {
         $kategoriList = CaborKategori::all();
-        $pelatihList = Pelatih::all();
-        $jenisList = MstJenisPelatih::pluck('id')->toArray();
+        $pelatihList  = Pelatih::all();
+        $jenisList    = MstJenisPelatih::pluck('id')->toArray();
 
         foreach ($kategoriList as $kategori) {
             $randomPelatihs = $pelatihList->random(rand(2, min(4, $pelatihList->count())));
             foreach ($randomPelatihs as $pelatih) {
                 DB::table('cabor_kategori_pelatih')->updateOrInsert([
-                    'cabor_id' => $kategori->cabor_id,
+                    'cabor_id'          => $kategori->cabor_id,
                     'cabor_kategori_id' => $kategori->id,
-                    'pelatih_id' => $pelatih->id,
+                    'pelatih_id'        => $pelatih->id,
                 ], [
-                    'is_active' => rand(0, 1),
+                    'is_active'        => rand(0, 1),
                     'jenis_pelatih_id' => $jenisList ? $jenisList[array_rand($jenisList)] : null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
                 ]);
             }
         }

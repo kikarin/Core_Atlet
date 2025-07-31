@@ -19,7 +19,7 @@ class IdentityRepository
 
     public function __construct(Identity $model, CategoryIdentityRepository $categoryIdentityRepository)
     {
-        $this->model = $model;
+        $this->model                      = $model;
         $this->categoryIdentityRepository = $categoryIdentityRepository;
 
         $this->route = 'identity';
@@ -51,10 +51,10 @@ class IdentityRepository
             if ($get) {
                 if ($get->type == $this->model::TYPE_FILE) {
                     if (@$data[$value]) {
-                        $file_lama = $get->file;
+                        $file_lama  = $get->file;
                         $uploadFile = $this->uploadFileCustom($data[$value], 'identity/photo');
-                        $filename = @$uploadFile['filename'];
-                        $type_file = $uploadFile['type_file'];
+                        $filename   = @$uploadFile['filename'];
+                        $type_file  = $uploadFile['type_file'];
                         $this->update($get->id, ['value' => $filename, 'type_file' => $type_file]);
                         if ($get->file != '') {
                             $this->deleteFileCustom($file_lama, 'identity/photo');
@@ -73,7 +73,7 @@ class IdentityRepository
     public function getCache()
     {
         $data = Cache::remember($this->cacheKeyApi, 60, function () {
-            $getAll = $this->getAll();
+            $getAll  = $this->getAll();
             $getData = collect($getAll);
 
             return $getData;
@@ -104,9 +104,9 @@ class IdentityRepository
     public function customIndex($data)
     {
         $data += [
-            'request' => request()->all(),
+            'request'  => request()->all(),
             'listType' => $this->listType(),
-            'data' => $this->categoryIdentityRepository->getAll(),
+            'data'     => $this->categoryIdentityRepository->getAll(),
         ];
 
         return $data;
@@ -116,7 +116,7 @@ class IdentityRepository
     {
         $data += [
             'category_identity_id' => request()->input('category_identity_id'),
-            'listType' => $this->listType(),
+            'listType'             => $this->listType(),
         ];
 
         return $data;

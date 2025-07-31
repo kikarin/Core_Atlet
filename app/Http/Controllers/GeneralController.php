@@ -31,11 +31,11 @@ class GeneralController extends Controller
         PencakerRepository $pencakerRepository,
         PerusahaanRepository $perusahaanRepository
     ) {
-        $this->usersRepository = $usersRepository;
-        $this->kelurahanRepository = $kelurahanRepository;
+        $this->usersRepository           = $usersRepository;
+        $this->kelurahanRepository       = $kelurahanRepository;
         $this->jenisPendidikanRepository = $jenisPendidikanRepository;
-        $this->pencakerRepository = $pencakerRepository;
-        $this->perusahaanRepository = $perusahaanRepository;
+        $this->pencakerRepository        = $pencakerRepository;
+        $this->perusahaanRepository      = $perusahaanRepository;
     }
 
     public function access_file($direktori, $file_name)
@@ -55,7 +55,7 @@ class GeneralController extends Controller
             if (Auth::user()->current_role_id == 100) {
                 $data['is_my_file'] = 1;
             }
-            $getFile = $this->usersRepository->getByFile($data);
+            $getFile   = $this->usersRepository->getByFile($data);
             $file_path = @$getFile['file_path'];
         }
         abort_if(! $getFile, 404);
@@ -69,7 +69,7 @@ class GeneralController extends Controller
 
         return response()->json([
             'error' => 0,
-            'data' => $data,
+            'data'  => $data,
         ]);
     }
 
@@ -79,7 +79,7 @@ class GeneralController extends Controller
 
         return response()->json([
             'error' => 0,
-            'data' => $data,
+            'data'  => $data,
         ]);
     }
 
@@ -93,7 +93,7 @@ class GeneralController extends Controller
 
         return response()->json([
             'error' => 0,
-            'html' => $result,
+            'html'  => $result,
         ]);
     }
 

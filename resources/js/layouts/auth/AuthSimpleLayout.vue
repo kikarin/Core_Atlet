@@ -22,9 +22,9 @@ defineProps<{
                         <p class="text-muted-foreground text-center text-sm">{{ description }}</p>
                     </div>
                 </div>
-                
+
                 <!-- Form container with simple background -->
-                <div class="rounded-xl bg-card border border-border shadow-sm p-6">
+                <div class="bg-card border-border rounded-xl border p-6 shadow-sm">
                     <slot />
                 </div>
             </div>

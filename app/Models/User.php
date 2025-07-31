@@ -82,7 +82,7 @@ class User extends Authenticatable implements HasMedia
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
@@ -198,7 +198,7 @@ class User extends Authenticatable implements HasMedia
 
     public function getIsActiveBadgeAttribute()
     {
-        $text = ($this->is_active == 1) ? 'Aktif' : 'Nonaktif';
+        $text     = ($this->is_active == 1) ? 'Aktif' : 'Nonaktif';
         $badge_bg = ($this->is_active == 0) ? 'bg-label-danger' : 'bg-label-primary';
 
         return "<span class='badge $badge_bg'>$text</span>";
@@ -261,7 +261,7 @@ class User extends Authenticatable implements HasMedia
 
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new RegisterNotification); // Ini akan mengirim email verifikasi
+        $this->notify(new RegisterNotification()); // Ini akan mengirim email verifikasi
     }
 
     public function sendPasswordResetNotification($token)

@@ -20,14 +20,14 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
     public function __construct()
     {
         $this->initialize();
-        $this->route = 'rencana-latihan-kelola-kelompok';
-        $this->commonData['kode_first_menu'] = 'RENCANA-LATIHAN';
+        $this->route                          = 'rencana-latihan-kelola-kelompok';
+        $this->commonData['kode_first_menu']  = 'RENCANA-LATIHAN';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -46,7 +46,7 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
         $rencanaLatihanList = RencanaLatihan::with([
             'targetLatihan' => function ($query) {
                 $query->where('jenis_target', 'kelompok');
-            }
+            },
         ])->where('program_latihan_id', $program_id)
           ->orderBy('id', 'desc')
           ->get();
@@ -56,27 +56,27 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
             ->get();
 
         $data = $this->commonData + [
-            'titlePage' => 'Kelola Target Kelompok Rencana Latihan',
-            'program_id' => $program_id,
+            'titlePage'       => 'Kelola Target Kelompok Rencana Latihan',
+            'program_id'      => $program_id,
             'program_latihan' => [
-                'nama_program' => $programLatihan->nama_program,
-                'cabor_nama' => $programLatihan->cabor->nama,
+                'nama_program'        => $programLatihan->nama_program,
+                'cabor_nama'          => $programLatihan->cabor->nama,
                 'cabor_kategori_nama' => $programLatihan->caborKategori->nama,
             ],
             'rencana_latihan_list' => $rencanaLatihanList->map(function ($rencana) {
                 return [
-                    'id' => $rencana->id,
-                    'tanggal' => $rencana->tanggal,
-                    'materi' => $rencana->materi,
-                    'lokasi_latihan' => $rencana->lokasi_latihan,
-                    'jumlah_atlet' => $rencana->atlets()->count(),
-                    'jumlah_pelatih' => $rencana->pelatihs()->count(),
+                    'id'                      => $rencana->id,
+                    'tanggal'                 => $rencana->tanggal,
+                    'materi'                  => $rencana->materi,
+                    'lokasi_latihan'          => $rencana->lokasi_latihan,
+                    'jumlah_atlet'            => $rencana->atlets()->count(),
+                    'jumlah_pelatih'          => $rencana->pelatihs()->count(),
                     'jumlah_tenaga_pendukung' => $rencana->tenagaPendukung()->count(),
-                    'target_latihan' => $rencana->targetLatihan->where('jenis_target', 'kelompok')->map(function ($target) {
+                    'target_latihan'          => $rencana->targetLatihan->where('jenis_target', 'kelompok')->map(function ($target) {
                         return [
-                            'id' => $target->id,
-                            'deskripsi' => $target->deskripsi,
-                            'satuan' => $target->satuan,
+                            'id'           => $target->id,
+                            'deskripsi'    => $target->deskripsi,
+                            'satuan'       => $target->satuan,
                             'nilai_target' => $target->nilai_target,
                         ];
                     }),
@@ -84,9 +84,9 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
             }),
             'target_latihan' => $targetLatihan->map(function ($target) {
                 return [
-                    'id' => $target->id,
-                    'deskripsi' => $target->deskripsi,
-                    'satuan' => $target->satuan,
+                    'id'           => $target->id,
+                    'deskripsi'    => $target->deskripsi,
+                    'satuan'       => $target->satuan,
                     'nilai_target' => $target->nilai_target,
                 ];
             }),
@@ -130,11 +130,11 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
     public function bulkUpdate(Request $request, $program_id)
     {
         $request->validate([
-            'data' => 'required|array',
+            'data'                      => 'required|array',
             'data.*.rencana_latihan_id' => 'required|exists:rencana_latihan,id',
-            'data.*.target_latihan_id' => 'required|exists:target_latihan,id',
-            'data.*.nilai' => 'required|string',
-            'data.*.trend' => 'required|in:naik,stabil,turun',
+            'data.*.target_latihan_id'  => 'required|exists:target_latihan,id',
+            'data.*.nilai'              => 'required|string',
+            'data.*.trend'              => 'required|in:naik,stabil,turun',
         ]);
 
         try {
@@ -165,9 +165,9 @@ class RencanaLatihanKelolaKelompokController extends Controller implements HasMi
                     // Insert data baru
                     DB::table('rencana_latihan_target_latihan')->insert([
                         'rencana_latihan_id' => $item['rencana_latihan_id'],
-                        'target_latihan_id' => $item['target_latihan_id'],
-                        'nilai' => $item['nilai'],
-                        'trend' => $item['trend'],
+                        'target_latihan_id'  => $item['target_latihan_id'],
+                        'nilai'              => $item['nilai'],
+                        'trend'              => $item['trend'],
                     ]);
                 }
             }

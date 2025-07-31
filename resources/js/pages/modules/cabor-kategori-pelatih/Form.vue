@@ -16,9 +16,9 @@ const jenisPelatihOptions = ref<{ value: number; label: string }[]>([]);
 onMounted(async () => {
     try {
         const res = await axios.get('/api/jenis-pelatih-list');
-        jenisPelatihOptions.value = (res.data || []).map((item: { id: number; nama: string }) => ({ 
-            value: item.id, 
-            label: item.nama 
+        jenisPelatihOptions.value = (res.data || []).map((item: { id: number; nama: string }) => ({
+            value: item.id,
+            label: item.nama,
         }));
     } catch (e) {
         console.error('Gagal mengambil data jenis pelatih', e);
@@ -64,4 +64,4 @@ const handleSave = (form: any) => {
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
-</template> 
+</template>

@@ -21,15 +21,15 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
     public function __construct(AtletOrangTuaRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -45,7 +45,7 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
     {
         Log::info('AtletOrangTuaController: START store method', ['atlet_id_route' => $atlet_id, 'request_all' => $request->all()]);
 
-        $data = $request->validated();
+        $data             = $request->validated();
         $data['atlet_id'] = $atlet_id;
 
         Log::info('AtletOrangTuaController: store method - validated data', $data);
@@ -54,11 +54,11 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
 
         if ($existingOrangTua) {
             Log::info('AtletOrangTuaController: Existing record found, updating.', ['id' => $existingOrangTua->id]);
-            $model = $this->repository->update($existingOrangTua->id, $data);
+            $model   = $this->repository->update($existingOrangTua->id, $data);
             $message = 'Data orang tua/wali berhasil diperbarui!';
         } else {
             Log::info('AtletOrangTuaController: No existing record, creating new.');
-            $model = $this->repository->create($data);
+            $model   = $this->repository->create($data);
             $message = 'Data orang tua/wali berhasil ditambahkan!';
         }
 
@@ -92,7 +92,7 @@ class AtletOrangTuaController extends Controller implements HasMiddleware
         Log::info('AtletOrangTuaController: START update method', ['atlet_id_route' => $atlet_id, 'id_orang_tua' => $id, 'request_all' => $request->all()]);
 
         try {
-            $data = $request->validated();
+            $data             = $request->validated();
             $data['atlet_id'] = $atlet_id;
 
             Log::info('AtletOrangTuaController: update method - validated data', $data);

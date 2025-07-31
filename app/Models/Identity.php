@@ -29,9 +29,9 @@ class Identity extends Model
     public function listType(): array
     {
         return [
-            self::TYPE_TEXT => self::TYPE_TEXT,
+            self::TYPE_TEXT     => self::TYPE_TEXT,
             self::TYPE_TEXTAREA => self::TYPE_TEXTAREA,
-            self::TYPE_FILE => self::TYPE_FILE,
+            self::TYPE_FILE     => self::TYPE_FILE,
         ];
     }
 
@@ -43,7 +43,7 @@ class Identity extends Model
     public function getFileFotoAttribute()
     {
         $file_path = 'identity/photo/'.$this->value;
-        $result = asset('assets/img/no-image.jpeg');
+        $result    = asset('assets/img/no-image.jpeg');
         if ($this->type == self::TYPE_FILE) {
             if ($this->value != '' and Storage::disk('public')->exists($file_path)) {
                 $result = url(Storage::url($file_path));

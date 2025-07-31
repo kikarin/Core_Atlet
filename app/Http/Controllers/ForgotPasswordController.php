@@ -36,7 +36,7 @@ class ForgotPasswordController extends Controller
 
         $lastResetTime = Cache::get("password_reset_$email");
         if ($lastResetTime) {
-            $now = Carbon::now();
+            $now            = Carbon::now();
             $timeDifference = $now->diffInMinutes($lastResetTime);
             if ($timeDifference < 5) {
                 return back()->withErrors('Harap tunggu sebelum mencoba lagi');
@@ -65,15 +65,15 @@ class ForgotPasswordController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in: password,123456,admin',
+            'token'                 => 'required',
+            'email'                 => 'required|email',
+            'password'              => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in: password,123456,admin',
             'password_confirmation' => 'required',
         ], [
-            'password.required' => 'Password harus diisi.',
-            'password.min' => 'Password minimal harus terdiri dari 8 karakter.',
-            'password.regex' => 'Password harus mengandung setidaknya satu huruf kecil, satu huruf besar, dan satu angka.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.required'              => 'Password harus diisi.',
+            'password.min'                   => 'Password minimal harus terdiri dari 8 karakter.',
+            'password.regex'                 => 'Password harus mengandung setidaknya satu huruf kecil, satu huruf besar, dan satu angka.',
+            'password.confirmed'             => 'Konfirmasi password tidak cocok.',
             'password_confirmation.required' => 'Konfirmasi password harus diisi.',
         ]);
 

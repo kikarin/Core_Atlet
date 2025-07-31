@@ -17,7 +17,7 @@ class CategoryIdentityRepository
     public function customDataCreateUpdate($data, $record = null)
     {
         if (@$data['file']) {
-            $uploadFile = $this->uploadFileCustom($data['file'], 'category-identity/photo');
+            $uploadFile   = $this->uploadFileCustom($data['file'], 'category-identity/photo');
             $data['file'] = @$uploadFile['filename'];
         }
 

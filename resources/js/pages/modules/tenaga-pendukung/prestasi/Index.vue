@@ -199,18 +199,17 @@ const idsToDelete = ref<number[]>([]);
                 <div class="mx-auto px-4 py-4">
                     <!-- Tabs -->
                     <div class="mb-4">
-            <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'prestasi-data'" />
+                        <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'prestasi-data'" />
                     </div>
-                    
-                    <HeaderActions
-                title="Prestasi"
-                :create-url="`/tenaga-pendukung/${props.tenagaPendukungId}/prestasi/create`"
-                :selected="selected"
-                :on-delete-selected="deleteSelected"
-            />
 
+                    <HeaderActions
+                        title="Prestasi"
+                        :create-url="`/tenaga-pendukung/${props.tenagaPendukungId}/prestasi/create`"
+                        :selected="selected"
+                        :on-delete-selected="deleteSelected"
+                    />
                 </div>
-                
+
                 <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"

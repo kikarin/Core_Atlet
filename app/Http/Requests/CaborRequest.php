@@ -14,7 +14,7 @@ class CaborRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nama' => 'required|string|max:255',
+            'nama'      => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -30,9 +30,9 @@ class CaborRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama cabor wajib diisi.',
-            'nama.string' => 'Nama cabor harus berupa teks.',
-            'nama.max' => 'Nama cabor tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama cabor sudah ada.',
+            'nama.string'   => 'Nama cabor harus berupa teks.',
+            'nama.max'      => 'Nama cabor tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama cabor sudah ada.',
         ];
     }
 }

@@ -21,16 +21,16 @@ class CaborController extends Controller implements HasMiddleware
     public function __construct(Request $request, CaborRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = CaborRequest::createFromBase($request);
+        $this->request    = CaborRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'cabor';
-        $this->commonData['kode_first_menu'] = 'CABOR';
+        $this->route                          = 'cabor';
+        $this->commonData['kode_first_menu']  = 'CABOR';
         $this->commonData['kode_second_menu'] = 'CABOR';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -49,12 +49,12 @@ class CaborController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['cabors'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -89,7 +89,7 @@ class CaborController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
 
         return Inertia::render('modules/cabor/Show', [
@@ -107,7 +107,7 @@ class CaborController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:cabor,id',
         ]);
         $this->repository->delete_selected($request->ids);

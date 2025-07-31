@@ -17,7 +17,7 @@ class AtletSertifikatRepository
     public function __construct(AtletSertifikat $model)
     {
         $this->model = $model;
-        $this->with = [
+        $this->with  = [
             'media',
             'created_by_user',
             'updated_by_user',
@@ -29,7 +29,7 @@ class AtletSertifikatRepository
         Log::info('AtletSertifikatRepository: create', $data);
         $file = $data['file'] ?? null;
         unset($data['file']);
-        $data = $this->customDataCreateUpdate($data);
+        $data  = $this->customDataCreateUpdate($data);
         $model = $this->model->create($data);
         if ($file) {
             $model->addMedia($file)->usingName($data['nama_sertifikat'] ?? 'Sertifikat')->toMediaCollection('sertifikat_file');
@@ -111,8 +111,8 @@ class AtletSertifikatRepository
         }
         // Sort
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama_sertifikat', 'penyelenggara', 'tanggal_terbit', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -123,52 +123,52 @@ class AtletSertifikatRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
+                    'id'              => $item->id,
                     'nama_sertifikat' => $item->nama_sertifikat,
-                    'penyelenggara' => $item->penyelenggara,
-                    'tanggal_terbit' => $item->tanggal_terbit,
-                    'file_url' => $item->file_url,
+                    'penyelenggara'   => $item->penyelenggara,
+                    'tanggal_terbit'  => $item->tanggal_terbit,
+                    'file_url'        => $item->file_url,
                 ];
             });
 
             return [
                 'data' => $transformed,
                 'meta' => [
-                    'total' => $transformed->count(),
+                    'total'        => $transformed->count(),
                     'current_page' => 1,
-                    'per_page' => -1,
-                    'search' => request('search', ''),
-                    'sort' => request('sort', ''),
-                    'order' => request('order', 'asc'),
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => request('sort', ''),
+                    'order'        => request('order', 'asc'),
                 ],
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
+                'id'              => $item->id,
                 'nama_sertifikat' => $item->nama_sertifikat,
-                'penyelenggara' => $item->penyelenggara,
-                'tanggal_terbit' => $item->tanggal_terbit,
-                'file_url' => $item->file_url,
+                'penyelenggara'   => $item->penyelenggara,
+                'tanggal_terbit'  => $item->tanggal_terbit,
+                'file_url'        => $item->file_url,
             ];
         });
 
         return [
             'data' => $transformed,
             'meta' => [
-                'total' => $items->total(),
+                'total'        => $items->total(),
                 'current_page' => $items->currentPage(),
-                'per_page' => $items->perPage(),
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $items->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ];
     }
@@ -189,7 +189,7 @@ class AtletSertifikatRepository
 
         return Inertia::render('modules/atlet/sertifikat/Edit', [
             'atletId' => (int) $atletId,
-            'item' => $sertifikat,
+            'item'    => $sertifikat,
         ]);
     }
 

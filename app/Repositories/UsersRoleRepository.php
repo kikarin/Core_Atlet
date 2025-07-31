@@ -33,8 +33,8 @@ class UsersRoleRepository
             $data = [];
             foreach ($roleIds as $roleId) {
                 $data[] = [
-                    'users_id' => $userId,
-                    'role_id' => $roleId,
+                    'users_id'   => $userId,
+                    'role_id'    => $roleId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -95,7 +95,7 @@ class UsersRoleRepository
             if (! $exists) {
                 $this->model->create([
                     'users_id' => $userId,
-                    'role_id' => $role,
+                    'role_id'  => $role,
                 ]);
             }
         }

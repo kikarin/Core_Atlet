@@ -22,17 +22,17 @@ class PermissionController extends Controller implements HasMiddleware
 
     public function __construct(PermissionRepository $repository, CategoryPermissionRepository $categoryPermissionRepository, Request $request)
     {
-        $this->repository = $repository;
+        $this->repository                   = $repository;
         $this->categoryPermissionRepository = $categoryPermissionRepository;
-        $this->request = PermissionRequest::createFromBase($request);
+        $this->request                      = PermissionRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu'] = 'USERS-MANAGEMENT';
+        $this->commonData['kode_first_menu']  = 'USERS-MANAGEMENT';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 

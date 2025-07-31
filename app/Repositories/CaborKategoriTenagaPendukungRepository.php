@@ -17,7 +17,7 @@ class CaborKategoriTenagaPendukungRepository
     public function __construct(CaborKategoriTenagaPendukung $model)
     {
         $this->model = $model;
-        $this->with = [
+        $this->with  = [
             'cabor',
             'caborKategori',
             'tenagaPendukung',
@@ -49,7 +49,7 @@ class CaborKategoriTenagaPendukungRepository
             });
         }
         if (request('sort')) {
-            $order = request('order', 'asc');
+            $order     = request('order', 'asc');
             $sortField = request('sort');
             if ($sortField === 'tenaga_pendukung_nama') {
                 $query->join('tenaga_pendukungs', 'cabor_kategori_tenaga_pendukung.tenaga_pendukung_id', '=', 'tenaga_pendukungs.id')
@@ -67,67 +67,67 @@ class CaborKategoriTenagaPendukungRepository
         }
 
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $allRecords = $query->get();
+            $allRecords         = $query->get();
             $transformedRecords = collect($allRecords)->map(function ($record) {
                 return [
-                    'id' => $record->id,
-                    'cabor_id' => $record->cabor_id,
-                    'cabor_nama' => $record->cabor->nama ?? '-',
-                    'cabor_kategori_id' => $record->cabor_kategori_id,
-                    'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
-                    'tenaga_pendukung_id' => $record->tenaga_pendukung_id,
-                    'tenaga_pendukung_nama' => $record->tenagaPendukung->nama ?? '-',
-                    'tenaga_pendukung_nik' => $record->tenagaPendukung->nik ?? '-',
-                    'jenis_tenaga_pendukung_id' => $record->jenis_tenaga_pendukung_id,
+                    'id'                          => $record->id,
+                    'cabor_id'                    => $record->cabor_id,
+                    'cabor_nama'                  => $record->cabor->nama ?? '-',
+                    'cabor_kategori_id'           => $record->cabor_kategori_id,
+                    'cabor_kategori_nama'         => $record->caborKategori->nama ?? '-',
+                    'tenaga_pendukung_id'         => $record->tenaga_pendukung_id,
+                    'tenaga_pendukung_nama'       => $record->tenagaPendukung->nama ?? '-',
+                    'tenaga_pendukung_nik'        => $record->tenagaPendukung->nik  ?? '-',
+                    'jenis_tenaga_pendukung_id'   => $record->jenis_tenaga_pendukung_id,
                     'jenis_tenaga_pendukung_nama' => $record->jenisTenagaPendukung->nama ?? '-',
-                    'is_active' => $record->is_active,
-                    'is_active_badge' => $record->is_active_badge,
-                    'created_at' => $record->created_at,
+                    'is_active'                   => $record->is_active,
+                    'is_active_badge'             => $record->is_active_badge,
+                    'created_at'                  => $record->created_at,
                 ];
             });
             $data += [
-                'records' => $transformedRecords,
-                'total' => $transformedRecords->count(),
+                'records'     => $transformedRecords,
+                'total'       => $transformedRecords->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
-        $pageForPaginate = $page < 1 ? 1 : $page;
-        $records = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $pageForPaginate    = $page < 1 ? 1 : $page;
+        $records            = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformedRecords = collect($records->items())->map(function ($record) {
             return [
-                'id' => $record->id,
-                'tenaga_pendukung_id' => $record->tenaga_pendukung_id,
-                'nama' => $record->tenagaPendukung->nama ?? '-',
-                'tenaga_pendukung_nama' => $record->tenagaPendukung->nama ?? '-',
-                'jenis_tenaga_pendukung_id' => $record->jenis_tenaga_pendukung_id,
+                'id'                          => $record->id,
+                'tenaga_pendukung_id'         => $record->tenaga_pendukung_id,
+                'nama'                        => $record->tenagaPendukung->nama ?? '-',
+                'tenaga_pendukung_nama'       => $record->tenagaPendukung->nama ?? '-',
+                'jenis_tenaga_pendukung_id'   => $record->jenis_tenaga_pendukung_id,
                 'jenis_tenaga_pendukung_nama' => $record->jenisTenagaPendukung->nama ?? '-',
-                'is_active' => $record->is_active,
-                'is_active_badge' => $record->is_active_badge,
-                'created_at' => $record->created_at,
-                'jenis_kelamin' => $record->tenagaPendukung->jenis_kelamin ?? '-',
-                'tempat_lahir' => $record->tenagaPendukung->tempat_lahir ?? '-',
-                'tanggal_lahir' => $record->tenagaPendukung->tanggal_lahir ?? '-',
-                'tanggal_bergabung' => $record->tenagaPendukung->tanggal_bergabung ?? '-',
-                'foto' => $record->tenagaPendukung->foto ?? null,
-                'no_hp' => $record->tenagaPendukung->no_hp ?? '-',
+                'is_active'                   => $record->is_active,
+                'is_active_badge'             => $record->is_active_badge,
+                'created_at'                  => $record->created_at,
+                'jenis_kelamin'               => $record->tenagaPendukung->jenis_kelamin     ?? '-',
+                'tempat_lahir'                => $record->tenagaPendukung->tempat_lahir      ?? '-',
+                'tanggal_lahir'               => $record->tenagaPendukung->tanggal_lahir     ?? '-',
+                'tanggal_bergabung'           => $record->tenagaPendukung->tanggal_bergabung ?? '-',
+                'foto'                        => $record->tenagaPendukung->foto              ?? null,
+                'no_hp'                       => $record->tenagaPendukung->no_hp             ?? '-',
             ];
         });
         $data += [
-            'records' => $transformedRecords,
-            'total' => $records->total(),
+            'records'     => $transformedRecords,
+            'total'       => $records->total(),
             'currentPage' => $records->currentPage(),
-            'perPage' => $records->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $records->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -146,7 +146,7 @@ class CaborKategoriTenagaPendukungRepository
 
     public function batchInsert($data)
     {
-        $userId = Auth::id();
+        $userId     = Auth::id();
         $insertData = [];
         foreach ($data['tenaga_pendukung_ids'] as $tpId) {
             $existing = $this->model->withTrashed()
@@ -157,32 +157,32 @@ class CaborKategoriTenagaPendukungRepository
                 if ($existing->trashed()) {
                     $existing->restore();
                 }
-                $existing->is_active = (int) $data['is_active'];
+                $existing->is_active                 = (int) $data['is_active'];
                 $existing->jenis_tenaga_pendukung_id = $data['jenis_tenaga_pendukung_id'];
-                $existing->cabor_id = $data['cabor_id'];
-                $existing->updated_by = $userId;
-                $existing->updated_at = now();
+                $existing->cabor_id                  = $data['cabor_id'];
+                $existing->updated_by                = $userId;
+                $existing->updated_at                = now();
                 $existing->save();
                 Log::info('Updated existing tenaga pendukung', [
-                    'tenaga_pendukung_id' => $tpId,
-                    'is_active' => $data['is_active'],
+                    'tenaga_pendukung_id'       => $tpId,
+                    'is_active'                 => $data['is_active'],
                     'jenis_tenaga_pendukung_id' => $data['jenis_tenaga_pendukung_id'],
                 ]);
             } else {
                 $insertData[] = [
-                    'cabor_id' => $data['cabor_id'],
-                    'cabor_kategori_id' => $data['cabor_kategori_id'],
-                    'tenaga_pendukung_id' => $tpId,
+                    'cabor_id'                  => $data['cabor_id'],
+                    'cabor_kategori_id'         => $data['cabor_kategori_id'],
+                    'tenaga_pendukung_id'       => $tpId,
                     'jenis_tenaga_pendukung_id' => $data['jenis_tenaga_pendukung_id'],
-                    'is_active' => (int) $data['is_active'],
-                    'created_by' => $userId,
-                    'updated_by' => $userId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'is_active'                 => (int) $data['is_active'],
+                    'created_by'                => $userId,
+                    'updated_by'                => $userId,
+                    'created_at'                => now(),
+                    'updated_at'                => now(),
                 ];
                 Log::info('Will insert new tenaga pendukung', [
-                    'tenaga_pendukung_id' => $tpId,
-                    'is_active' => $data['is_active'],
+                    'tenaga_pendukung_id'       => $tpId,
+                    'is_active'                 => $data['is_active'],
                     'jenis_tenaga_pendukung_id' => $data['jenis_tenaga_pendukung_id'],
                 ]);
             }
@@ -232,26 +232,26 @@ class CaborKategoriTenagaPendukungRepository
         } else {
             // Untuk create/store, validasi semua field
             $rules = [
-                'cabor_id' => 'required|exists:cabor,id',
-                'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-                'tenaga_pendukung_ids' => 'required|array|min:1',
-                'tenaga_pendukung_ids.*' => 'required|exists:tenaga_pendukungs,id',
+                'cabor_id'                  => 'required|exists:cabor,id',
+                'cabor_kategori_id'         => 'required|exists:cabor_kategori,id',
+                'tenaga_pendukung_ids'      => 'required|array|min:1',
+                'tenaga_pendukung_ids.*'    => 'required|exists:tenaga_pendukungs,id',
                 'jenis_tenaga_pendukung_id' => 'required|exists:mst_jenis_tenaga_pendukung,id',
             ];
         }
 
         $messages = [
-            'cabor_id.required' => 'Cabor harus dipilih.',
-            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
-            'cabor_kategori_id.required' => 'Kategori harus dipilih.',
-            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
-            'tenaga_pendukung_ids.required' => 'Tenaga Pendukung harus dipilih minimal 1.',
-            'tenaga_pendukung_ids.array' => 'Tenaga Pendukung harus berupa array.',
-            'tenaga_pendukung_ids.min' => 'Tenaga Pendukung harus dipilih minimal 1.',
-            'tenaga_pendukung_ids.*.required' => 'Tenaga Pendukung tidak boleh kosong.',
-            'tenaga_pendukung_ids.*.exists' => 'Tenaga Pendukung yang dipilih tidak valid.',
+            'cabor_id.required'                  => 'Cabor harus dipilih.',
+            'cabor_id.exists'                    => 'Cabor yang dipilih tidak valid.',
+            'cabor_kategori_id.required'         => 'Kategori harus dipilih.',
+            'cabor_kategori_id.exists'           => 'Kategori yang dipilih tidak valid.',
+            'tenaga_pendukung_ids.required'      => 'Tenaga Pendukung harus dipilih minimal 1.',
+            'tenaga_pendukung_ids.array'         => 'Tenaga Pendukung harus berupa array.',
+            'tenaga_pendukung_ids.min'           => 'Tenaga Pendukung harus dipilih minimal 1.',
+            'tenaga_pendukung_ids.*.required'    => 'Tenaga Pendukung tidak boleh kosong.',
+            'tenaga_pendukung_ids.*.exists'      => 'Tenaga Pendukung yang dipilih tidak valid.',
             'jenis_tenaga_pendukung_id.required' => 'Jenis tenaga pendukung harus dipilih.',
-            'jenis_tenaga_pendukung_id.exists' => 'Jenis tenaga pendukung yang dipilih tidak valid.',
+            'jenis_tenaga_pendukung_id.exists'   => 'Jenis tenaga pendukung yang dipilih tidak valid.',
         ];
 
         return $request->validate($rules, $messages);

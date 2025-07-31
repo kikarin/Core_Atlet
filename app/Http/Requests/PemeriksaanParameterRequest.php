@@ -16,7 +16,7 @@ class PemeriksaanParameterRequest extends FormRequest
         return [
             'pemeriksaan_id' => 'sometimes|exists:pemeriksaan,id',
             'nama_parameter' => 'required|string|max:200',
-            'satuan' => 'nullable|string|max:100',
+            'satuan'         => 'nullable|string|max:100',
         ];
     }
 
@@ -24,10 +24,10 @@ class PemeriksaanParameterRequest extends FormRequest
     {
         return [
             'pemeriksaan_id.required' => 'Pemeriksaan wajib dipilih.',
-            'pemeriksaan_id.exists' => 'Pemeriksaan tidak valid.',
+            'pemeriksaan_id.exists'   => 'Pemeriksaan tidak valid.',
             'nama_parameter.required' => 'Nama parameter wajib diisi.',
-            'nama_parameter.max' => 'Nama parameter maksimal 200 karakter.',
-            'satuan.max' => 'Satuan maksimal 100 karakter.',
+            'nama_parameter.max'      => 'Nama parameter maksimal 200 karakter.',
+            'satuan.max'              => 'Satuan maksimal 100 karakter.',
         ];
     }
 }

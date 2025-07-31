@@ -21,14 +21,14 @@ class UsersMenuRepository
     public function __construct(UsersMenu $model, PermissionRepository $permissionRepository)
     {
         $this->model = $model;
-        $this->with = [
+        $this->with  = [
             'children',
             'rel_users_menu',
             'permission',
         ];
 
         $this->permissionRepository = $permissionRepository;
-        $this->with = ['rel_users_menu', 'permission', 'created_by_user', 'updated_by_user'];
+        $this->with                 = ['rel_users_menu', 'permission', 'created_by_user', 'updated_by_user'];
     }
 
     public function getByRel($rel)
@@ -38,9 +38,9 @@ class UsersMenuRepository
 
     public function listDropdown()
     {
-        $list = [];
+        $list    = [];
         $list[0] = 'Menu Utama';
-        $data = $this->getByRel(0);
+        $data    = $this->getByRel(0);
         foreach ($data as $key => $value) {
             $list[$value->id] = $value->nama;
             foreach ($value->children as $k => $v) {
@@ -107,13 +107,13 @@ class UsersMenuRepository
 
         // Apply sorting
         if (request('sort')) {
-            $order = request('order', 'asc');
+            $order       = request('order', 'asc');
             $sortMapping = [
-                'name' => 'nama',
-                'code' => 'kode',
-                'url' => 'url',
+                'name'   => 'nama',
+                'code'   => 'kode',
+                'url'    => 'url',
                 'parent' => 'rel',
-                'order' => 'urutan',
+                'order'  => 'urutan',
             ];
             $sortColumn = $sortMapping[request('sort')] ?? 'urutan';
             $query->orderBy($sortColumn, $order);
@@ -121,36 +121,36 @@ class UsersMenuRepository
             $query->orderBy('urutan');
         }
 
-        $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 0);
+        $perPage        = (int) request('per_page', 10);
+        $page           = (int) request('page', 0);
         $pageForLaravel = $page < 1 ? 1 : $page + 1;
 
         // Jika per_page == -1, ambil semua data tanpa paginate
         if ($perPage === -1) {
-            $menus = $query->get();
+            $menus            = $query->get();
             $transformedMenus = $menus->map(function ($menu) {
                 return [
-                    'id' => $menu->id,
-                    'name' => $menu->nama,
-                    'code' => $menu->kode,
-                    'icon' => $menu->icon,
-                    'parent' => optional($menu->rel_users_menu)->nama ?? '-',
-                    'permission' => optional($menu->permission)->name ?? '-',
-                    'url' => $menu->url,
-                    'order' => $menu->urutan,
+                    'id'         => $menu->id,
+                    'name'       => $menu->nama,
+                    'code'       => $menu->kode,
+                    'icon'       => $menu->icon,
+                    'parent'     => optional($menu->rel_users_menu)->nama ?? '-',
+                    'permission' => optional($menu->permission)->name     ?? '-',
+                    'url'        => $menu->url,
+                    'order'      => $menu->urutan,
                 ];
             });
             $data += [
-                'listUsersMenu' => $this->listDropdown(),
+                'listUsersMenu'  => $this->listDropdown(),
                 'get_Permission' => $this->permissionRepository->getAll()->pluck('name', 'id'),
-                'menus' => $transformedMenus,
-                'meta' => [
-                    'total' => $menus->count(),
+                'menus'          => $transformedMenus,
+                'meta'           => [
+                    'total'        => $menus->count(),
                     'current_page' => 1,
-                    'per_page' => $menus->count(),
-                    'search' => request('search', ''),
-                    'sort' => request('sort', ''),
-                    'order' => request('order', 'asc'),
+                    'per_page'     => $menus->count(),
+                    'search'       => request('search', ''),
+                    'sort'         => request('sort', ''),
+                    'order'        => request('order', 'asc'),
                 ],
             ];
 
@@ -158,30 +158,30 @@ class UsersMenuRepository
         }
 
         // Default: paginate
-        $menus = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
+        $menus            = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
         $transformedMenus = $menus->getCollection()->map(function ($menu) {
             return [
-                'id' => $menu->id,
-                'name' => $menu->nama,
-                'code' => $menu->kode,
-                'icon' => $menu->icon,
-                'parent' => optional($menu->rel_users_menu)->nama ?? '-',
-                'permission' => optional($menu->permission)->name ?? '-',
-                'url' => $menu->url,
-                'order' => $menu->urutan,
+                'id'         => $menu->id,
+                'name'       => $menu->nama,
+                'code'       => $menu->kode,
+                'icon'       => $menu->icon,
+                'parent'     => optional($menu->rel_users_menu)->nama ?? '-',
+                'permission' => optional($menu->permission)->name     ?? '-',
+                'url'        => $menu->url,
+                'order'      => $menu->urutan,
             ];
         });
         $data += [
-            'listUsersMenu' => $this->listDropdown(),
+            'listUsersMenu'  => $this->listDropdown(),
             'get_Permission' => $this->permissionRepository->getAll()->pluck('name', 'id'),
-            'menus' => $transformedMenus,
-            'meta' => [
-                'total' => $menus->total(),
+            'menus'          => $transformedMenus,
+            'meta'           => [
+                'total'        => $menus->total(),
                 'current_page' => $menus->currentPage(),
-                'per_page' => $menus->perPage(),
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $menus->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ];
 
@@ -191,7 +191,7 @@ class UsersMenuRepository
     public function customCreateEdit($data, $item = null)
     {
         $data += [
-            'listUsersMenu' => $this->listDropdown(),
+            'listUsersMenu'  => $this->listDropdown(),
             'get_Permission' => $this->permissionRepository->getAll()->pluck('name', 'id'),
         ];
 
@@ -209,11 +209,11 @@ class UsersMenuRepository
             return collect([]);
         }
 
-        $role = $user->role;
+        $role   = $user->role;
         $roleId = $role->id;
 
         // Tambahkan versioning (timestamp) biar cache otomatis invalid saat CRUD
-        $version = Cache::get('menus_version', now()->timestamp);
+        $version  = Cache::get('menus_version', now()->timestamp);
         $cacheKey = "menus_for_role_{$roleId}_v_{$version}";
 
         return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($role) {
@@ -293,15 +293,15 @@ class UsersMenuRepository
         $result['updated_by'] = Auth::id();
 
         // Pastikan nilai numerik
-        $result['rel'] = isset($data['rel']) ? (int) $data['rel'] : 0;
+        $result['rel']           = isset($data['rel']) ? (int) $data['rel'] : 0;
         $result['permission_id'] = isset($data['permission_id']) ? (int) $data['permission_id'] : null;
-        $result['urutan'] = isset($data['urutan']) ? (int) $data['urutan'] : 1;
+        $result['urutan']        = isset($data['urutan']) ? (int) $data['urutan'] : 1;
 
         // Tambahkan field lain
         $result['nama'] = $data['nama'] ?? '';
         $result['kode'] = $data['kode'] ?? '';
         $result['icon'] = $data['icon'] ?? '';
-        $result['url'] = $data['url'] ?? '';
+        $result['url']  = $data['url']  ?? '';
 
         // Tambahkan id jika mode update
         if ($record !== null) {

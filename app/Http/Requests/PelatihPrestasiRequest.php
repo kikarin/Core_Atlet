@@ -17,8 +17,8 @@ class PelatihPrestasiRequest extends FormRequest
             'pelatih_id' => 'required|exists:pelatihs,id',
             'nama_event' => 'required|string|max:255',
             'tingkat_id' => 'nullable|integer',
-            'tanggal' => 'nullable|date',
-            'peringkat' => 'nullable|string|max:255',
+            'tanggal'    => 'nullable|date',
+            'peringkat'  => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
         ];
 
@@ -33,7 +33,7 @@ class PelatihPrestasiRequest extends FormRequest
     {
         return [
             'pelatih_id.required' => 'ID Pelatih wajib diisi.',
-            'pelatih_id.exists' => 'ID Pelatih tidak valid.',
+            'pelatih_id.exists'   => 'ID Pelatih tidak valid.',
             'nama_event.required' => 'Nama event wajib diisi.',
         ];
     }

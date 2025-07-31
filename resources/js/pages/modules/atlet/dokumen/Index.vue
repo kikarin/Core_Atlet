@@ -204,9 +204,9 @@ const idsToDelete = ref<number[]>([]);
                 <div class="mx-auto px-4 py-4">
                     <!-- Tabs -->
                     <div class="mb-4">
-            <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'dokumen-data'" />
+                        <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'dokumen-data'" />
                     </div>
-                    
+
                     <HeaderActions
                         title="Dokumen"
                         :create-url="`/atlet/${props.atletId}/dokumen/create`"
@@ -214,7 +214,7 @@ const idsToDelete = ref<number[]>([]);
                         :on-delete-selected="deleteSelected"
                     />
                 </div>
-                
+
                 <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"

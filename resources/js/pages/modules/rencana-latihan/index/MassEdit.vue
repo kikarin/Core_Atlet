@@ -66,10 +66,7 @@ onMounted(async () => {
                     posisi: peserta.posisi || peserta.jenis_pelatih || peserta.jenis_tenaga_pendukung || '-',
                 },
                 targets: props.target_latihan.map((target) => {
-                    const existing =
-                        existingData[peserta.id] && existingData[peserta.id][target.id]
-                            ? existingData[peserta.id][target.id]
-                            : {};
+                    const existing = existingData[peserta.id] && existingData[peserta.id][target.id] ? existingData[peserta.id][target.id] : {};
                     return {
                         target_latihan_id: target.id,
                         nilai: existing.nilai || '',
@@ -105,10 +102,10 @@ onMounted(async () => {
 const handleSave = async () => {
     try {
         loading.value = true;
-        
+
         // Flatten data untuk setiap peserta dan target
         const flattenedData: any[] = [];
-        
+
         tableState.value.forEach((row) => {
             row.targets.forEach((target: any) => {
                 flattenedData.push({
@@ -119,16 +116,16 @@ const handleSave = async () => {
                 });
             });
         });
-        
+
         const payload = {
             data: flattenedData,
         };
-        
+
         const response = await axios.post(
-            `/program-latihan/${props.program_id}/rencana-latihan/${props.rencana_latihan.id}/kelola/${props.jenis_peserta}/bulk-update`, 
-            payload
+            `/program-latihan/${props.program_id}/rencana-latihan/${props.rencana_latihan.id}/kelola/${props.jenis_peserta}/bulk-update`,
+            payload,
         );
-        
+
         if (response.data?.success) {
             toast({ title: response.data?.message || 'Data berhasil disimpan', variant: 'success' });
         }
@@ -161,7 +158,7 @@ const getTargetValue = (target: any) => {
                             <div class="flex items-center gap-2">
                                 <span class="text-muted-foreground text-sm font-medium">Cabor:</span>
                                 <span class="text-sm font-medium">
-                                    {{ props.rencana_latihan.program_latihan.cabor_nama }} - 
+                                    {{ props.rencana_latihan.program_latihan.cabor_nama }} -
                                     {{ props.rencana_latihan.program_latihan.cabor_kategori_nama }}
                                 </span>
                             </div>
@@ -193,9 +190,7 @@ const getTargetValue = (target: any) => {
                 </div>
 
                 <!-- Table Section -->
-                <div class="text-foreground mb-2 text-lg font-semibold">
-                    Peserta {{ jenisLabel[props.jenis_peserta] || props.jenis_peserta }}
-                </div>
+                <div class="text-foreground mb-2 text-lg font-semibold">Peserta {{ jenisLabel[props.jenis_peserta] || props.jenis_peserta }}</div>
 
                 <!-- Table -->
                 <div v-if="tableState.length && props.target_latihan.length" class="overflow-x-auto rounded-xl bg-white shadow dark:bg-neutral-900">
@@ -206,7 +201,13 @@ const getTargetValue = (target: any) => {
                                 <th class="text-foreground border-b px-3 py-2 whitespace-nowrap" rowspan="2">Jenis Kelamin</th>
                                 <th class="text-foreground border-b px-3 py-2 whitespace-nowrap" rowspan="2">Usia</th>
                                 <th class="text-foreground border-b px-3 py-2 whitespace-nowrap" rowspan="2">
-                                    {{ props.jenis_peserta === 'atlet' ? 'Posisi' : props.jenis_peserta === 'pelatih' ? 'Jenis Pelatih' : 'Jenis Tenaga Pendukung' }}
+                                    {{
+                                        props.jenis_peserta === 'atlet'
+                                            ? 'Posisi'
+                                            : props.jenis_peserta === 'pelatih'
+                                              ? 'Jenis Pelatih'
+                                              : 'Jenis Tenaga Pendukung'
+                                    }}
                                 </th>
                                 <template v-for="target in props.target_latihan" :key="'target-header-' + target.id">
                                     <th class="text-foreground border-b px-3 py-2 text-center whitespace-nowrap" :colspan="2">
@@ -262,10 +263,15 @@ const getTargetValue = (target: any) => {
                 >
                     <div>Rencana latihan ini belum memiliki target latihan individu yang dipilih.</div>
                     <div class="text-sm">Silakan pilih target latihan individu terlebih dahulu di halaman edit rencana latihan.</div>
-                    <Button variant="outline" @click="router.visit(`/program-latihan/${props.program_id}/rencana-latihan/${props.rencana_latihan.id}/edit`)"> Edit Rencana Latihan </Button>
+                    <Button
+                        variant="outline"
+                        @click="router.visit(`/program-latihan/${props.program_id}/rencana-latihan/${props.rencana_latihan.id}/edit`)"
+                    >
+                        Edit Rencana Latihan
+                    </Button>
                 </div>
                 <div v-else class="text-muted-foreground py-10 text-center">Loading data...</div>
             </div>
         </div>
     </AppLayout>
-</template> 
+</template>

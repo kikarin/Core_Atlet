@@ -17,14 +17,14 @@ class RoleRepository
     public function __construct(Role $model)
     {
         $this->model = $model;
-        $this->with = ['created_by_user', 'updated_by_user'];
+        $this->with  = ['created_by_user', 'updated_by_user'];
 
     }
 
     public function customCreateEdit($data, $item = null)
     {
         $data += [
-            'listBg' => $this->model->listBg(),
+            'listBg'       => $this->model->listBg(),
             'listInitPage' => $this->model->listInitPage(),
         ];
 
@@ -47,7 +47,7 @@ class RoleRepository
         $record = $this->getById($id);
         try {
             DB::beginTransaction();
-            $properties['old'] = $record->permissions()->pluck('name')->toArray();
+            $properties['old']   = $record->permissions()->pluck('name')->toArray();
             $permission_id_array = array_map('intval', $permission_id_array);
             $record->syncPermissions($permission_id_array);
             $properties['attributes'] = $record->permissions()->pluck('name')->toArray();
@@ -89,9 +89,9 @@ class RoleRepository
             $order = request('order', 'asc');
             // Mapping nama kolom frontend ke nama kolom database
             $sortMapping = [
-                'name' => 'name',
-                'init_page_login' => 'init_page_login',
-                'is_allow_login' => 'is_allow_login',
+                'name'             => 'name',
+                'init_page_login'  => 'init_page_login',
+                'is_allow_login'   => 'is_allow_login',
                 'is_vertical_menu' => 'is_vertical_menu',
             ];
 
@@ -104,56 +104,56 @@ class RoleRepository
         // Apply pagination
         $perPage = (int) request('per_page', 10);
         if ($perPage === -1) {
-            $allRoles = $query->get();
+            $allRoles         = $query->get();
             $transformedRoles = $allRoles->map(function ($role) {
                 return [
-                    'id' => $role->id,
-                    'name' => $role->name,
-                    'bg' => $role->bg,
-                    'init_page_login' => $role->init_page_login,
-                    'is_allow_login' => $role->is_allow_login ? 'Ya' : 'Tidak',
+                    'id'               => $role->id,
+                    'name'             => $role->name,
+                    'bg'               => $role->bg,
+                    'init_page_login'  => $role->init_page_login,
+                    'is_allow_login'   => $role->is_allow_login ? 'Ya' : 'Tidak',
                     'is_vertical_menu' => $role->is_vertical_menu ? 'Vertical' : 'Horizontal',
                 ];
             });
             $data += [
                 'roles' => $transformedRoles,
-                'meta' => [
-                    'total' => $transformedRoles->count(),
+                'meta'  => [
+                    'total'        => $transformedRoles->count(),
                     'current_page' => 1,
-                    'per_page' => -1,
-                    'search' => request('search', ''),
-                    'sort' => request('sort', ''),
-                    'order' => request('order', 'asc'),
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => request('sort', ''),
+                    'order'        => request('order', 'asc'),
                 ],
             ];
 
             return $data;
         }
-        $page = (int) request('page', 1);
+        $page           = (int) request('page', 1);
         $pageForLaravel = $page < 1 ? 1 : $page;
-        $roles = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
+        $roles          = $query->paginate($perPage, ['*'], 'page', $pageForLaravel);
 
         // Transform data
         $transformedRoles = $roles->getCollection()->map(function ($role) {
             return [
-                'id' => $role->id,
-                'name' => $role->name,
-                'bg' => $role->bg,
-                'init_page_login' => $role->init_page_login,
-                'is_allow_login' => $role->is_allow_login ? 'Ya' : 'Tidak',
+                'id'               => $role->id,
+                'name'             => $role->name,
+                'bg'               => $role->bg,
+                'init_page_login'  => $role->init_page_login,
+                'is_allow_login'   => $role->is_allow_login ? 'Ya' : 'Tidak',
                 'is_vertical_menu' => $role->is_vertical_menu ? 'Vertical' : 'Horizontal',
             ];
         });
 
         $data += [
             'roles' => $transformedRoles,
-            'meta' => [
-                'total' => $roles->total(),
+            'meta'  => [
+                'total'        => $roles->total(),
                 'current_page' => $roles->currentPage(),
-                'per_page' => $roles->perPage(),
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $roles->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ];
 

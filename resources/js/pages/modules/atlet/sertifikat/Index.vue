@@ -213,9 +213,14 @@ const idsToDelete = ref<number[]>([]);
                 <div class="mx-auto px-4 py-4">
                     <!-- Tabs -->
                     <div class="mb-4">
-                        <AppTabs :tabs="tabsConfig" :model-value="activeTab" @update:model-value="handleTabChange" :default-value="'sertifikat-data'" />
+                        <AppTabs
+                            :tabs="tabsConfig"
+                            :model-value="activeTab"
+                            @update:model-value="handleTabChange"
+                            :default-value="'sertifikat-data'"
+                        />
                     </div>
-                    
+
                     <HeaderActions
                         title="Sertifikat"
                         :create-url="`/atlet/${props.atletId}/sertifikat/create`"
@@ -223,7 +228,7 @@ const idsToDelete = ref<number[]>([]);
                         :on-delete-selected="deleteSelected"
                     />
                 </div>
-                
+
                 <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">
                     <DataTable
                         :columns="columns"

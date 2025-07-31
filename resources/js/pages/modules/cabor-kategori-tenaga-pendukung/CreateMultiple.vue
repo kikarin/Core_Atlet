@@ -276,9 +276,7 @@ fetchJenisTenagaPendukung();
 
             <!-- Jenis Tenaga Pendukung Selection -->
             <div class="flex items-center gap-4">
-                <span class="text-muted-foreground text-sm font-medium">
-                    Jenis Tenaga Pendukung:
-                </span>
+                <span class="text-muted-foreground text-sm font-medium"> Jenis Tenaga Pendukung: </span>
                 <Select
                     :model-value="selectedJenisTenagaPendukungId"
                     @update:model-value="(val: any) => (selectedJenisTenagaPendukungId = val as number | null)"

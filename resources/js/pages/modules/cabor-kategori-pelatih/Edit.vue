@@ -17,4 +17,4 @@ const breadcrumbs = [
     <PageEdit title="Jenis Pelatih" :breadcrumbs="breadcrumbs" :back-url="`/cabor-kategori/${item.cabor_kategori_id}/pelatih`">
         <Form mode="edit" :initial-data="item" />
     </PageEdit>
-</template> 
+</template>

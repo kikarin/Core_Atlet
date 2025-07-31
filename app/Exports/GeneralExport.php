@@ -30,8 +30,8 @@ class GeneralExport implements FromCollection, WithHeadings, WithMapping, WithTi
             array_unshift($fillableColumns, 'id');
         }
 
-        $this->request = $request;
-        $this->columns = $columns ?: $fillableColumns;
+        $this->request  = $request;
+        $this->columns  = $columns ?: $fillableColumns;
         $this->headings = $headings ?: $this->columns;
         // Set sheetName, jika tidak diberikan gunakan nama tabel sebagai default
         $this->sheetName = $sheetName ?: $this->model->getTable();

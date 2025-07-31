@@ -258,15 +258,15 @@ const getPesertaLabel = computed(() => {
         </template>
         <template #cell-parameter_peserta="{ row }">
             <div class="flex justify-center">
-            <BadgeGroup
-                :badges="[
-                    {
-                        value: row.jumlah_parameter || 0,
-                        colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
-                        onClick: () => router.visit(`/pemeriksaan/${pemeriksaan.id}/peserta/${row.id}/parameter?jenis_peserta=${jenisPeserta}`),
-                    },
-                ]"
-            />
+                <BadgeGroup
+                    :badges="[
+                        {
+                            value: row.jumlah_parameter || 0,
+                            colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+                            onClick: () => router.visit(`/pemeriksaan/${pemeriksaan.id}/peserta/${row.id}/parameter?jenis_peserta=${jenisPeserta}`),
+                        },
+                    ]"
+                />
             </div>
         </template>
     </PageIndex>

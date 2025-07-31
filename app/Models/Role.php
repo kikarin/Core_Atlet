@@ -43,23 +43,23 @@ class Role extends ModelsRole
     public function listBg(): array
     {
         return [
-            self::BG_PRIMARY => self::BG_PRIMARY,
-            self::BG_WARNING => self::BG_WARNING,
-            self::BG_INFO => self::BG_INFO,
-            self::BG_DANGER => self::BG_DANGER,
+            self::BG_PRIMARY   => self::BG_PRIMARY,
+            self::BG_WARNING   => self::BG_WARNING,
+            self::BG_INFO      => self::BG_INFO,
+            self::BG_DANGER    => self::BG_DANGER,
             self::BG_SECONDARY => self::BG_SECONDARY,
-            self::BG_SUCCESS => self::BG_SUCCESS,
-            self::BG_DARK => self::BG_DARK,
-            self::BG_LIGHT => self::BG_LIGHT,
+            self::BG_SUCCESS   => self::BG_SUCCESS,
+            self::BG_DARK      => self::BG_DARK,
+            self::BG_LIGHT     => self::BG_LIGHT,
         ];
     }
 
     public function listInitPage()
     {
         return [
-            self::INIT_PAGE_PROFILE => self::INIT_PAGE_PROFILE,
+            self::INIT_PAGE_PROFILE   => self::INIT_PAGE_PROFILE,
             self::INIT_PAGE_DASHBOARD => self::INIT_PAGE_DASHBOARD,
-            self::INIT_PAGE_USERS => self::INIT_PAGE_USERS,
+            self::INIT_PAGE_USERS     => self::INIT_PAGE_USERS,
         ];
     }
 

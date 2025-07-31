@@ -38,9 +38,9 @@ class MstPosisiAtletRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis pelatih wajib diisi.',
-            'nama.string' => 'Nama jenis pelatih harus berupa teks.',
-            'nama.max' => 'Nama jenis pelatih tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama jenis pelatih sudah ada.',
+            'nama.string'   => 'Nama jenis pelatih harus berupa teks.',
+            'nama.max'      => 'Nama jenis pelatih tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama jenis pelatih sudah ada.',
         ];
     }
 }

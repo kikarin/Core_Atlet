@@ -37,7 +37,7 @@ class CaborKategoriTenagaPendukung extends Model
 
     public function getIsActiveBadgeAttribute()
     {
-        $text = $this->is_active ? 'Aktif' : 'Nonaktif';
+        $text  = $this->is_active ? 'Aktif' : 'Nonaktif';
         $badge = $this->is_active ? 'bg-label-primary' : 'bg-label-danger';
 
         return "<span class='badge $badge'>$text</span>";

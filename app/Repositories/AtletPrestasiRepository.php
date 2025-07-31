@@ -17,7 +17,7 @@ class AtletPrestasiRepository
     public function __construct(AtletPrestasi $model)
     {
         $this->model = $model;
-        $this->with = [
+        $this->with  = [
             'created_by_user',
             'updated_by_user',
             'tingkat',
@@ -27,7 +27,7 @@ class AtletPrestasiRepository
     public function create(array $data)
     {
         Log::info('AtletPrestasiRepository: create', $data);
-        $data = $this->customDataCreateUpdate($data);
+        $data  = $this->customDataCreateUpdate($data);
         $model = $this->model->create($data);
 
         return $model;
@@ -101,8 +101,8 @@ class AtletPrestasiRepository
         }
         // Sort
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama_event', 'tingkat_id', 'tanggal', 'peringkat', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -113,16 +113,16 @@ class AtletPrestasiRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->with($this->with)->get();
+            $all         = $query->with($this->with)->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
+                    'id'         => $item->id,
                     'nama_event' => $item->nama_event,
-                    'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
-                    'tanggal' => $item->tanggal,
-                    'peringkat' => $item->peringkat,
+                    'tingkat'    => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
+                    'tanggal'    => $item->tanggal,
+                    'peringkat'  => $item->peringkat,
                     'keterangan' => $item->keterangan,
                 ];
             });
@@ -130,24 +130,24 @@ class AtletPrestasiRepository
             return [
                 'data' => $transformed,
                 'meta' => [
-                    'total' => $transformed->count(),
+                    'total'        => $transformed->count(),
                     'current_page' => 1,
-                    'per_page' => -1,
-                    'search' => request('search', ''),
-                    'sort' => request('sort', ''),
-                    'order' => request('order', 'asc'),
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => request('sort', ''),
+                    'order'        => request('order', 'asc'),
                 ],
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
+                'id'         => $item->id,
                 'nama_event' => $item->nama_event,
-                'tingkat' => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
-                'tanggal' => $item->tanggal,
-                'peringkat' => $item->peringkat,
+                'tingkat'    => $item->tingkat ? ['id' => $item->tingkat->id, 'nama' => $item->tingkat->nama] : null,
+                'tanggal'    => $item->tanggal,
+                'peringkat'  => $item->peringkat,
                 'keterangan' => $item->keterangan,
             ];
         });
@@ -155,12 +155,12 @@ class AtletPrestasiRepository
         return [
             'data' => $transformed,
             'meta' => [
-                'total' => $items->total(),
+                'total'        => $items->total(),
                 'current_page' => $items->currentPage(),
-                'per_page' => $items->perPage(),
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $items->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ];
     }
@@ -181,7 +181,7 @@ class AtletPrestasiRepository
 
         return Inertia::render('modules/atlet/prestasi/Edit', [
             'atletId' => (int) $atletId,
-            'item' => $prestasi,
+            'item'    => $prestasi,
         ]);
     }
 

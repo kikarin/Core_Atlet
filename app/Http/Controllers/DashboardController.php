@@ -27,14 +27,14 @@ class DashboardController extends Controller implements HasMiddleware
     public function __construct()
     {
         $this->initialize();
-        $this->route = 'dashboard';
-        $this->commonData['kode_first_menu'] = 'DASHBOARD';
+        $this->route                          = 'dashboard';
+        $this->commonData['kode_first_menu']  = 'DASHBOARD';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -48,10 +48,10 @@ class DashboardController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
+        $now              = Carbon::now();
+        $startOfMonth     = $now->copy()->startOfMonth();
         $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
-        $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
+        $endOfLastMonth   = $now->copy()->subMonth()->endOfMonth();
 
         $stat = function ($model, $label, $icon, $href) use ($startOfMonth, $now, $startOfLastMonth, $endOfLastMonth) {
             $thisMonth = $model::whereBetween('created_at', [$startOfMonth, $now])->count();
@@ -59,34 +59,34 @@ class DashboardController extends Controller implements HasMiddleware
 
             if ($lastMonth == 0) {
                 if ($thisMonth == 0) {
-                    $change = 0;
-                    $changeLabel = '0%';
-                    $trend = 'up';
-                    $changeAbs = 0;
+                    $change         = 0;
+                    $changeLabel    = '0%';
+                    $trend          = 'up';
+                    $changeAbs      = 0;
                     $changeAbsLabel = '0 data dibanding bulan lalu';
                 } else {
-                    $change = null;
-                    $changeLabel = 'Baru';
-                    $trend = 'up';
-                    $changeAbs = $thisMonth;
+                    $change         = null;
+                    $changeLabel    = 'Baru';
+                    $trend          = 'up';
+                    $changeAbs      = $thisMonth;
                     $changeAbsLabel = '+'.$thisMonth.' data';
                 }
             } else {
-                $change = round((($thisMonth - $lastMonth) / $lastMonth) * 100, 1);
-                $changeLabel = ($change > 0 ? '+' : '').$change.'%';
-                $trend = $change > 0 ? 'up' : ($change < 0 ? 'down' : 'up');
-                $changeAbs = $thisMonth - $lastMonth;
+                $change         = round((($thisMonth - $lastMonth) / $lastMonth) * 100, 1);
+                $changeLabel    = ($change > 0 ? '+' : '').$change.'%';
+                $trend          = $change > 0 ? 'up' : ($change < 0 ? 'down' : 'up');
+                $changeAbs      = $thisMonth - $lastMonth;
                 $changeAbsLabel = ($changeAbs > 0 ? '+' : '').$changeAbs.' data';
             }
 
             return [
-                'title' => $label,
-                'value' => $model::count(),
-                'change' => $changeLabel,
-                'change_abs' => $changeAbsLabel,
-                'trend' => $trend,
-                'icon' => $icon,
-                'href' => $href,
+                'title'         => $label,
+                'value'         => $model::count(),
+                'change'        => $changeLabel,
+                'change_abs'    => $changeAbsLabel,
+                'trend'         => $trend,
+                'icon'          => $icon,
+                'href'          => $href,
                 'compare_label' => '',
             ];
         };
@@ -103,7 +103,7 @@ class DashboardController extends Controller implements HasMiddleware
 
         $data = $this->commonData + [
             'titlePage' => 'Dashboard',
-            'stats' => $stats,
+            'stats'     => $stats,
         ];
 
         if ($this->check_permission == true) {
@@ -119,14 +119,14 @@ class DashboardController extends Controller implements HasMiddleware
                 // Hitung durasi periode
                 $durasi = '-';
                 if ($item->periode_mulai && $item->periode_selesai) {
-                    $startDate = Carbon::parse($item->periode_mulai);
-                    $endDate = Carbon::parse($item->periode_selesai);
+                    $startDate  = Carbon::parse($item->periode_mulai);
+                    $endDate    = Carbon::parse($item->periode_selesai);
                     $diffInDays = $startDate->diffInDays($endDate) + 1; // +1 karena inclusive
 
                     if ($diffInDays <= 30) {
                         $durasi = $diffInDays.' hari';
                     } else {
-                        $months = floor($diffInDays / 30);
+                        $months        = floor($diffInDays / 30);
                         $remainingDays = $diffInDays % 30;
 
                         if ($remainingDays == 0) {
@@ -138,13 +138,13 @@ class DashboardController extends Controller implements HasMiddleware
                 }
 
                 return [
-                    'id' => $item->id,
-                    'nama_program' => $item->nama_program,
-                    'cabor_nama' => $item->cabor?->nama ?? '-',
-                    'cabor_kategori_nama' => $item->caborKategori?->nama ?? '-',
-                    'periode' => $durasi,
+                    'id'                     => $item->id,
+                    'nama_program'           => $item->nama_program,
+                    'cabor_nama'             => $item->cabor?->nama         ?? '-',
+                    'cabor_kategori_nama'    => $item->caborKategori?->nama ?? '-',
+                    'periode'                => $durasi,
                     'jumlah_rencana_latihan' => $item->rencanaLatihan()->count(),
-                    'rencana_latihan_list' => $item->rencanaLatihan()->orderByDesc('tanggal')->limit(3)->pluck('materi')->map(function ($materi) {
+                    'rencana_latihan_list'   => $item->rencanaLatihan()->orderByDesc('tanggal')->limit(3)->pluck('materi')->map(function ($materi) {
                         return Str::limit($materi, 30);
                     })->toArray(),
                 ];
@@ -157,27 +157,27 @@ class DashboardController extends Controller implements HasMiddleware
             ->get()
             ->map(function ($item) {
                 // Hitung jumlah peserta berdasarkan jenis menggunakan peserta_type
-                $pesertaAtlet = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Atlet')->count();
-                $pesertaPelatih = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Pelatih')->count();
+                $pesertaAtlet           = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Atlet')->count();
+                $pesertaPelatih         = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Pelatih')->count();
                 $pesertaTenagaPendukung = $item->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\TenagaPendukung')->count();
 
                 return [
-                    'id' => $item->id,
-                    'nama_pemeriksaan' => $item->nama_pemeriksaan,
-                    'cabor_kategori_nama' => $item->caborKategori?->nama ?? '-',
+                    'id'                    => $item->id,
+                    'nama_pemeriksaan'      => $item->nama_pemeriksaan,
+                    'cabor_kategori_nama'   => $item->caborKategori?->nama   ?? '-',
                     'tenaga_pendukung_nama' => $item->tenagaPendukung?->nama ?? '-',
-                    'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
-                    'status' => $item->status,
-                    'jumlah_parameter' => $item->pemeriksaanParameter()->count(),
-                    'jumlah_peserta' => $item->pemeriksaanPeserta()->count(),
-                    'cabor_nama' => $item->cabor?->nama ?? '-',
-                    'parameter_list' => $item->pemeriksaanParameter()->limit(3)->pluck('nama_parameter')->toArray(),
-                    'peserta_list' => $item->pemeriksaanPeserta()->with('peserta')->limit(3)->get()->map(function ($peserta) {
+                    'tanggal_pemeriksaan'   => $item->tanggal_pemeriksaan,
+                    'status'                => $item->status,
+                    'jumlah_parameter'      => $item->pemeriksaanParameter()->count(),
+                    'jumlah_peserta'        => $item->pemeriksaanPeserta()->count(),
+                    'cabor_nama'            => $item->cabor?->nama ?? '-',
+                    'parameter_list'        => $item->pemeriksaanParameter()->limit(3)->pluck('nama_parameter')->toArray(),
+                    'peserta_list'          => $item->pemeriksaanPeserta()->with('peserta')->limit(3)->get()->map(function ($peserta) {
                         // Cek field nama di model morph (Atlet, Pelatih, TenagaPendukung)
                         return $peserta->peserta?->nama ?? '-';
                     })->toArray(),
-                    'jumlah_atlet' => $pesertaAtlet,
-                    'jumlah_pelatih' => $pesertaPelatih,
+                    'jumlah_atlet'            => $pesertaAtlet,
+                    'jumlah_pelatih'          => $pesertaPelatih,
                     'jumlah_tenaga_pendukung' => $pesertaTenagaPendukung,
                 ];
             });
@@ -189,8 +189,8 @@ class DashboardController extends Controller implements HasMiddleware
             ->get()
             ->map(function ($item) {
                 $causerName = $item->causer ? $item->causer->name : 'System';
-                $roleName = $item->causer && $item->causer->role ? $item->causer->role->name : '';
-                $userInfo = $roleName ? "$causerName - $roleName" : $causerName;
+                $roleName   = $item->causer && $item->causer->role ? $item->causer->role->name : '';
+                $userInfo   = $roleName ? "$causerName - $roleName" : $causerName;
 
                 // Gunakan getFileUrlAttribute untuk avatar
                 $avatar = $item->causer ? $item->causer->getFileUrlAttribute() : null;
@@ -202,26 +202,26 @@ class DashboardController extends Controller implements HasMiddleware
                 }
 
                 return [
-                    'id' => $item->id,
-                    'title' => $this->getActivityTitle($item),
+                    'id'          => $item->id,
+                    'title'       => $this->getActivityTitle($item),
                     'description' => $item->description,
-                    'time' => $time,
-                    'avatar' => $avatar,
-                    'initials' => $item->causer ? strtoupper(substr($item->causer->name, 0, 2)) : 'SY',
+                    'time'        => $time,
+                    'avatar'      => $avatar,
+                    'initials'    => $item->causer ? strtoupper(substr($item->causer->name, 0, 2)) : 'SY',
                     'causer_name' => $userInfo,
                 ];
             });
 
-        $data['latest_programs'] = $latestPrograms;
+        $data['latest_programs']    = $latestPrograms;
         $data['latest_pemeriksaan'] = $latestPemeriksaan;
-        $data['latest_activities'] = $latestActivities;
+        $data['latest_activities']  = $latestActivities;
 
         // Data untuk grafik berdasarkan tanggal bergabung per tahun
-        $chartData = $this->getChartData();
+        $chartData          = $this->getChartData();
         $data['chart_data'] = $chartData;
 
         // Data rekapitulasi per cabor kategori
-        $rekapData = $this->getRekapData();
+        $rekapData          = $this->getRekapData();
         $data['rekap_data'] = $rekapData;
 
         return Inertia::render('Dashboard', $data);
@@ -230,16 +230,16 @@ class DashboardController extends Controller implements HasMiddleware
     private function formatTimeAgo($datetime)
     {
         $createdAt = Carbon::parse($datetime);
-        $now = Carbon::now();
+        $now       = Carbon::now();
 
         // Perbaiki logika perhitungan waktu - gunakan abs() untuk nilai absolut dan format yang rapi
         $diffInSeconds = abs($now->diffInSeconds($createdAt));
         $diffInMinutes = abs($now->diffInMinutes($createdAt));
-        $diffInHours = abs($now->diffInHours($createdAt));
-        $diffInDays = abs($now->diffInDays($createdAt));
-        $diffInWeeks = abs($now->diffInWeeks($createdAt));
-        $diffInMonths = abs($now->diffInMonths($createdAt));
-        $diffInYears = abs($now->diffInYears($createdAt));
+        $diffInHours   = abs($now->diffInHours($createdAt));
+        $diffInDays    = abs($now->diffInDays($createdAt));
+        $diffInWeeks   = abs($now->diffInWeeks($createdAt));
+        $diffInMonths  = abs($now->diffInMonths($createdAt));
+        $diffInYears   = abs($now->diffInYears($createdAt));
 
         if ($diffInSeconds < 60) {
             return 'Baru saja';
@@ -261,7 +261,7 @@ class DashboardController extends Controller implements HasMiddleware
     private function getActivityTitle($activity)
     {
         $subjectType = class_basename($activity->subject_type);
-        $event = $activity->event;
+        $event       = $activity->event;
 
         switch ($subjectType) {
             case 'Atlet':
@@ -296,42 +296,42 @@ class DashboardController extends Controller implements HasMiddleware
     {
         // Ambil data 5 tahun terakhir
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 4, $currentYear);
-        
-        $atletData = [];
-        $pelatihData = [];
+        $years       = range($currentYear - 4, $currentYear);
+
+        $atletData           = [];
+        $pelatihData         = [];
         $tenagaPendukungData = [];
 
         foreach ($years as $year) {
             // Data Atlet per tahun
-            $atletCount = Atlet::whereYear('tanggal_bergabung', $year)->count();
+            $atletCount  = Atlet::whereYear('tanggal_bergabung', $year)->count();
             $atletData[] = $atletCount;
 
             // Data Pelatih per tahun
-            $pelatihCount = Pelatih::whereYear('tanggal_bergabung', $year)->count();
+            $pelatihCount  = Pelatih::whereYear('tanggal_bergabung', $year)->count();
             $pelatihData[] = $pelatihCount;
 
             // Data Tenaga Pendukung per tahun
-            $tenagaPendukungCount = TenagaPendukung::whereYear('tanggal_bergabung', $year)->count();
+            $tenagaPendukungCount  = TenagaPendukung::whereYear('tanggal_bergabung', $year)->count();
             $tenagaPendukungData[] = $tenagaPendukungCount;
         }
 
         return [
-            'years' => $years,
+            'years'  => $years,
             'series' => [
                 [
                     'name' => 'Atlet',
-                    'data' => $atletData
+                    'data' => $atletData,
                 ],
                 [
                     'name' => 'Pelatih',
-                    'data' => $pelatihData
+                    'data' => $pelatihData,
                 ],
                 [
                     'name' => 'Tenaga Pendukung',
-                    'data' => $tenagaPendukungData
-                ]
-            ]
+                    'data' => $tenagaPendukungData,
+                ],
+            ],
         ];
     }
 
@@ -362,13 +362,13 @@ class DashboardController extends Controller implements HasMiddleware
                 ->count();
 
             $rekapData[] = [
-                'id' => $caborKategori->id,
-                'cabor_nama' => $caborKategori->cabor->nama ?? '-',
-                'nama' => $caborKategori->nama,
-                'jumlah_atlet' => $jumlahAtlet,
-                'jumlah_pelatih' => $jumlahPelatih,
+                'id'                      => $caborKategori->id,
+                'cabor_nama'              => $caborKategori->cabor->nama ?? '-',
+                'nama'                    => $caborKategori->nama,
+                'jumlah_atlet'            => $jumlahAtlet,
+                'jumlah_pelatih'          => $jumlahPelatih,
                 'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
-                'total' => $jumlahAtlet + $jumlahPelatih + $jumlahTenagaPendukung,
+                'total'                   => $jumlahAtlet + $jumlahPelatih + $jumlahTenagaPendukung,
             ];
         }
 

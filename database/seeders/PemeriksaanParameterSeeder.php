@@ -18,17 +18,17 @@ class PemeriksaanParameterSeeder extends Seeder
             [
                 'pemeriksaan_id' => $pemeriksaan->id,
                 'nama_parameter' => 'Tekanan Darah',
-                'satuan' => 'mmHg',
+                'satuan'         => 'mmHg',
             ],
             [
                 'pemeriksaan_id' => $pemeriksaan->id,
                 'nama_parameter' => 'Denyut Nadi',
-                'satuan' => 'bpm',
+                'satuan'         => 'bpm',
             ],
             [
                 'pemeriksaan_id' => $pemeriksaan->id,
                 'nama_parameter' => 'Suhu Tubuh',
-                'satuan' => '°C',
+                'satuan'         => '°C',
             ],
         ];
         foreach ($data as $item) {

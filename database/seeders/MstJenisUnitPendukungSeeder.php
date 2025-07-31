@@ -13,7 +13,7 @@ class MstJenisUnitPendukungSeeder extends Seeder
             ['nama' => 'Hewan'],
             ['nama' => 'Alat'],
             ['nama' => 'Kendaraan'],
-            ['nama'=> 'Robot'],
+            ['nama' => 'Robot'],
         ];
 
         foreach ($statuses as $status) {

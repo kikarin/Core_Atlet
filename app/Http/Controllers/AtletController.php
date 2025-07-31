@@ -28,15 +28,15 @@ class AtletController extends Controller implements HasMiddleware
     public function __construct(AtletRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = AtletRequest::createFromBase($request);
+        $this->request    = AtletRequest::createFromBase($request);
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -55,11 +55,11 @@ class AtletController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['atlets'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
             ],
         ]);
     }
@@ -92,7 +92,7 @@ class AtletController extends Controller implements HasMiddleware
 
             return response()->json([
                 'success' => true,
-                'data' => $item,
+                'data'    => $item,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching atlet detail: '.$e->getMessage());
@@ -100,7 +100,7 @@ class AtletController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data atlet',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -117,13 +117,13 @@ class AtletController extends Controller implements HasMiddleware
         ]);
 
         try {
-            $import = new AtletImport;
+            $import = new AtletImport();
             Excel::import($import, $request->file('file'));
 
             Log::info('AtletController: import successful', [
                 'rows_processed' => $import->getRowCount(),
-                'success_count' => $import->getSuccessCount(),
-                'error_count' => $import->getErrorCount(),
+                'success_count'  => $import->getSuccessCount(),
+                'error_count'    => $import->getErrorCount(),
             ]);
 
             $message = 'Import berhasil! ';
@@ -137,11 +137,11 @@ class AtletController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => [
-                    'total_rows' => $import->getRowCount(),
+                'data'    => [
+                    'total_rows'    => $import->getRowCount(),
                     'success_count' => $import->getSuccessCount(),
-                    'error_count' => $import->getErrorCount(),
-                    'errors' => $import->getErrors(),
+                    'error_count'   => $import->getErrorCount(),
+                    'errors'        => $import->getErrors(),
                 ],
             ]);
 
@@ -154,7 +154,7 @@ class AtletController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal import: '.$e->getMessage(),
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 422);
         }
     }
@@ -171,7 +171,7 @@ class AtletController extends Controller implements HasMiddleware
     public function parameterDetail($atletId, $pemeriksaanId)
     {
         $atlet = $this->repository->getDetailWithRelations($atletId);
-        
+
         // Ambil data pemeriksaan
         $pemeriksaan = Pemeriksaan::with(['tenagaPendukung'])
             ->findOrFail($pemeriksaanId);
@@ -189,22 +189,22 @@ class AtletController extends Controller implements HasMiddleware
                 ->get()
                 ->map(function ($item) {
                     return [
-                        'id' => $item->id,
+                        'id'             => $item->id,
                         'nama_parameter' => $item->pemeriksaanParameter->nama_parameter ?? '-',
-                        'nilai' => $item->nilai,
-                        'trend' => $item->trend,
+                        'nilai'          => $item->nilai,
+                        'trend'          => $item->trend,
                     ];
                 });
         }
 
         return Inertia::render('modules/atlet/ParameterDetail', [
-            'atlet' => $atlet,
+            'atlet'       => $atlet,
             'pemeriksaan' => [
-                'id' => $pemeriksaan->id,
-                'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                'id'                  => $pemeriksaan->id,
+                'nama_pemeriksaan'    => $pemeriksaan->nama_pemeriksaan,
                 'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
-                'tenaga_pendukung' => $pemeriksaan->tenagaPendukung->nama ?? '-',
-                'status' => $pemeriksaan->status,
+                'tenaga_pendukung'    => $pemeriksaan->tenagaPendukung->nama ?? '-',
+                'status'              => $pemeriksaan->status,
             ],
             'parameters' => $parameters,
         ]);
@@ -223,24 +223,24 @@ class AtletController extends Controller implements HasMiddleware
 
             $riwayat = $pemeriksaanPeserta->map(function ($item) {
                 return [
-                    'id' => $item->pemeriksaan->id,
-                    'nama_pemeriksaan' => $item->pemeriksaan->nama_pemeriksaan,
+                    'id'                  => $item->pemeriksaan->id,
+                    'nama_pemeriksaan'    => $item->pemeriksaan->nama_pemeriksaan,
                     'tanggal_pemeriksaan' => $item->pemeriksaan->tanggal_pemeriksaan,
-                    'tenaga_pendukung' => $item->pemeriksaan->tenagaPendukung->nama ?? '-',
-                    'status' => $item->pemeriksaan->status,
-                    'jumlah_parameter' => $item->pemeriksaanPesertaParameter->count(),
+                    'tenaga_pendukung'    => $item->pemeriksaan->tenagaPendukung->nama ?? '-',
+                    'status'              => $item->pemeriksaan->status,
+                    'jumlah_parameter'    => $item->pemeriksaanPesertaParameter->count(),
                 ];
             });
 
             return response()->json([
                 'data' => $riwayat,
                 'meta' => [
-                    'total' => $riwayat->count(),
+                    'total'        => $riwayat->count(),
                     'current_page' => 1,
-                    'per_page' => $riwayat->count(),
-                    'search' => '',
-                    'sort' => '',
-                    'order' => 'asc',
+                    'per_page'     => $riwayat->count(),
+                    'search'       => '',
+                    'sort'         => '',
+                    'order'        => 'asc',
                 ],
             ]);
         } catch (\Exception $e) {
@@ -249,7 +249,7 @@ class AtletController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data riwayat pemeriksaan',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

@@ -25,7 +25,7 @@ class CategoryPermissionRequest extends FormRequest
             'name' => 'required',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {
-            $rules['id'] = 'required';
+            $rules['id']       = 'required';
             $rules['sequence'] = 'required';
         }
 

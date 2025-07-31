@@ -22,9 +22,9 @@ class UnitPendukungRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nama' => 'required|string|max:255',
+            'nama'                    => 'required|string|max:255',
             'jenis_unit_pendukung_id' => 'required|exists:mst_jenis_unit_pendukung,id',
-            'deskripsi' => 'nullable|string|max:1000',
+            'deskripsi'               => 'nullable|string|max:1000',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -39,14 +39,14 @@ class UnitPendukungRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nama.required' => 'Nama unit pendukung wajib diisi.',
-            'nama.string' => 'Nama unit pendukung harus berupa teks.',
-            'nama.max' => 'Nama unit pendukung tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama unit pendukung sudah ada.',
+            'nama.required'                    => 'Nama unit pendukung wajib diisi.',
+            'nama.string'                      => 'Nama unit pendukung harus berupa teks.',
+            'nama.max'                         => 'Nama unit pendukung tidak boleh lebih dari 255 karakter.',
+            'nama.unique'                      => 'Nama unit pendukung sudah ada.',
             'jenis_unit_pendukung_id.required' => 'Jenis unit pendukung wajib dipilih.',
-            'jenis_unit_pendukung_id.exists' => 'Jenis unit pendukung yang dipilih tidak valid.',
-            'deskripsi.string' => 'Deskripsi harus berupa teks.',
-            'deskripsi.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
+            'jenis_unit_pendukung_id.exists'   => 'Jenis unit pendukung yang dipilih tidak valid.',
+            'deskripsi.string'                 => 'Deskripsi harus berupa teks.',
+            'deskripsi.max'                    => 'Deskripsi tidak boleh lebih dari 1000 karakter.',
         ];
     }
 }

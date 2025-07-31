@@ -14,11 +14,11 @@ class AtletPrestasiRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id' => 'required|exists:atlets,id',
+            'atlet_id'   => 'required|exists:atlets,id',
             'nama_event' => 'required|string|max:255',
             'tingkat_id' => 'nullable|integer',
-            'tanggal' => 'nullable|date',
-            'peringkat' => 'nullable|string|max:255',
+            'tanggal'    => 'nullable|date',
+            'peringkat'  => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
         ];
 
@@ -32,8 +32,8 @@ class AtletPrestasiRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists' => 'ID Atlet tidak valid.',
+            'atlet_id.required'   => 'ID Atlet wajib diisi.',
+            'atlet_id.exists'     => 'ID Atlet tidak valid.',
             'nama_event.required' => 'Nama event wajib diisi.',
         ];
     }

@@ -17,10 +17,10 @@ class SingupRepository
     {
 
         $data = array_merge($data, [
-            'role_id' => null,
-            'name' => null,
-            'email' => null,
-            'password' => null,
+            'role_id'       => null,
+            'name'          => null,
+            'email'         => null,
+            'password'      => null,
             'is_verifikasi' => 1,
         ]);
         if ($data['is_verifikasi'] == 0) {
@@ -33,7 +33,7 @@ class SingupRepository
         }
         $user = $this->usersRepository->create($data);
         if ($data['is_verifikasi'] == 0) {
-            $user->notify(new RegisterNotification);
+            $user->notify(new RegisterNotification());
             session(['verificationEmail' => $data['email']]);
         }
 

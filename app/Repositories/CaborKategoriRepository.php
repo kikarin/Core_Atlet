@@ -19,9 +19,9 @@ class CaborKategoriRepository
 
     public function __construct(CaborKategori $model)
     {
-        $this->model = $model;
+        $this->model   = $model;
         $this->request = CaborKategoriRequest::createFromBase(request());
-        $this->with = ['created_by_user', 'updated_by_user', 'cabor'];
+        $this->with    = ['created_by_user', 'updated_by_user', 'cabor'];
     }
 
     public function customIndex($data)
@@ -40,8 +40,8 @@ class CaborKategoriRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'cabor_id', 'nama', 'deskripsi', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -53,61 +53,61 @@ class CaborKategoriRepository
         }
 
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allData = $query->get();
+            $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'cabor_id' => $item->cabor_id,
-                    'cabor_nama' => $item->cabor?->nama,
-                    'nama' => $item->nama,
-                    'jenis_kelamin' => $item->jenis_kelamin,
-                    'deskripsi' => $item->deskripsi,
-                    'jumlah_atlet' => $item->jumlah_atlet,
-                    'jumlah_pelatih' => $item->jumlah_pelatih,
+                    'id'                      => $item->id,
+                    'cabor_id'                => $item->cabor_id,
+                    'cabor_nama'              => $item->cabor?->nama,
+                    'nama'                    => $item->nama,
+                    'jenis_kelamin'           => $item->jenis_kelamin,
+                    'deskripsi'               => $item->deskripsi,
+                    'jumlah_atlet'            => $item->jumlah_atlet,
+                    'jumlah_pelatih'          => $item->jumlah_pelatih,
                     'jumlah_tenaga_pendukung' => CaborKategoriTenagaPendukung::where('cabor_kategori_id', $item->id)->count(),
                 ];
             });
             $data += [
-                'kategori' => $transformedData,
-                'total' => $transformedData->count(),
+                'kategori'    => $transformedData,
+                'total'       => $transformedData->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
-                'cabor_id' => $item->cabor_id,
-                'cabor_nama' => $item->cabor?->nama,
-                'nama' => $item->nama,
-                'jenis_kelamin' => $item->jenis_kelamin,
-                'deskripsi' => $item->deskripsi,
-                'jumlah_atlet' => $item->jumlah_atlet,
-                'jumlah_pelatih' => $item->jumlah_pelatih,
+                'id'                      => $item->id,
+                'cabor_id'                => $item->cabor_id,
+                'cabor_nama'              => $item->cabor?->nama,
+                'nama'                    => $item->nama,
+                'jenis_kelamin'           => $item->jenis_kelamin,
+                'deskripsi'               => $item->deskripsi,
+                'jumlah_atlet'            => $item->jumlah_atlet,
+                'jumlah_pelatih'          => $item->jumlah_pelatih,
                 'jumlah_tenaga_pendukung' => CaborKategoriTenagaPendukung::where('cabor_kategori_id', $item->id)->count(),
             ];
         });
 
         $data += [
-            'kategori' => $transformedData,
-            'total' => $items->total(),
+            'kategori'    => $transformedData,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $items->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -146,8 +146,8 @@ class CaborKategoriRepository
             return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
 
-        $itemArray = $item->toArray();
-        $itemArray['cabor_nama'] = $item->cabor?->nama ?? '-';
+        $itemArray                  = $item->toArray();
+        $itemArray['cabor_nama']    = $item->cabor?->nama ?? '-';
         $itemArray['jenis_kelamin'] = $item->jenis_kelamin;
 
         return Inertia::render('modules/cabor-kategori/Show', [
@@ -157,7 +157,7 @@ class CaborKategoriRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

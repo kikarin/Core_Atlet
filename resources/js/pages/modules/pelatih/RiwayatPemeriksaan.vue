@@ -118,7 +118,7 @@ const deleteSelected = async () => {
                 </div>
             </div>
         </template>
-        
+
         <template #cell-parameter="{ row }">
             <BadgeGroup
                 :badges="[
@@ -131,4 +131,4 @@ const deleteSelected = async () => {
             />
         </template>
     </PageIndex>
-</template> 
+</template>

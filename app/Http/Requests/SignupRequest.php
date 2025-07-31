@@ -39,9 +39,9 @@ class SignupRequest extends FormRequest
     public function messages()
     {
         return [
-            'password.required' => 'Password harus diisi.',
-            'password.min' => 'Password minimal harus terdiri dari 8 karakter.',
-            'password.regex' => 'Password harus mengandung setidaknya satu huruf kecil, satu huruf besar, dan satu angka.',
+            'password.required'  => 'Password harus diisi.',
+            'password.min'       => 'Password minimal harus terdiri dari 8 karakter.',
+            'password.regex'     => 'Password harus mengandung setidaknya satu huruf kecil, satu huruf besar, dan satu angka.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ];
     }

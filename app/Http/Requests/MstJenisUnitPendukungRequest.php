@@ -38,9 +38,9 @@ class MstJenisUnitPendukungRequest extends FormRequest
     {
         return [
             'nama.required' => 'Nama jenis unit pendukung wajib diisi.',
-            'nama.string' => 'Nama jenis unit pendukung harus berupa teks.',
-            'nama.max' => 'Nama jenis unit pendukung tidak boleh lebih dari 255 karakter.',
-            'nama.unique' => 'Nama jenis unit pendukung sudah ada.',
+            'nama.string'   => 'Nama jenis unit pendukung harus berupa teks.',
+            'nama.max'      => 'Nama jenis unit pendukung tidak boleh lebih dari 255 karakter.',
+            'nama.unique'   => 'Nama jenis unit pendukung sudah ada.',
         ];
     }
 }

@@ -125,9 +125,9 @@ trait RepositoryTrait
     {
         try {
             DB::beginTransaction();
-            $record = $this->getById($id);
+            $record            = $this->getById($id);
             $record_sebelumnya = clone $record;
-            $data = $this->customDataCreateUpdate($data, $record);
+            $data              = $this->customDataCreateUpdate($data, $record);
 
             // $data = array_map(function($value) {
             //     return is_string($value) ? trim($value) : $value;
@@ -149,7 +149,7 @@ trait RepositoryTrait
         try {
             DB::beginTransaction();
             $record = $this->getById($id);
-            $model = $record;
+            $model  = $record;
             $model->delete();
             DB::commit();
 
@@ -180,7 +180,7 @@ trait RepositoryTrait
 
     public function getDataTable($data = [])
     {
-        $data = $this->customDataDatatable($data);
+        $data   = $this->customDataDatatable($data);
         $record = $this->model::select([$this->model->getTable().'.*'])->with($this->with)->withCount($this->withCount);
         if (@$data['orderDefault'] == null) {
             if (count($this->orderByColumnsArray) > 0) {
@@ -247,7 +247,7 @@ trait RepositoryTrait
     {
         return [
             'error' => 0,
-            'data' => $data,
+            'data'  => $data,
         ];
     }
 
@@ -292,11 +292,11 @@ trait RepositoryTrait
     {
         if ($files = $file) {
             $destinationPath = "public/$direktori";
-            $profileImage = date('YmdHis').'-'.RandomString(20).'.'.$files->getClientOriginalExtension();
+            $profileImage    = date('YmdHis').'-'.RandomString(20).'.'.$files->getClientOriginalExtension();
             $file->storeAs($destinationPath, $profileImage);
-            $data_file['filename'] = $profileImage;
+            $data_file['filename']  = $profileImage;
             $data_file['type_file'] = $files->getClientOriginalExtension();
-            $data_file['size'] = Storage::size($destinationPath.'/'.$profileImage);
+            $data_file['size']      = Storage::size($destinationPath.'/'.$profileImage);
 
             return $data_file;
         } else {

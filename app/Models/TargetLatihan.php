@@ -34,7 +34,7 @@ class TargetLatihan extends Model
 
     protected $casts = [
         'jenis_target' => 'string',
-        'peruntukan' => 'string',
+        'peruntukan'   => 'string',
     ];
 
     public function programLatihan()

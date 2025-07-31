@@ -21,15 +21,15 @@ class TenagaPendukungKesehatanController extends Controller implements HasMiddle
     public function __construct(TenagaPendukungKesehatanRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -44,17 +44,17 @@ class TenagaPendukungKesehatanController extends Controller implements HasMiddle
     public function store(TenagaPendukungKesehatanRequest $request, $tenaga_pendukung_id)
     {
         Log::info('TenagaPendukungKesehatanController: START store method', ['tenaga_pendukung_id_route' => $tenaga_pendukung_id, 'request_all' => $request->all()]);
-        $data = $request->validated();
+        $data                        = $request->validated();
         $data['tenaga_pendukung_id'] = $tenaga_pendukung_id;
         Log::info('TenagaPendukungKesehatanController: store method - validated data', $data);
         $existingKesehatan = $this->repository->getByTenagaPendukungId($tenaga_pendukung_id);
         if ($existingKesehatan) {
             Log::info('TenagaPendukungKesehatanController: Existing record found, updating.', ['id' => $existingKesehatan->id]);
-            $model = $this->repository->update($existingKesehatan->id, $data);
+            $model   = $this->repository->update($existingKesehatan->id, $data);
             $message = 'Data kesehatan tenaga pendukung berhasil diperbarui!';
         } else {
             Log::info('TenagaPendukungKesehatanController: No existing record, creating new.');
-            $model = $this->repository->create($data);
+            $model   = $this->repository->create($data);
             $message = 'Data kesehatan tenaga pendukung berhasil ditambahkan!';
         }
         if ($model) {
@@ -86,7 +86,7 @@ class TenagaPendukungKesehatanController extends Controller implements HasMiddle
     {
         Log::info('TenagaPendukungKesehatanController: START update method', ['tenaga_pendukung_id_route' => $tenaga_pendukung_id, 'id_kesehatan' => $id, 'request_all' => $request->all()]);
         try {
-            $data = $request->validated();
+            $data                        = $request->validated();
             $data['tenaga_pendukung_id'] = $tenaga_pendukung_id;
             Log::info('TenagaPendukungKesehatanController: update method - validated data', $data);
             $model = $this->repository->update($id, $data);

@@ -204,7 +204,7 @@ defineExpose({ fetchData });
     <Head :title="title" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="min-h-screen w-full bg-gray-100 dark:bg-neutral-950">
-            <div class="container mx-auto ">
+            <div class="container mx-auto">
                 <div class="mx-auto px-4 py-4">
                     <slot name="header-extra"></slot>
                     <HeaderActions

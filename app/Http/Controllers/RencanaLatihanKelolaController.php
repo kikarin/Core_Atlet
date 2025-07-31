@@ -17,14 +17,14 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
     public function __construct()
     {
         $this->initialize();
-        $this->route = 'rencana-latihan-kelola';
-        $this->commonData['kode_first_menu'] = 'RENCANA-LATIHAN';
+        $this->route                          = 'rencana-latihan-kelola';
+        $this->commonData['kode_first_menu']  = 'RENCANA-LATIHAN';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -52,22 +52,22 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
         $pesertaList = $this->getPesertaList($rencana_id, $jenis_peserta);
 
         $data = $this->commonData + [
-            'titlePage' => 'Kelola Pemetaan Rencana Latihan',
-            'program_id' => $program_id,
+            'titlePage'       => 'Kelola Pemetaan Rencana Latihan',
+            'program_id'      => $program_id,
             'rencana_latihan' => [
-                'id' => $rencanaLatihan->id,
-                'tanggal' => $rencanaLatihan->tanggal,
-                'materi' => $rencanaLatihan->materi,
-                'lokasi_latihan' => $rencanaLatihan->lokasi_latihan,
+                'id'              => $rencanaLatihan->id,
+                'tanggal'         => $rencanaLatihan->tanggal,
+                'materi'          => $rencanaLatihan->materi,
+                'lokasi_latihan'  => $rencanaLatihan->lokasi_latihan,
                 'program_latihan' => [
-                    'nama_program' => $rencanaLatihan->programLatihan->nama_program,
-                    'cabor_nama' => $rencanaLatihan->programLatihan->cabor->nama,
+                    'nama_program'        => $rencanaLatihan->programLatihan->nama_program,
+                    'cabor_nama'          => $rencanaLatihan->programLatihan->cabor->nama,
                     'cabor_kategori_nama' => $rencanaLatihan->programLatihan->caborKategori->nama,
                 ],
             ],
-            'jenis_peserta' => $jenis_peserta,
+            'jenis_peserta'  => $jenis_peserta,
             'target_latihan' => $targetLatihan,
-            'peserta_list' => $pesertaList,
+            'peserta_list'   => $pesertaList,
         ];
 
         if ($this->check_permission == true) {
@@ -80,7 +80,7 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
     public function getTargetMapping($rencana_id, Request $request)
     {
         $jenis_peserta = $request->input('jenis_peserta');
-        $pesertaType = $this->getPesertaType($jenis_peserta);
+        $pesertaType   = $this->getPesertaType($jenis_peserta);
 
         $mapping = DB::table('rencana_latihan_peserta_target')
             ->where('rencana_latihan_id', $rencana_id)
@@ -104,11 +104,11 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
     public function bulkUpdate(Request $request, $program_id, $rencana_id, $jenis_peserta)
     {
         $request->validate([
-            'data' => 'required|array',
-            'data.*.peserta_id' => 'required|integer',
+            'data'                     => 'required|array',
+            'data.*.peserta_id'        => 'required|integer',
             'data.*.target_latihan_id' => 'required|integer',
-            'data.*.nilai' => 'nullable|string',
-            'data.*.trend' => 'required|in:naik,stabil,turun',
+            'data.*.nilai'             => 'nullable|string',
+            'data.*.trend'             => 'required|in:naik,stabil,turun',
         ]);
 
         try {
@@ -138,11 +138,11 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
                     // Insert data baru
                     DB::table('rencana_latihan_peserta_target')->insert([
                         'rencana_latihan_id' => $rencana_id,
-                        'target_latihan_id' => $data['target_latihan_id'],
-                        'peserta_id' => $data['peserta_id'],
-                        'peserta_type' => $this->getPesertaType($jenis_peserta),
-                        'nilai' => $data['nilai'],
-                        'trend' => $data['trend'],
+                        'target_latihan_id'  => $data['target_latihan_id'],
+                        'peserta_id'         => $data['peserta_id'],
+                        'peserta_type'       => $this->getPesertaType($jenis_peserta),
+                        'nilai'              => $data['nilai'],
+                        'trend'              => $data['trend'],
                     ]);
                 }
             }
@@ -166,7 +166,7 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
     private function getPesertaList($rencana_id, $jenis_peserta)
     {
-        $rencanaLatihan = RencanaLatihan::with(['programLatihan'])->findOrFail($rencana_id);
+        $rencanaLatihan  = RencanaLatihan::with(['programLatihan'])->findOrFail($rencana_id);
         $caborKategoriId = $rencanaLatihan->programLatihan->cabor_kategori_id;
 
         switch ($jenis_peserta) {
@@ -188,11 +188,11 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
                 return $query->get()->map(function ($atlet) {
                     return [
-                        'id' => $atlet->id,
-                        'nama' => $atlet->nama,
+                        'id'            => $atlet->id,
+                        'nama'          => $atlet->nama,
                         'jenis_kelamin' => $atlet->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                        'usia' => $this->calculateAge($atlet->tanggal_lahir),
-                        'posisi' => $atlet->posisi_atlet_nama ?? '-',
+                        'usia'          => $this->calculateAge($atlet->tanggal_lahir),
+                        'posisi'        => $atlet->posisi_atlet_nama ?? '-',
                     ];
                 });
 
@@ -214,10 +214,10 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
                 return $query->get()->map(function ($pelatih) {
                     return [
-                        'id' => $pelatih->id,
-                        'nama' => $pelatih->nama,
+                        'id'            => $pelatih->id,
+                        'nama'          => $pelatih->nama,
                         'jenis_kelamin' => $pelatih->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                        'usia' => $this->calculateAge($pelatih->tanggal_lahir),
+                        'usia'          => $this->calculateAge($pelatih->tanggal_lahir),
                         'jenis_pelatih' => $pelatih->jenis_pelatih_nama ?? '-',
                     ];
                 });
@@ -240,10 +240,10 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
 
                 return $query->get()->map(function ($tenaga) {
                     return [
-                        'id' => $tenaga->id,
-                        'nama' => $tenaga->nama,
-                        'jenis_kelamin' => $tenaga->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                        'usia' => $this->calculateAge($tenaga->tanggal_lahir),
+                        'id'                     => $tenaga->id,
+                        'nama'                   => $tenaga->nama,
+                        'jenis_kelamin'          => $tenaga->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                        'usia'                   => $this->calculateAge($tenaga->tanggal_lahir),
                         'jenis_tenaga_pendukung' => $tenaga->jenis_tenaga_pendukung_nama ?? '-',
                     ];
                 });
@@ -259,9 +259,9 @@ class RencanaLatihanKelolaController extends Controller implements HasMiddleware
             return '-';
         }
 
-        $today = new \DateTime;
+        $today = new \DateTime();
         $birth = new \DateTime($birthDate);
-        $age = $today->diff($birth);
+        $age   = $today->diff($birth);
 
         return $age->y;
     }

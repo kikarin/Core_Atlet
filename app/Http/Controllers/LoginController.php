@@ -12,7 +12,7 @@ class LoginController extends Controller
     public function index()
     {
         $data = [
-            'titlePage' => 'Login',
+            'titlePage'             => 'Login',
             'generateCaptcha_Login' => generateCaptcha('captcha_login'),
         ];
 
@@ -22,11 +22,11 @@ class LoginController extends Controller
     public function action(Request $request)
     {
         $request->validate([
-            'email' => 'required',
+            'email'    => 'required',
             'password' => 'required|string',
-            'captcha' => 'required|numeric',
+            'captcha'  => 'required|numeric',
         ]);
-        $remember = $request->has('remember') ? true : false;
+        $remember    = $request->has('remember') ? true : false;
         $credentials = $request->only('email', 'password');
 
         if (! verifyCaptcha('captcha_login', $request->captcha)) {

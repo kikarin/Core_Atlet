@@ -21,16 +21,16 @@ class CaborKategoriController extends Controller implements HasMiddleware
     public function __construct(Request $request, CaborKategoriRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = CaborKategoriRequest::createFromBase($request);
+        $this->request    = CaborKategoriRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'cabor-kategori';
-        $this->commonData['kode_first_menu'] = 'CABOR';
+        $this->route                          = 'cabor-kategori';
+        $this->commonData['kode_first_menu']  = 'CABOR';
         $this->commonData['kode_second_menu'] = 'KATEGORI';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -49,12 +49,12 @@ class CaborKategoriController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['kategori'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -102,7 +102,7 @@ class CaborKategoriController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:cabor_kategori,id',
         ]);
         $this->repository->delete_selected($request->ids);

@@ -24,18 +24,18 @@ class RoleController extends Controller implements HasMiddleware
 
     public function __construct(RoleRepository $repository, CategoryPermissionRepository $categoryPermissionRepository, Request $request)
     {
-        $this->repository = $repository;
+        $this->repository                   = $repository;
         $this->categoryPermissionRepository = $categoryPermissionRepository;
-        $this->request = RoleRequest::createFromBase($request);
+        $this->request                      = RoleRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'roles';
-        $this->commonData['kode_first_menu'] = 'USERS-MANAGEMENT';
+        $this->route                          = 'roles';
+        $this->commonData['kode_first_menu']  = 'USERS-MANAGEMENT';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -51,7 +51,7 @@ class RoleController extends Controller implements HasMiddleware
     {
         $item = $this->repository->getById($id);
         // Ambil semua permission dan group by category
-        $permissions = Permission::with('category_permission')->get();
+        $permissions        = Permission::with('category_permission')->get();
         $groupedPermissions = $permissions->groupBy(function ($perm) {
             return optional($perm->category_permission)->name ?? 'Other';
         });
@@ -59,10 +59,10 @@ class RoleController extends Controller implements HasMiddleware
         $rolePermissionIds = $item->permissions->pluck('id')->toArray();
         $this->commonData['titlePage'] .= ' Set Permission';
         $data = $this->commonData + [
-            'item' => $item,
+            'item'             => $item,
             'permissionGroups' => $groupedPermissions->map(function ($perms, $cat) {
                 return [
-                    'label' => $cat,
+                    'label'    => $cat,
                     'children' => $perms->map(function ($p) {
                         return ['id' => $p->id, 'label' => $p->name];
                     })->values(),
@@ -91,12 +91,12 @@ class RoleController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['roles'],
             'meta' => [
-                'total' => $data['meta']['total'],
+                'total'        => $data['meta']['total'],
                 'current_page' => $data['meta']['current_page'],
-                'per_page' => $data['meta']['per_page'],
-                'search' => $data['meta']['search'],
-                'sort' => $data['meta']['sort'],
-                'order' => $data['meta']['order'],
+                'per_page'     => $data['meta']['per_page'],
+                'search'       => $data['meta']['search'],
+                'sort'         => $data['meta']['sort'],
+                'order'        => $data['meta']['order'],
             ],
         ]);
     }

@@ -10,7 +10,7 @@ if (! function_exists('set_date')) {
         }
         // remove S (st,nd,rd,th) there are no such things in indonesia :p
         $date_format = preg_replace('/S/', '', $date_format);
-        $pattern = [
+        $pattern     = [
             '/Mon[^day]/', '/Tue[^sday]/', '/Wed[^nesday]/', '/Thu[^rsday]/',
             '/Fri[^day]/', '/Sat[^urday]/', '/Sun[^day]/', '/Monday/', '/Tuesday/',
             '/Wednesday/', '/Thursday/', '/Friday/', '/Saturday/', '/Sunday/',

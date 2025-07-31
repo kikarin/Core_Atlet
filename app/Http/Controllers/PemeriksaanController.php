@@ -21,16 +21,16 @@ class PemeriksaanController extends Controller implements HasMiddleware
     public function __construct(Request $request, PemeriksaanRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = PemeriksaanRequest::createFromBase($request);
+        $this->request    = PemeriksaanRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'pemeriksaan';
-        $this->commonData['kode_first_menu'] = 'PEMERIKSAAN';
+        $this->route                          = 'pemeriksaan';
+        $this->commonData['kode_first_menu']  = 'PEMERIKSAAN';
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -76,7 +76,7 @@ class PemeriksaanController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $item = $this->repository->getById($id);
+        $item      = $this->repository->getById($id);
         $itemArray = $item->toArray();
 
         return Inertia::render('modules/pemeriksaan/Show', ['item' => $itemArray]);
@@ -113,7 +113,7 @@ class PemeriksaanController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:pemeriksaan,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -128,12 +128,12 @@ class PemeriksaanController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['pemeriksaan'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ]);
     }

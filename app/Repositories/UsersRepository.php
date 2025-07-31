@@ -25,10 +25,10 @@ class UsersRepository
 
     public function __construct(User $model, RoleRepository $roleRepository, UsersRoleRepository $usersRoleRepository)
     {
-        $this->model = $model;
-        $this->roleRepository = $roleRepository;
+        $this->model               = $model;
+        $this->roleRepository      = $roleRepository;
         $this->usersRoleRepository = $usersRoleRepository;
-        $this->request = UsersRequest::createFromBase(request());
+        $this->request             = UsersRequest::createFromBase(request());
 
         $this->with = ['users_role', 'role', 'created_by_user', 'updated_by_user'];
     }
@@ -50,7 +50,7 @@ class UsersRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
+            $order     = request('order', 'asc');
             $sortField = request('sort');
 
             if ($sortField === 'role') {
@@ -71,56 +71,56 @@ class UsersRepository
 
         // --- PAGINATION FIX ---
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $allUsers = $query->get();
+            $allUsers         = $query->get();
             $transformedUsers = collect($allUsers)->map(function ($user) {
                 return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role ? $user->role->name : '-',
+                    'id'        => $user->id,
+                    'name'      => $user->name,
+                    'email'     => $user->email,
+                    'role'      => $user->role ? $user->role->name : '-',
                     'all_roles' => $user->list_role_name_str, // Show all roles
                     'is_active' => $user->is_active,
                 ];
             });
             $data += [
-                'listRole' => $this->roleRepository->getAll()->pluck('name', 'id')->toArray(),
-                'users' => $transformedUsers,
-                'total' => $transformedUsers->count(),
+                'listRole'    => $this->roleRepository->getAll()->pluck('name', 'id')->toArray(),
+                'users'       => $transformedUsers,
+                'total'       => $transformedUsers->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $users = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $users           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedUsers = collect($users->items())->map(function ($user) {
             return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role ? $user->role->name : '-',
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'role'      => $user->role ? $user->role->name : '-',
                 'all_roles' => $user->list_role_name_str, // Show all roles
                 'is_active' => $user->is_active,
             ];
         });
 
         $data += [
-            'listRole' => $this->roleRepository->getAll()->pluck('name', 'id')->toArray(),
-            'users' => $transformedUsers,
-            'total' => $users->total(),
+            'listRole'    => $this->roleRepository->getAll()->pluck('name', 'id')->toArray(),
+            'users'       => $transformedUsers,
+            'total'       => $users->total(),
             'currentPage' => $users->currentPage(),
-            'perPage' => $users->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $users->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -132,10 +132,10 @@ class UsersRepository
 
         $data += [
             'get_Roles' => $roles->pluck('name', 'id')->toArray(),
-            'roles' => $roles->map(function ($role) {
+            'roles'     => $roles->map(function ($role) {
                 return [
-                    'id' => $role->id,
-                    'name' => $role->name,
+                    'id'          => $role->id,
+                    'name'        => $role->name,
                     'description' => $role->description ?? '',
                 ];
             })->toArray(),
@@ -179,7 +179,7 @@ class UsersRepository
             throw new \Exception('Role harus dipilih minimal 1');
         }
 
-        $validRoles = $this->roleRepository->getAll()->pluck('id')->toArray();
+        $validRoles   = $this->roleRepository->getAll()->pluck('id')->toArray();
         $invalidRoles = array_diff($data['role_id'], $validRoles);
 
         if (! empty($invalidRoles)) {
@@ -214,7 +214,7 @@ class UsersRepository
             }
 
             // Validasi apakah semua role_id ada di database
-            $validRoles = $this->roleRepository->getAll()->pluck('id')->toArray();
+            $validRoles   = $this->roleRepository->getAll()->pluck('id')->toArray();
             $invalidRoles = array_diff($data['role_id'], $validRoles);
 
             if (! empty($invalidRoles)) {
@@ -254,7 +254,7 @@ class UsersRepository
 
     public function loginAs($userId)
     {
-        $record = $this->getById($userId);
+        $record        = $this->getById($userId);
         $users_id_lama = Auth::user()->id;
         if (Auth::loginUsingId($record->id, false)) {
             request()->session()->put('is_login_as', 1);
@@ -286,7 +286,7 @@ class UsersRepository
             return redirect()->back()->with('error', 'User not found');
         }
 
-        $itemArray = $item->toArray();
+        $itemArray              = $item->toArray();
         $itemArray['all_roles'] = $item->list_role_name_str;
 
         return \Inertia\Inertia::render('modules/users/Show', [
@@ -299,7 +299,7 @@ class UsersRepository
      */
     public function validateUserRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

@@ -13,9 +13,9 @@ class MakeRepository extends Command
 
     public function handle()
     {
-        $name = $this->argument('name');
+        $name           = $this->argument('name');
         $repositoryName = Str::studly($name).'Repository';
-        $namespace = 'App\\Repositories';
+        $namespace      = 'App\\Repositories';
 
         $stub = file_get_contents(base_path('stubs/repository.stub'));
         $stub = str_replace(['{{ namespace }}', '{{ rootNamespace }}', '{{ class }}'], [$namespace, 'App', $name], $stub);

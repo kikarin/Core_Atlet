@@ -10,12 +10,14 @@ class SitemapRepository
 {
     use RepositoryTrait;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function generateSitemap()
     {
-        $sitemap = Sitemap::create();
-        $baseUrl = url('');
+        $sitemap   = Sitemap::create();
+        $baseUrl   = url('');
         $endpoints = [
         ];
         foreach ($endpoints as $endpoint) {

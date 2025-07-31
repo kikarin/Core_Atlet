@@ -8,5 +8,7 @@ class HomeRepository
 {
     use RepositoryTrait;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 }

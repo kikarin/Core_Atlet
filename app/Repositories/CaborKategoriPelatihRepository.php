@@ -17,7 +17,7 @@ class CaborKategoriPelatihRepository
     public function __construct(CaborKategoriPelatih $model)
     {
         $this->model = $model;
-        $this->with = ['cabor', 'caborKategori', 'pelatih', 'jenisPelatih', 'created_by_user', 'updated_by_user'];
+        $this->with  = ['cabor', 'caborKategori', 'pelatih', 'jenisPelatih', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -46,7 +46,7 @@ class CaborKategoriPelatihRepository
 
         // Sort
         if (request('sort')) {
-            $order = request('order', 'asc');
+            $order     = request('order', 'asc');
             $sortField = request('sort');
 
             if ($sortField === 'pelatih_nama') {
@@ -66,71 +66,71 @@ class CaborKategoriPelatihRepository
 
         // Pagination
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allRecords = $query->get();
+            $allRecords         = $query->get();
             $transformedRecords = collect($allRecords)->map(function ($record) {
                 return [
-                    'id' => $record->id,
-                    'cabor_id' => $record->cabor_id,
-                    'cabor_nama' => $record->cabor->nama ?? '-',
-                    'cabor_kategori_id' => $record->cabor_kategori_id,
+                    'id'                  => $record->id,
+                    'cabor_id'            => $record->cabor_id,
+                    'cabor_nama'          => $record->cabor->nama ?? '-',
+                    'cabor_kategori_id'   => $record->cabor_kategori_id,
                     'cabor_kategori_nama' => $record->caborKategori->nama ?? '-',
-                    'pelatih_id' => $record->pelatih_id,
-                    'pelatih_nama' => $record->pelatih->nama ?? '-',
-                    'pelatih_nik' => $record->pelatih->nik ?? '-',
-                    'jenis_pelatih_id' => $record->jenis_pelatih_id,
-                    'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
-                    'is_active' => $record->is_active,
-                    'is_active_badge' => $record->is_active_badge,
-                    'created_at' => $record->created_at,
+                    'pelatih_id'          => $record->pelatih_id,
+                    'pelatih_nama'        => $record->pelatih->nama ?? '-',
+                    'pelatih_nik'         => $record->pelatih->nik  ?? '-',
+                    'jenis_pelatih_id'    => $record->jenis_pelatih_id,
+                    'jenis_pelatih_nama'  => $record->jenisPelatih->nama ?? '-',
+                    'is_active'           => $record->is_active,
+                    'is_active_badge'     => $record->is_active_badge,
+                    'created_at'          => $record->created_at,
                 ];
             });
 
             $data += [
-                'records' => $transformedRecords,
-                'total' => $transformedRecords->count(),
+                'records'     => $transformedRecords,
+                'total'       => $transformedRecords->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $records = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $records         = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedRecords = collect($records->items())->map(function ($record) {
             return [
-                'id' => $record->id,
-                'pelatih_id' => $record->pelatih_id,
-                'nama' => $record->pelatih->nama ?? '-',
-                'pelatih_nama' => $record->pelatih->nama ?? '-',
-                'jenis_pelatih_id' => $record->jenis_pelatih_id,
+                'id'                 => $record->id,
+                'pelatih_id'         => $record->pelatih_id,
+                'nama'               => $record->pelatih->nama ?? '-',
+                'pelatih_nama'       => $record->pelatih->nama ?? '-',
+                'jenis_pelatih_id'   => $record->jenis_pelatih_id,
                 'jenis_pelatih_nama' => $record->jenisPelatih->nama ?? '-',
-                'is_active' => $record->is_active,
-                'is_active_badge' => $record->is_active_badge,
-                'created_at' => $record->created_at,
-                'jenis_kelamin' => $record->pelatih->jenis_kelamin ?? '-',
-                'tempat_lahir' => $record->pelatih->tempat_lahir ?? '-',
-                'tanggal_lahir' => $record->pelatih->tanggal_lahir ?? '-',
-                'tanggal_bergabung' => $record->pelatih->tanggal_bergabung ?? '-',
-                'foto' => $record->pelatih->foto ?? null,
+                'is_active'          => $record->is_active,
+                'is_active_badge'    => $record->is_active_badge,
+                'created_at'         => $record->created_at,
+                'jenis_kelamin'      => $record->pelatih->jenis_kelamin     ?? '-',
+                'tempat_lahir'       => $record->pelatih->tempat_lahir      ?? '-',
+                'tanggal_lahir'      => $record->pelatih->tanggal_lahir     ?? '-',
+                'tanggal_bergabung'  => $record->pelatih->tanggal_bergabung ?? '-',
+                'foto'               => $record->pelatih->foto              ?? null,
             ];
         });
 
         $data += [
-            'records' => $transformedRecords,
-            'total' => $records->total(),
+            'records'     => $transformedRecords,
+            'total'       => $records->total(),
             'currentPage' => $records->currentPage(),
-            'perPage' => $records->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $records->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -150,7 +150,7 @@ class CaborKategoriPelatihRepository
 
     public function batchInsert($data)
     {
-        $userId = Auth::id();
+        $userId     = Auth::id();
         $insertData = [];
 
         foreach ($data['pelatih_ids'] as $pelatihId) {
@@ -166,35 +166,35 @@ class CaborKategoriPelatihRepository
                     $existing->restore();
                 }
                 // Update status aktif/nonaktif dan jenis pelatih
-                $existing->is_active = (int) $data['is_active'];
+                $existing->is_active        = (int) $data['is_active'];
                 $existing->jenis_pelatih_id = $data['jenis_pelatih_id'];
-                $existing->cabor_id = $data['cabor_id'];
-                $existing->updated_by = $userId;
-                $existing->updated_at = now();
+                $existing->cabor_id         = $data['cabor_id'];
+                $existing->updated_by       = $userId;
+                $existing->updated_at       = now();
                 $existing->save();
 
                 Log::info('Updated existing pelatih', [
-                    'pelatih_id' => $pelatihId,
-                    'is_active' => $data['is_active'],
+                    'pelatih_id'       => $pelatihId,
+                    'is_active'        => $data['is_active'],
                     'jenis_pelatih_id' => $data['jenis_pelatih_id'],
                 ]);
             } else {
                 // Insert baru
                 $insertData[] = [
-                    'cabor_id' => $data['cabor_id'],
+                    'cabor_id'          => $data['cabor_id'],
                     'cabor_kategori_id' => $data['cabor_kategori_id'],
-                    'pelatih_id' => $pelatihId,
-                    'jenis_pelatih_id' => $data['jenis_pelatih_id'],
-                    'is_active' => (int) $data['is_active'],
-                    'created_by' => $userId,
-                    'updated_by' => $userId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'pelatih_id'        => $pelatihId,
+                    'jenis_pelatih_id'  => $data['jenis_pelatih_id'],
+                    'is_active'         => (int) $data['is_active'],
+                    'created_by'        => $userId,
+                    'updated_by'        => $userId,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
                 ];
 
                 Log::info('Will insert new pelatih', [
-                    'pelatih_id' => $pelatihId,
-                    'is_active' => $data['is_active'],
+                    'pelatih_id'       => $pelatihId,
+                    'is_active'        => $data['is_active'],
                     'jenis_pelatih_id' => $data['jenis_pelatih_id'],
                 ]);
             }
@@ -247,26 +247,26 @@ class CaborKategoriPelatihRepository
         } else {
             // Untuk create/store, validasi semua field
             $rules = [
-                'cabor_id' => 'required|exists:cabor,id',
+                'cabor_id'          => 'required|exists:cabor,id',
                 'cabor_kategori_id' => 'required|exists:cabor_kategori,id',
-                'pelatih_ids' => 'required|array|min:1',
-                'pelatih_ids.*' => 'required|exists:pelatihs,id',
-                'jenis_pelatih_id' => 'required|exists:mst_jenis_pelatih,id',
+                'pelatih_ids'       => 'required|array|min:1',
+                'pelatih_ids.*'     => 'required|exists:pelatihs,id',
+                'jenis_pelatih_id'  => 'required|exists:mst_jenis_pelatih,id',
             ];
         }
 
         $messages = [
-            'cabor_id.required' => 'Cabor harus dipilih.',
-            'cabor_id.exists' => 'Cabor yang dipilih tidak valid.',
+            'cabor_id.required'          => 'Cabor harus dipilih.',
+            'cabor_id.exists'            => 'Cabor yang dipilih tidak valid.',
             'cabor_kategori_id.required' => 'Kategori harus dipilih.',
-            'cabor_kategori_id.exists' => 'Kategori yang dipilih tidak valid.',
-            'pelatih_ids.required' => 'Pelatih harus dipilih minimal 1.',
-            'pelatih_ids.array' => 'Pelatih harus berupa array.',
-            'pelatih_ids.min' => 'Pelatih harus dipilih minimal 1.',
-            'pelatih_ids.*.required' => 'Pelatih tidak boleh kosong.',
-            'pelatih_ids.*.exists' => 'Pelatih yang dipilih tidak valid.',
-            'jenis_pelatih_id.required' => 'Jenis pelatih harus dipilih.',
-            'jenis_pelatih_id.exists' => 'Jenis pelatih yang dipilih tidak valid.',
+            'cabor_kategori_id.exists'   => 'Kategori yang dipilih tidak valid.',
+            'pelatih_ids.required'       => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.array'          => 'Pelatih harus berupa array.',
+            'pelatih_ids.min'            => 'Pelatih harus dipilih minimal 1.',
+            'pelatih_ids.*.required'     => 'Pelatih tidak boleh kosong.',
+            'pelatih_ids.*.exists'       => 'Pelatih yang dipilih tidak valid.',
+            'jenis_pelatih_id.required'  => 'Jenis pelatih harus dipilih.',
+            'jenis_pelatih_id.exists'    => 'Jenis pelatih yang dipilih tidak valid.',
         ];
 
         return $request->validate($rules, $messages);

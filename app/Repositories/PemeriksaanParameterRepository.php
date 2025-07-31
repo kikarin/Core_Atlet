@@ -15,7 +15,7 @@ class PemeriksaanParameterRepository
     public function __construct(PemeriksaanParameter $model)
     {
         $this->model = $model;
-        $this->with = ['pemeriksaan', 'created_by_user', 'updated_by_user'];
+        $this->with  = ['pemeriksaan', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -32,8 +32,8 @@ class PemeriksaanParameterRepository
             });
         }
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama_parameter', 'satuan', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -44,47 +44,47 @@ class PemeriksaanParameterRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
+                    'id'             => $item->id,
                     'pemeriksaan_id' => $item->pemeriksaan_id,
                     'nama_parameter' => $item->nama_parameter,
-                    'satuan' => $item->satuan,
+                    'satuan'         => $item->satuan,
                 ];
             });
             $data += [
-                'data' => $transformed,
-                'total' => $transformed->count(),
+                'data'        => $transformed,
+                'total'       => $transformed->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
+                'id'             => $item->id,
                 'pemeriksaan_id' => $item->pemeriksaan_id,
                 'nama_parameter' => $item->nama_parameter,
-                'satuan' => $item->satuan,
+                'satuan'         => $item->satuan,
             ];
         });
         $data += [
-            'data' => $transformed,
-            'total' => $items->total(),
+            'data'        => $transformed,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $items->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -110,7 +110,7 @@ class PemeriksaanParameterRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

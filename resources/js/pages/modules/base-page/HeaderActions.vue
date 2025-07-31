@@ -55,15 +55,9 @@ const props = defineProps<{
                 </DropdownMenuContent>
             </DropdownMenu>
 
-<Button
-  v-if="props.showDelete !== true"
-  variant="destructive"
-  size="sm"
-  :disabled="selected.length === 0"
-  @click="onDeleteSelected"
->
-  Delete Selected ({{ selected.length }})
-</Button>
+            <Button v-if="props.showDelete !== true" variant="destructive" size="sm" :disabled="selected.length === 0" @click="onDeleteSelected">
+                Delete Selected ({{ selected.length }})
+            </Button>
         </div>
     </div>
 </template>

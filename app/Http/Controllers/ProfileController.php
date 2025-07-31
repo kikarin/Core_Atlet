@@ -19,7 +19,7 @@ class ProfileController extends Controller
     public function __construct(ProfileRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
     }
 
@@ -33,7 +33,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name'  => 'required',
             'email' => 'required|email|max:120',
             'no_hp' => 'required|max:20',
         ]);
@@ -52,8 +52,8 @@ class ProfileController extends Controller
     public function ganti_password_action(Request $request)
     {
         $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|string|min: 8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
+            'current_password'          => 'required',
+            'new_password'              => 'required|string|min: 8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
             'new_password_confirmation' => 'required',
         ]);
 

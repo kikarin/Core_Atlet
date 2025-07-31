@@ -15,11 +15,11 @@ class TenagaPendukungPrestasiRequest extends FormRequest
     {
         $rules = [
             'tenaga_pendukung_id' => 'required|exists:tenaga_pendukungs,id',
-            'nama_event' => 'required|string|max:255',
-            'tingkat_id' => 'nullable|integer',
-            'tanggal' => 'nullable|date',
-            'peringkat' => 'nullable|string|max:255',
-            'keterangan' => 'nullable|string',
+            'nama_event'          => 'required|string|max:255',
+            'tingkat_id'          => 'nullable|integer',
+            'tanggal'             => 'nullable|date',
+            'peringkat'           => 'nullable|string|max:255',
+            'keterangan'          => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -33,8 +33,8 @@ class TenagaPendukungPrestasiRequest extends FormRequest
     {
         return [
             'tenaga_pendukung_id.required' => 'ID Tenaga Pendukung wajib diisi.',
-            'tenaga_pendukung_id.exists' => 'ID Tenaga Pendukung tidak valid.',
-            'nama_event.required' => 'Nama event wajib diisi.',
+            'tenaga_pendukung_id.exists'   => 'ID Tenaga Pendukung tidak valid.',
+            'nama_event.required'          => 'Nama event wajib diisi.',
         ];
     }
 

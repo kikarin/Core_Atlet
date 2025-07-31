@@ -63,17 +63,17 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
                 $atlet = Atlet::withTrashed()->where('nik', $row['nik'])->first();
 
                 $data = [
-                    'nik' => $row['nik'] ?? null,
-                    'nama' => $row['nama'] ?? null,
+                    'nik'           => $row['nik']           ?? null,
+                    'nama'          => $row['nama']          ?? null,
                     'jenis_kelamin' => $row['jenis_kelamin'] ?? null,
-                    'tempat_lahir' => $row['tempat_lahir'] ?? null,
+                    'tempat_lahir'  => $row['tempat_lahir']  ?? null,
                     'tanggal_lahir' => $this->convertExcelDate($row['tanggal_lahir'] ?? null),
-                    'alamat' => $row['alamat'] ?? null,
-                    'kecamatan_id' => $row['kecamatan_id'] ?? null,
-                    'kelurahan_id' => $row['kelurahan_id'] ?? null,
-                    'no_hp' => $row['no_hp'] ?? null,
-                    'email' => $row['email'] ?? null,
-                    'is_active' => $row['is_active'] ?? 1,
+                    'alamat'        => $row['alamat']       ?? null,
+                    'kecamatan_id'  => $row['kecamatan_id'] ?? null,
+                    'kelurahan_id'  => $row['kelurahan_id'] ?? null,
+                    'no_hp'         => $row['no_hp']        ?? null,
+                    'email'         => $row['email']        ?? null,
+                    'is_active'     => $row['is_active']    ?? 1,
                 ];
 
                 if ($atlet) {
@@ -91,25 +91,25 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
                 $this->successCount++;
 
                 $orangTuaData = [
-                    'atlet_id' => $atletId,
-                    'nama_ibu_kandung' => $row['nama_ibu_kandung'] ?? null,
-                    'tempat_lahir_ibu' => $row['tempat_lahir_ibu'] ?? null,
-                    'tanggal_lahir_ibu' => $this->convertExcelDate($row['tanggal_lahir_ibu'] ?? null),
-                    'alamat_ibu' => $row['alamat_ibu'] ?? null,
-                    'no_hp_ibu' => $row['no_hp_ibu'] ?? null,
-                    'pekerjaan_ibu' => $row['pekerjaan_ibu'] ?? null,
-                    'nama_ayah_kandung' => $row['nama_ayah_kandung'] ?? null,
-                    'tempat_lahir_ayah' => $row['tempat_lahir_ayah'] ?? null,
+                    'atlet_id'           => $atletId,
+                    'nama_ibu_kandung'   => $row['nama_ibu_kandung'] ?? null,
+                    'tempat_lahir_ibu'   => $row['tempat_lahir_ibu'] ?? null,
+                    'tanggal_lahir_ibu'  => $this->convertExcelDate($row['tanggal_lahir_ibu'] ?? null),
+                    'alamat_ibu'         => $row['alamat_ibu']        ?? null,
+                    'no_hp_ibu'          => $row['no_hp_ibu']         ?? null,
+                    'pekerjaan_ibu'      => $row['pekerjaan_ibu']     ?? null,
+                    'nama_ayah_kandung'  => $row['nama_ayah_kandung'] ?? null,
+                    'tempat_lahir_ayah'  => $row['tempat_lahir_ayah'] ?? null,
                     'tanggal_lahir_ayah' => $this->convertExcelDate($row['tanggal_lahir_ayah'] ?? null),
-                    'alamat_ayah' => $row['alamat_ayah'] ?? null,
-                    'no_hp_ayah' => $row['no_hp_ayah'] ?? null,
-                    'pekerjaan_ayah' => $row['pekerjaan_ayah'] ?? null,
-                    'nama_wali' => $row['nama_wali'] ?? null,
-                    'tempat_lahir_wali' => $row['tempat_lahir_wali'] ?? null,
+                    'alamat_ayah'        => $row['alamat_ayah']       ?? null,
+                    'no_hp_ayah'         => $row['no_hp_ayah']        ?? null,
+                    'pekerjaan_ayah'     => $row['pekerjaan_ayah']    ?? null,
+                    'nama_wali'          => $row['nama_wali']         ?? null,
+                    'tempat_lahir_wali'  => $row['tempat_lahir_wali'] ?? null,
                     'tanggal_lahir_wali' => $this->convertExcelDate($row['tanggal_lahir_wali'] ?? null),
-                    'alamat_wali' => $row['alamat_wali'] ?? null,
-                    'no_hp_wali' => $row['no_hp_wali'] ?? null,
-                    'pekerjaan_wali' => $row['pekerjaan_wali'] ?? null,
+                    'alamat_wali'        => $row['alamat_wali']    ?? null,
+                    'no_hp_wali'         => $row['no_hp_wali']     ?? null,
+                    'pekerjaan_wali'     => $row['pekerjaan_wali'] ?? null,
                 ];
 
                 $orangTuaData = array_filter($orangTuaData, function ($value) {
@@ -132,15 +132,15 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
                 }
 
                 $kesehatanData = [
-                    'atlet_id' => $atletId,
-                    'tinggi_badan' => $row['tinggi_badan'] ?? null,
-                    'berat_badan' => $row['berat_badan'] ?? null,
-                    'penglihatan' => $row['penglihatan'] ?? null,
-                    'golongan_darah' => $row['golongan_darah'] ?? null,
-                    'riwayat_penyakit' => $row['riwayat_penyakit'] ?? null,
-                    'alergi' => $row['alergi'] ?? null,
-                    'kelainan_jasmani' => $row['kelainan_jasmani'] ?? null,
-                    'keterangan' => $row['keterangan_kesehatan'] ?? null,
+                    'atlet_id'         => $atletId,
+                    'tinggi_badan'     => $row['tinggi_badan']         ?? null,
+                    'berat_badan'      => $row['berat_badan']          ?? null,
+                    'penglihatan'      => $row['penglihatan']          ?? null,
+                    'golongan_darah'   => $row['golongan_darah']       ?? null,
+                    'riwayat_penyakit' => $row['riwayat_penyakit']     ?? null,
+                    'alergi'           => $row['alergi']               ?? null,
+                    'kelainan_jasmani' => $row['kelainan_jasmani']     ?? null,
+                    'keterangan'       => $row['keterangan_kesehatan'] ?? null,
                 ];
 
                 $kesehatanData = array_filter($kesehatanData, function ($value) {
@@ -168,15 +168,15 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
                 DB::rollBack();
 
                 $this->errorCount++;
-                $errorMessage = $this->getUserFriendlyErrorMessage($e);
+                $errorMessage   = $this->getUserFriendlyErrorMessage($e);
                 $this->errors[] = [
-                    'row' => $this->rowCount,
+                    'row'   => $this->rowCount,
                     'error' => $errorMessage,
-                    'data' => $row,
+                    'data'  => $row,
                 ];
 
                 Log::error('Error importing row '.$this->rowCount.': '.$e->getMessage(), [
-                    'row' => $row,
+                    'row'       => $row,
                     'exception' => $e,
                 ]);
 
@@ -194,7 +194,7 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
         // Log the full error for debugging
         Log::error('Import Error: '.$message, [
             'exception' => get_class($e),
-            'trace' => $e->getTraceAsString(),
+            'trace'     => $e->getTraceAsString(),
         ]);
 
         // Handle database constraint violations

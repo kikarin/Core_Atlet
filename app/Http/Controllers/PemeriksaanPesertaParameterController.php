@@ -27,14 +27,14 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
     public function __construct(Request $request, PemeriksaanPesertaParameterRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = PemeriksaanPesertaParameterRequest::createFromBase($request);
+        $this->request    = PemeriksaanPesertaParameterRequest::createFromBase($request);
         $this->initialize();
         $this->route = 'pemeriksaan-peserta-parameter';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -53,17 +53,17 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         $this->repository->customProperty(__FUNCTION__);
         $data = [
             'pemeriksaan' => $pemeriksaan,
-            'peserta' => $peserta,
+            'peserta'     => $peserta,
         ];
         request()->merge([
-            'pemeriksaan_id' => $pemeriksaan->id,
+            'pemeriksaan_id'         => $pemeriksaan->id,
             'pemeriksaan_peserta_id' => $peserta->id,
         ]);
         $data = $this->repository->customIndex($data);
 
         return inertia('modules/pemeriksaan-peserta-parameter/Index', $data + [
-            'pemeriksaan' => $pemeriksaan,
-            'peserta' => $peserta,
+            'pemeriksaan'   => $pemeriksaan,
+            'peserta'       => $peserta,
             'jenis_peserta' => request('jenis_peserta', 'atlet'),
         ]);
     }
@@ -72,10 +72,10 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
     {
         $this->repository->customProperty(__FUNCTION__);
         $data = [
-            'item' => null,
+            'item'        => null,
             'pemeriksaan' => $pemeriksaan,
-            'peserta' => $peserta,
-            'parameters' => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
+            'peserta'     => $peserta,
+            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
         ];
         $data = $this->repository->customCreateEdit($data);
 
@@ -86,8 +86,8 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
 
     public function store(PemeriksaanPesertaParameterRequest $request, Pemeriksaan $pemeriksaan, PemeriksaanPeserta $peserta)
     {
-        $data = $this->repository->validateRequest($request);
-        $data['pemeriksaan_id'] = $pemeriksaan->id;
+        $data                           = $this->repository->validateRequest($request);
+        $data['pemeriksaan_id']         = $pemeriksaan->id;
         $data['pemeriksaan_peserta_id'] = $peserta->id;
         $this->repository->create($data);
 
@@ -99,9 +99,9 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         $item = $this->repository->getByIdArray($id);
 
         return Inertia::render('modules/pemeriksaan-peserta-parameter/Show', [
-            'item' => $item,
-            'pemeriksaan' => $pemeriksaan,
-            'peserta' => $peserta,
+            'item'          => $item,
+            'pemeriksaan'   => $pemeriksaan,
+            'peserta'       => $peserta,
             'jenis_peserta' => request('jenis_peserta', 'atlet'),
         ]);
     }
@@ -111,10 +111,10 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
         $item = $this->repository->getByIdArray($id);
         $data = [
-            'item' => $item,
+            'item'        => $item,
             'pemeriksaan' => $pemeriksaan,
-            'peserta' => $peserta,
-            'parameters' => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
+            'peserta'     => $peserta,
+            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
         ];
         $data = $this->repository->customCreateEdit($data, $item);
 
@@ -125,8 +125,8 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
 
     public function update(PemeriksaanPesertaParameterRequest $request, Pemeriksaan $pemeriksaan, PemeriksaanPeserta $peserta, $id)
     {
-        $data = $this->repository->validateRequest($request);
-        $data['pemeriksaan_id'] = $pemeriksaan->id;
+        $data                           = $this->repository->validateRequest($request);
+        $data['pemeriksaan_id']         = $pemeriksaan->id;
         $data['pemeriksaan_peserta_id'] = $peserta->id;
         $this->repository->update($id, $data);
 
@@ -143,7 +143,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
     public function destroy_selected(Request $request, Pemeriksaan $pemeriksaan, PemeriksaanPeserta $peserta)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:pemeriksaan_peserta_parameter,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -154,7 +154,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
     public function apiIndex(Pemeriksaan $pemeriksaan, PemeriksaanPeserta $peserta)
     {
         request()->merge([
-            'pemeriksaan_id' => $pemeriksaan->id,
+            'pemeriksaan_id'         => $pemeriksaan->id,
             'pemeriksaan_peserta_id' => $peserta->id,
         ]);
         $data = $this->repository->customIndex([]);
@@ -162,12 +162,12 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         return response()->json([
             'data' => $data['data'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ]);
     }
@@ -179,10 +179,10 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         // Data dummy, nanti diisi fetch peserta, parameter, dan nilai
         return Inertia::render('modules/pemeriksaan-peserta-parameter/MassEdit', [
             'pemeriksaan' => [
-                'id' => $pemeriksaan->id,
-                'nama' => $pemeriksaan->nama_pemeriksaan,
-                'cabor' => $pemeriksaan->cabor?->nama,
-                'kategori' => $pemeriksaan->caborKategori?->nama,
+                'id'               => $pemeriksaan->id,
+                'nama'             => $pemeriksaan->nama_pemeriksaan,
+                'cabor'            => $pemeriksaan->cabor?->nama,
+                'kategori'         => $pemeriksaan->caborKategori?->nama,
                 'tenaga_pendukung' => $pemeriksaan->tenagaPendukung?->nama,
             ],
             'jenis_peserta' => $jenisPeserta,
@@ -192,14 +192,14 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
     public function bulkUpdate(Request $request, Pemeriksaan $pemeriksaan)
     {
         $data = $request->validate([
-            'data' => 'required|array',
-            'data.*.peserta_id' => 'required|integer|exists:pemeriksaan_peserta,id',
-            'data.*.status' => 'nullable|exists:ref_status_pemeriksaan,id',
-            'data.*.catatan' => 'nullable|string',
-            'data.*.parameters' => 'required|array',
+            'data'                             => 'required|array',
+            'data.*.peserta_id'                => 'required|integer|exists:pemeriksaan_peserta,id',
+            'data.*.status'                    => 'nullable|exists:ref_status_pemeriksaan,id',
+            'data.*.catatan'                   => 'nullable|string',
+            'data.*.parameters'                => 'required|array',
             'data.*.parameters.*.parameter_id' => 'required|integer|exists:pemeriksaan_parameter,id',
-            'data.*.parameters.*.nilai' => 'nullable|string',
-            'data.*.parameters.*.trend' => 'nullable|in:stabil,kenaikan,penurunan',
+            'data.*.parameters.*.nilai'        => 'nullable|string',
+            'data.*.parameters.*.trend'        => 'nullable|in:stabil,kenaikan,penurunan',
         ]);
 
         DB::beginTransaction();
@@ -208,14 +208,14 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
                 $peserta = PemeriksaanPeserta::findOrFail($pesertaData['peserta_id']);
                 $peserta->update([
                     'ref_status_pemeriksaan_id' => $pesertaData['status'],
-                    'catatan_umum' => $pesertaData['catatan'],
+                    'catatan_umum'              => $pesertaData['catatan'],
                 ]);
 
                 foreach ($pesertaData['parameters'] as $param) {
                     PemeriksaanPesertaParameter::updateOrCreate(
                         [
-                            'pemeriksaan_id' => $pemeriksaan->id,
-                            'pemeriksaan_peserta_id' => $pesertaData['peserta_id'],
+                            'pemeriksaan_id'           => $pemeriksaan->id,
+                            'pemeriksaan_peserta_id'   => $pesertaData['peserta_id'],
                             'pemeriksaan_parameter_id' => $param['parameter_id'],
                         ],
                         [

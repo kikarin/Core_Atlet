@@ -2,43 +2,43 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Tabs from '@/components/ui/tabs/Tabs.vue';
 import TabsContent from '@/components/ui/tabs/TabsContent.vue';
 import TabsList from '@/components/ui/tabs/TabsList.vue';
 import TabsTrigger from '@/components/ui/tabs/TabsTrigger.vue';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import ApexChart from '@/components/ApexChart.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import ApexChart from '@/components/ApexChart.vue';
-import { 
-    ArrowDownRight, 
-    ArrowUpRight, 
-    Bell, 
-    Ungroup, 
-    Search, 
-    Settings, 
-    UserCircle2,
+import {
+    ArrowDownRight,
+    ArrowUpRight,
+    Bell,
+    ClipboardCheck,
     Flag,
     HandHeart,
     HeartHandshake,
+    Search,
+    Settings,
     Stethoscope,
-    ClipboardCheck,
+    Ungroup,
+    UserCircle2,
 } from 'lucide-vue-next';
 
 const props = defineProps<{
-    stats?: any[],
-    latest_programs?: any[],
-    latest_pemeriksaan?: any[],
-    latest_activities?: any[],
+    stats?: any[];
+    latest_programs?: any[];
+    latest_pemeriksaan?: any[];
+    latest_activities?: any[];
     chart_data?: {
         years: number[];
         series: Array<{
             name: string;
             data: number[];
         }>;
-    },
+    };
     rekap_data?: Array<{
         id: number;
         cabor_nama: string;
@@ -72,7 +72,7 @@ const iconMap = {
 // Chart data dan options
 const chartData = props.chart_data || {
     years: [],
-    series: []
+    series: [],
 };
 
 // Rekap data
@@ -108,8 +108,8 @@ const chartOptions = {
                 },
                 pdf: {
                     filename: 'statistik-bergabung-per-tahun',
-                }
-            }
+                },
+            },
         },
         background: 'transparent',
         foreColor: 'hsl(var(--foreground))',
@@ -119,81 +119,81 @@ const chartOptions = {
             horizontal: false,
             columnWidth: '55%',
             borderRadius: 5,
-            borderRadiusApplication: 'end'
+            borderRadiusApplication: 'end',
         },
     },
     dataLabels: {
-        enabled: false
+        enabled: false,
     },
     stroke: {
         show: true,
         width: 2,
-        colors: ['transparent']
+        colors: ['transparent'],
     },
     xaxis: {
-        categories: chartData.years.map(year => year.toString()),
+        categories: chartData.years.map((year) => year.toString()),
         labels: {
             style: {
-                colors: 'hsl(var(--muted-foreground))'
-            }
+                colors: 'hsl(var(--muted-foreground))',
+            },
         },
         axisBorder: {
-            color: 'hsl(var(--border))'
+            color: 'hsl(var(--border))',
         },
         axisTicks: {
-            color: 'hsl(var(--border))'
-        }
+            color: 'hsl(var(--border))',
+        },
     },
     yaxis: {
         title: {
             text: 'Jumlah',
             style: {
-                color: 'hsl(var(--foreground))'
-            }
+                color: 'hsl(var(--foreground))',
+            },
         },
         labels: {
             style: {
-                colors: 'hsl(var(--muted-foreground))'
-            }
-        }
+                colors: 'hsl(var(--muted-foreground))',
+            },
+        },
     },
     fill: {
-        opacity: 1
+        opacity: 1,
     },
     tooltip: {
         theme: 'dark',
         style: {
-            fontSize: '12px'
+            fontSize: '12px',
         },
         y: {
             formatter: function (val: number) {
-                return val + " orang"
-            }
-        }
+                return val + ' orang';
+            },
+        },
     },
     colors: ['#3B82F6', '#10B981', '#F59E0B'],
     legend: {
         position: 'top',
         horizontalAlign: 'center',
         labels: {
-            colors: 'hsl(var(--foreground))'
-        }
+            colors: 'hsl(var(--foreground))',
+        },
     },
     grid: {
         borderColor: 'hsl(var(--border))',
         xaxis: {
             lines: {
                 show: true,
-                color: 'hsl(var(--border))'
-            }
+                color: 'hsl(var(--border))',
+            },
         },
         yaxis: {
             lines: {
                 show: true,
-                color: 'hsl(var(--border))'
-            }
-        }
-    }
+                color: 'hsl(var(--border))',
+            },
+        },
+    },
 };
 
 // const showMoreActions = ref(false);
@@ -240,7 +240,7 @@ const chartOptions = {
 // ];
 
 // const quickActions = computed(() => {
-//     return showMoreActions.value 
+//     return showMoreActions.value
 //         ? [...defaultActions, ...additionalActions]
 //         : defaultActions;
 // });
@@ -274,8 +274,13 @@ const chartOptions = {
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
-                <Card v-for="stat in stats" :key="stat.title" class="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" @click="router.visit(stat.href)">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
+                <Card
+                    v-for="stat in stats"
+                    :key="stat.title"
+                    class="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
+                    @click="router.visit(stat.href)"
+                >
                     <CardHeader class="flex flex-row items-center justify-between space-y-0">
                         <CardTitle class="text-sm font-medium">
                             {{ stat.title }}
@@ -295,20 +300,19 @@ const chartOptions = {
                             <span :class="stat.trend === 'up' ? 'text-green-500' : 'text-red-500'">
                                 {{ stat.change }}
                             </span>
-                            <span class="text-xs text-muted-foreground">
-                            {{ stat.change_abs }}
-                        </span>
+                            <span class="text-muted-foreground text-xs">
+                                {{ stat.change_abs }}
+                            </span>
                             <span class="text-muted-foreground">{{ stat.compare_label }}</span>
                         </div>
-
                     </CardContent>
                 </Card>
             </div>
 
             <!-- Main Content -->
             <!-- <div class="grid grid-cols-5 gap-6"> -->
-                <!-- Recent Activities -->
-                <!-- <Card class="col-span-3">
+            <!-- Recent Activities -->
+            <!-- <Card class="col-span-3">
                     <CardHeader>
                         <CardTitle>Aktivitas Terbaru</CardTitle>
                         <CardDescription>Update terbaru dari sistem</CardDescription>
@@ -333,8 +337,8 @@ const chartOptions = {
                     </CardFooter>
                 </Card> -->
 
-                <!-- Quick Actions -->
-                <!-- <Card class="col-span-2">
+            <!-- Quick Actions -->
+            <!-- <Card class="col-span-2">
                     <CardHeader>
                         <CardTitle>Aksi Cepat</CardTitle>
                         <CardDescription>Tugas umum dan pintasan</CardDescription>
@@ -362,28 +366,21 @@ const chartOptions = {
                 <CardContent>
                     <Tabs default-value="chart" class="w-full">
                         <TabsList class="grid w-full grid-cols-1">
-<TabsTrigger
-  value="chart"
-  class="justify-center w-fit px-3 py-1 text-base font-medium text-center bg-gray-100 dark:bg-neutral-900 rounded mx-auto"
->
-  Grafik Bergabung
-</TabsTrigger>
-
-
+                            <TabsTrigger
+                                value="chart"
+                                class="mx-auto w-fit justify-center rounded bg-gray-100 px-3 py-1 text-center text-base font-medium dark:bg-neutral-900"
+                            >
+                                Grafik Bergabung
+                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="chart" class="mt-6">
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-lg font-semibold">Jumlah Bergabung per Tahun</h3>
-                                    <p class="text-sm text-muted-foreground">
-                                        Berdasarkan tanggal bergabung Peserta
-                                    </p>
+                                    <p class="text-muted-foreground text-sm">Berdasarkan tanggal bergabung Peserta</p>
                                 </div>
-                                <div class="border rounded-lg p-4">
-                                    <ApexChart 
-                                        :options="chartOptions" 
-                                        :series="chartData.series" 
-                                    />
+                                <div class="rounded-lg border p-4">
+                                    <ApexChart :options="chartOptions" :series="chartData.series" />
                                 </div>
                             </div>
                         </TabsContent>
@@ -400,11 +397,9 @@ const chartOptions = {
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold">Jumlah Peserta</h3>
-                            <p class="text-sm text-muted-foreground">
-                                Berdasarkan kategori cabor yang aktif
-                            </p>
+                            <p class="text-muted-foreground text-sm">Berdasarkan kategori cabor yang aktif</p>
                         </div>
-                        <div class="border rounded-lg overflow-hidden">
+                        <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -442,7 +437,7 @@ const chartOptions = {
                                         </TableCell>
                                     </TableRow>
                                     <TableRow v-if="rekapData.length === 0">
-                                        <TableCell colspan="6" class="text-center text-muted-foreground py-8">
+                                        <TableCell colspan="6" class="text-muted-foreground py-8 text-center">
                                             Tidak ada data rekapitulasi
                                         </TableCell>
                                     </TableRow>
@@ -455,8 +450,8 @@ const chartOptions = {
 
             <!-- Dua Section dalam Grid 2 Kolom -->
             <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> -->
-                <!-- Section Program Latihan -->
-                <!-- <div class="space-y-4">
+            <!-- Section Program Latihan -->
+            <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Program Latihan Terbaru</h3>
                     <div class="space-y-3">
                         <div v-for="row in props.latest_programs" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
@@ -490,8 +485,8 @@ const chartOptions = {
                     </div>
                 </div> -->
 
-                <!-- Section Pemeriksaan -->
-                <!-- <div class="space-y-4">
+            <!-- Section Pemeriksaan -->
+            <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Pemeriksaan Terbaru</h3>
                     <div class="space-y-3">
                         <div v-for="row in props.latest_pemeriksaan" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">

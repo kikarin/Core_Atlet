@@ -198,11 +198,9 @@ body {
     font-variation-settings: 'wght' 510;
 
     /* Light mode */
-.apexcharts-menu {
-  background-color: #f3f4f6 !important; /* bg-gray-100 */
-  border: 1px solid #e5e7eb !important;
-  color: #111827 !important; /* text-gray-900 */
-}
-
-
+    .apexcharts-menu {
+        background-color: #f3f4f6 !important; /* bg-gray-100 */
+        border: 1px solid #e5e7eb !important;
+        color: #111827 !important; /* text-gray-900 */
+    }
 }

@@ -9,7 +9,7 @@ const props = defineProps<{
     mode: 'create' | 'edit';
     initialData?: any;
     pemeriksaan: any;
-    jenisPeserta?: string; 
+    jenisPeserta?: string;
 }>();
 
 console.log('pemeriksaan:', props.pemeriksaan);
@@ -185,24 +185,16 @@ const columns = computed(() => {
     ];
 
     if (jenisPeserta.value === 'pelatih') {
-        return [
-            { key: 'pelatih_nama', label: 'Nama Pelatih' },
-            { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
-            ...baseColumns
-        ];
+        return [{ key: 'pelatih_nama', label: 'Nama Pelatih' }, { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' }, ...baseColumns];
     } else if (jenisPeserta.value === 'tenaga-pendukung') {
         return [
             { key: 'tenaga_pendukung_nama', label: 'Nama Tenaga Pendukung' },
             { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
-            ...baseColumns
+            ...baseColumns,
         ];
     } else {
         // Atlet
-        return [
-            { key: 'atlet_nama', label: 'Nama Atlet' },
-            { key: 'posisi_atlet_nama', label: 'Posisi' },
-            ...baseColumns
-        ];
+        return [{ key: 'atlet_nama', label: 'Nama Atlet' }, { key: 'posisi_atlet_nama', label: 'Posisi' }, ...baseColumns];
     }
 });
 </script>

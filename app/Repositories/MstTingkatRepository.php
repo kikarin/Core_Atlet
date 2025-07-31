@@ -17,9 +17,9 @@ class MstTingkatRepository
 
     public function __construct(MstTingkat $model)
     {
-        $this->model = $model;
+        $this->model   = $model;
         $this->request = MstTingkatRequest::createFromBase(request());
-        $this->with = ['created_by_user', 'updated_by_user'];
+        $this->with    = ['created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -34,8 +34,8 @@ class MstTingkatRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -47,47 +47,47 @@ class MstTingkatRepository
         }
 
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allData = $query->get();
+            $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id' => $item->id,
+                    'id'   => $item->id,
                     'nama' => $item->nama,
                 ];
             });
             $data += [
-                'tingkats' => $transformedData,
-                'total' => $transformedData->count(),
+                'tingkats'    => $transformedData,
+                'total'       => $transformedData->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'perPage'     => -1,
+                'search'      => request('search', ''),
+                'sort'        => request('sort', ''),
+                'order'       => request('order', 'asc'),
             ];
 
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
+                'id'   => $item->id,
                 'nama' => $item->nama,
             ];
         });
 
         $data += [
-            'tingkats' => $transformedData,
-            'total' => $items->total(),
+            'tingkats'    => $transformedData,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'perPage'     => $items->perPage(),
+            'search'      => request('search', ''),
+            'sort'        => request('sort', ''),
+            'order'       => request('order', 'asc'),
         ];
 
         return $data;
@@ -135,7 +135,7 @@ class MstTingkatRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

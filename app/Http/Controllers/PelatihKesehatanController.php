@@ -21,15 +21,15 @@ class PelatihKesehatanController extends Controller implements HasMiddleware
     public function __construct(PelatihKesehatanRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->commonData['kode_first_menu'] = $this->kode_menu;
+        $this->commonData['kode_first_menu']  = $this->kode_menu;
         $this->commonData['kode_second_menu'] = null;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -45,7 +45,7 @@ class PelatihKesehatanController extends Controller implements HasMiddleware
     {
         Log::info('PelatihKesehatanController: START store method', ['pelatih_id_route' => $pelatih_id, 'request_all' => $request->all()]);
 
-        $data = $request->validated();
+        $data               = $request->validated();
         $data['pelatih_id'] = $pelatih_id;
 
         Log::info('PelatihKesehatanController: store method - validated data', $data);
@@ -54,11 +54,11 @@ class PelatihKesehatanController extends Controller implements HasMiddleware
 
         if ($existingKesehatan) {
             Log::info('PelatihKesehatanController: Existing record found, updating.', ['id' => $existingKesehatan->id]);
-            $model = $this->repository->update($existingKesehatan->id, $data);
+            $model   = $this->repository->update($existingKesehatan->id, $data);
             $message = 'Data kesehatan pelatih berhasil diperbarui!';
         } else {
             Log::info('PelatihKesehatanController: No existing record, creating new.');
-            $model = $this->repository->create($data);
+            $model   = $this->repository->create($data);
             $message = 'Data kesehatan pelatih berhasil ditambahkan!';
         }
 
@@ -92,7 +92,7 @@ class PelatihKesehatanController extends Controller implements HasMiddleware
         Log::info('PelatihKesehatanController: START update method', ['pelatih_id_route' => $pelatih_id, 'id_kesehatan' => $id, 'request_all' => $request->all()]);
 
         try {
-            $data = $request->validated();
+            $data               = $request->validated();
             $data['pelatih_id'] = $pelatih_id;
 
             Log::info('PelatihKesehatanController: update method - validated data', $data);

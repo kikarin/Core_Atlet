@@ -17,7 +17,7 @@ class TenagaPendukungDokumenRepository
     public function __construct(TenagaPendukungDokumen $model)
     {
         $this->model = $model;
-        $this->with = [
+        $this->with  = [
             'media',
             'created_by_user',
             'updated_by_user',
@@ -30,7 +30,7 @@ class TenagaPendukungDokumenRepository
         Log::info('TenagaPendukungDokumenRepository: create', $data);
         $file = $data['file'] ?? null;
         unset($data['file']);
-        $data = $this->customDataCreateUpdate($data);
+        $data  = $this->customDataCreateUpdate($data);
         $model = $this->model->create($data);
         if ($file) {
             $model->addMedia($file)->usingName($data['nomor'] ?? 'Dokumen')->toMediaCollection('dokumen_file');
@@ -110,8 +110,8 @@ class TenagaPendukungDokumenRepository
             });
         }
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nomor', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -126,50 +126,50 @@ class TenagaPendukungDokumenRepository
             $query->orderBy('id', 'desc');
         }
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
         if ($perPage === -1) {
-            $all = $query->with($this->with)->get();
+            $all         = $query->with($this->with)->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id' => $item->id,
+                    'id'            => $item->id,
                     'jenis_dokumen' => $item->jenis_dokumen ? ['id' => $item->jenis_dokumen->id, 'nama' => $item->jenis_dokumen->nama] : null,
-                    'nomor' => $item->nomor,
-                    'file_url' => $item->file_url,
+                    'nomor'         => $item->nomor,
+                    'file_url'      => $item->file_url,
                 ];
             });
 
             return [
                 'data' => $transformed,
                 'meta' => [
-                    'total' => $transformed->count(),
+                    'total'        => $transformed->count(),
                     'current_page' => 1,
-                    'per_page' => -1,
-                    'search' => request('search', ''),
-                    'sort' => request('sort', ''),
-                    'order' => request('order', 'asc'),
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => request('sort', ''),
+                    'order'        => request('order', 'asc'),
                 ],
             ];
         }
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
-        $transformed = collect($items->items())->map(function ($item) {
+        $items           = $query->with($this->with)->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $transformed     = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
+                'id'            => $item->id,
                 'jenis_dokumen' => $item->jenis_dokumen ? ['id' => $item->jenis_dokumen->id, 'nama' => $item->jenis_dokumen->nama] : null,
-                'nomor' => $item->nomor,
-                'file_url' => $item->file_url,
+                'nomor'         => $item->nomor,
+                'file_url'      => $item->file_url,
             ];
         });
 
         return [
             'data' => $transformed,
             'meta' => [
-                'total' => $items->total(),
+                'total'        => $items->total(),
                 'current_page' => $items->currentPage(),
-                'per_page' => $items->perPage(),
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $items->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ];
     }
@@ -190,7 +190,7 @@ class TenagaPendukungDokumenRepository
 
         return Inertia::render('modules/tenaga-pendukung/dokumen/Edit', [
             'pelatihId' => (int) $tenagaPendukungId,
-            'item' => $dokumen,
+            'item'      => $dokumen,
         ]);
     }
 

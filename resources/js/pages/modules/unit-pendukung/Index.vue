@@ -5,9 +5,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 
-const breadcrumbs = [
-    { title: 'Unit Pendukung', href: 'unit-pendukung' },
-];
+const breadcrumbs = [{ title: 'Unit Pendukung', href: 'unit-pendukung' }];
 
 const columns = [
     { key: 'nama', label: 'Nama Unit Pendukung' },

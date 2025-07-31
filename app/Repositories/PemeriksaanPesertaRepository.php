@@ -21,7 +21,7 @@ class PemeriksaanPesertaRepository
     public function __construct(PemeriksaanPeserta $model)
     {
         $this->model = $model;
-        $this->with = ['pemeriksaan', 'status', 'peserta', 'created_by_user', 'updated_by_user', 'pemeriksaanPesertaParameter'];
+        $this->with  = ['pemeriksaan', 'status', 'peserta', 'created_by_user', 'updated_by_user', 'pemeriksaanPesertaParameter'];
     }
 
     public function customIndex($data)
@@ -39,12 +39,12 @@ class PemeriksaanPesertaRepository
         }
 
         if (request('jenis_peserta')) {
-            $jenis = request('jenis_peserta');
+            $jenis      = request('jenis_peserta');
             $modelClass = match ($jenis) {
-                'atlet' => Atlet::class,
-                'pelatih' => Pelatih::class,
+                'atlet'            => Atlet::class,
+                'pelatih'          => Pelatih::class,
                 'tenaga-pendukung' => TenagaPendukung::class,
-                default => null,
+                default            => null,
             };
             if ($modelClass) {
                 $query->where('peserta_type', $modelClass);
@@ -60,17 +60,17 @@ class PemeriksaanPesertaRepository
         }
 
         $sortField = request('sort');
-        $order = request('order', 'asc');
-        $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $order     = request('order', 'asc');
+        $perPage   = (int) request('per_page', 10);
+        $page      = (int) request('page', 1);
 
         if ($sortField) {
             $jenis = request('jenis_peserta');
             $table = match ($jenis) {
-                'atlet' => 'atlets',
-                'pelatih' => 'pelatihs',
+                'atlet'            => 'atlets',
+                'pelatih'          => 'pelatihs',
                 'tenaga-pendukung' => 'tenaga_pendukungs',
-                default => null,
+                default            => null,
             };
             if (str_starts_with($sortField, 'peserta.')) {
                 $field = explode('.', $sortField)[1];
@@ -95,37 +95,37 @@ class PemeriksaanPesertaRepository
 
         // Handle show entries all
         if ($perPage == -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 $peserta = $item->peserta;
                 if (is_object($peserta)) {
                     $pesertaData = [
-                        'id' => $peserta->id,
-                        'nama' => $peserta->nama ?? null,
-                        'tempat_lahir' => $peserta->tempat_lahir ?? null,
+                        'id'            => $peserta->id,
+                        'nama'          => $peserta->nama          ?? null,
+                        'tempat_lahir'  => $peserta->tempat_lahir  ?? null,
                         'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
                         'tanggal_lahir' => $peserta->tanggal_lahir ?? null,
-                        'foto' => $peserta->foto ?? null,
+                        'foto'          => $peserta->foto          ?? null,
                     ];
                 } else {
                     $pesertaData = null;
                 }
 
                 return [
-                    'id' => $item->id,
+                    'id'             => $item->id,
                     'pemeriksaan_id' => $item->pemeriksaan_id,
-                    'peserta_type' => $item->peserta_type,
-                    'peserta_id' => $item->peserta_id,
-                    'peserta' => $pesertaData,
-                    'status' => [
-                        'id' => $item->status?->id ?? '',
+                    'peserta_type'   => $item->peserta_type,
+                    'peserta_id'     => $item->peserta_id,
+                    'peserta'        => $pesertaData,
+                    'status'         => [
+                        'id'   => $item->status?->id   ?? '',
                         'nama' => $item->status?->nama ?? '',
                     ],
-                    'catatan_umum' => $item->catatan_umum,
-                    'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at,
+                    'catatan_umum'      => $item->catatan_umum,
+                    'created_at'        => $item->created_at,
+                    'updated_at'        => $item->updated_at,
                     'parameter_peserta' => true,
-                    'jumlah_parameter' => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
+                    'jumlah_parameter'  => $item->pemeriksaanParameter ? $item->pemeriksaanParameter()->count() : 0,
                 ];
             });
             if ($sortField === 'jumlah_parameter') {
@@ -137,27 +137,27 @@ class PemeriksaanPesertaRepository
             return [
                 'data' => $transformed,
                 'meta' => [
-                    'total' => $transformed->count(),
+                    'total'        => $transformed->count(),
                     'current_page' => 1,
-                    'per_page' => -1,
-                    'search' => request('search', ''),
-                    'sort' => $sortField ?: '',
-                    'order' => $order,
+                    'per_page'     => -1,
+                    'search'       => request('search', ''),
+                    'sort'         => $sortField ?: '',
+                    'order'        => $order,
                 ],
             ];
         }
 
-        $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        $items       = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             $peserta = $item->peserta;
             if (is_object($peserta)) {
                 $pesertaData = [
-                    'id' => $peserta->id,
-                    'nama' => $peserta->nama ?? null,
-                    'tempat_lahir' => $peserta->tempat_lahir ?? null,
+                    'id'            => $peserta->id,
+                    'nama'          => $peserta->nama          ?? null,
+                    'tempat_lahir'  => $peserta->tempat_lahir  ?? null,
                     'jenis_kelamin' => $peserta->jenis_kelamin ?? null,
                     'tanggal_lahir' => $peserta->tanggal_lahir ?? null,
-                    'foto' => $peserta->foto ?? null,
+                    'foto'          => $peserta->foto          ?? null,
                 ];
             } else {
                 $pesertaData = null;
@@ -166,29 +166,29 @@ class PemeriksaanPesertaRepository
             if ($item->relationLoaded('pemeriksaanPesertaParameter')) {
                 $parameterPeserta = $item->pemeriksaanPesertaParameter->map(function ($pp) {
                     return [
-                        'id' => $pp->id,
+                        'id'                       => $pp->id,
                         'pemeriksaan_parameter_id' => $pp->pemeriksaan_parameter_id,
-                        'nilai' => $pp->nilai,
-                        'trend' => $pp->trend,
+                        'nilai'                    => $pp->nilai,
+                        'trend'                    => $pp->trend,
                     ];
                 })->toArray();
             }
 
             return [
-                'id' => $item->id,
+                'id'             => $item->id,
                 'pemeriksaan_id' => $item->pemeriksaan_id,
-                'peserta_type' => $item->peserta_type,
-                'peserta_id' => $item->peserta_id,
-                'peserta' => $pesertaData,
-                'status' => [
-                    'id' => $item->status?->id ?? '',
+                'peserta_type'   => $item->peserta_type,
+                'peserta_id'     => $item->peserta_id,
+                'peserta'        => $pesertaData,
+                'status'         => [
+                    'id'   => $item->status?->id   ?? '',
                     'nama' => $item->status?->nama ?? '',
                 ],
-                'catatan_umum' => $item->catatan_umum,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
-                'parameter_peserta' => true,
-                'jumlah_parameter' => $item->pemeriksaanPesertaParameter ? $item->pemeriksaanPesertaParameter->count() : 0,
+                'catatan_umum'                => $item->catatan_umum,
+                'created_at'                  => $item->created_at,
+                'updated_at'                  => $item->updated_at,
+                'parameter_peserta'           => true,
+                'jumlah_parameter'            => $item->pemeriksaanPesertaParameter ? $item->pemeriksaanPesertaParameter->count() : 0,
                 'pemeriksaanPesertaParameter' => $parameterPeserta,
             ];
         });
@@ -196,12 +196,12 @@ class PemeriksaanPesertaRepository
         return [
             'data' => $transformed,
             'meta' => [
-                'total' => $items->total(),
+                'total'        => $items->total(),
                 'current_page' => $items->currentPage(),
-                'per_page' => $items->perPage(),
-                'search' => request('search', ''),
-                'sort' => $sortField ?: '',
-                'order' => $order,
+                'per_page'     => $items->perPage(),
+                'search'       => request('search', ''),
+                'sort'         => $sortField ?: '',
+                'order'        => $order,
             ],
         ];
     }
@@ -235,20 +235,20 @@ class PemeriksaanPesertaRepository
         $newPesertaIds = array_diff($data[$idKey], $existingPesertaIds);
 
         $insertData = [];
-        $now = now();
-        $userId = Auth::id();
+        $now        = now();
+        $userId     = Auth::id();
 
         foreach ($newPesertaIds as $pesertaId) {
             $insertData[] = [
-                'pemeriksaan_id' => $pemeriksaan->id,
-                'peserta_id' => $pesertaId,
-                'peserta_type' => $typeClass,
+                'pemeriksaan_id'            => $pemeriksaan->id,
+                'peserta_id'                => $pesertaId,
+                'peserta_type'              => $typeClass,
                 'ref_status_pemeriksaan_id' => $data['ref_status_pemeriksaan_id'],
-                'catatan_umum' => $data['catatan_umum'],
-                'created_at' => $now,
-                'updated_at' => $now,
-                'created_by' => $userId,
-                'updated_by' => $userId,
+                'catatan_umum'              => $data['catatan_umum'],
+                'created_at'                => $now,
+                'updated_at'                => $now,
+                'created_by'                => $userId,
+                'updated_by'                => $userId,
             ];
         }
 
@@ -270,7 +270,7 @@ class PemeriksaanPesertaRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

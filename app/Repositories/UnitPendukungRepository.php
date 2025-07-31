@@ -18,9 +18,9 @@ class UnitPendukungRepository
 
     public function __construct(UnitPendukung $model)
     {
-        $this->model = $model;
+        $this->model   = $model;
         $this->request = UnitPendukungRequest::createFromBase(request());
-        $this->with = ['created_by_user', 'updated_by_user', 'jenisUnitPendukung'];
+        $this->with    = ['created_by_user', 'updated_by_user', 'jenisUnitPendukung'];
     }
 
     public function customIndex($data)
@@ -40,8 +40,8 @@ class UnitPendukungRepository
         }
 
         if (request('sort')) {
-            $order = request('order', 'asc');
-            $sortField = request('sort');
+            $order        = request('order', 'asc');
+            $sortField    = request('sort');
             $validColumns = ['id', 'nama', 'jenis_unit_pendukung_id', 'deskripsi', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
@@ -53,17 +53,17 @@ class UnitPendukungRepository
         }
 
         $perPage = (int) request('per_page', 10);
-        $page = (int) request('page', 1);
+        $page    = (int) request('page', 1);
 
         if ($perPage === -1) {
-            $allData = $query->get();
+            $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
+                    'id'                      => $item->id,
+                    'nama'                    => $item->nama,
                     'jenis_unit_pendukung_id' => $item->jenis_unit_pendukung_id,
-                    'jenis_unit_pendukung' => $item->jenisUnitPendukung ? [
-                        'id' => $item->jenisUnitPendukung->id,
+                    'jenis_unit_pendukung'    => $item->jenisUnitPendukung ? [
+                        'id'   => $item->jenisUnitPendukung->id,
                         'nama' => $item->jenisUnitPendukung->nama,
                     ] : null,
                     'deskripsi' => $item->deskripsi,
@@ -71,27 +71,27 @@ class UnitPendukungRepository
             });
             $data += [
                 'unitPendukungs' => $transformedData,
-                'total' => $transformedData->count(),
-                'currentPage' => 1,
-                'perPage' => -1,
-                'search' => request('search', ''),
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'total'          => $transformedData->count(),
+                'currentPage'    => 1,
+                'perPage'        => -1,
+                'search'         => request('search', ''),
+                'sort'           => request('sort', ''),
+                'order'          => request('order', 'asc'),
             ];
 
             return $data;
         }
 
         $pageForPaginate = $page < 1 ? 1 : $page;
-        $items = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
+        $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
+                'id'                      => $item->id,
+                'nama'                    => $item->nama,
                 'jenis_unit_pendukung_id' => $item->jenis_unit_pendukung_id,
-                'jenis_unit_pendukung' => $item->jenisUnitPendukung ? [
-                    'id' => $item->jenisUnitPendukung->id,
+                'jenis_unit_pendukung'    => $item->jenisUnitPendukung ? [
+                    'id'   => $item->jenisUnitPendukung->id,
                     'nama' => $item->jenisUnitPendukung->nama,
                 ] : null,
                 'deskripsi' => $item->deskripsi,
@@ -100,12 +100,12 @@ class UnitPendukungRepository
 
         $data += [
             'unitPendukungs' => $transformedData,
-            'total' => $items->total(),
-            'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => request('search', ''),
-            'sort' => request('sort', ''),
-            'order' => request('order', 'asc'),
+            'total'          => $items->total(),
+            'currentPage'    => $items->currentPage(),
+            'perPage'        => $items->perPage(),
+            'search'         => request('search', ''),
+            'sort'           => request('sort', ''),
+            'order'          => request('order', 'asc'),
         ];
 
         return $data;
@@ -153,7 +153,7 @@ class UnitPendukungRepository
 
     public function validateRequest($request)
     {
-        $rules = method_exists($request, 'rules') ? $request->rules() : [];
+        $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);

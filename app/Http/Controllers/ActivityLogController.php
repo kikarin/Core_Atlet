@@ -21,16 +21,16 @@ class ActivityLogController extends Controller implements HasMiddleware
     public function __construct(ActivityLogRepository $repository, Request $request)
     {
         $this->repository = $repository;
-        $this->request = $request;
-        $this->with = ['causer', 'causer.role'];
+        $this->request    = $request;
+        $this->with       = ['causer', 'causer.role'];
         $this->initialize();
-        $this->commonData['kode_first_menu'] = 'USERS-MANAGEMENT';
+        $this->commonData['kode_first_menu']  = 'USERS-MANAGEMENT';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -47,12 +47,12 @@ class ActivityLogController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['logs'],
             'meta' => [
-                'total' => $data['meta']['total'],
+                'total'        => $data['meta']['total'],
                 'current_page' => $data['meta']['current_page'],
-                'per_page' => $data['meta']['per_page'],
-                'search' => $data['meta']['search'],
-                'sort' => $data['meta']['sort'],
-                'order' => $data['meta']['order'],
+                'per_page'     => $data['meta']['per_page'],
+                'search'       => $data['meta']['search'],
+                'sort'         => $data['meta']['sort'],
+                'order'        => $data['meta']['order'],
             ],
         ]);
     }
@@ -80,9 +80,9 @@ class ActivityLogController extends Controller implements HasMiddleware
         ];
 
         return inertia('modules/activity-logs/Show', [
-            'fields' => $fields,
+            'fields'       => $fields,
             'actionFields' => $actionFields,
-            'backUrl' => '/menu-permissions/logs',
+            'backUrl'      => '/menu-permissions/logs',
         ]);
     }
 

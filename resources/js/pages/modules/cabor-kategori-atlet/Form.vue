@@ -16,9 +16,9 @@ const posisiAtletOptions = ref<{ value: number; label: string }[]>([]);
 onMounted(async () => {
     try {
         const res = await axios.get('/api/posisi-atlet-list');
-        posisiAtletOptions.value = (res.data || []).map((item: { id: number; nama: string }) => ({ 
-            value: item.id, 
-            label: item.nama 
+        posisiAtletOptions.value = (res.data || []).map((item: { id: number; nama: string }) => ({
+            value: item.id,
+            label: item.nama,
         }));
     } catch (e) {
         console.error('Gagal mengambil data posisi atlet', e);
@@ -57,11 +57,11 @@ const handleSave = (form: any) => {
         id: props.initialData?.id,
         successMessage: props.mode === 'create' ? 'Posisi atlet berhasil ditambahkan!' : 'Posisi atlet berhasil diperbarui!',
         errorMessage: props.mode === 'create' ? 'Gagal menyimpan posisi atlet.' : 'Gagal memperbarui posisi atlet.',
-         redirectUrl: `/cabor-kategori/${props.initialData?.cabor_kategori_id}/atlet`,
+        redirectUrl: `/cabor-kategori/${props.initialData?.cabor_kategori_id}/atlet`,
     });
 };
 </script>
 
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
-</template> 
+</template>

@@ -14,13 +14,13 @@ class AtletKesehatanRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id' => 'required|exists:atlets,id',
-            'tinggi_badan' => 'nullable|numeric',
-            'berat_badan' => 'nullable|numeric',
-            'penglihatan' => 'nullable|string|max:255',
-            'pendengaran' => 'nullable|string|max:255',
+            'atlet_id'         => 'required|exists:atlets,id',
+            'tinggi_badan'     => 'nullable|numeric',
+            'berat_badan'      => 'nullable|numeric',
+            'penglihatan'      => 'nullable|string|max:255',
+            'pendengaran'      => 'nullable|string|max:255',
             'riwayat_penyakit' => 'nullable|string',
-            'alergi' => 'nullable|string',
+            'alergi'           => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -34,7 +34,7 @@ class AtletKesehatanRequest extends FormRequest
     {
         return [
             'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists' => 'ID Atlet tidak valid.',
+            'atlet_id.exists'   => 'ID Atlet tidak valid.',
         ];
     }
 

@@ -22,7 +22,7 @@ class PermissionRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => 'required',
+            'name'                   => 'required',
             'category_permission_id' => 'required',
         ];
         if ($this->isMethod('patch') || $this->isMethod('put')) {

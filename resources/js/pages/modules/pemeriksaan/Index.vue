@@ -81,15 +81,15 @@ const deleteSelected = async () => {
     >
         <template #cell-parameter="{ row }">
             <div class="flex justify-center">
-            <BadgeGroup
-                :badges="[
-                    {
-                        value: row.jumlah_parameter || 0,
-                        colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
-                        onClick: () => router.visit(`/pemeriksaan/${row.id}/pemeriksaan-parameter`),
-                    },
-                ]"
-            />
+                <BadgeGroup
+                    :badges="[
+                        {
+                            value: row.jumlah_parameter || 0,
+                            colorClass: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+                            onClick: () => router.visit(`/pemeriksaan/${row.id}/pemeriksaan-parameter`),
+                        },
+                    ]"
+                />
             </div>
         </template>
         <template #cell-peserta="{ row }">

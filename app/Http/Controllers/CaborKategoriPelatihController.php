@@ -24,16 +24,16 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
     public function __construct(Request $request, CaborKategoriPelatihRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = $request;
+        $this->request    = $request;
         $this->initialize();
-        $this->route = 'cabor-kategori-pelatih';
-        $this->commonData['kode_first_menu'] = 'CABOR';
+        $this->route                          = 'cabor-kategori-pelatih';
+        $this->commonData['kode_first_menu']  = 'CABOR';
         $this->commonData['kode_second_menu'] = $this->kode_menu;
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -86,7 +86,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Detail Cabor Kategori Pelatih',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -102,7 +102,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         $item = $this->repository->getById($id);
         $data = $this->commonData + [
             'titlePage' => 'Edit Cabor Kategori Pelatih',
-            'item' => $item,
+            'item'      => $item,
         ];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
@@ -117,7 +117,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         $data = $this->repository->validateRequest($request);
         $this->repository->update($id, $data);
 
-        $item = $this->repository->getById($id);
+        $item       = $this->repository->getById($id);
         $kategoriId = $item->cabor_kategori_id ?? null;
         if ($kategoriId) {
             return redirect()->route('cabor-kategori-pelatih.pelatih-by-kategori', $kategoriId)
@@ -153,12 +153,12 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['records'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => $data['sort'],
-                'order' => $data['order'],
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }
@@ -174,7 +174,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         }
 
         $data = $this->commonData + [
-            'titlePage' => 'Daftar Pelatih - '.$caborKategori->nama,
+            'titlePage'     => 'Daftar Pelatih - '.$caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
 
@@ -196,7 +196,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         }
 
         $data = $this->commonData + [
-            'titlePage' => 'Tambah Multiple Pelatih - '.$caborKategori->nama,
+            'titlePage'     => 'Tambah Multiple Pelatih - '.$caborKategori->nama,
             'caborKategori' => $caborKategori,
         ];
 
@@ -213,7 +213,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
         try {
             Log::info('storeMultiple called', [
                 'caborKategoriId' => $caborKategoriId,
-                'request_data' => $request->all(),
+                'request_data'    => $request->all(),
             ]);
 
             $caborKategori = app(CaborKategori::class)->find($caborKategoriId);
@@ -224,7 +224,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
             // Merge ke request sebelum validasi
             $request->merge([
                 'cabor_kategori_id' => $caborKategoriId,
-                'cabor_id' => $caborKategori->cabor_id,
+                'cabor_id'          => $caborKategori->cabor_id,
             ]);
 
             $validatedData = $this->repository->validateRequest($request);
@@ -241,8 +241,8 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
                 ->with('success', 'Pelatih berhasil ditambahkan ke kategori!');
         } catch (\Exception $e) {
             Log::error('Error in storeMultiple', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'        => $e->getMessage(),
+                'trace'        => $e->getTraceAsString(),
                 'request_data' => $request->all(),
             ]);
 
@@ -254,7 +254,7 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
     public function apiAvailableForPemeriksaan(Request $request)
     {
         $caborKategoriId = $request->input('cabor_kategori_id');
-        $pemeriksaanId = $request->input('pemeriksaan_id');
+        $pemeriksaanId   = $request->input('pemeriksaan_id');
 
         // Ambil semua pelatih_id yang sudah jadi peserta di pemeriksaan ini
         $usedPelatihIds = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaanId)
@@ -277,33 +277,33 @@ class CaborKategoriPelatihController extends Controller implements HasMiddleware
             });
         }
         $perPage = (int) $request->input('per_page', 10);
-        $page = (int) $request->input('page', 1);
-        $result = $query->paginate($perPage, ['*'], 'page', $page);
+        $page    = (int) $request->input('page', 1);
+        $result  = $query->paginate($perPage, ['*'], 'page', $page);
 
-        $data = $result->items();
+        $data        = $result->items();
         $transformed = collect($data)->map(function ($item) {
             return [
-                'id' => $item->id,
-                'pelatih_id' => $item->pelatih_id,
-                'pelatih_nama' => $item->pelatih->nama ?? '-',
-                'nik' => $item->pelatih->nik ?? '-',
-                'jenis_kelamin' => $item->pelatih->jenis_kelamin ?? '-',
-                'tempat_lahir' => $item->pelatih->tempat_lahir ?? '-',
-                'tanggal_lahir' => $item->pelatih->tanggal_lahir ?? '-',
-                'tanggal_bergabung' => $item->pelatih->tanggal_bergabung ?? '-',
-                'no_hp' => $item->pelatih->no_hp ?? '-',
-                'foto' => $item->pelatih->foto ?? null,
-                'jenis_pelatih_nama' => $item->jenisPelatih?->nama ?? '-',
+                'id'                 => $item->id,
+                'pelatih_id'         => $item->pelatih_id,
+                'pelatih_nama'       => $item->pelatih->nama              ?? '-',
+                'nik'                => $item->pelatih->nik               ?? '-',
+                'jenis_kelamin'      => $item->pelatih->jenis_kelamin     ?? '-',
+                'tempat_lahir'       => $item->pelatih->tempat_lahir      ?? '-',
+                'tanggal_lahir'      => $item->pelatih->tanggal_lahir     ?? '-',
+                'tanggal_bergabung'  => $item->pelatih->tanggal_bergabung ?? '-',
+                'no_hp'              => $item->pelatih->no_hp             ?? '-',
+                'foto'               => $item->pelatih->foto              ?? null,
+                'jenis_pelatih_nama' => $item->jenisPelatih?->nama        ?? '-',
             ];
         });
 
         return response()->json([
             'data' => $transformed,
             'meta' => [
-                'total' => $result->total(),
+                'total'        => $result->total(),
                 'current_page' => $result->currentPage(),
-                'per_page' => $result->perPage(),
-                'search' => $request->input('search', ''),
+                'per_page'     => $result->perPage(),
+                'search'       => $request->input('search', ''),
             ],
         ]);
     }

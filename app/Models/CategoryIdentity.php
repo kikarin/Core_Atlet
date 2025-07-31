@@ -41,7 +41,7 @@ class CategoryIdentity extends Model
     public function getFileFotoAttribute()
     {
         $file_path = 'category-identity/photo/'.$this->file;
-        $result = asset('assets/img/no-image.jpeg');
+        $result    = asset('assets/img/no-image.jpeg');
         if ($this->file != '' and Storage::disk('public')->exists($file_path)) {
             $result = url(Storage::url($file_path));
         }

@@ -10,18 +10,18 @@ const breadcrumbs = [{ title: 'Program Latihan', href: '/program-latihan' }];
 
 const formatPeriode = (startDate: string, endDate: string) => {
     if (!startDate || !endDate) return '-';
-    
+
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     const startDay = start.getDate();
     const startMonth = start.toLocaleDateString('id-ID', { month: 'long' });
     const startYear = start.getFullYear();
-    
+
     const endDay = end.getDate();
     const endMonth = end.toLocaleDateString('id-ID', { month: 'long' });
     const endYear = end.getFullYear();
-    
+
     // Jika tahun sama
     if (startYear === endYear) {
         // Jika bulan sama
@@ -119,16 +119,16 @@ const deleteProgram = async (row: any) => {
             :show-import="false"
         >
             <template #cell-rencana_latihan="{ row }">
-                <div class="flex justify-center">   
-                <BadgeGroup
-                    :badges="[
-                        {
-                            value: row.jumlah_rencana_latihan || 0,
-                            colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
-                        },
-                    ]"
-                />
+                <div class="flex justify-center">
+                    <BadgeGroup
+                        :badges="[
+                            {
+                                value: row.jumlah_rencana_latihan || 0,
+                                colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+                                onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
+                            },
+                        ]"
+                    />
                 </div>
             </template>
 
@@ -159,15 +159,15 @@ const deleteProgram = async (row: any) => {
 
             <template #cell-target_kelompok="{ row }">
                 <div class="flex justify-center">
-                <BadgeGroup
-                    :badges="[
-                        {
-                            value: row.jumlah_target_kelompok || 0,
-                            colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),
-                        },
-                    ]"
-                />
+                    <BadgeGroup
+                        :badges="[
+                            {
+                                value: row.jumlah_target_kelompok || 0,
+                                colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                                onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),
+                            },
+                        ]"
+                    />
                 </div>
             </template>
         </PageIndex>

@@ -22,16 +22,16 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function __construct(Request $request, PemeriksaanParameterRepository $repository)
     {
         $this->repository = $repository;
-        $this->request = PemeriksaanParameterRequest::createFromBase($request);
+        $this->request    = PemeriksaanParameterRequest::createFromBase($request);
         $this->initialize();
-        $this->route = 'pemeriksaan-parameter';
-        $this->commonData['kode_first_menu'] = 'PEMERIKSAAN';
+        $this->route                          = 'pemeriksaan-parameter';
+        $this->commonData['kode_first_menu']  = 'PEMERIKSAAN';
         $this->commonData['kode_second_menu'] = 'PEMERIKSAAN-PARAMETER';
     }
 
     public static function middleware(): array
     {
-        $className = class_basename(__CLASS__);
+        $className  = class_basename(__CLASS__);
         $permission = str_replace('Controller', '', $className);
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
@@ -72,7 +72,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
 
     public function store(PemeriksaanParameterRequest $request, Pemeriksaan $pemeriksaan)
     {
-        $data = $this->repository->validateRequest($request);
+        $data                   = $this->repository->validateRequest($request);
         $data['pemeriksaan_id'] = $pemeriksaan->id;
         $this->repository->create($data);
 
@@ -103,7 +103,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
 
     public function update(PemeriksaanParameterRequest $request, Pemeriksaan $pemeriksaan, $id)
     {
-        $data = $this->repository->validateRequest($request);
+        $data                   = $this->repository->validateRequest($request);
         $data['pemeriksaan_id'] = $pemeriksaan->id;
         $this->repository->update($id, $data);
 
@@ -120,7 +120,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function destroy_selected(Request $request, Pemeriksaan $pemeriksaan)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'required|array',
             'ids.*' => 'required|numeric|exists:pemeriksaan_parameter,id',
         ]);
         $this->repository->delete_selected($request->ids);
@@ -136,12 +136,12 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
         return response()->json([
             'data' => $data['data'],
             'meta' => [
-                'total' => $data['total'],
+                'total'        => $data['total'],
                 'current_page' => $data['currentPage'],
-                'per_page' => $data['perPage'],
-                'search' => $data['search'],
-                'sort' => request('sort', ''),
-                'order' => request('order', 'asc'),
+                'per_page'     => $data['perPage'],
+                'search'       => $data['search'],
+                'sort'         => request('sort', ''),
+                'order'        => request('order', 'asc'),
             ],
         ]);
     }

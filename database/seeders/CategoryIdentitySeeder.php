@@ -14,18 +14,18 @@ class CategoryIdentitySeeder extends Seeder
     {
         $listData = [
             [
-                'id' => 2,
-                'name' => 'Meta Admin Panel',
-                'file' => '' == null,
+                'id'          => 2,
+                'name'        => 'Meta Admin Panel',
+                'file'        => '' == null,
                 'description' => 'Title, Description, Keyword',
-                'sequence' => 1,
+                'sequence'    => 1,
             ],
             [
-                'id' => 3,
-                'name' => 'Footer',
-                'file' => null,
+                'id'          => 3,
+                'name'        => 'Footer',
+                'file'        => null,
                 'description' => null,
-                'sequence' => 2,
+                'sequence'    => 2,
             ],
         ];
         foreach ($listData as $data) {

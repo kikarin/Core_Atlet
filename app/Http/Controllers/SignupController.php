@@ -14,7 +14,7 @@ class SignupController extends Controller
 
     public function __construct(SingupRepository $repository, UsersRoleRepository $usersRoleRepository)
     {
-        $this->repository = $repository;
+        $this->repository          = $repository;
         $this->usersRoleRepository = $usersRoleRepository;
     }
 
@@ -22,7 +22,7 @@ class SignupController extends Controller
     {
         $data = [
             'titlePage' => 'Sign Up',
-            'jenis' => request()->input('jenis', null),
+            'jenis'     => request()->input('jenis', null),
         ];
 
         return view('signup.index', $data);

@@ -14,11 +14,11 @@ class AtletSertifikatRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'atlet_id' => 'required|exists:atlets,id',
+            'atlet_id'        => 'required|exists:atlets,id',
             'nama_sertifikat' => 'required|string|max:255',
-            'penyelenggara' => 'nullable|string|max:255',
-            'tanggal_terbit' => 'nullable|date',
-            'file' => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'penyelenggara'   => 'nullable|string|max:255',
+            'tanggal_terbit'  => 'nullable|date',
+            'file'            => 'nullable|mimes:jpg,png,jpeg,pdf,webp|max:4096',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {
@@ -31,8 +31,8 @@ class AtletSertifikatRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'atlet_id.required' => 'ID Atlet wajib diisi.',
-            'atlet_id.exists' => 'ID Atlet tidak valid.',
+            'atlet_id.required'        => 'ID Atlet wajib diisi.',
+            'atlet_id.exists'          => 'ID Atlet tidak valid.',
             'nama_sertifikat.required' => 'Nama sertifikat wajib diisi.',
         ];
     }
