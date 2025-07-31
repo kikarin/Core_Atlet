@@ -11,7 +11,7 @@ return new class () extends Migration {
             $table->id();
             $table->unsignedBigInteger('pemeriksaan_id');
             $table->morphs('peserta');
-            $table->unsignedBigInteger('ref_status_pemeriksaan_id');
+            $table->unsignedBigInteger('ref_status_pemeriksaan_id')->nullable();
             $table->text('catatan_umum')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -15,7 +15,7 @@ class PemeriksaanPesertaRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'ref_status_pemeriksaan_id' => 'required|exists:ref_status_pemeriksaan,id',
+            'ref_status_pemeriksaan_id' => 'nullable|exists:ref_status_pemeriksaan,id',
             'catatan_umum'              => 'nullable|string',
         ];
 
@@ -46,7 +46,6 @@ class PemeriksaanPesertaRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'ref_status_pemeriksaan_id.required' => 'Status pemeriksaan wajib dipilih.',
             'atlet_ids.required'                 => 'Minimal pilih satu peserta (atlet, pelatih, atau tenaga pendukung).',
         ];
     }
