@@ -103,7 +103,7 @@ const handleSave = async () => {
                 peserta_id: row.peserta_id,
                 status: row.status,
                 catatan: row.catatan,
-                parameters: row.parameters.map((param) => ({
+                parameters: row.parameters.map((param: any) => ({
                     parameter_id: param.parameter_id,
                     nilai: param.nilai,
                     trend: param.trend,
@@ -205,17 +205,16 @@ const handleSave = async () => {
                                 <template v-for="(param, paramIdx) in row.parameters" :key="'param-' + param.parameter_id">
                                     <td class="border-b px-2 py-1 whitespace-nowrap">
                                         <Input
-                                            type="number"
+                                            type="text"
                                             class="bg-background text-foreground w-24 rounded border px-1 py-0.5 text-right"
                                             v-model="tableState[rowIdx].parameters[paramIdx].nilai"
-                                            min="0"
-                                            step="any"
+                                            placeholder="0"
                                         />
                                     </td>
                                     <td class="border-b px-2 py-1 whitespace-nowrap">
                                         <SimpleSelect
                                             :model-value="tableState[rowIdx].parameters[paramIdx].trend"
-                                            @update:modelValue="(val) => (tableState[rowIdx].parameters[paramIdx].trend = val)"
+                                            @update:modelValue="(val: any) => (tableState[rowIdx].parameters[paramIdx].trend = val)"
                                             :options="trendOptions"
                                             placeholder="Pilih trend"
                                         />
@@ -225,7 +224,7 @@ const handleSave = async () => {
                                 <td class="border-b px-2 py-1 whitespace-nowrap">
                                     <SimpleSelect
                                         :model-value="tableState[rowIdx].status"
-                                        @update:modelValue="(val) => (tableState[rowIdx].status = val)"
+                                        @update:modelValue="(val: any) => (tableState[rowIdx].status = val)"
                                         :options="statusList"
                                         placeholder="Pilih status"
                                     />

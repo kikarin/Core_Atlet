@@ -96,6 +96,7 @@ const deleteRow = async (row: any) => {
             :show-import="false"
             :showKelola="true"
             :kelolaUrl="`/program-latihan/${info.program_latihan_id}/rencana-latihan/kelola-target-kelompok`"
+            kelola-label="Pemetaan Kelompok"
         >
             <template #header-extra>
                 <div class="bg-card mb-4 rounded-lg border p-4">

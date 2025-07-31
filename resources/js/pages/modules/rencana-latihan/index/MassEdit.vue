@@ -213,7 +213,6 @@ const getTargetValue = (target: any) => {
                                         {{ target.deskripsi }}
                                         <div class="text-muted-foreground text-xs">Target: {{ getTargetValue(target) }}</div>
                                         <div class="text-muted-foreground text-xs">{{ target.satuan }}</div>
-                                        <div class="text-muted-foreground text-xs">Peruntukan: {{ target.peruntukan || 'Semua' }}</div>
                                     </th>
                                 </template>
                             </tr>

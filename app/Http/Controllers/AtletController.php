@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AtletRequest;
 use App\Imports\AtletImport;
+use App\Models\Atlet;
+use App\Models\Pemeriksaan;
+use App\Models\PemeriksaanPeserta;
+use App\Models\PemeriksaanPesertaParameter;
 use App\Repositories\AtletRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
@@ -152,6 +156,101 @@ class AtletController extends Controller implements HasMiddleware
                 'message' => 'Gagal import: '.$e->getMessage(),
                 'error' => $e->getMessage(),
             ], 422);
+        }
+    }
+
+    public function riwayatPemeriksaan($id)
+    {
+        $atlet = $this->repository->getDetailWithRelations($id);
+
+        return Inertia::render('modules/atlet/RiwayatPemeriksaan', [
+            'atlet' => $atlet,
+        ]);
+    }
+
+    public function parameterDetail($atletId, $pemeriksaanId)
+    {
+        $atlet = $this->repository->getDetailWithRelations($atletId);
+        
+        // Ambil data pemeriksaan
+        $pemeriksaan = Pemeriksaan::with(['tenagaPendukung'])
+            ->findOrFail($pemeriksaanId);
+
+        // Ambil data parameter pemeriksaan untuk atlet ini
+        $pemeriksaanPeserta = PemeriksaanPeserta::where('pemeriksaan_id', $pemeriksaanId)
+            ->where('peserta_type', Atlet::class)
+            ->where('peserta_id', $atletId)
+            ->first();
+
+        $parameters = [];
+        if ($pemeriksaanPeserta) {
+            $parameters = PemeriksaanPesertaParameter::with(['pemeriksaanParameter'])
+                ->where('pemeriksaan_peserta_id', $pemeriksaanPeserta->id)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'nama_parameter' => $item->pemeriksaanParameter->nama_parameter ?? '-',
+                        'nilai' => $item->nilai,
+                        'trend' => $item->trend,
+                    ];
+                });
+        }
+
+        return Inertia::render('modules/atlet/ParameterDetail', [
+            'atlet' => $atlet,
+            'pemeriksaan' => [
+                'id' => $pemeriksaan->id,
+                'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
+                'tenaga_pendukung' => $pemeriksaan->tenagaPendukung->nama ?? '-',
+                'status' => $pemeriksaan->status,
+            ],
+            'parameters' => $parameters,
+        ]);
+    }
+
+    public function apiRiwayatPemeriksaan($id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+
+            // Ambil semua pemeriksaan yang melibatkan atlet ini
+            $pemeriksaanPeserta = PemeriksaanPeserta::where('peserta_type', Atlet::class)
+                ->where('peserta_id', $id)
+                ->with(['pemeriksaan.tenagaPendukung', 'pemeriksaanPesertaParameter'])
+                ->get();
+
+            $riwayat = $pemeriksaanPeserta->map(function ($item) {
+                return [
+                    'id' => $item->pemeriksaan->id,
+                    'nama_pemeriksaan' => $item->pemeriksaan->nama_pemeriksaan,
+                    'tanggal_pemeriksaan' => $item->pemeriksaan->tanggal_pemeriksaan,
+                    'tenaga_pendukung' => $item->pemeriksaan->tenagaPendukung->nama ?? '-',
+                    'status' => $item->pemeriksaan->status,
+                    'jumlah_parameter' => $item->pemeriksaanPesertaParameter->count(),
+                ];
+            });
+
+            return response()->json([
+                'data' => $riwayat,
+                'meta' => [
+                    'total' => $riwayat->count(),
+                    'current_page' => 1,
+                    'per_page' => $riwayat->count(),
+                    'search' => '',
+                    'sort' => '',
+                    'order' => 'asc',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching riwayat pemeriksaan: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data riwayat pemeriksaan',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

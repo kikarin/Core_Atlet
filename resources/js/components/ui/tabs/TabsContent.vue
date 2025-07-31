@@ -13,7 +13,7 @@ const isSelected = computed(() => context?.selectedValue.value === props.value);
 </script>
 
 <template>
-    <div v-if="isSelected || forceMount" role="tabpanel" :data-state="isSelected ? 'active' : 'inactive'">
+    <div v-if="isSelected || forceMount" role="tabpanel" :data-state="isSelected ? 'active' : 'inactive'" class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
         <slot />
     </div>
 </template> 

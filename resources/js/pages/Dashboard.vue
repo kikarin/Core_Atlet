@@ -2,11 +2,16 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Tabs from '@/components/ui/tabs/Tabs.vue';
+import TabsContent from '@/components/ui/tabs/TabsContent.vue';
+import TabsList from '@/components/ui/tabs/TabsList.vue';
+import TabsTrigger from '@/components/ui/tabs/TabsTrigger.vue';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import BadgeGroup from '@/pages/modules/components/BadgeGroup.vue';
+import ApexChart from '@/components/ApexChart.vue';
 import { 
     ArrowDownRight, 
     ArrowUpRight, 
@@ -27,6 +32,22 @@ const props = defineProps<{
     latest_programs?: any[],
     latest_pemeriksaan?: any[],
     latest_activities?: any[],
+    chart_data?: {
+        years: number[];
+        series: Array<{
+            name: string;
+            data: number[];
+        }>;
+    },
+    rekap_data?: Array<{
+        id: number;
+        cabor_nama: string;
+        nama: string;
+        jumlah_atlet: number;
+        jumlah_pelatih: number;
+        jumlah_tenaga_pendukung: number;
+        total: number;
+    }>;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -46,6 +67,133 @@ const iconMap = {
     Ungroup,
     ClipboardCheck,
     Stethoscope,
+};
+
+// Chart data dan options
+const chartData = props.chart_data || {
+    years: [],
+    series: []
+};
+
+// Rekap data
+const rekapData = props.rekap_data || [];
+
+const chartOptions = {
+    chart: {
+        type: 'bar',
+        height: 350,
+        toolbar: {
+            show: true,
+            tools: {
+                download: true,
+                selection: false,
+                zoom: false,
+                zoomin: false,
+                zoomout: false,
+                pan: false,
+                reset: false,
+            },
+            export: {
+                csv: {
+                    filename: 'statistik-bergabung-per-tahun',
+                    columnDelimiter: ',',
+                    headerCategory: 'Tahun',
+                    headerValue: 'Jumlah',
+                },
+                png: {
+                    filename: 'statistik-bergabung-per-tahun',
+                },
+                svg: {
+                    filename: 'statistik-bergabung-per-tahun',
+                },
+                pdf: {
+                    filename: 'statistik-bergabung-per-tahun',
+                }
+            }
+        },
+        background: 'transparent',
+        foreColor: 'hsl(var(--foreground))',
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            borderRadiusApplication: 'end'
+        },
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent']
+    },
+    xaxis: {
+        categories: chartData.years.map(year => year.toString()),
+        labels: {
+            style: {
+                colors: 'hsl(var(--muted-foreground))'
+            }
+        },
+        axisBorder: {
+            color: 'hsl(var(--border))'
+        },
+        axisTicks: {
+            color: 'hsl(var(--border))'
+        }
+    },
+    yaxis: {
+        title: {
+            text: 'Jumlah',
+            style: {
+                color: 'hsl(var(--foreground))'
+            }
+        },
+        labels: {
+            style: {
+                colors: 'hsl(var(--muted-foreground))'
+            }
+        }
+    },
+    fill: {
+        opacity: 1
+    },
+    tooltip: {
+        theme: 'dark',
+        style: {
+            fontSize: '12px'
+        },
+        y: {
+            formatter: function (val: number) {
+                return val + " orang"
+            }
+        }
+    },
+    colors: ['#3B82F6', '#10B981', '#F59E0B'],
+    legend: {
+        position: 'top',
+        horizontalAlign: 'center',
+        labels: {
+            colors: 'hsl(var(--foreground))'
+        }
+    },
+    grid: {
+        borderColor: 'hsl(var(--border))',
+        xaxis: {
+            lines: {
+                show: true,
+                color: 'hsl(var(--border))'
+            }
+        },
+        yaxis: {
+            lines: {
+                show: true,
+                color: 'hsl(var(--border))'
+            }
+        }
+    }
 };
 
 // const showMoreActions = ref(false);
@@ -206,10 +354,109 @@ const iconMap = {
                 </Card> -->
             <!-- </div> -->
 
+            <!-- Chart Section dengan Tabs -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Statistik Bergabung per Tahun</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Tabs default-value="chart" class="w-full">
+                        <TabsList class="grid w-full grid-cols-1">
+<TabsTrigger
+  value="chart"
+  class="justify-center w-fit px-3 py-1 text-base font-medium text-center bg-gray-100 dark:bg-neutral-900 rounded mx-auto"
+>
+  Grafik Bergabung
+</TabsTrigger>
+
+
+                        </TabsList>
+                        <TabsContent value="chart" class="mt-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold">Jumlah Bergabung per Tahun</h3>
+                                    <p class="text-sm text-muted-foreground">
+                                        Berdasarkan tanggal bergabung Peserta
+                                    </p>
+                                </div>
+                                <div class="border rounded-lg p-4">
+                                    <ApexChart 
+                                        :options="chartOptions" 
+                                        :series="chartData.series" 
+                                    />
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+
+            <!-- Rekap Section -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Rekapitulasi per Cabor Kategori</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold">Jumlah Peserta</h3>
+                            <p class="text-sm text-muted-foreground">
+                                Berdasarkan kategori cabor yang aktif
+                            </p>
+                        </div>
+                        <div class="border rounded-lg overflow-hidden">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead class="w-[200px]">Cabor</TableHead>
+                                        <TableHead class="w-[200px]">Kategori</TableHead>
+                                        <TableHead class="w-[100px] text-center">Atlet</TableHead>
+                                        <TableHead class="w-[100px] text-center">Pelatih</TableHead>
+                                        <TableHead class="w-[150px] text-center">Tenaga Pendukung</TableHead>
+                                        <TableHead class="w-[100px] text-center">Total</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow v-for="item in rekapData" :key="item.id" class="hover:bg-muted/50">
+                                        <TableCell class="font-medium">{{ item.cabor_nama }}</TableCell>
+                                        <TableCell>{{ item.nama }}</TableCell>
+                                        <TableCell class="text-center">
+                                            <Badge variant="secondary" class="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                                {{ item.jumlah_atlet }}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell class="text-center">
+                                            <Badge variant="secondary" class="bg-green-100 text-green-800 hover:bg-green-200">
+                                                {{ item.jumlah_pelatih }}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell class="text-center">
+                                            <Badge variant="secondary" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                                                {{ item.jumlah_tenaga_pendukung }}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell class="text-center">
+                                            <Badge variant="default" class="bg-gray-100 text-gray-800 hover:bg-gray-200">
+                                                {{ item.total }}
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow v-if="rekapData.length === 0">
+                                        <TableCell colspan="6" class="text-center text-muted-foreground py-8">
+                                            Tidak ada data rekapitulasi
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
             <!-- Dua Section dalam Grid 2 Kolom -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> -->
                 <!-- Section Program Latihan -->
-                <div class="space-y-4">
+                <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Program Latihan Terbaru</h3>
                     <div class="space-y-3">
                         <div v-for="row in props.latest_programs" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
@@ -241,10 +488,10 @@ const iconMap = {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Section Pemeriksaan -->
-                <div class="space-y-4">
+                <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Pemeriksaan Terbaru</h3>
                     <div class="space-y-3">
                         <div v-for="row in props.latest_pemeriksaan" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
@@ -308,8 +555,8 @@ const iconMap = {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div> -->
+            <!-- </div> -->
         </div>
     </AppLayout>
 </template>

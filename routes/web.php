@@ -191,6 +191,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('kesehatan', [AtletKesehatanController::class, 'store'])->name('atlet.kesehatan.store');
         Route::put('kesehatan/{id}', [AtletKesehatanController::class, 'update'])->name('atlet.kesehatan.update');
         Route::delete('kesehatan/{id}', [AtletKesehatanController::class, 'destroy'])->name('atlet.kesehatan.destroy');
+        
+        // Riwayat Pemeriksaan
+        Route::get('riwayat-pemeriksaan', [AtletController::class, 'riwayatPemeriksaan'])->name('atlet.riwayat-pemeriksaan');
+        Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [AtletController::class, 'parameterDetail'])->name('atlet.riwayat-pemeriksaan.parameter');
     });
     // PELATIH
     Route::resource('/pelatih', PelatihController::class)->names('pelatih');
@@ -226,6 +230,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('dokumen/{id}', [PelatihDokumenController::class, 'destroy'])->name('pelatih.dokumen.destroy');
         Route::post('dokumen/destroy-selected', [PelatihDokumenController::class, 'destroy_selected'])->name('pelatih.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [PelatihDokumenController::class, 'show'])->name('pelatih.dokumen.show');
+        
+        // Riwayat Pemeriksaan
+        Route::get('riwayat-pemeriksaan', [PelatihController::class, 'riwayatPemeriksaan'])->name('pelatih.riwayat-pemeriksaan');
+        Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [PelatihController::class, 'parameterDetail'])->name('pelatih.riwayat-pemeriksaan.parameter');
     });
     // TENAGA PENDUKUNG
     Route::resource('/tenaga-pendukung', TenagaPendukungController::class)->names('tenaga-pendukung');
@@ -266,6 +274,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('dokumen/{id}', [TenagaPendukungDokumenController::class, 'destroy'])->name('tenaga-pendukung.dokumen.destroy');
         Route::post('dokumen/destroy-selected', [TenagaPendukungDokumenController::class, 'destroy_selected'])->name('tenaga-pendukung.dokumen.destroy_selected');
         Route::get('dokumen/{id}', [TenagaPendukungDokumenController::class, 'show'])->name('tenaga-pendukung.dokumen.show');
+        
+        // Riwayat Pemeriksaan
+        Route::get('riwayat-pemeriksaan', [TenagaPendukungController::class, 'riwayatPemeriksaan'])->name('tenaga-pendukung.riwayat-pemeriksaan');
+        Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [TenagaPendukungController::class, 'parameterDetail'])->name('tenaga-pendukung.riwayat-pemeriksaan.parameter');
     });
     // Unit Pendukung
     Route::resource('/unit-pendukung', UnitPendukungController::class)->names('unit-pendukung');
@@ -323,9 +335,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/api/atlet/{atlet_id}/sertifikat', [AtletSertifikatController::class, 'apiIndex']);
 Route::get('/api/atlet/{atlet_id}/prestasi', [AtletPrestasiController::class, 'apiIndex']);
 Route::get('/api/atlet/{atlet_id}/dokumen', [AtletDokumenController::class, 'apiIndex']);
+Route::get('/api/atlet/{atlet_id}/riwayat-pemeriksaan', [AtletController::class, 'apiRiwayatPemeriksaan']);
 Route::get('/api/pelatih/{pelatih_id}/sertifikat', [PelatihSertifikatController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/prestasi', [PelatihPrestasiController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/dokumen', [PelatihDokumenController::class, 'apiIndex']);
+Route::get('/api/pelatih/{pelatih_id}/riwayat-pemeriksaan', [PelatihController::class, 'apiRiwayatPemeriksaan']);
 
 // API endpoint untuk sertifikat tenaga pendukung
 Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/sertifikat', [TenagaPendukungSertifikatController::class, 'apiIndex']);
@@ -335,6 +349,7 @@ Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/prestasi', [TenagaPenduk
 
 // API endpoint untuk prestasi tenaga pendukung
 Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/dokumen', [TenagaPendukungDokumenController::class, 'apiIndex']);
+Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/riwayat-pemeriksaan', [TenagaPendukungController::class, 'apiRiwayatPemeriksaan']);
 
 // =====================
 // PROGRAM LATIHAN
@@ -363,6 +378,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{target_id}/edit', [TargetLatihanController::class, 'nestedEdit'])->name('program-latihan.target-latihan.edit');
         Route::put('/{target_id}', [TargetLatihanController::class, 'nestedUpdate'])->name('program-latihan.target-latihan.update');
         Route::delete('/{target_id}', [TargetLatihanController::class, 'nestedDestroy'])->name('program-latihan.target-latihan.destroy');
+        Route::post('/destroy-selected', [TargetLatihanController::class, 'nestedDestroySelected'])->name('program-latihan.target-latihan.destroy-selected');
     });
 });
 

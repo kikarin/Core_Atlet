@@ -107,6 +107,10 @@ const actions = (row: any) => [
         onClick: () => router.visit(`/tenaga-pendukung/${row.id}/edit`),
     },
     {
+        label: 'Riwayat Pemeriksaan',
+        onClick: () => router.visit(`/tenaga-pendukung/${row.id}/riwayat-pemeriksaan`),
+    },
+    {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
     },

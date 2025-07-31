@@ -14,6 +14,8 @@ const props = defineProps<{
     showKehadiran?: boolean;
     showKelola?: boolean;
     kelolaUrl?: string;
+    kelolaLabel?: string;
+    showDelete?: boolean;
 }>();
 </script>
 
@@ -31,13 +33,13 @@ const props = defineProps<{
                 <Button variant="outline" size="sm">+ Tambah Multiple</Button>
             </Link>
 
-            <!-- Button Kelola -->
-            <Link v-if="props.showKelola && props.kelolaUrl" :href="props.kelolaUrl">
-                <Button variant="outline" size="sm">Pemetaan</Button>
-            </Link>
-
             <Link v-if="props.createUrl" :href="props.createUrl">
                 <Button variant="outline" size="sm">+ Create</Button>
+            </Link>
+
+            <!-- Button Kelola -->
+            <Link v-if="props.showKelola && props.kelolaUrl" :href="props.kelolaUrl">
+                <Button variant="outline" size="sm">{{ props.kelolaLabel || props.kelolaUrl }}</Button>
             </Link>
 
             <!-- Dropdown Set Kehadiran pakai shadcn-vue -->
@@ -53,9 +55,15 @@ const props = defineProps<{
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="destructive" size="sm" :disabled="selected.length === 0" @click="onDeleteSelected">
-                Delete Selected ({{ selected.length }})
-            </Button>
+<Button
+  v-if="props.showDelete !== true"
+  variant="destructive"
+  size="sm"
+  :disabled="selected.length === 0"
+  @click="onDeleteSelected"
+>
+  Delete Selected ({{ selected.length }})
+</Button>
         </div>
     </div>
 </template>

@@ -48,10 +48,12 @@ library.add(faFutbol, faBasketballBall, faTableTennis, faVolleyballBall, faRunni
                     class="flex-1 rounded-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
                 >
                     <div class="mb-4 flex items-center gap-3">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-600">
-                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full">
+                            <img
+        src="/Logo.png"
+        alt="Logo"
+        class="size-15 object-contain"
+      />
                         </div>
                         <div>
                             <h1 class="text-3xl font-bold text-[#1b1b18] dark:text-[#EDEDEC]">DISPORA</h1>
@@ -210,17 +212,17 @@ library.add(faFutbol, faBasketballBall, faTableTennis, faVolleyballBall, faRunni
                             <!-- Sports equipment floating elements -->
                             <div class="absolute -top-12 -left-12 h-8 w-8 rounded-full bg-orange-200 opacity-70 dark:bg-orange-800">
                                 <!-- Football -->
-                                <div class="absolute inset-1 rounded-full border-2 border-orange-400 dark:border-orange-600">
-                                    <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-orange-400 dark:bg-orange-600"></div>
-                                    <div class="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-orange-400 dark:bg-orange-600"></div>
+                                <div class="absolute inset-1 rounded-full border-2 border-orange-400 dark:border-orange-400">
+                                    <div class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-orange-400 dark:bg-orange-400"></div>
+                                    <div class="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-orange-400 dark:bg-orange-400"></div>
                                 </div>
                             </div>
                             
-                            <div class="absolute -bottom-8 -right-8 h-6 w-12 rounded-full bg-blue-200 opacity-70 dark:bg-blue-800">
+                            <div class="absolute -bottom-8 -right-8 h-6 w-12 rounded-full bg-green-200 opacity-70 dark:bg-green-800">
                                 <!-- Shuttlecock -->
                             </div>
                             
-                            <div class="absolute top-6 right-12 h-4 w-4 bg-green-200 opacity-70 dark:bg-green-800" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%)">
+                            <div class="absolute -top-9 right-12 h-4 w-4 bg-yellow-200 opacity-70 dark:bg-yellow-800" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%)">
                                 <!-- Trophy -->
                             </div>
                             
@@ -228,20 +230,19 @@ library.add(faFutbol, faBasketballBall, faTableTennis, faVolleyballBall, faRunni
                             <div class="flex h-36 w-36 items-center justify-center rounded-3xl bg-white shadow-2xl dark:bg-gray-800">
                                 <div class="relative">
                                     <!-- Medal/Trophy icon -->
-                                    <svg class="h-20 w-20 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
-                                    </svg>
+                                    <img
+        src="/Logo.png"
+        alt="Logo"
+        class="size-24 object-contain"
+      />
                                     <!-- Small sports icons around -->
-                                    <div class="absolute -top-2 -left-2 h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center">
+                                    <div class="absolute -top-4 left-10 h-4 w-4 rounded-full bg-yellow-300 flex items-center justify-center">
                                         <div class="h-2 w-2 rounded-full bg-white"></div>
                                     </div>
-                                    <div class="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-blue-500 flex items-center justify-center">
+                                    <div class="absolute -bottom-1 -left-2 h-4 w-4 rounded-full bg-green-600 flex items-center justify-center">
                                         <div class="h-2 w-2 rounded-full bg-white"></div>
                                     </div>
-                                    <div class="absolute -bottom-2 -left-2 h-4 w-4 rounded-full bg-green-500 flex items-center justify-center">
-                                        <div class="h-2 w-2 rounded-full bg-white"></div>
-                                    </div>
-                                    <div class="absolute -bottom-2 -right-2 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center">
+                                    <div class="absolute -bottom-1 -right-2 h-4 w-4 rounded-full bg-orange-400 flex items-center justify-center">
                                         <div class="h-2 w-2 rounded-full bg-white"></div>
                                     </div>
                                 </div>

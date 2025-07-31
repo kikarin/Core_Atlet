@@ -10,6 +10,8 @@ const { toast } = useToast();
 const breadcrumbs = [{ title: 'Pemeriksaan', href: '/pemeriksaan' }];
 
 const columns = [
+    { key: 'peserta', label: 'Peserta' },
+    { key: 'parameter', label: 'Parameter' },
     { key: 'cabor', label: 'Cabor' },
     { key: 'cabor_kategori', label: 'Kategori' },
     { key: 'tenaga_pendukung', label: 'Tenaga Pendukung' },
@@ -27,8 +29,6 @@ const columns = [
             return row.status;
         },
     },
-    { key: 'parameter', label: 'Parameter' },
-    { key: 'peserta', label: 'Peserta' },
 ];
 
 const selected = ref<number[]>([]);
@@ -80,6 +80,7 @@ const deleteSelected = async () => {
         :showImport="false"
     >
         <template #cell-parameter="{ row }">
+            <div class="flex justify-center">
             <BadgeGroup
                 :badges="[
                     {
@@ -89,6 +90,7 @@ const deleteSelected = async () => {
                     },
                 ]"
             />
+            </div>
         </template>
         <template #cell-peserta="{ row }">
             <BadgeGroup

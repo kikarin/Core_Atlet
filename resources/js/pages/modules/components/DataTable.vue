@@ -23,6 +23,8 @@ const props = defineProps({
     hidePagination: { type: Boolean, default: false },
     disableLength: { type: Boolean, default: false },
     hideSearch: { type: Boolean, default: false },
+    hideSelectAll: { type: Boolean, default: false },
+    hideSelect: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['update:selected', 'update:search', 'update:sort', 'update:page', 'update:perPage', 'deleted']);
@@ -80,19 +82,19 @@ const getValue = (obj: any, key: string) => {
                     <TableHeader class="bg-muted">
                         <TableRow>
                             <TableHead class="w-12 text-center">No</TableHead>
-                            <TableHead class="w-10 text-center">
-                                <label
-                                    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        class="peer sr-only"
-                                        :checked="props.selected.length > 0 && props.selected.length === props.rows.length"
-                                        @change="(e) => toggleSelectAll((e.target as HTMLInputElement).checked)"
-                                    />
-                                    <div class="bg-primary h-3 w-3 scale-0 transform rounded-sm transition-all peer-checked:scale-100"></div>
-                                </label>
-                            </TableHead>
+<TableHead v-if="!props.hideSelectAll" class="w-10 text-center">
+  <label
+    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+  >
+    <input
+      type="checkbox"
+      class="peer sr-only"
+      :checked="props.selected.length > 0 && props.selected.length === props.rows.length"
+      @change="(e) => toggleSelectAll((e.target as HTMLInputElement).checked)"
+    />
+    <div class="bg-primary h-3 w-3 scale-0 transform rounded-sm transition-all peer-checked:scale-100"></div>
+  </label>
+</TableHead>
                             <TableHead class="w-28 px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">Actions</TableHead>
                             <TableHead
                                 v-for="col in visibleColumns"
@@ -115,27 +117,31 @@ const getValue = (obj: any, key: string) => {
                             <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 {{ (props.page - 1) * props.perPage + index + 1 }}
                             </TableCell>
-                            <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
-                                <label
-                                    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        class="peer sr-only"
-                                        :checked="props.selected.includes(row.id)"
-                                        @change="() => toggleSelect(row.id)"
-                                    />
-                                    <svg
-                                        class="text-primary h-4 w-4 scale-75 opacity-0 transition-all duration-200 peer-checked:scale-100 peer-checked:opacity-100"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="3"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </label>
-                            </TableCell>
+<TableCell
+  v-if="!props.hideSelect"
+  class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm"
+>
+  <label
+    class="bg-background relative inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded border border-gray-500"
+  >
+    <input
+      type="checkbox"
+      class="peer sr-only"
+      :checked="props.selected.includes(row.id)"
+      @change="() => toggleSelect(row.id)"
+    />
+    <svg
+      class="text-primary h-4 w-4 scale-75 opacity-0 transition-all duration-200 peer-checked:scale-100 peer-checked:opacity-100"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  </label>
+</TableCell>
+
                             <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 <RowActions
                                     v-if="actions(row).length > 0"

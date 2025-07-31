@@ -198,7 +198,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
             'data.*.catatan' => 'nullable|string',
             'data.*.parameters' => 'required|array',
             'data.*.parameters.*.parameter_id' => 'required|integer|exists:pemeriksaan_parameter,id',
-            'data.*.parameters.*.nilai' => 'nullable|numeric',
+            'data.*.parameters.*.nilai' => 'nullable|string',
             'data.*.parameters.*.trend' => 'nullable|in:stabil,kenaikan,penurunan',
         ]);
 

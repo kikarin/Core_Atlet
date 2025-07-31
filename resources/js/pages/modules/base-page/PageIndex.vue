@@ -80,6 +80,10 @@ const props = defineProps<{
     showKehadiran?: boolean;
     showKelola?: boolean;
     kelolaUrl?: string;
+    kelolaLabel?: string;
+    showDelete?: boolean;
+    hideSelectAll?: boolean;
+    hideSelect?: boolean;
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
@@ -214,6 +218,8 @@ defineExpose({ fetchData });
                         :showKehadiran="props.showKehadiran"
                         :showKelola="props.showKelola"
                         :kelolaUrl="props.kelolaUrl"
+                        :kelolaLabel="props.kelolaLabel"
+                        :showDelete="props.showDelete"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
@@ -239,6 +245,8 @@ defineExpose({ fetchData });
                         :hide-pagination="props.hidePagination"
                         :disable-length="props.disableLength"
                         :hide-search="props.hideSearch"
+                        :hide-select-all="props.hideSelectAll"
+                        :hide-select="props.hideSelect"
                     >
                         <template #cell-peserta="slotProps">
                             <slot name="cell-peserta" v-bind="slotProps" />

@@ -189,6 +189,7 @@ const confirmSetKehadiran = async () => {
             :showKelola="true"
             :kelolaUrl="`/program-latihan/${programId}/rencana-latihan/${rencanaId}/kelola/${jenisPeserta}`"
             @setKehadiran="handleSetKehadiran"
+            kelola-label="Pemetaan Peserta"
         >
             <template #header-extra>
                 <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="rounded-xl shadow">
+  <div class="rounded-xl">
     <img
       src="/Logo.png"
       alt="Logo"

@@ -42,8 +42,9 @@ const formInputs = computed(() => [
     {
         name: 'nilai',
         label: 'Nilai',
-        type: 'number' as const,
+        type: 'text' as const,
         required: true,
+        placeholder: 'Contoh: 36.8 (suhu), 72 (nadi), 120/80 (tensi)',
     },
     {
         name: 'trend',

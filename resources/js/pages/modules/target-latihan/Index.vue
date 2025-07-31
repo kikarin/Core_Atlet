@@ -7,8 +7,8 @@ import { computed, ref } from 'vue';
 
 const page = usePage();
 const routeParams = computed(() => {
-    if (page.props && page.props.ziggy && page.props.ziggy.route_parameters) {
-        return page.props.ziggy.route_parameters;
+    if (page.props && page.props.ziggy && (page.props.ziggy as any).route_parameters) {
+        return (page.props.ziggy as any).route_parameters;
     }
     // fallback: parse dari URL
     if (typeof window !== 'undefined') {
@@ -62,7 +62,7 @@ const deleteSelected = async () => {
         return toast({ title: 'Pilih data yang akan dihapus', variant: 'destructive' });
     }
     try {
-        const response = await axios.post(`/target-latihan/destroy-selected`, { ids: selected.value });
+        const response = await axios.post(`/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/destroy-selected`, { ids: selected.value });
         selected.value = [];
         pageIndex.value.fetchData();
         toast({ title: response.data?.message, variant: 'success' });
@@ -73,12 +73,17 @@ const deleteSelected = async () => {
 };
 
 const deleteRow = async (row: any) => {
-    await router.delete(`/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/${row.id}`, {
+    const deleteUrl = `/program-latihan/${info.value.program_latihan_id}/target-latihan/${info.value.jenis_target}/${row.id}`;
+    console.log('Delete URL:', deleteUrl);
+    console.log('program_latihan_id:', info.value.program_latihan_id, 'jenis_target:', info.value.jenis_target, 'row.id:', row.id);
+    
+    await router.delete(deleteUrl, {
         onSuccess: () => {
             toast({ title: 'Data berhasil dihapus', variant: 'success' });
             pageIndex.value.fetchData();
         },
-        onError: () => {
+        onError: (errors: any) => {
+            console.error('Delete error:', errors);
             toast({ title: 'Gagal menghapus data.', variant: 'destructive' });
         },
     });
@@ -110,7 +115,7 @@ const defaultApiEndpoint = computed(() => {
             :api-endpoint="defaultApiEndpoint"
             ref="pageIndex"
             :on-toast="toast"
-            :on-delete-row-confirm="deleteRow"
+            :on-delete-row="deleteRow"
             :show-import="false"
         >
             <template #header-extra>

@@ -119,6 +119,7 @@ const deleteProgram = async (row: any) => {
             :show-import="false"
         >
             <template #cell-rencana_latihan="{ row }">
+                <div class="flex justify-center">   
                 <BadgeGroup
                     :badges="[
                         {
@@ -128,25 +129,26 @@ const deleteProgram = async (row: any) => {
                         },
                     ]"
                 />
+                </div>
             </template>
 
             <template #cell-target_individu="{ row }">
                 <BadgeGroup
                     :badges="[
                         {
-                            label: 'Untuk Atlet',
+                            label: 'Atlet',
                             value: row.jumlah_target_atlet || 0,
                             colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=atlet`),
                         },
                         {
-                            label: 'Untuk Pelatih',
+                            label: 'Pelatih',
                             value: row.jumlah_target_pelatih || 0,
                             colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=pelatih`),
                         },
                         {
-                            label: 'Untuk Tenaga Pendukung',
+                            label: 'Tenaga Pendukung',
                             value: row.jumlah_target_tenaga_pendukung || 0,
                             colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
                             onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
@@ -156,6 +158,7 @@ const deleteProgram = async (row: any) => {
             </template>
 
             <template #cell-target_kelompok="{ row }">
+                <div class="flex justify-center">
                 <BadgeGroup
                     :badges="[
                         {
@@ -165,6 +168,7 @@ const deleteProgram = async (row: any) => {
                         },
                     ]"
                 />
+                </div>
             </template>
         </PageIndex>
     </div>

@@ -311,4 +311,15 @@ class TargetLatihanController extends Controller implements HasMiddleware
 
         return redirect()->route('program-latihan.target-latihan.index', [$program_id, $jenis_target])->with('success', 'Target latihan berhasil dihapus!');
     }
+
+    public function nestedDestroySelected(Request $request, $program_id, $jenis_target)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'required|integer|exists:target_latihan,id',
+        ]);
+        $this->repository->delete_selected($request->ids);
+
+        return response()->json(['message' => 'Target latihan terpilih berhasil dihapus!']);
+    }
 }

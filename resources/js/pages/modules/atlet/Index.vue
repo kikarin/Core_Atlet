@@ -106,6 +106,10 @@ const actions = (row: any) => [
         onClick: () => router.visit(`/atlet/${row.id}/edit`),
     },
     {
+        label: 'Riwayat Pemeriksaan',
+        onClick: () => router.visit(`/atlet/${row.id}/riwayat-pemeriksaan`),
+    },
+    {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
     },

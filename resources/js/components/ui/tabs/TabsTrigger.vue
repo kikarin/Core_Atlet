@@ -29,4 +29,4 @@ const handleClick = () => {
     >
         <slot />
     </button>
-</template> 
+</template>

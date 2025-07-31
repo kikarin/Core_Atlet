@@ -6,6 +6,9 @@ use App\Models\ActivityLog;
 use App\Models\Atlet;
 use App\Models\Cabor;
 use App\Models\CaborKategori;
+use App\Models\CaborKategoriAtlet;
+use App\Models\CaborKategoriPelatih;
+use App\Models\CaborKategoriTenagaPendukung;
 use App\Models\Pelatih;
 use App\Models\Pemeriksaan;
 use App\Models\ProgramLatihan;
@@ -213,6 +216,14 @@ class DashboardController extends Controller implements HasMiddleware
         $data['latest_pemeriksaan'] = $latestPemeriksaan;
         $data['latest_activities'] = $latestActivities;
 
+        // Data untuk grafik berdasarkan tanggal bergabung per tahun
+        $chartData = $this->getChartData();
+        $data['chart_data'] = $chartData;
+
+        // Data rekapitulasi per cabor kategori
+        $rekapData = $this->getRekapData();
+        $data['rekap_data'] = $rekapData;
+
         return Inertia::render('Dashboard', $data);
     }
 
@@ -279,5 +290,88 @@ class DashboardController extends Controller implements HasMiddleware
 
                 return ucfirst(strtolower(str_replace('_', ' ', $subjectType))).' '.($event === 'created' ? 'ditambahkan' : 'diperbarui');
         }
+    }
+
+    private function getChartData()
+    {
+        // Ambil data 5 tahun terakhir
+        $currentYear = Carbon::now()->year;
+        $years = range($currentYear - 4, $currentYear);
+        
+        $atletData = [];
+        $pelatihData = [];
+        $tenagaPendukungData = [];
+
+        foreach ($years as $year) {
+            // Data Atlet per tahun
+            $atletCount = Atlet::whereYear('tanggal_bergabung', $year)->count();
+            $atletData[] = $atletCount;
+
+            // Data Pelatih per tahun
+            $pelatihCount = Pelatih::whereYear('tanggal_bergabung', $year)->count();
+            $pelatihData[] = $pelatihCount;
+
+            // Data Tenaga Pendukung per tahun
+            $tenagaPendukungCount = TenagaPendukung::whereYear('tanggal_bergabung', $year)->count();
+            $tenagaPendukungData[] = $tenagaPendukungCount;
+        }
+
+        return [
+            'years' => $years,
+            'series' => [
+                [
+                    'name' => 'Atlet',
+                    'data' => $atletData
+                ],
+                [
+                    'name' => 'Pelatih',
+                    'data' => $pelatihData
+                ],
+                [
+                    'name' => 'Tenaga Pendukung',
+                    'data' => $tenagaPendukungData
+                ]
+            ]
+        ];
+    }
+
+    private function getRekapData()
+    {
+        // Ambil semua cabor kategori dengan relasi cabor
+        $caborKategoris = CaborKategori::with('cabor')
+            ->orderBy('cabor_id')
+            ->orderBy('nama')
+            ->get();
+
+        $rekapData = [];
+
+        foreach ($caborKategoris as $caborKategori) {
+            // Hitung jumlah atlet di kategori ini
+            $jumlahAtlet = CaborKategoriAtlet::where('cabor_kategori_id', $caborKategori->id)
+                ->where('is_active', 1)
+                ->count();
+
+            // Hitung jumlah pelatih di kategori ini
+            $jumlahPelatih = CaborKategoriPelatih::where('cabor_kategori_id', $caborKategori->id)
+                ->where('is_active', 1)
+                ->count();
+
+            // Hitung jumlah tenaga pendukung di kategori ini
+            $jumlahTenagaPendukung = CaborKategoriTenagaPendukung::where('cabor_kategori_id', $caborKategori->id)
+                ->where('is_active', 1)
+                ->count();
+
+            $rekapData[] = [
+                'id' => $caborKategori->id,
+                'cabor_nama' => $caborKategori->cabor->nama ?? '-',
+                'nama' => $caborKategori->nama,
+                'jumlah_atlet' => $jumlahAtlet,
+                'jumlah_pelatih' => $jumlahPelatih,
+                'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
+                'total' => $jumlahAtlet + $jumlahPelatih + $jumlahTenagaPendukung,
+            ];
+        }
+
+        return $rekapData;
     }
 }
