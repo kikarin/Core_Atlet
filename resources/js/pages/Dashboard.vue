@@ -59,7 +59,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const stats = props.stats || [];
 
-const iconMap = {
+const iconMap: any = {
     UserCircle2,
     HandHeart,
     HeartHandshake,
@@ -247,6 +247,7 @@ const chartOptions = {
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
@@ -256,11 +257,8 @@ const chartOptions = {
                 <div class="flex items-center gap-4">
                     <div class="relative">
                         <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-10 w-[300px] rounded-md border pr-4 pl-9 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                        />
+                        <input type="text" placeholder="Search..."
+                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-10 w-[300px] rounded-md border pr-4 pl-9 text-sm focus-visible:ring-2 focus-visible:outline-none" />
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -274,39 +272,26 @@ const chartOptions = {
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
-                <Card
-                    v-for="stat in stats"
-                    :key="stat.title"
-                    class="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
-                    @click="router.visit(stat.href)"
-                >
-                    <CardHeader class="flex flex-row items-center justify-between space-y-0">
-                        <CardTitle class="text-sm font-medium">
-                            {{ stat.title }}
-                        </CardTitle>
-                        <div :class="[stat.bgColor, 'rounded-full']">
-                            <component :is="iconMap[stat.icon]" :class="stat.color" class="h-5 w-5" />
+            <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
+                <Card v-for="stat in stats" :key="stat.title"
+                    class="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                    @click="router.visit(stat.href)">
+                    <CardHeader class="flex items-center justify-between space-y-0">
+                        <div class="flex flex-col gap-3">
+                            <CardTitle class="text-sm font-medium">
+                                {{ stat.title }}
+                            </CardTitle>
+                            <div class="text-2xl font-bold">
+                                {{ stat.value }}
+                            </div>
+                        </div>
+
+                        <div :class="[stat.bgColor, 'rounded-full p-3']">
+                            <component :is="iconMap[stat.icon]" :class="stat.color" class="h-10 w-10" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-2xl font-bold">{{ stat.value }}</div>
-                        <div class="mt-2 flex items-center space-x-2 text-xs">
-                            <component
-                                :is="stat.trend === 'up' ? ArrowUpRight : ArrowDownRight"
-                                :class="stat.trend === 'up' ? 'text-green-500' : 'text-red-500'"
-                                class="h-4 w-4"
-                            />
-                            <span :class="stat.trend === 'up' ? 'text-green-500' : 'text-red-500'">
-                                {{ stat.change }}
-                            </span>
-                            <span class="text-muted-foreground text-xs">
-                                {{ stat.change_abs }}
-                            </span>
-                            <span class="text-muted-foreground">{{ stat.compare_label }}</span>
-                        </div>
-                    </CardContent>
                 </Card>
+
             </div>
 
             <!-- Main Content -->
@@ -454,27 +439,30 @@ const chartOptions = {
             <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Program Latihan Terbaru</h3>
                     <div class="space-y-3">
-                        <div v-for="row in props.latest_programs" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div v-for="row in props.latest_programs" :key="row.id"
+                            class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                             <div class="flex flex-col gap-2">
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[125px] text-sm">Nama:</span>
+                                    <span class="font-medium min-w-[125px] text-sm">Nama</span>
                                     <span class="text-foreground text-sm">{{ row.nama_program }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[125px] text-sm">Cabor:</span>
-                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
+                                    <span class="font-medium min-w-[125px] text-sm">Cabor</span>
+                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{
+                                        row.cabor_kategori_nama }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[125px] text-sm">Periode:</span>
+                                    <span class="font-medium min-w-[125px] text-sm">Periode</span>
                                     <span class="text-foreground text-sm">{{ row.periode }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2 items-center">
-                                    <span class="font-medium min-w-[125px] text-sm">Rencana Latihan:</span>
+                                    <span class="font-medium min-w-[125px] text-sm">Rencana Latihan</span>
                                     <div class="flex flex-wrap gap-2 items-center text-sm">
                                         <Badge variant="secondary" class="text-foreground ">
                                             {{ row.jumlah_rencana_latihan }}
                                         </Badge>
-                                        <span v-if="row.rencana_latihan_list && row.rencana_latihan_list.length > 0" class="text-muted-foreground">
+                                        <span v-if="row.rencana_latihan_list && row.rencana_latihan_list.length > 0"
+                                            class="text-muted-foreground">
                                             {{ row.rencana_latihan_list.join(', ') }}
                                         </span>
                                         <span v-else class="text-muted-foreground">-</span>
@@ -489,63 +477,65 @@ const chartOptions = {
             <!-- <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Pemeriksaan Terbaru</h3>
                     <div class="space-y-3">
-                        <div v-for="row in props.latest_pemeriksaan" :key="row.id" class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div v-for="row in props.latest_pemeriksaan" :key="row.id"
+                            class="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                             <div class="flex flex-col gap-2">
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[145px] text-sm">Nama:</span>
+                                    <span class="font-medium min-w-[145px] text-sm">Nama</span>
                                     <span class="text-foreground text-sm">{{ row.nama_pemeriksaan }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[145px] text-sm">Cabor:</span>
-                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{ row.cabor_kategori_nama }}</span>
+                                    <span class="font-medium min-w-[145px] text-sm">Cabor</span>
+                                    <span class="text-foreground text-sm">{{ row.cabor_nama }} - {{
+                                        row.cabor_kategori_nama }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[145px] text-sm">Tenaga Pendukung:</span>
+                                    <span class="font-medium min-w-[145px] text-sm">Tenaga Pendukung</span>
                                     <span class="text-foreground text-sm">{{ row.tenaga_pendukung_nama }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="font-medium min-w-[145px] text-sm">Tanggal:</span>
+                                    <span class="font-medium min-w-[145px] text-sm">Tanggal</span>
                                     <span class="text-foreground text-sm">{{ row.tanggal_pemeriksaan }}</span>
                                 </div>
                                 <div class="flex flex-wrap gap-2 items-center">
-                                    <span class="font-medium min-w-[145px] text-sm">Status:</span>
-                                    <Badge :variant="row.status === 'selesai' ? 'success' : row.status === 'sebagian' ? 'warning' : 'destructive'">
+                                    <span class="font-medium min-w-[145px] text-sm">Status</span>
+                                    <Badge
+                                        :variant="row.status === 'selesai' ? 'success' : row.status === 'sebagian' ? 'warning' : 'destructive'">
                                         {{ row.status }}
                                     </Badge>
                                 </div>
                                 <div class="flex flex-wrap gap-2 items-center">
-                                    <span class="font-medium min-w-[145px] text-sm">Parameter:</span>
+                                    <span class="font-medium min-w-[145px] text-sm">Parameter</span>
                                     <div class="flex flex-wrap gap-2 items-center text-sm">
                                         <Badge variant="secondary" class="text-foreground">
                                             {{ row.jumlah_parameter }}
                                         </Badge>
-                                        <span v-if="row.parameter_list && row.parameter_list.length > 0" class="text-muted-foreground">
+                                        <span v-if="row.parameter_list && row.parameter_list.length > 0"
+                                            class="text-muted-foreground">
                                             {{ row.parameter_list.join(', ') }}
                                         </span>
                                         <span v-else class="text-muted-foreground">-</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-wrap gap-2 items-center">
-                                    <span class="font-medium min-w-[145px] text-sm">Peserta:</span>
-                                    <BadgeGroup
-                                        :badges="[
-                                            {
-                                                label: 'Atlet',
-                                                value: row.jumlah_atlet || 0,
-                                                colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                                            },
-                                            {
-                                                label: 'Pelatih',
-                                                value: row.jumlah_pelatih || 0,
-                                                colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                                            },
-                                            {
-                                                label: 'Tenaga Pendukung',
-                                                value: row.jumlah_tenaga_pendukung || 0,
-                                                colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                                            },
-                                        ]"
-                                    />
+                                    <span class="font-medium min-w-[145px] text-sm">Peserta</span>
+                                    <BadgeGroup :badges="[
+                                        {
+                                            label: 'Atlet',
+                                            value: row.jumlah_atlet || 0,
+                                            colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                                        },
+                                        {
+                                            label: 'Pelatih',
+                                            value: row.jumlah_pelatih || 0,
+                                            colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                                        },
+                                        {
+                                            label: 'Tenaga Pendukung',
+                                            value: row.jumlah_tenaga_pendukung || 0,
+                                            colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                                        },
+                                    ]" />
                                 </div>
                             </div>
                         </div>

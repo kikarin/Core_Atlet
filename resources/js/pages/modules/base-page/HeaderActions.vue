@@ -21,7 +21,7 @@ const props = defineProps<{
 
 <template>
     <div class="mx-auto flex flex-wrap items-center justify-between gap-2">
-        <h1 class="text-2xl font-semibold tracking-tight dark:text-white">
+        <h1 class="text-xl font-semibold tracking-tight dark:text-white">
             {{ title }}
         </h1>
 
