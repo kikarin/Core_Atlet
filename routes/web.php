@@ -21,6 +21,7 @@ use App\Http\Controllers\MstJenisPelatihController;
 use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\MstPosisiAtletController;
 use App\Http\Controllers\MstTingkatController;
+use App\Http\Controllers\MstJuaraController;
 use App\Http\Controllers\PelatihController;
 use App\Http\Controllers\PelatihDokumenController;
 use App\Http\Controllers\PelatihKesehatanController;
@@ -48,6 +49,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UsersMenuController;
 use App\Http\Controllers\MstJenisUnitPendukungController;
 use App\Http\Controllers\UnitPendukungController;
+use App\Http\Controllers\TurnamenController;
 use App\Models\Cabor;
 use App\Models\MstDesa;
 use App\Models\MstJenisDokumen;
@@ -57,6 +59,7 @@ use App\Models\MstKecamatan;
 use App\Models\MstPosisiAtlet;
 use App\Models\MstTingkat;
 use App\Models\MstJenisUnitPendukung;
+use App\Models\MstJuara;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -81,6 +84,7 @@ Route::get('/api/posisi-atlet', [MstPosisiAtletController::class, 'apiIndex']);
 Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex']);
 Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
 Route::get('/api/jenis-unit-pendukung', [MstJenisUnitPendukungController::class, 'apiIndex']);
+Route::get('/api/juara', [MstJuaraController::class, 'apiIndex']);
 
 // select
 Route::get('/api/tingkat-list', function () {
@@ -106,6 +110,9 @@ Route::get('/api/jenis-tenaga-pendukung-list', function () {
 });
 Route::get('/api/jenis-unit-pendukung-list', function () {
     return MstJenisUnitPendukung::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/juara-list', function () {
+    return MstJuara::select('id', 'nama')->orderBy('nama')->get();
 });
 
 // =====================
@@ -455,6 +462,9 @@ Route::prefix('data-master')->group(function () {
     // Master Jenis Unit Pendukung
     Route::resource('/jenis-unit-pendukung', MstJenisUnitPendukungController::class)->names('jenis-unit-pendukung');
     Route::post('/jenis-unit-pendukung/destroy-selected', [MstJenisUnitPendukungController::class, 'destroy_selected'])->name('jenis-unit-pendukung.destroy_selected');
+    // Master Juara
+    Route::resource('/juara', MstJuaraController::class)->names('juara');
+    Route::post('/juara/destroy-selected', [MstJuaraController::class, 'destroy_selected'])->name('juara.destroy_selected');
 
 });
 
@@ -533,6 +543,22 @@ Route::get('/api/cabor-kategori-tenaga-pendukung/available-for-pemeriksaan', [Ca
 Route::get('/api/ref-status-pemeriksaan', [RefStatusPemeriksaanController::class, 'index']);
 // Route untuk bulk update parameter peserta (untuk MassEdit)
 Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate']);
+
+
+// TURNAMEN
+Route::resource('/turnamen', TurnamenController::class)->names('turnamen');
+Route::get('/api/turnamen', [TurnamenController::class, 'apiIndex']);
+Route::post('/turnamen/destroy-selected', [TurnamenController::class, 'destroy_selected'])->name('turnamen.destroy_selected');
+
+// API untuk peserta turnamen
+Route::get('/api/turnamen/peserta-by-cabor-kategori', [TurnamenController::class, 'apiPesertaByCaborKategori']);
+Route::get('/api/turnamen/{turnamen_id}/peserta', [TurnamenController::class, 'apiPesertaTurnamen']);
+Route::delete('/api/turnamen/{turnamen_id}/peserta/{jenis_peserta}/{peserta_id}', [TurnamenController::class, 'destroyPeserta']);
+Route::post('/api/turnamen/{turnamen_id}/peserta/{jenis_peserta}/destroy-selected', [TurnamenController::class, 'destroySelectedPeserta']);
+
+// Halaman peserta turnamen
+Route::get('/turnamen/{turnamen_id}/peserta', [TurnamenController::class, 'pesertaIndex'])->name('turnamen.peserta.index');
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

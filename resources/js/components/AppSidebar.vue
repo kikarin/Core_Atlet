@@ -51,6 +51,7 @@ const iconMap: Record<string, any> = {
     Ungroup: LucideIcons.Ungroup,
     Stethoscope: LucideIcons.Stethoscope,
     Wrench: LucideIcons.Wrench,
+    Trophy: LucideIcons.Trophy,
 };
 
 const fetchMenus = async () => {
@@ -174,7 +175,7 @@ onUnmounted(() => {
 
             <NavMain v-if="caborNavItems.length > 0" :items="caborNavItems" section-title="Cabang Olahraga" section-id="cabor" />
 
-            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Training" section-id="training" />
+            <NavMain v-if="trainingNavItems.length > 0" :items="trainingNavItems" section-title="Turnamen" section-id="training" />
 
             <NavMain v-if="pemeriksaanNavItems.length > 0" :items="pemeriksaanNavItems" section-title="Pemeriksaan" section-id="pemeriksaan" />
 

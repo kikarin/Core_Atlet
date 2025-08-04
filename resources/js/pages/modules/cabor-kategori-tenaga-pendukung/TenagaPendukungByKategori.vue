@@ -26,7 +26,6 @@ const showConfirmDelete = ref(false);
 const rowToDelete = ref<any>(null);
 
 const columns = [
-    { key: 'tenaga_pendukung_nama', label: 'Nama' },
     {
         key: 'foto',
         label: 'Foto',
@@ -39,6 +38,7 @@ const columns = [
             return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
         },
     },
+    { key: 'tenaga_pendukung_nama', label: 'Nama' },
     { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
 
     {

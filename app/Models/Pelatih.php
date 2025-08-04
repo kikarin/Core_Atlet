@@ -124,4 +124,15 @@ class Pelatih extends Model implements HasMedia
     {
         return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
     }
+
+    public function turnamen()
+    {
+        return $this->morphedByMany(Turnamen::class, 'peserta', 'turnamen_peserta', 'peserta_id', 'turnamen_id')
+            ->withTimestamps();
+    }
+
+    public function jenisPelatih()
+    {
+        return $this->belongsTo(MstJenisPelatih::class, 'jenis_pelatih_id');
+    }
 }

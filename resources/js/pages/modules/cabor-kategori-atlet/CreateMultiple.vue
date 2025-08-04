@@ -69,7 +69,6 @@ const total = ref(0);
 
 // Columns untuk tabel atlet
 const columns = [
-    { key: 'nama', label: 'Nama' },
     {
         key: 'foto',
         label: 'Foto',
@@ -82,6 +81,7 @@ const columns = [
             return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
         },
     },
+    { key: 'nama', label: 'Nama' },
     {
         key: 'jenis_kelamin',
         label: 'Jenis Kelamin',

@@ -145,6 +145,10 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name'       => 'Mst Juara',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name'       => 'Cabor',
                 'permission' => 'CRUD',
             ],
@@ -191,6 +195,10 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Pemeriksaan Peserta Parameter',
                 'permission' => 'CRUD',
+            ],
+            [
+                'name'      => 'Turnamen',
+                'permission'=> 'CRUD',
             ],
         ];
 

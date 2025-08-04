@@ -129,4 +129,15 @@ class Atlet extends Model implements HasMedia
     {
         return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
     }
+
+    public function turnamen()
+    {
+        return $this->morphedByMany(Turnamen::class, 'peserta', 'turnamen_peserta', 'peserta_id', 'turnamen_id')
+            ->withTimestamps();
+    }
+
+    public function posisiAtlet()
+    {
+        return $this->belongsTo(MstPosisiAtlet::class, 'posisi_atlet_id');
+    }
 }

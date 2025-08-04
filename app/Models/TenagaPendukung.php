@@ -123,4 +123,15 @@ class TenagaPendukung extends Model implements HasMedia
     {
         return $this->morphMany(PemeriksaanPeserta::class, 'peserta');
     }
+
+    public function turnamen()
+    {
+        return $this->morphedByMany(Turnamen::class, 'peserta', 'turnamen_peserta', 'peserta_id', 'turnamen_id')
+            ->withTimestamps();
+    }
+
+    public function jenisTenagaPendukung()
+    {
+        return $this->belongsTo(MstJenisTenagaPendukung::class, 'jenis_tenaga_pendukung_id');
+    }
 }

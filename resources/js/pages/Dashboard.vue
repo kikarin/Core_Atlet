@@ -13,8 +13,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import {
-    ArrowDownRight,
-    ArrowUpRight,
+    // ArrowDownRight,
+    // ArrowUpRight,
     Bell,
     ClipboardCheck,
     Flag,
@@ -247,7 +247,6 @@ const chartOptions = {
 </script>
 
 <template>
-
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
@@ -257,8 +256,11 @@ const chartOptions = {
                 <div class="flex items-center gap-4">
                     <div class="relative">
                         <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                        <input type="text" placeholder="Search..."
-                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-10 w-[300px] rounded-md border pr-4 pl-9 text-sm focus-visible:ring-2 focus-visible:outline-none" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-10 w-[300px] rounded-md border pr-4 pl-9 text-sm focus-visible:ring-2 focus-visible:outline-none"
+                        />
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -272,10 +274,13 @@ const chartOptions = {
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
-                <Card v-for="stat in stats" :key="stat.title"
-                    class="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                    @click="router.visit(stat.href)">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
+                <Card
+                    v-for="stat in stats"
+                    :key="stat.title"
+                    class="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
+                    @click="router.visit(stat.href)"
+                >
                     <CardHeader class="flex items-center justify-between space-y-0">
                         <div class="flex flex-col gap-3">
                             <CardTitle class="text-sm font-medium">
@@ -291,7 +296,6 @@ const chartOptions = {
                         </div>
                     </CardHeader>
                 </Card>
-
             </div>
 
             <!-- Main Content -->
