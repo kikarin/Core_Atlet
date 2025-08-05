@@ -25,11 +25,14 @@ return new class () extends Migration {
             $table->string('email', 200)->nullable();
             $table->boolean('is_active')->default(1);
             $table->string('foto', 255)->nullable();
+            $table->unsignedBigInteger('users_id')->nullable(); 
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
+
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('set null');
 
             // Foreign keys
             $table->foreign('kecamatan_id')->references('id')->on('mst_kecamatan')->onDelete('set null');

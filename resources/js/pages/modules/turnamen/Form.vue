@@ -220,11 +220,40 @@ const atletColumns = [
     { key: 'nama', label: 'Nama' },
     { key: 'posisi_atlet_nama', label: 'Posisi' },
     { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan') },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) => (row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID') : '-'),
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            if (!row.tanggal_lahir) return '-';
+            const today = new Date();
+            const birth = new Date(row.tanggal_lahir);
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        },
+    },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => {
+            if (!row.tanggal_bergabung) return '-';
+            const start = new Date(row.tanggal_bergabung);
+            const now = new Date();
+            let tahun = now.getFullYear() - start.getFullYear();
+            let bulan = now.getMonth() - start.getMonth();
+            if (bulan < 0) {
+                tahun--;
+                bulan += 12;
+            }
+            let result = '';
+            if (tahun > 0) result += tahun + ' tahun ';
+            if (bulan > 0) result += bulan + ' bulan';
+            if (!result) result = 'Kurang dari 1 bulan';
+            return result.trim();
+        },
     },
 ];
 
@@ -232,11 +261,40 @@ const pelatihColumns = [
     { key: 'nama', label: 'Nama' },
     { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih' },
     { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan') },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) => (row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID') : '-'),
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            if (!row.tanggal_lahir) return '-';
+            const today = new Date();
+            const birth = new Date(row.tanggal_lahir);
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        },
+    },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => {
+            if (!row.tanggal_bergabung) return '-';
+            const start = new Date(row.tanggal_bergabung);
+            const now = new Date();
+            let tahun = now.getFullYear() - start.getFullYear();
+            let bulan = now.getMonth() - start.getMonth();
+            if (bulan < 0) {
+                tahun--;
+                bulan += 12;
+            }
+            let result = '';
+            if (tahun > 0) result += tahun + ' tahun ';
+            if (bulan > 0) result += bulan + ' bulan';
+            if (!result) result = 'Kurang dari 1 bulan';
+            return result.trim();
+        },
     },
 ];
 
@@ -244,11 +302,40 @@ const tenagaPendukungColumns = [
     { key: 'nama', label: 'Nama' },
     { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung' },
     { key: 'jenis_kelamin', label: 'Jenis Kelamin', format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan') },
-    { key: 'tempat_lahir', label: 'Tempat Lahir' },
     {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) => (row.tanggal_lahir ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID') : '-'),
+        key: 'usia',
+        label: 'Usia',
+        format: (row: any) => {
+            if (!row.tanggal_lahir) return '-';
+            const today = new Date();
+            const birth = new Date(row.tanggal_lahir);
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        },
+    },
+    {
+        key: 'lama_bergabung',
+        label: 'Lama Bergabung',
+        format: (row: any) => {
+            if (!row.tanggal_bergabung) return '-';
+            const start = new Date(row.tanggal_bergabung);
+            const now = new Date();
+            let tahun = now.getFullYear() - start.getFullYear();
+            let bulan = now.getMonth() - start.getMonth();
+            if (bulan < 0) {
+                tahun--;
+                bulan += 12;
+            }
+            let result = '';
+            if (tahun > 0) result += tahun + ' tahun ';
+            if (bulan > 0) result += bulan + ' bulan';
+            if (!result) result = 'Kurang dari 1 bulan';
+            return result.trim();
+        },
     },
 ];
 

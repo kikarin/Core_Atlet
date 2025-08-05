@@ -350,22 +350,15 @@ const chartOptions = {
             <!-- Chart Section dengan Tabs -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Statistik Bergabung per Tahun</CardTitle>
+                    <CardTitle>Grafik Peserta Tahunan</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Tabs default-value="chart" class="w-full">
                         <TabsList class="grid w-full grid-cols-1">
-                            <TabsTrigger
-                                value="chart"
-                                class="mx-auto w-fit justify-center rounded bg-gray-100 px-3 py-1 text-center text-base font-medium dark:bg-neutral-900"
-                            >
-                                Grafik Bergabung
-                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="chart" class="mt-6">
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between">
-                                    <h3 class="text-lg font-semibold">Jumlah Bergabung per Tahun</h3>
                                     <p class="text-muted-foreground text-sm">Berdasarkan tanggal bergabung Peserta</p>
                                 </div>
                                 <div class="rounded-lg border p-4">

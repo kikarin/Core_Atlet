@@ -266,14 +266,7 @@ function getLamaBergabung(tanggalBergabung: string) {
                         <div v-if="fileName" class="text-muted-foreground text-sm">File: {{ fileName }}</div>
                     </div>
                     <div class="bg-muted rounded-lg border p-3">
-                        <div class="mb-2 text-sm font-medium">Format kolom yang didukung:</div>
-                        <div class="text-muted-foreground space-y-1 text-xs">
-                            <div>
-                                <strong>Tenaga Pendukung:</strong> nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, kecamatan_id,
-                                kelurahan_id, no_hp, email, is_active
-                            </div>
-                            <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
-                        </div>
+                        <div class="mb-2 text-sm font-medium">Template kolom yang didukung:</div>
                         <div class="mt-2">
                             <a href="/template-import/template_import.xlsx" target="_blank" class="text-sm text-blue-600 hover:underline" download>
                                 Unduh Format Excel Tenaga Pendukung

@@ -7,6 +7,7 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\User; 
 
 class AtletRepository
 {
@@ -20,10 +21,11 @@ class AtletRepository
     {
         $this->model                   = $model;
         $this->atletOrangTuaRepository = $atletOrangTuaRepository;
-        $this->with                    = [
+        $this->with = [
             'media',
             'created_by_user',
             'updated_by_user',
+            'user', 
             'atletOrangTua.created_by_user',
             'atletOrangTua.updated_by_user',
             'sertifikat',
@@ -217,6 +219,11 @@ class AtletRepository
                 }
             }
 
+            // Handle Atlet Akun data
+            if (isset($data['akun_email']) && $data['akun_email']) {
+                $this->handleAtletAkun($model, $data);
+            }
+
             DB::commit();
             Log::info('AtletRepository: Transaction committed successfully');
 
@@ -228,6 +235,59 @@ class AtletRepository
                 'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
+        }
+    }
+
+    /**
+     * Handle Atlet Akun creation/update
+     */
+    public function handleAtletAkun($atlet, $data)
+    {
+        $userId = Auth::check() ? Auth::id() : null;
+        $userData = [
+            'name' => $atlet->nama,
+            'email' => $data['akun_email'],
+            'no_hp' => $atlet->no_hp,
+            'is_active' => 1,
+            'current_role_id' => 35, // Set current_role_id ke Role Atlet
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ];
+
+        // Jika ada password, hash password
+        if (isset($data['akun_password']) && $data['akun_password']) {
+            $userData['password'] = bcrypt($data['akun_password']);
+        }
+
+        // Jika sudah ada users_id, update user
+        if (isset($data['users_id']) && $data['users_id']) {
+            $user = User::find($data['users_id']);
+            if ($user) {
+                $user->update($userData);
+                Log::info('AtletRepository: Updated existing user for atlet', [
+                    'atlet_id' => $atlet->id,
+                    'user_id' => $user->id
+                ]);
+            }
+        } else {
+            // Create new user
+            $user = User::create($userData);
+            
+            // Assign role Atlet (ID: 35 berdasarkan RoleSeeder)
+            $user->users_role()->create([
+                'users_id' => $user->id,
+                'role_id' => 35, // Role Atlet
+                'created_by' => $userId,
+                'updated_by' => $userId,
+            ]);
+
+            // Update atlet dengan users_id
+            $atlet->update(['users_id' => $user->id]);
+
+            Log::info('AtletRepository: Created new user for atlet', [
+                'atlet_id' => $atlet->id,
+                'user_id' => $user->id
+            ]);
         }
     }
 

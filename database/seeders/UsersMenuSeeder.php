@@ -76,7 +76,7 @@ class UsersMenuSeeder extends Seeder
                 'icon'          => 'Ungroup',
                 'rel'           => 0,
                 'urutan'        => 22,
-                'permission_id' => 'Kategori Show',
+                'permission_id' => 'Cabor Kategori Show',
             ],
             [
                 'nama'          => 'Program Latihan',
@@ -119,14 +119,14 @@ class UsersMenuSeeder extends Seeder
                         'kode'          => 'DATA-MASTER-TINGKAT',
                         'url'           => '/data-master/tingkat',
                         'urutan'        => 1,
-                        'permission_id' => 'Master Tingkat Show',
+                        'permission_id' => 'Mst Tingkat Show',
                     ],
                     [
                         'nama'          => 'Jenis Dokumen',
                         'kode'          => 'DATA-MASTER-JENIS-DOKUMEN',
                         'url'           => '/data-master/jenis-dokumen',
                         'urutan'        => 2,
-                        'permission_id' => 'Master Jenis Dokumen Show',
+                        'permission_id' => 'Mst Jenis Dokumen Show',
                     ],
                     [
                         'nama'          => 'Posisi Atlet',

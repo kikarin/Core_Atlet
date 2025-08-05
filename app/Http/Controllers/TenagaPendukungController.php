@@ -317,4 +317,94 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             ], 500);
         }
     }
+
+    /**
+     * Store akun tenaga pendukung
+     */
+    public function storeAkun(Request $request, $id)
+    {
+        try {
+            $tenagaPendukung = $this->repository->getDetailWithRelations($id);
+            
+            // Validasi request untuk akun
+            $request->validate([
+                'akun_email' => 'required|email|unique:users,email',
+                'akun_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
+            ], [
+                'akun_email.required' => 'Email wajib diisi.',
+                'akun_email.email' => 'Format email tidak valid.',
+                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_password.required' => 'Password wajib diisi.',
+                'akun_password.min' => 'Password minimal 8 karakter.',
+                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+            ]);
+
+            // Handle akun creation di repository
+            $this->repository->handleTenagaPendukungAkun($tenagaPendukung, $request->all());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun tenaga pendukung berhasil dibuat!',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating akun tenaga pendukung: '.$e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat akun tenaga pendukung: ' . $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Update akun tenaga pendukung
+     */
+    public function updateAkun(Request $request, $id)
+    {
+        try {
+            $tenagaPendukung = $this->repository->getDetailWithRelations($id);
+            
+            $rules = [
+                'akun_email' => 'required|email',
+            ];
+
+            if ($tenagaPendukung->users_id) {
+                $rules['akun_email'] = 'required|email|unique:users,email,'.$tenagaPendukung->users_id;
+            } else {
+                $rules['akun_email'] = 'required|email|unique:users,email';
+            }
+
+            // Password opsional untuk update
+            if ($request->akun_password) {
+                $rules['akun_password'] = 'string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin';
+            }
+
+            $request->validate($rules, [
+                'akun_email.required' => 'Email wajib diisi.',
+                'akun_email.email' => 'Format email tidak valid.',
+                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_password.min' => 'Password minimal 8 karakter.',
+                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+            ]);
+
+            // Handle akun update di repository
+            $this->repository->handleTenagaPendukungAkun($tenagaPendukung, $request->all());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun tenaga pendukung berhasil diperbarui!',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating akun tenaga pendukung: '.$e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui akun tenaga pendukung: ' . $e->getMessage(),
+            ], 422);
+        }
+    }
 }

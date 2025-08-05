@@ -199,6 +199,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'atlets.jenis_kelamin',
                     'atlets.tempat_lahir',
                     'atlets.tanggal_lahir',
+                    'atlets.tanggal_bergabung',
                     'atlets.no_hp',
                     'cabor_kategori_atlet.is_active as kategori_is_active',
                     'mst_posisi_atlet.nama as posisi_atlet_nama'
@@ -220,6 +221,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'pelatihs.jenis_kelamin',
                     'pelatihs.tempat_lahir',
                     'pelatihs.tanggal_lahir',
+                    'pelatihs.tanggal_bergabung',
                     'pelatihs.no_hp',
                     'cabor_kategori_pelatih.is_active as kategori_is_active',
                     'mst_jenis_pelatih.nama as jenis_pelatih_nama'
@@ -241,6 +243,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'tenaga_pendukungs.jenis_kelamin',
                     'tenaga_pendukungs.tempat_lahir',
                     'tenaga_pendukungs.tanggal_lahir',
+                    'tenaga_pendukungs.tanggal_bergabung',
                     'tenaga_pendukungs.no_hp',
                     'cabor_kategori_tenaga_pendukung.is_active as kategori_is_active',
                     'mst_jenis_tenaga_pendukung.nama as jenis_tenaga_pendukung_nama'
@@ -323,6 +326,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'atlets.jenis_kelamin',
                     'atlets.tempat_lahir',
                     'atlets.tanggal_lahir',
+                    'atlets.tanggal_bergabung',
                     'atlets.no_hp',
                     'mst_posisi_atlet.nama as posisi_atlet_nama'
                 );
@@ -346,6 +350,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'pelatihs.jenis_kelamin',
                     'pelatihs.tempat_lahir',
                     'pelatihs.tanggal_lahir',
+                    'pelatihs.tanggal_bergabung',
                     'pelatihs.no_hp',
                     'mst_jenis_pelatih.nama as jenis_pelatih_nama'
                 );
@@ -369,6 +374,7 @@ class TurnamenController extends Controller implements HasMiddleware
                     'tenaga_pendukungs.jenis_kelamin',
                     'tenaga_pendukungs.tempat_lahir',
                     'tenaga_pendukungs.tanggal_lahir',
+                    'tenaga_pendukungs.tanggal_bergabung',
                     'tenaga_pendukungs.no_hp',
                     'mst_jenis_tenaga_pendukung.nama as jenis_tenaga_pendukung_nama'
                 );

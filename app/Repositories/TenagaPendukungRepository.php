@@ -7,6 +7,7 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class TenagaPendukungRepository
 {
@@ -21,6 +22,7 @@ class TenagaPendukungRepository
             'media',
             'created_by_user',
             'updated_by_user',
+            'user',
             'sertifikat',
             'sertifikat.media',
             'sertifikat.created_by_user',
@@ -178,8 +180,60 @@ class TenagaPendukungRepository
 
     public function getDetailWithRelations($id)
     {
-        $with = $this->with;
+        $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
 
         return $this->model->with($with)->findOrFail($id);
+    }
+
+    /**
+     * Handle Tenaga Pendukung Akun creation/update
+     */
+    public function handleTenagaPendukungAkun($tenagaPendukung, $data)
+    {
+        $userId = Auth::check() ? Auth::id() : null;
+        $userData = [
+            'name' => $tenagaPendukung->nama,
+            'email' => $data['akun_email'],
+            'no_hp' => $tenagaPendukung->no_hp,
+            'is_active' => 1,
+            'current_role_id' => 37, 
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ];
+
+        // Jika ada password, hash password
+        if (isset($data['akun_password']) && $data['akun_password']) {
+            $userData['password'] = bcrypt($data['akun_password']);
+        }
+
+        // Jika sudah ada users_id, update user
+        if (isset($data['users_id']) && $data['users_id']) {
+            $user = User::find($data['users_id']);
+            if ($user) {
+                $user->update($userData);
+                Log::info('TenagaPendukungRepository: Updated existing user for tenaga pendukung', [
+                    'tenaga_pendukung_id' => $tenagaPendukung->id,
+                    'user_id' => $user->id
+                ]);
+            }
+        } else {
+            // Create new user
+            $user = User::create($userData);
+            
+           
+            $user->users_role()->create([
+                'users_id' => $user->id,
+                'role_id' => 37, 
+                'created_by' => $userId,
+                'updated_by' => $userId,
+            ]);
+
+            $tenagaPendukung->update(['users_id' => $user->id]);
+
+            Log::info('TenagaPendukungRepository: Created new user for tenaga pendukung', [
+                'tenaga_pendukung_id' => $tenagaPendukung->id,
+                'user_id' => $user->id
+            ]);
+        }
     }
 }

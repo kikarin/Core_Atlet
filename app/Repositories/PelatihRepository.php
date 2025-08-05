@@ -7,6 +7,7 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class PelatihRepository
 {
@@ -24,6 +25,7 @@ class PelatihRepository
             'media',
             'created_by_user',
             'updated_by_user',
+            'user',
             'sertifikat',
             'sertifikat.media',
             'sertifikat.created_by_user',
@@ -206,5 +208,56 @@ class PelatihRepository
         $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
 
         return $this->model->with($with)->findOrFail($id);
+    }
+
+    /**
+     * Handle Pelatih Akun creation/update
+     */
+    public function handlePelatihAkun($pelatih, $data)
+    {
+        $userId = Auth::check() ? Auth::id() : null;
+        $userData = [
+            'name' => $pelatih->nama,
+            'email' => $data['akun_email'],
+            'no_hp' => $pelatih->no_hp,
+            'is_active' => 1,
+            'current_role_id' => 36, 
+            'created_by' => $userId,
+            'updated_by' => $userId,
+        ];
+
+        // Jika ada password, hash password
+        if (isset($data['akun_password']) && $data['akun_password']) {
+            $userData['password'] = bcrypt($data['akun_password']);
+        }
+
+        // Jika sudah ada users_id, update user
+        if (isset($data['users_id']) && $data['users_id']) {
+            $user = User::find($data['users_id']);
+            if ($user) {
+                $user->update($userData);
+                Log::info('PelatihRepository: Updated existing user for pelatih', [
+                    'pelatih_id' => $pelatih->id,
+                    'user_id' => $user->id
+                ]);
+            }
+        } else {
+            // Create new user
+            $user = User::create($userData);
+            
+            $user->users_role()->create([
+                'users_id' => $user->id,
+                'role_id' => 36, 
+                'created_by' => $userId,
+                'updated_by' => $userId,
+            ]);
+
+            $pelatih->update(['users_id' => $user->id]);
+
+            Log::info('PelatihRepository: Created new user for pelatih', [
+                'pelatih_id' => $pelatih->id,
+                'user_id' => $user->id
+            ]);
+        }
     }
 }

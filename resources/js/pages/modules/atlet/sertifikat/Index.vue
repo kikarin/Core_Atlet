@@ -191,6 +191,11 @@ const tabsConfig = [
         label: 'Kesehatan',
         onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=kesehatan-data`),
     },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=akun-data`),
+    },
 ];
 const activeTab = ref('sertifikat-data');
 

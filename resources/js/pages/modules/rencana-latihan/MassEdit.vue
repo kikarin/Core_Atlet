@@ -49,7 +49,6 @@ onMounted(async () => {
                 jumlah_atlet: rencana.jumlah_atlet,
                 jumlah_pelatih: rencana.jumlah_pelatih,
                 jumlah_tenaga_pendukung: rencana.jumlah_tenaga_pendukung,
-                // Hanya ambil target yang dimiliki oleh rencana ini
                 targets: rencana.target_latihan.map((target: any) => {
                     return {
                         target_latihan_id: target.id,
@@ -257,7 +256,7 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                             <div class="flex justify-center">
                                                 <Input
                                                     type="text"
-                                                    class="bg-background text-foreground w-24 rounded border px-1 py-0.5 text-center"
+                                                    class="w-24 rounded border px-1 py-0.5 text-center bg-background text-foreground border-border"
                                                     :model-value="getTargetNilai(rencana, uniqueTarget.id)"
                                                     @update:model-value="(val: string) => updateTargetNilai(rencana, uniqueTarget.id, val)"
                                                     :placeholder="getTargetValue(uniqueTarget)"
@@ -277,11 +276,11 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                         </td>
                                     </template>
                                     <template v-else>
-                                        <td class="border-b bg-gray-50 px-2 py-1 text-center whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">-</span>
+                                        <td class="border-b bg-muted/20 px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-xs text-muted-foreground">-</span>
                                         </td>
-                                        <td class="border-b bg-gray-50 px-2 py-1 text-center whitespace-nowrap">
-                                            <span class="text-xs text-gray-400">-</span>
+                                        <td class="border-b bg-muted/20 px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-xs text-muted-foreground">-</span>
                                         </td>
                                     </template>
                                 </template>

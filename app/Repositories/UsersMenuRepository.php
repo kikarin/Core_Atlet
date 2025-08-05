@@ -240,7 +240,7 @@ class UsersMenuRepository
     {
         return $menus->filter(function ($menu) use ($role) {
             // Check if menu has permission requirement
-            if ($menu->permission) {
+            if ($menu->permission && $menu->permission->name) {
                 $permissionName = $menu->permission->name;
                 try {
                     $hasPermission = $role->hasPermissionTo($permissionName);
@@ -249,6 +249,7 @@ class UsersMenuRepository
                     }
                 } catch (PermissionDoesNotExist $e) {
                     // If permission doesn't exist, allow access
+                    \Log::warning("Permission not found: {$permissionName}");
                 }
             }
 
@@ -256,6 +257,8 @@ class UsersMenuRepository
             if ($menu->children && $menu->children->count() > 0) {
                 $filteredChildren = $this->filterMenusByPermission($menu->children, $role);
                 $menu->setRelation('children', $filteredChildren);
+                
+                // If parent menu has no permission requirement but all children are filtered out, hide parent
                 if ($filteredChildren->count() === 0) {
                     return false;
                 }

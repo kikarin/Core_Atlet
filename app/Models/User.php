@@ -134,6 +134,21 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(UsersRole::class, 'users_id');
     }
 
+    public function atlet()
+    {
+        return $this->hasOne(Atlet::class, 'users_id');
+    }
+
+    public function pelatih()
+    {
+        return $this->hasOne(Pelatih::class, 'users_id');
+    }
+
+    public function tenagaPendukung()
+    {
+        return $this->hasOne(TenagaPendukung::class, 'users_id');
+    }
+
     public function created_by_user()
     {
         return $this->belongsTo(User::class, 'created_by');

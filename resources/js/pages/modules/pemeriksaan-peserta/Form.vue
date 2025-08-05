@@ -109,7 +109,27 @@ const formState = ref({
 });
 
 const formInputs = computed(() => {
-    return [];
+    const inputs: any[] = [];
+    
+    // Hanya tampilkan form status dan catatan di mode edit
+    if (props.mode === 'edit') {
+        inputs.push(
+            {
+                name: 'ref_status_pemeriksaan_id',
+                label: 'Status Pemeriksaan',
+                type: 'select' as const,
+                required: true,
+                options: ((usePage().props.ref_status_pemeriksaan as any[]) || []).map((s) => ({ value: s.id, label: s.nama })),
+            },
+            {
+                name: 'catatan_umum',
+                label: 'Catatan Umum',
+                type: 'textarea' as const,
+            }
+        );
+    }
+    
+    return inputs;
 });
 
 const { save } = useHandleFormSave();

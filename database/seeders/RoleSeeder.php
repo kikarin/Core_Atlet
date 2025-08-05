@@ -57,6 +57,27 @@ class RoleSeeder extends Seeder
                 'init_page_login'  => 'dashboard',
                 'is_allow_login'   => 1,
                 'is_vertical_menu' => true,
+            ], [
+                'id'               => 35,
+                'name'             => 'Atlet',
+                'bg'               => 'bg-danger',
+                'init_page_login'  => 'dashboard',
+                'is_allow_login'   => 1,
+                'is_vertical_menu' => true,
+            ], [
+                'id'               => 36,
+                'name'             => 'Pelatih',
+                'bg'               => 'bg-warning',
+                'init_page_login'  => 'dashboard',
+                'is_allow_login'   => 1,
+                'is_vertical_menu' => true,
+            ], [
+                'id'               => 37,
+                'name'             => 'Tenaga Pendukung',
+                'bg'               => 'bg-success',
+                'init_page_login'  => 'dashboard',
+                'is_allow_login'   => 1,
+                'is_vertical_menu' => true,
             ],
         ];
         foreach ($listData as $data) {

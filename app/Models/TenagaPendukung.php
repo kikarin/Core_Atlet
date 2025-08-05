@@ -37,6 +37,7 @@ class TenagaPendukung extends Model implements HasMedia
         'email',
         'is_active',
         'foto',
+        'users_id',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -133,5 +134,10 @@ class TenagaPendukung extends Model implements HasMedia
     public function jenisTenagaPendukung()
     {
         return $this->belongsTo(MstJenisTenagaPendukung::class, 'jenis_tenaga_pendukung_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
     }
 }

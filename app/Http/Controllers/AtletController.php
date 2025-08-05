@@ -253,4 +253,114 @@ class AtletController extends Controller implements HasMiddleware
             ], 500);
         }
     }
+
+    /**
+     * Handle akun atlet
+     */
+    public function handleAkun($id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+            
+            return Inertia::render('modules/atlet/Edit', [
+                'item' => $atlet,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error handling akun atlet: '.$e->getMessage());
+            
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses akun atlet');
+        }
+    }
+
+    /**
+     * Store akun atlet
+     */
+    public function storeAkun(Request $request, $id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+            
+            // Validasi request untuk akun
+            $request->validate([
+                'akun_email' => 'required|email|unique:users,email',
+                'akun_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
+            ], [
+                'akun_email.required' => 'Email wajib diisi.',
+                'akun_email.email' => 'Format email tidak valid.',
+                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_password.required' => 'Password wajib diisi.',
+                'akun_password.min' => 'Password minimal 8 karakter.',
+                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+            ]);
+
+            // Handle akun creation di repository
+            $this->repository->handleAtletAkun($atlet, $request->all());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun atlet berhasil dibuat!',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating akun atlet: '.$e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat akun atlet: ' . $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Update akun atlet
+     */
+    public function updateAkun(Request $request, $id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+            
+            // Validasi request untuk akun
+            $rules = [
+                'akun_email' => 'required|email',
+            ];
+
+            // Jika ada users_id, validasi email unique kecuali untuk user yang sama
+            if ($atlet->users_id) {
+                $rules['akun_email'] = 'required|email|unique:users,email,'.$atlet->users_id;
+            } else {
+                $rules['akun_email'] = 'required|email|unique:users,email';
+            }
+
+            // Password opsional untuk update
+            if ($request->akun_password) {
+                $rules['akun_password'] = 'string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin';
+            }
+
+            $request->validate($rules, [
+                'akun_email.required' => 'Email wajib diisi.',
+                'akun_email.email' => 'Format email tidak valid.',
+                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_password.min' => 'Password minimal 8 karakter.',
+                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+            ]);
+
+            // Handle akun update di repository
+            $this->repository->handleAtletAkun($atlet, $request->all());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun atlet berhasil diperbarui!',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating akun atlet: '.$e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui akun atlet: ' . $e->getMessage(),
+            ], 422);
+        }
+    }
 }

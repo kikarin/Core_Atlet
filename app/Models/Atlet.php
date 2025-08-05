@@ -37,6 +37,7 @@ class Atlet extends Model implements HasMedia
         'email',
         'is_active',
         'foto',
+        'users_id', 
         'created_by',
         'updated_by',
         'deleted_by',
@@ -139,5 +140,10 @@ class Atlet extends Model implements HasMedia
     public function posisiAtlet()
     {
         return $this->belongsTo(MstPosisiAtlet::class, 'posisi_atlet_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
     }
 }

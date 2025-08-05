@@ -6,6 +6,7 @@ import { computed, ref, watch } from 'vue';
 import Form from './Form.vue';
 import FormKesehatan from './FormKesehatan.vue';
 import FormOrangTua from './FormOrangTua.vue';
+import FormAkun from './FormAkun.vue';
 
 const props = defineProps<{ item: Record<string, any> }>();
 
@@ -52,6 +53,8 @@ const dynamicTitle = computed(() => {
         return `Dokumen : ${props.item.nama || '-'}`;
     } else if (activeTab.value === 'kesehatan-data') {
         return `Kesehatan : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'akun-data') {
+        return `Akun : ${props.item.nama || '-'}`;
     }
     return 'Edit Atlet';
 });
@@ -99,6 +102,12 @@ const tabsConfig = computed(() => [
         label: 'Kesehatan',
         component: FormKesehatan,
         props: { atletId: atletId.value, mode: 'edit' },
+    },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        component: FormAkun,
+        props: { mode: 'edit', initialData: props.item },
     },
 ]);
 </script>

@@ -285,15 +285,7 @@ function getLamaBergabung(tanggalBergabung: string) {
                     </div>
 
                     <div class="bg-muted rounded-lg border p-3">
-                        <div class="mb-2 text-sm font-medium">Format kolom yang didukung:</div>
-                        <div class="text-muted-foreground space-y-1 text-xs">
-                            <div>
-                                <strong>Atlet:</strong> nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, kecamatan_id, kelurahan_id,
-                                no_hp, email, is_active
-                            </div>
-                            <div><strong>Orang Tua:</strong> nama_ibu_kandung, nama_ayah_kandung, nama_wali, dst</div>
-                            <div><strong>Kesehatan:</strong> tinggi_badan, berat_badan, penglihatan, pendengaran, riwayat_penyakit, alergi</div>
-                        </div>
+                        <div class="mb-2 text-sm font-medium">Template kolom yang didukung:</div>
                         <div class="mt-2">
                             <a
                                 href="/template-import/template_import_atlet.xlsx"

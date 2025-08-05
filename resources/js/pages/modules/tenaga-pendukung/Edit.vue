@@ -4,6 +4,7 @@ import { router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import Form from './Form.vue';
 import FormKesehatan from './FormKesehatan.vue';
+import FormAkun from './FormAkun.vue';
 
 interface TenagaPendukungItem {
     id: number;
@@ -70,6 +71,8 @@ const dynamicTitle = computed(() => {
         return `Kesehatan : ${props.item.nama || '-'}`;
     } else if (activeTab.value === 'dokumen-data') {
         return `Dokumen : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'akun-data') {
+        return `Akun : ${props.item.nama || '-'}`;
     }
     return 'Edit Tenaga Pendukung';
 });
@@ -110,6 +113,12 @@ const tabsConfig = computed(() => [
         label: 'Dokumen',
         isRedirectTab: true,
         onClick: () => router.visit(`/tenaga-pendukung/${props.item.id}/dokumen`),
+    },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        component: FormAkun,
+        props: { mode: 'edit', initialData: props.item },
     },
 ]);
 </script>

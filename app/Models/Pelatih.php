@@ -37,6 +37,7 @@ class Pelatih extends Model implements HasMedia
         'email',
         'is_active',
         'foto',
+        'users_id',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -134,5 +135,10 @@ class Pelatih extends Model implements HasMedia
     public function jenisPelatih()
     {
         return $this->belongsTo(MstJenisPelatih::class, 'jenis_pelatih_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
     }
 }
