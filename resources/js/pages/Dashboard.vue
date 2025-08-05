@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Tabs from '@/components/ui/tabs/Tabs.vue';
 import TabsContent from '@/components/ui/tabs/TabsContent.vue';
 import TabsList from '@/components/ui/tabs/TabsList.vue';
-import TabsTrigger from '@/components/ui/tabs/TabsTrigger.vue';
 
 import ApexChart from '@/components/ApexChart.vue';
 import AppLayout from '@/layouts/AppLayout.vue';

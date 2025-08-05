@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
-const { save } = useHandleFormSave();
 const { toast } = useToast();
 
 const props = defineProps<{
