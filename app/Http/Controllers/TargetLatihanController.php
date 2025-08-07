@@ -36,10 +36,11 @@ class TargetLatihanController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'nestedIndex']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
-            new Middleware("can:$permission Detail", only: ['show']),
-            new Middleware("can:$permission Edit", only: ['edit', 'update']),
-            new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
+            new Middleware("can:$permission Detail", only: ['show', 'nestedShow']),
+            new Middleware("can:$permission Edit", only: ['edit', 'update', 'nestedEdit', 'nestedUpdate']),
+            new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected', 'nestedDestroy', 'nestedDestroySelected']),
         ];
     }
 

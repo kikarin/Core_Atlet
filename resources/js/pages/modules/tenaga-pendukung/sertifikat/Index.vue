@@ -185,6 +185,11 @@ const tabsConfig = [
         label: 'Dokumen',
         onClick: () => router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen`),
     },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        onClick: () => router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/edit?tab=akun-data`),
+    },
 ];
 const activeTab = ref('sertifikat-data');
 

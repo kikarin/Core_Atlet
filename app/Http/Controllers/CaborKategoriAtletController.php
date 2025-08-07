@@ -38,6 +38,7 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'atletByKategori', 'createMultiple', 'getByAtletId']),
             new Middleware("can:$permission Add", only: ['create', 'store', 'storeMultiple']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),
@@ -54,6 +55,9 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
+        
+        // Tambahkan customIndex() call untuk permission checking yang konsisten
+        $data = $this->repository->customIndex($data);
 
         return inertia('modules/cabor-kategori-atlet/Index', $data);
     }

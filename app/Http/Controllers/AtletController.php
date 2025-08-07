@@ -41,11 +41,17 @@ class AtletController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
-            new Middleware("can:$permission Add", only: ['create', 'store', 'import']),
+            new Middleware("can:$permission Show", only: ['index','riwayatPemeriksaan', 'getByAtletId',]),
+            new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
-            new Middleware("can:$permission Edit", only: ['edit', 'update']),
+            new Middleware("can:$permission Edit", only: ['edit', 'update' ]),
             new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
         ];
+    }
+
+    public function index()
+    {
+        return Inertia::render('modules/atlet/Index');
     }
 
     public function apiIndex()
@@ -60,6 +66,7 @@ class AtletController extends Controller implements HasMiddleware
                 'per_page'     => $data['perPage'],
                 'search'       => $data['search'],
                 'sort'         => $data['sort'],
+                'order'        => $data['order'],
             ],
         ]);
     }

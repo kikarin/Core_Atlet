@@ -35,6 +35,7 @@ class RencanaLatihanController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['nestedIndex']),
             new Middleware("can:$permission Add", only: ['nestedCreate', 'nestedStore']),
             new Middleware("can:$permission Detail", only: ['nestedShow']),
             new Middleware("can:$permission Edit", only: ['nestedEdit', 'nestedUpdate']),

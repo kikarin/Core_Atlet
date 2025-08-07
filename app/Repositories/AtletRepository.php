@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User; 
+use App\Models\Role;
 
 class AtletRepository
 {
@@ -264,6 +265,13 @@ class AtletRepository
             $user = User::find($data['users_id']);
             if ($user) {
                 $user->update($userData);
+                
+                // Ensure role is assigned using Spatie Permission
+                $role = Role::find(35); // Role Atlet
+                if ($role && !$user->hasRole($role)) {
+                    $user->assignRole($role);
+                }
+                
                 Log::info('AtletRepository: Updated existing user for atlet', [
                     'atlet_id' => $atlet->id,
                     'user_id' => $user->id
@@ -273,7 +281,13 @@ class AtletRepository
             // Create new user
             $user = User::create($userData);
             
-            // Assign role Atlet (ID: 35 berdasarkan RoleSeeder)
+            // Assign role Atlet using Spatie Permission
+            $role = Role::find(35); // Role Atlet
+            if ($role) {
+                $user->assignRole($role);
+            }
+            
+            // Also create users_role record for compatibility
             $user->users_role()->create([
                 'users_id' => $user->id,
                 'role_id' => 35, // Role Atlet

@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersRole;
 use App\Repositories\RoleRepository;
+use App\Repositories\UsersMenuRepository;
 use App\Repositories\UsersRepository;
 use App\Repositories\UsersRoleRepository;
 use App\Traits\BaseTrait;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class UsersController extends Controller implements HasMiddleware
 {
@@ -40,6 +42,7 @@ class UsersController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'apiIndex']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),
@@ -132,6 +135,19 @@ class UsersController extends Controller implements HasMiddleware
         $user                  = User::find($authUser->id);
         $user->current_role_id = $newRoleId;
         $user->save();
+
+        // Sync roles with Spatie Permission package to update permissions
+        $user->syncRoles([(int) $newRoleId]);
+
+        // Clear permission and menu caches
+        Cache::forget('spatie.permission.cache');
+        app(UsersMenuRepository::class)->invalidateMenusCache();
+
+        // Refresh the session to ensure new permissions are loaded
+        $request->session()->regenerate();
+
+        // Refresh the authenticated user to get updated permissions
+        Auth::setUser($user->fresh(['role', 'users_role.role']));
 
         $newRole     = Role::find($newRoleId);
         $redirectUrl = $newRole && ! empty($newRole->init_page_login) ? $newRole->init_page_login : 'dashboard';

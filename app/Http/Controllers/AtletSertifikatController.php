@@ -34,8 +34,9 @@ class AtletSertifikatController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'getByAtletId']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
-            new Middleware("can:$permission Detail", only: ['getByAtletId']),
+            new Middleware("can:$permission Detail", only: ['getByAtletId', 'show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),
             new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
         ];

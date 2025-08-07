@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Models\Role;
 
 class PelatihRepository
 {
@@ -236,6 +237,13 @@ class PelatihRepository
             $user = User::find($data['users_id']);
             if ($user) {
                 $user->update($userData);
+                
+                // Ensure role is assigned using Spatie Permission
+                $role = Role::find(36); // Role Pelatih
+                if ($role && !$user->hasRole($role)) {
+                    $user->assignRole($role);
+                }
+                
                 Log::info('PelatihRepository: Updated existing user for pelatih', [
                     'pelatih_id' => $pelatih->id,
                     'user_id' => $user->id
@@ -245,6 +253,13 @@ class PelatihRepository
             // Create new user
             $user = User::create($userData);
             
+            // Assign role Pelatih using Spatie Permission
+            $role = Role::find(36); // Role Pelatih
+            if ($role) {
+                $user->assignRole($role);
+            }
+            
+            // Also create users_role record for compatibility
             $user->users_role()->create([
                 'users_id' => $user->id,
                 'role_id' => 36, 

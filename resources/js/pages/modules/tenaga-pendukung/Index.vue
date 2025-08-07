@@ -33,6 +33,7 @@ const columns = [
             }
             return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
         },
+        orderable: false,
     },
     { key: 'nama', label: 'Nama' },
     {
@@ -91,6 +92,7 @@ const columns = [
                 ? '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aktif</span>'
                 : '<span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Nonaktif</span>';
         },
+        orderable: false,
     },
 ];
 

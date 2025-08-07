@@ -39,20 +39,22 @@ const formatPeriode = (startDate: string, endDate: string) => {
 
 const columns = [
     { key: 'nama_program', label: 'Nama Program' },
-    { key: 'rencana_latihan', label: 'Rencana Latihan' },
-    { key: 'cabor_nama', label: 'Cabor' },
+    { key: 'rencana_latihan', label: 'Rencana Latihan', orderable: false, },
+    { key: 'cabor_nama', label: 'Cabor', orderable: false, },
     {
         key: 'cabor_kategori_nama',
         label: 'Kategori',
         format: (row: any) => row.cabor_kategori_nama || row.cabor_kategori?.nama || '-',
+        orderable: false,
     },
     {
         key: 'periode',
         label: 'Periode',
         format: (row: any) => formatPeriode(row.periode_mulai, row.periode_selesai),
+        orderable: false,
     },
-    { key: 'target_individu', label: 'Target Individu' },
-    { key: 'target_kelompok', label: 'Target Kelompok' },
+    { key: 'target_individu', label: 'Target Individu', orderable: false },
+    { key: 'target_kelompok', label: 'Target Kelompok', orderable: false },
 ];
 
 const selected = ref<number[]>([]);

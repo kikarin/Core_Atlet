@@ -34,8 +34,9 @@ class TenagaPendukungPrestasiController extends Controller implements HasMiddlew
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'getByTenagaPendukungId']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
-            new Middleware("can:$permission Detail", only: ['getByTenagaPendukungId']),
+            new Middleware("can:$permission Detail", only: ['getByTenagaPendukungId', 'show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),
             new Middleware("can:$permission Delete", only: ['destroy', 'destroy_selected']),
         ];

@@ -54,6 +54,7 @@ class RoleRepository
             activity()->event('Set Permission')->performedOn($record)->withProperties($properties)->log('User');
 
             Cache::forget("menus_for_role_$id");
+            Cache::put('menus_version', now()->timestamp);
 
             DB::commit();
         } catch (Exception $e) {

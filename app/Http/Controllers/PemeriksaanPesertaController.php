@@ -13,10 +13,11 @@ use App\Repositories\PemeriksaanPesertaRepository;
 use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class PemeriksaanPesertaController extends Controller
+class PemeriksaanPesertaController extends Controller implements HasMiddleware
 {
     use BaseTrait;
 
@@ -35,6 +36,7 @@ class PemeriksaanPesertaController extends Controller
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),

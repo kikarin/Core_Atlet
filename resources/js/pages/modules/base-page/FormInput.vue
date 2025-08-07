@@ -38,12 +38,22 @@ const props = defineProps<{
     }[];
     initialData?: Record<string, any>;
     modelValue?: Record<string, any>;
+    disableAutoReset?: boolean; 
 }>();
 
 const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
 
-// Inisialisasi form menggunakan useForm dengan data awal
 const form = useForm<Record<string, any>>(props.initialData || {});
+
+// Computed property untuk mengontrol kapan form harus di-reset
+const shouldResetForm = computed(() => {
+    // Jika disableAutoReset aktif, hanya reset jika benar-benar diperlukan
+    if (props.disableAutoReset) {
+        // Hanya reset jika initialData berubah dari null/undefined ke ada data
+        return false; // Disable auto reset in create mode
+    }
+    return true; // Allow reset in edit mode
+});
 
 // Sinkronisasi form ke v-model parent
 watch(
@@ -54,11 +64,18 @@ watch(
     { deep: true },
 );
 
-// Tambahkan watch untuk memperbarui form saat initialData berubah (ini penting untuk edit mode)
+// Tambahkan watch untuk memperbarui form saat initialData berubah (ini penting untuk edit mode) FIX
 watch(
     () => props.initialData,
-    (newVal) => {
-        console.log('FormInput.vue: watch initialData triggered. newVal:', newVal);
+    (newVal, oldVal) => {
+        console.log('FormInput.vue: watch initialData triggered. newVal:', newVal, 'oldVal:', oldVal);
+        
+        // Skip reset if shouldResetForm is false
+        if (!shouldResetForm.value) {
+            console.log('FormInput.vue: Skipping auto reset due to shouldResetForm being false');
+            return;
+        }
+        
         if (newVal) {
             // Perbarui setiap properti secara manual untuk memastikan reaktivitas
             // dan agar form.isDirty bekerja dengan benar
@@ -340,7 +357,7 @@ const handleCancel = () => {
                                     <Checkbox
                                         :model-value="(form[input.name] || []).includes(option.value)"
                                         @update:modelValue="
-                                            (checked) => {
+                                            (checked: boolean) => {
                                                 const selected = form[input.name] || [];
                                                 if (checked) {
                                                     form[input.name] = [...selected, option.value];
@@ -360,7 +377,7 @@ const handleCancel = () => {
                             v-else-if="input.type === 'icon'"
                             :required="input.required"
                             :model-value="form[input.name]"
-                            @update:modelValue="(val) => (form[input.name] = val)"
+                            @update:modelValue="(val: any) => (form[input.name] = val)"
                         >
                             <SelectTrigger class="w-full">
                                 <SelectValue :placeholder="input.placeholder">
@@ -403,7 +420,7 @@ const handleCancel = () => {
                             :required="input.required"
                             :model-value="form[input.name]"
                             @update:modelValue="
-                                (val) => {
+                                (val: any) => {
                                     form[input.name] = val;
                                     emit('field-updated', { field: input.name, value: val });
                                 }

@@ -10,13 +10,13 @@ const { toast } = useToast();
 const breadcrumbs = [{ title: 'Pemeriksaan', href: '/pemeriksaan' }];
 
 const columns = [
-    { key: 'peserta', label: 'Peserta' },
-    { key: 'parameter', label: 'Parameter' },
-    { key: 'cabor', label: 'Cabor' },
-    { key: 'cabor_kategori', label: 'Kategori' },
-    { key: 'tenaga_pendukung', label: 'Tenaga Pendukung' },
+    { key: 'peserta', label: 'Peserta', orderable: false, },
+    { key: 'parameter', label: 'Parameter', orderable: false, },
+    { key: 'cabor', label: 'Cabor', orderable: false, },
+    { key: 'cabor_kategori', label: 'Kategori', orderable: false, },
+    { key: 'tenaga_pendukung', label: 'Tenaga Pendukung', orderable: false, },
     { key: 'nama_pemeriksaan', label: 'Nama Pemeriksaan' },
-    { key: 'tanggal_pemeriksaan', label: 'Tanggal Pemeriksaan' },
+    { key: 'tanggal_pemeriksaan', label: 'Tanggal Pemeriksaan'},
     {
         key: 'status',
         label: 'Status',

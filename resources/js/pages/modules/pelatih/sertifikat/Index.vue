@@ -185,6 +185,11 @@ const tabsConfig = [
         label: 'Dokumen',
         onClick: () => router.visit(`/pelatih/${props.pelatihId}/dokumen`),
     },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=akun-data`),
+    }
 ];
 const activeTab = ref('sertifikat-data');
 

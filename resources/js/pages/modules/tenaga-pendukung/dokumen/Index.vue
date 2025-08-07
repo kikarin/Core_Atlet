@@ -191,6 +191,11 @@ const tabsConfig = [
         label: 'Dokumen',
         // Aktif
     },
+    {
+        value: 'akun-data',
+        label: 'Akun',
+        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=akun-data`),
+    },
 ];
 const activeTab = ref('dokumen-data');
 

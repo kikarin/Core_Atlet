@@ -137,5 +137,5 @@ function handleFieldUpdate({ field, value }: { field: string; value: any }) {
 </script>
 
 <template>
-    <FormInput :form-inputs="formInputs" :initial-data="formInitialData" @save="handleSave" @field-updated="handleFieldUpdate" />
+    <FormInput :form-inputs="formInputs" :initial-data="formInitialData" @save="handleSave" @field-updated="handleFieldUpdate" :disable-auto-reset="props.mode === 'create'" />
 </template>

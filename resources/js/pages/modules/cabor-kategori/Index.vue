@@ -9,13 +9,14 @@ import BadgeGroup from '../components/BadgeGroup.vue';
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];
 
 const columns = [
-    { key: 'peserta', label: 'Peserta', sortable: false },
-    { key: 'cabor_nama', label: 'Cabor' },
+    { key: 'peserta', label: 'Peserta', sortable: false, orderable: false },
+    { key: 'cabor_nama', label: 'Cabor', orderable: false,},
     { key: 'nama', label: 'Nama' },
     {
         key: 'jenis_kelamin',
         label: 'Gender',
         format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : 'Campuran'),
+        orderable: false,
     },
     { key: 'deskripsi', label: 'Deskripsi' },
 ];

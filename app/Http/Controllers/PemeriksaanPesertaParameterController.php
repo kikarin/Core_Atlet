@@ -39,6 +39,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'massEdit']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),

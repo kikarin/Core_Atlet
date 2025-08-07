@@ -38,6 +38,7 @@ class CaborKategoriTenagaPendukungController extends Controller implements HasMi
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
+            new Middleware("can:$permission Show", only: ['index', 'tenagaPendukungByKategori', 'createMultiple']),
             new Middleware("can:$permission Add", only: ['create', 'store', 'storeMultiple']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),

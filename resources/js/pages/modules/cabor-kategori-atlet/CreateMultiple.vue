@@ -180,7 +180,7 @@ const handlePerPageChange = (value: number) => {
 };
 
 const selectedStatus = ref(1); // 1 = aktif, 0 = nonaktif
-const posisiAtletOptions = ref<{ value: number; label: string }[]>([]);
+const posisiAtletOptions = ref<any[]>([]);
 const selectedPosisiAtletId = ref<number | null>(null);
 
 // Fetch posisi atlet
@@ -453,7 +453,7 @@ fetchAvailableAtlet();
                 :show-save="true"
                 :show-cancel="true"
                 :save-text="`Tambah ${selectedAtletIds.length} Atlet`"
-                :save-disabled="selectedAtletIds.length === 0"
+                :save-disabled="selectedAtletIds.length === 0 || selectedPosisiAtletId === null"
                 @save="handleSave"
                 @cancel="handleCancel"
             />

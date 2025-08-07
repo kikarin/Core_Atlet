@@ -158,15 +158,15 @@ class CategoryPermissionSeeder extends Seeder
             ],
             [
                 'name'       => 'Cabor Kategori Atlet',
-                'permission' => 'CRUD',
+                'permission' => ['Cabor Kategori Atlet Show', 'Cabor Kategori Atlet Create', 'Cabor Kategori Atlet Edit', 'Cabor Kategori Atlet Delete' ],
             ],
             [
                 'name'       => 'Cabor Kategori Pelatih',
-                'permission' => 'CRUD',
+                'permission' => ['Cabor Kategori Pelatih Show', 'Cabor Kategori Pelatih Create', 'Cabor Kategori Pelatih Edit', 'Cabor Kategori Pelatih Delete'],
             ],
             [
                 'name'       => 'Cabor Kategori Tenaga Pendukung',
-                'permission' => 'CRUD',
+                'permission' => ['Cabor Kategori Tenaga Pendukung Show', 'Cabor Kategori Tenaga Pendukung Create', 'Cabor Kategori Tenaga Pendukung Edit', 'Cabor Kategori Tenaga Pendukung Delete'],
             ],
             [
                 'name'       => 'Program Latihan',

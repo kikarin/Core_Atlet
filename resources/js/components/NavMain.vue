@@ -26,7 +26,7 @@ const toggleGroup = (title: string) => {
 const isActive = (href?: string) => {
     if (!href) return false;
     if (href === '/') return page.url === '/';
-    return page.url === href;
+    return page.url === href || page.url.startsWith(href + '/');
 };
 
 const findActiveParents = (items: NavItem[], currentUrl: string): string[] => {
