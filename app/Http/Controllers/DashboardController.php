@@ -308,10 +308,22 @@ class DashboardController extends Controller implements HasMiddleware
         $maxPelatihYear         = Pelatih::whereNotNull('tanggal_bergabung')->selectRaw("MAX($yearFn) as year")->value('year');
         $maxTenagaPendukungYear = TenagaPendukung::whereNotNull('tanggal_bergabung')->selectRaw("MAX($yearFn) as year")->value('year');
 
+        $minValues = array_filter([$minAtletYear, $minPelatihYear, $minTenagaPendukungYear]);
+        $maxValues = array_filter([$maxAtletYear, $maxPelatihYear, $maxTenagaPendukungYear]);
 
-        // Ambil tahun terendah dan tertinggi dari semua tabel
-        $minYear = min(array_filter([$minAtletYear, $minPelatihYear, $minTenagaPendukungYear]));
-        $maxYear = max(array_filter([$maxAtletYear, $maxPelatihYear, $maxTenagaPendukungYear]));
+        if (empty($minValues) || empty($maxValues)) {
+            return [
+                'years' => [],
+                'series' => [
+                    ['name' => 'Atlet', 'data' => []],
+                    ['name' => 'Pelatih', 'data' => []],
+                    ['name' => 'Tenaga Pendukung', 'data' => []],
+                ],
+            ];
+        }
+
+        $minYear = min($minValues);
+        $maxYear = max($maxValues);
 
         // Buat range tahun dari data yang ada
         $years = range($minYear, $maxYear);
