@@ -110,7 +110,7 @@ const formState = ref({
 
 const formInputs = computed(() => {
     const inputs: any[] = [];
-    
+
     // Hanya tampilkan form status dan catatan di mode edit
     if (props.mode === 'edit') {
         inputs.push(
@@ -125,10 +125,10 @@ const formInputs = computed(() => {
                 name: 'catatan_umum',
                 label: 'Catatan Umum',
                 type: 'textarea' as const,
-            }
+            },
         );
     }
-    
+
     return inputs;
 });
 

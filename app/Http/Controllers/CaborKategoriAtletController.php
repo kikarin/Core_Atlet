@@ -55,7 +55,7 @@ class CaborKategoriAtletController extends Controller implements HasMiddleware
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
-        
+
         // Tambahkan customIndex() call untuk permission checking yang konsisten
         $data = $this->repository->customIndex($data);
 

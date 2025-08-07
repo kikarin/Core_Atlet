@@ -10,7 +10,7 @@ const breadcrumbs = [{ title: 'Turnamen', href: '/turnamen' }];
 
 const columns = [
     { key: 'nama', label: 'Nama Turnamen' },
-    { key: 'cabor_kategori_nama', label: 'Cabor Kategori', orderable: false, },
+    { key: 'cabor_kategori_nama', label: 'Cabor Kategori', orderable: false },
     {
         key: 'tanggal_mulai',
         label: 'Tanggal Mulai',
@@ -39,10 +39,10 @@ const columns = [
             return date.toLocaleDateString('id-ID', options);
         },
     },
-    { key: 'tingkat_nama', label: 'Tingkat', orderable: false, },
+    { key: 'tingkat_nama', label: 'Tingkat', orderable: false },
     { key: 'lokasi', label: 'Lokasi' },
-    { key: 'juara_nama', label: 'Juara', orderable: false, },
-    { key: 'hasil', label: 'Hasil', orderable: false, },
+    { key: 'juara_nama', label: 'Juara', orderable: false },
+    { key: 'hasil', label: 'Hasil', orderable: false },
     {
         key: 'peserta',
         label: 'Peserta',

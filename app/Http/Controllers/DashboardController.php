@@ -295,41 +295,45 @@ class DashboardController extends Controller implements HasMiddleware
 
     private function getChartData()
     {
-        // Ambil tahun bergabung terawal dari masing-masing tabel
-        $minAtletYear = Atlet::whereNotNull('tanggal_bergabung')->min(DB::raw('YEAR(tanggal_bergabung)'));
-        $minPelatihYear = Pelatih::whereNotNull('tanggal_bergabung')->min(DB::raw('YEAR(tanggal_bergabung)'));
-        $minTenagaPendukungYear = TenagaPendukung::whereNotNull('tanggal_bergabung')->min(DB::raw('YEAR(tanggal_bergabung)'));
-    
-        // Ambil tahun bergabung terakhir dari masing-masing tabel
-        $maxAtletYear = Atlet::whereNotNull('tanggal_bergabung')->max(DB::raw('YEAR(tanggal_bergabung)'));
-        $maxPelatihYear = Pelatih::whereNotNull('tanggal_bergabung')->max(DB::raw('YEAR(tanggal_bergabung)'));
-        $maxTenagaPendukungYear = TenagaPendukung::whereNotNull('tanggal_bergabung')->max(DB::raw('YEAR(tanggal_bergabung)'));
-    
+        $driver = DB::getDriverName();
+        $yearFn = $driver === 'sqlite'
+            ? "strftime('%Y', tanggal_bergabung)"
+            : 'YEAR(tanggal_bergabung)';
+
+        $minAtletYear           = Atlet::whereNotNull('tanggal_bergabung')->selectRaw("MIN($yearFn) as year")->value('year');
+        $minPelatihYear         = Pelatih::whereNotNull('tanggal_bergabung')->selectRaw("MIN($yearFn) as year")->value('year');
+        $minTenagaPendukungYear = TenagaPendukung::whereNotNull('tanggal_bergabung')->selectRaw("MIN($yearFn) as year")->value('year');
+
+        $maxAtletYear           = Atlet::whereNotNull('tanggal_bergabung')->selectRaw("MAX($yearFn) as year")->value('year');
+        $maxPelatihYear         = Pelatih::whereNotNull('tanggal_bergabung')->selectRaw("MAX($yearFn) as year")->value('year');
+        $maxTenagaPendukungYear = TenagaPendukung::whereNotNull('tanggal_bergabung')->selectRaw("MAX($yearFn) as year")->value('year');
+
+
         // Ambil tahun terendah dan tertinggi dari semua tabel
         $minYear = min(array_filter([$minAtletYear, $minPelatihYear, $minTenagaPendukungYear]));
         $maxYear = max(array_filter([$maxAtletYear, $maxPelatihYear, $maxTenagaPendukungYear]));
-    
+
         // Buat range tahun dari data yang ada
         $years = range($minYear, $maxYear);
-    
-        $atletData = [];
-        $pelatihData = [];
+
+        $atletData           = [];
+        $pelatihData         = [];
         $tenagaPendukungData = [];
-    
+
         foreach ($years as $year) {
             // Data Atlet per tahun
-            $atletCount = Atlet::whereYear('tanggal_bergabung', $year)->count();
+            $atletCount  = Atlet::whereYear('tanggal_bergabung', $year)->count();
             $atletData[] = $atletCount;
-    
+
             // Data Pelatih per tahun
-            $pelatihCount = Pelatih::whereYear('tanggal_bergabung', $year)->count();
+            $pelatihCount  = Pelatih::whereYear('tanggal_bergabung', $year)->count();
             $pelatihData[] = $pelatihCount;
-    
+
             // Data Tenaga Pendukung per tahun
-            $tenagaPendukungCount = TenagaPendukung::whereYear('tanggal_bergabung', $year)->count();
+            $tenagaPendukungCount  = TenagaPendukung::whereYear('tanggal_bergabung', $year)->count();
             $tenagaPendukungData[] = $tenagaPendukungCount;
         }
-    
+
         return [
             'years'  => $years,
             'series' => [
@@ -348,7 +352,7 @@ class DashboardController extends Controller implements HasMiddleware
             ],
         ];
     }
-    
+
 
     private function getRekapData()
     {

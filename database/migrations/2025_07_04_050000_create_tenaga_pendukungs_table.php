@@ -25,7 +25,7 @@ return new class () extends Migration {
             $table->string('email', 200)->nullable();
             $table->boolean('is_active')->default(1);
             $table->string('foto', 255)->nullable();
-            $table->unsignedBigInteger('users_id')->nullable(); 
+            $table->unsignedBigInteger('users_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();

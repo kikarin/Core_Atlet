@@ -36,8 +36,8 @@ class PelatihRequest extends FormRequest
             'is_active'         => 'required|boolean',
             'is_delete_foto'    => 'nullable|boolean',
 
-            'users_id' => 'nullable|integer|exists:users,id',
-            'akun_email' => 'nullable|email|max:200',
+            'users_id'      => 'nullable|integer|exists:users,id',
+            'akun_email'    => 'nullable|email|max:200',
             'akun_password' => 'nullable|string|min:8',
         ];
 
@@ -66,8 +66,8 @@ class PelatihRequest extends FormRequest
             'kelurahan_id' => $this->kelurahan_id && $this->kelurahan_id !== '' ? (int) $this->kelurahan_id : null,
             'is_active'    => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
 
-            'users_id' => $this->users_id ?: null,
-            'akun_email' => $this->akun_email ?: null,
+            'users_id'      => $this->users_id ?: null,
+            'akun_email'    => $this->akun_email ?: null,
             'akun_password' => $this->akun_password ?: null,
         ]);
     }

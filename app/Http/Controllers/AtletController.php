@@ -268,13 +268,13 @@ class AtletController extends Controller implements HasMiddleware
     {
         try {
             $atlet = $this->repository->getDetailWithRelations($id);
-            
+
             return Inertia::render('modules/atlet/Edit', [
                 'item' => $atlet,
             ]);
         } catch (\Exception $e) {
             Log::error('Error handling akun atlet: '.$e->getMessage());
-            
+
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses akun atlet');
         }
     }
@@ -286,19 +286,19 @@ class AtletController extends Controller implements HasMiddleware
     {
         try {
             $atlet = $this->repository->getDetailWithRelations($id);
-            
+
             // Validasi request untuk akun
             $request->validate([
-                'akun_email' => 'required|email|unique:users,email',
+                'akun_email'    => 'required|email|unique:users,email',
                 'akun_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
             ], [
-                'akun_email.required' => 'Email wajib diisi.',
-                'akun_email.email' => 'Format email tidak valid.',
-                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_email.required'    => 'Email wajib diisi.',
+                'akun_email.email'       => 'Format email tidak valid.',
+                'akun_email.unique'      => 'Email sudah digunakan.',
                 'akun_password.required' => 'Password wajib diisi.',
-                'akun_password.min' => 'Password minimal 8 karakter.',
-                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
-                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+                'akun_password.min'      => 'Password minimal 8 karakter.',
+                'akun_password.regex'    => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in'   => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
             ]);
 
             // Handle akun creation di repository
@@ -311,7 +311,7 @@ class AtletController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             Log::error('Error creating akun atlet: '.$e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membuat akun atlet: ' . $e->getMessage(),
@@ -326,7 +326,7 @@ class AtletController extends Controller implements HasMiddleware
     {
         try {
             $atlet = $this->repository->getDetailWithRelations($id);
-            
+
             // Validasi request untuk akun
             $rules = [
                 'akun_email' => 'required|email',
@@ -345,11 +345,11 @@ class AtletController extends Controller implements HasMiddleware
             }
 
             $request->validate($rules, [
-                'akun_email.required' => 'Email wajib diisi.',
-                'akun_email.email' => 'Format email tidak valid.',
-                'akun_email.unique' => 'Email sudah digunakan.',
-                'akun_password.min' => 'Password minimal 8 karakter.',
-                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_email.required'  => 'Email wajib diisi.',
+                'akun_email.email'     => 'Format email tidak valid.',
+                'akun_email.unique'    => 'Email sudah digunakan.',
+                'akun_password.min'    => 'Password minimal 8 karakter.',
+                'akun_password.regex'  => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
                 'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
             ]);
 
@@ -363,7 +363,7 @@ class AtletController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             Log::error('Error updating akun atlet: '.$e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui akun atlet: ' . $e->getMessage(),

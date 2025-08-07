@@ -202,7 +202,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [AtletController::class, 'riwayatPemeriksaan'])->name('atlet.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [AtletController::class, 'parameterDetail'])->name('atlet.riwayat-pemeriksaan.parameter');
-        
+
         // Akun Atlet
         Route::post('akun', [AtletController::class, 'storeAkun'])->name('atlet.akun.store');
         Route::put('akun', [AtletController::class, 'updateAkun'])->name('atlet.akun.update');
@@ -245,7 +245,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [PelatihController::class, 'riwayatPemeriksaan'])->name('pelatih.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [PelatihController::class, 'parameterDetail'])->name('pelatih.riwayat-pemeriksaan.parameter');
-        
+
         // Akun Pelatih
         Route::post('akun', [PelatihController::class, 'storeAkun'])->name('pelatih.akun.store');
         Route::put('akun', [PelatihController::class, 'updateAkun'])->name('pelatih.akun.update');
@@ -293,7 +293,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Riwayat Pemeriksaan
         Route::get('riwayat-pemeriksaan', [TenagaPendukungController::class, 'riwayatPemeriksaan'])->name('tenaga-pendukung.riwayat-pemeriksaan');
         Route::get('riwayat-pemeriksaan/{pemeriksaan_id}/parameter', [TenagaPendukungController::class, 'parameterDetail'])->name('tenaga-pendukung.riwayat-pemeriksaan.parameter');
-        
+
         // Akun Tenaga Pendukung
         Route::post('akun', [TenagaPendukungController::class, 'storeAkun'])->name('tenaga-pendukung.akun.store');
         Route::put('akun', [TenagaPendukungController::class, 'updateAkun'])->name('tenaga-pendukung.akun.update');

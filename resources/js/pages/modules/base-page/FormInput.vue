@@ -38,7 +38,7 @@ const props = defineProps<{
     }[];
     initialData?: Record<string, any>;
     modelValue?: Record<string, any>;
-    disableAutoReset?: boolean; 
+    disableAutoReset?: boolean;
 }>();
 
 const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
@@ -69,13 +69,13 @@ watch(
     () => props.initialData,
     (newVal, oldVal) => {
         console.log('FormInput.vue: watch initialData triggered. newVal:', newVal, 'oldVal:', oldVal);
-        
+
         // Skip reset if shouldResetForm is false
         if (!shouldResetForm.value) {
             console.log('FormInput.vue: Skipping auto reset due to shouldResetForm being false');
             return;
         }
-        
+
         if (newVal) {
             // Perbarui setiap properti secara manual untuk memastikan reaktivitas
             // dan agar form.isDirty bekerja dengan benar

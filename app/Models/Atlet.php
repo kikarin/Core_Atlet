@@ -37,7 +37,7 @@ class Atlet extends Model implements HasMedia
         'email',
         'is_active',
         'foto',
-        'users_id', 
+        'users_id',
         'created_by',
         'updated_by',
         'deleted_by',

@@ -4,9 +4,9 @@ import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import Form from './Form.vue';
+import FormAkun from './FormAkun.vue';
 import FormKesehatan from './FormKesehatan.vue';
 import FormOrangTua from './FormOrangTua.vue';
-import FormAkun from './FormAkun.vue';
 
 const props = defineProps<{ item: Record<string, any> }>();
 

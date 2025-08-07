@@ -216,15 +216,15 @@ class PelatihRepository
      */
     public function handlePelatihAkun($pelatih, $data)
     {
-        $userId = Auth::check() ? Auth::id() : null;
+        $userId   = Auth::check() ? Auth::id() : null;
         $userData = [
-            'name' => $pelatih->nama,
-            'email' => $data['akun_email'],
-            'no_hp' => $pelatih->no_hp,
-            'is_active' => 1,
-            'current_role_id' => 36, 
-            'created_by' => $userId,
-            'updated_by' => $userId,
+            'name'            => $pelatih->nama,
+            'email'           => $data['akun_email'],
+            'no_hp'           => $pelatih->no_hp,
+            'is_active'       => 1,
+            'current_role_id' => 36,
+            'created_by'      => $userId,
+            'updated_by'      => $userId,
         ];
 
         // Jika ada password, hash password
@@ -237,32 +237,32 @@ class PelatihRepository
             $user = User::find($data['users_id']);
             if ($user) {
                 $user->update($userData);
-                
+
                 // Ensure role is assigned using Spatie Permission
                 $role = Role::find(36); // Role Pelatih
                 if ($role && !$user->hasRole($role)) {
                     $user->assignRole($role);
                 }
-                
+
                 Log::info('PelatihRepository: Updated existing user for pelatih', [
                     'pelatih_id' => $pelatih->id,
-                    'user_id' => $user->id
+                    'user_id'    => $user->id,
                 ]);
             }
         } else {
             // Create new user
             $user = User::create($userData);
-            
+
             // Assign role Pelatih using Spatie Permission
             $role = Role::find(36); // Role Pelatih
             if ($role) {
                 $user->assignRole($role);
             }
-            
+
             // Also create users_role record for compatibility
             $user->users_role()->create([
-                'users_id' => $user->id,
-                'role_id' => 36, 
+                'users_id'   => $user->id,
+                'role_id'    => 36,
                 'created_by' => $userId,
                 'updated_by' => $userId,
             ]);
@@ -271,7 +271,7 @@ class PelatihRepository
 
             Log::info('PelatihRepository: Created new user for pelatih', [
                 'pelatih_id' => $pelatih->id,
-                'user_id' => $user->id
+                'user_id'    => $user->id,
             ]);
         }
     }

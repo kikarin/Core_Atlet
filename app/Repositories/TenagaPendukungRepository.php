@@ -191,15 +191,15 @@ class TenagaPendukungRepository
      */
     public function handleTenagaPendukungAkun($tenagaPendukung, $data)
     {
-        $userId = Auth::check() ? Auth::id() : null;
+        $userId   = Auth::check() ? Auth::id() : null;
         $userData = [
-            'name' => $tenagaPendukung->nama,
-            'email' => $data['akun_email'],
-            'no_hp' => $tenagaPendukung->no_hp,
-            'is_active' => 1,
-            'current_role_id' => 37, 
-            'created_by' => $userId,
-            'updated_by' => $userId,
+            'name'            => $tenagaPendukung->nama,
+            'email'           => $data['akun_email'],
+            'no_hp'           => $tenagaPendukung->no_hp,
+            'is_active'       => 1,
+            'current_role_id' => 37,
+            'created_by'      => $userId,
+            'updated_by'      => $userId,
         ];
 
         // Jika ada password, hash password
@@ -212,32 +212,32 @@ class TenagaPendukungRepository
             $user = User::find($data['users_id']);
             if ($user) {
                 $user->update($userData);
-                
+
                 // Ensure role is assigned using Spatie Permission
                 $role = Role::find(37); // Role Tenaga Pendukung
                 if ($role && !$user->hasRole($role)) {
                     $user->assignRole($role);
                 }
-                
+
                 Log::info('TenagaPendukungRepository: Updated existing user for tenaga pendukung', [
                     'tenaga_pendukung_id' => $tenagaPendukung->id,
-                    'user_id' => $user->id
+                    'user_id'             => $user->id,
                 ]);
             }
         } else {
             // Create new user
             $user = User::create($userData);
-            
+
             // Assign role Tenaga Pendukung using Spatie Permission
             $role = Role::find(37); // Role Tenaga Pendukung
             if ($role) {
                 $user->assignRole($role);
             }
-            
+
             // Also create users_role record for compatibility
             $user->users_role()->create([
-                'users_id' => $user->id,
-                'role_id' => 37, 
+                'users_id'   => $user->id,
+                'role_id'    => 37,
                 'created_by' => $userId,
                 'updated_by' => $userId,
             ]);
@@ -246,7 +246,7 @@ class TenagaPendukungRepository
 
             Log::info('TenagaPendukungRepository: Created new user for tenaga pendukung', [
                 'tenaga_pendukung_id' => $tenagaPendukung->id,
-                'user_id' => $user->id
+                'user_id'             => $user->id,
             ]);
         }
     }

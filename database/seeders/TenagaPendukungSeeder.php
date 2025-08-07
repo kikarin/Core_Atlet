@@ -76,7 +76,7 @@ class TenagaPendukungSeeder extends Seeder
                 'is_active'         => 1,
             ],
         ];
-        
+
 
         foreach ($tenagaPendukungs as $tp) {
             TenagaPendukung::create($tp);

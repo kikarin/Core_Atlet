@@ -10,9 +10,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
-    protected $levels = [];
+    protected $levels     = [];
     protected $dontReport = [];
-    protected $dontFlash = ['current_password', 'password', 'password_confirmation'];
+    protected $dontFlash  = ['current_password', 'password', 'password_confirmation'];
 
     public function register()
     {
@@ -26,8 +26,7 @@ class Handler extends ExceptionHandler
         }
 
         if (
-            $exception instanceof AuthorizationException ||
-            ($exception instanceof HttpException && $exception->getStatusCode() === 403)
+            $exception instanceof AuthorizationException || ($exception instanceof HttpException && $exception->getStatusCode() === 403)
         ) {
             return Inertia::render('errors/Error403')->toResponse($request)->setStatusCode(403);
         }

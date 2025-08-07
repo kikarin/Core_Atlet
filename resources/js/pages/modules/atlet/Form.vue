@@ -152,12 +152,12 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 
 <template>
     <div>
-        <FormInput 
-            :form-inputs="formInputs" 
-            :initial-data="formData" 
+        <FormInput
+            :form-inputs="formInputs"
+            :initial-data="formData"
             :disable-auto-reset="props.mode === 'create'"
-            @save="handleSave" 
-            @field-updated="handleFieldUpdate" 
+            @save="handleSave"
+            @field-updated="handleFieldUpdate"
         />
     </div>
 </template>

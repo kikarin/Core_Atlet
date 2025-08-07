@@ -238,7 +238,7 @@ function getLamaBergabung(tanggalBergabung: string) {
             :create-url="'/pelatih/create'"
             :actions="actions"
             :selected="selected"
-                @update:selected="(val) => (selected = val)"
+            @update:selected="(val) => (selected = val)"
             :on-delete-selected="deleteSelected"
             api-endpoint="/api/pelatih"
             ref="pageIndex"

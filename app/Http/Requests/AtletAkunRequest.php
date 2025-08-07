@@ -48,13 +48,13 @@ class AtletAkunRequest extends FormRequest
     public function messages(): array
     {
         $messages = [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.unique'      => 'Email sudah digunakan.',
             'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
-            'password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+            'password.min'      => 'Password minimal 8 karakter.',
+            'password.regex'    => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+            'password.not_in'   => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
         ];
 
         return $messages;
@@ -66,8 +66,8 @@ class AtletAkunRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'email' => $this->email ?: null,
+            'email'    => $this->email ?: null,
             'password' => $this->password ?: null,
         ]);
     }
-} 
+}

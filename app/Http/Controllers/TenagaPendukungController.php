@@ -326,19 +326,19 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     {
         try {
             $tenagaPendukung = $this->repository->getDetailWithRelations($id);
-            
+
             // Validasi request untuk akun
             $request->validate([
-                'akun_email' => 'required|email|unique:users,email',
+                'akun_email'    => 'required|email|unique:users,email',
                 'akun_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|not_in:password,123456,admin',
             ], [
-                'akun_email.required' => 'Email wajib diisi.',
-                'akun_email.email' => 'Format email tidak valid.',
-                'akun_email.unique' => 'Email sudah digunakan.',
+                'akun_email.required'    => 'Email wajib diisi.',
+                'akun_email.email'       => 'Format email tidak valid.',
+                'akun_email.unique'      => 'Email sudah digunakan.',
                 'akun_password.required' => 'Password wajib diisi.',
-                'akun_password.min' => 'Password minimal 8 karakter.',
-                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
-                'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
+                'akun_password.min'      => 'Password minimal 8 karakter.',
+                'akun_password.regex'    => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_password.not_in'   => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
             ]);
 
             // Handle akun creation di repository
@@ -351,7 +351,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             Log::error('Error creating akun tenaga pendukung: '.$e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membuat akun tenaga pendukung: ' . $e->getMessage(),
@@ -366,7 +366,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
     {
         try {
             $tenagaPendukung = $this->repository->getDetailWithRelations($id);
-            
+
             $rules = [
                 'akun_email' => 'required|email',
             ];
@@ -383,11 +383,11 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             }
 
             $request->validate($rules, [
-                'akun_email.required' => 'Email wajib diisi.',
-                'akun_email.email' => 'Format email tidak valid.',
-                'akun_email.unique' => 'Email sudah digunakan.',
-                'akun_password.min' => 'Password minimal 8 karakter.',
-                'akun_password.regex' => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
+                'akun_email.required'  => 'Email wajib diisi.',
+                'akun_email.email'     => 'Format email tidak valid.',
+                'akun_email.unique'    => 'Email sudah digunakan.',
+                'akun_password.min'    => 'Password minimal 8 karakter.',
+                'akun_password.regex'  => 'Password harus mengandung huruf kecil, huruf besar, dan angka.',
                 'akun_password.not_in' => 'Password tidak boleh menggunakan kata yang mudah ditebak.',
             ]);
 
@@ -401,7 +401,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             Log::error('Error updating akun tenaga pendukung: '.$e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui akun tenaga pendukung: ' . $e->getMessage(),

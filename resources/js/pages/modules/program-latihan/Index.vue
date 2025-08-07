@@ -39,8 +39,8 @@ const formatPeriode = (startDate: string, endDate: string) => {
 
 const columns = [
     { key: 'nama_program', label: 'Nama Program' },
-    { key: 'rencana_latihan', label: 'Rencana Latihan', orderable: false, },
-    { key: 'cabor_nama', label: 'Cabor', orderable: false, },
+    { key: 'rencana_latihan', label: 'Rencana Latihan', orderable: false },
+    { key: 'cabor_nama', label: 'Cabor', orderable: false },
     {
         key: 'cabor_kategori_nama',
         label: 'Kategori',

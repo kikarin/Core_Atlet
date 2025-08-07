@@ -256,7 +256,7 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                             <div class="flex justify-center">
                                                 <Input
                                                     type="text"
-                                                    class="w-24 rounded border px-1 py-0.5 text-center bg-background text-foreground border-border"
+                                                    class="bg-background text-foreground border-border w-24 rounded border px-1 py-0.5 text-center"
                                                     :model-value="getTargetNilai(rencana, uniqueTarget.id)"
                                                     @update:model-value="(val: string) => updateTargetNilai(rencana, uniqueTarget.id, val)"
                                                     :placeholder="getTargetValue(uniqueTarget)"
@@ -276,11 +276,11 @@ const updateTargetTrend = (rencana: any, targetId: number, value: string) => {
                                         </td>
                                     </template>
                                     <template v-else>
-                                        <td class="border-b bg-muted/20 px-2 py-1 text-center whitespace-nowrap">
-                                            <span class="text-xs text-muted-foreground">-</span>
+                                        <td class="bg-muted/20 border-b px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-muted-foreground text-xs">-</span>
                                         </td>
-                                        <td class="border-b bg-muted/20 px-2 py-1 text-center whitespace-nowrap">
-                                            <span class="text-xs text-muted-foreground">-</span>
+                                        <td class="bg-muted/20 border-b px-2 py-1 text-center whitespace-nowrap">
+                                            <span class="text-muted-foreground text-xs">-</span>
                                         </td>
                                     </template>
                                 </template>

@@ -7,7 +7,7 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\User; 
+use App\Models\User;
 use App\Models\Role;
 
 class AtletRepository
@@ -22,11 +22,11 @@ class AtletRepository
     {
         $this->model                   = $model;
         $this->atletOrangTuaRepository = $atletOrangTuaRepository;
-        $this->with = [
+        $this->with                    = [
             'media',
             'created_by_user',
             'updated_by_user',
-            'user', 
+            'user',
             'atletOrangTua.created_by_user',
             'atletOrangTua.updated_by_user',
             'sertifikat',
@@ -244,15 +244,15 @@ class AtletRepository
      */
     public function handleAtletAkun($atlet, $data)
     {
-        $userId = Auth::check() ? Auth::id() : null;
+        $userId   = Auth::check() ? Auth::id() : null;
         $userData = [
-            'name' => $atlet->nama,
-            'email' => $data['akun_email'],
-            'no_hp' => $atlet->no_hp,
-            'is_active' => 1,
+            'name'            => $atlet->nama,
+            'email'           => $data['akun_email'],
+            'no_hp'           => $atlet->no_hp,
+            'is_active'       => 1,
             'current_role_id' => 35, // Set current_role_id ke Role Atlet
-            'created_by' => $userId,
-            'updated_by' => $userId,
+            'created_by'      => $userId,
+            'updated_by'      => $userId,
         ];
 
         // Jika ada password, hash password
@@ -265,32 +265,32 @@ class AtletRepository
             $user = User::find($data['users_id']);
             if ($user) {
                 $user->update($userData);
-                
+
                 // Ensure role is assigned using Spatie Permission
                 $role = Role::find(35); // Role Atlet
                 if ($role && !$user->hasRole($role)) {
                     $user->assignRole($role);
                 }
-                
+
                 Log::info('AtletRepository: Updated existing user for atlet', [
                     'atlet_id' => $atlet->id,
-                    'user_id' => $user->id
+                    'user_id'  => $user->id,
                 ]);
             }
         } else {
             // Create new user
             $user = User::create($userData);
-            
+
             // Assign role Atlet using Spatie Permission
             $role = Role::find(35); // Role Atlet
             if ($role) {
                 $user->assignRole($role);
             }
-            
+
             // Also create users_role record for compatibility
             $user->users_role()->create([
-                'users_id' => $user->id,
-                'role_id' => 35, // Role Atlet
+                'users_id'   => $user->id,
+                'role_id'    => 35, // Role Atlet
                 'created_by' => $userId,
                 'updated_by' => $userId,
             ]);
@@ -300,7 +300,7 @@ class AtletRepository
 
             Log::info('AtletRepository: Created new user for atlet', [
                 'atlet_id' => $atlet->id,
-                'user_id' => $user->id
+                'user_id'  => $user->id,
             ]);
         }
     }

@@ -58,8 +58,8 @@ class AtletRequest extends FormRequest
             'pekerjaan_wali'     => 'nullable|string|max:255',
 
             // Rules for Atlet Akun
-            'users_id' => 'nullable|integer|exists:users,id',
-            'akun_email' => 'nullable|email|max:200',
+            'users_id'      => 'nullable|integer|exists:users,id',
+            'akun_email'    => 'nullable|email|max:200',
             'akun_password' => 'nullable|string|min:8',
         ];
 
@@ -111,8 +111,8 @@ class AtletRequest extends FormRequest
             'pekerjaan_wali'     => $this->pekerjaan_wali ?: null,
 
             // Prepare Atlet Akun fields
-            'users_id' => $this->users_id ?: null,
-            'akun_email' => $this->akun_email ?: null,
+            'users_id'      => $this->users_id ?: null,
+            'akun_email'    => $this->akun_email ?: null,
             'akun_password' => $this->akun_password ?: null,
         ]);
     }

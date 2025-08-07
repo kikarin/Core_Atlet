@@ -353,8 +353,7 @@ const chartOptions = {
                 </CardHeader>
                 <CardContent>
                     <Tabs default-value="chart" class="w-full">
-                        <TabsList class="grid w-full grid-cols-1">
-                        </TabsList>
+                        <TabsList class="grid w-full grid-cols-1"> </TabsList>
                         <TabsContent value="chart" class="mt-6">
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between">
