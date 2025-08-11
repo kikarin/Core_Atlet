@@ -31,26 +31,32 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/cabor-kategori/${row.id}`),
+        permission: 'Cabor Kategori Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/cabor-kategori/${row.id}/edit`),
+        permission: 'Cabor Kategori Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Cabor Kategori Delete',
     },
     {
         label: 'Daftar Atlet',
         onClick: () => router.visit(`/cabor-kategori/${row.id}/atlet`),
+        permission: 'Cabor Kategori Atlet Show',
     },
     {
         label: 'Daftar Pelatih',
         onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`),
+        permission: 'Cabor Kategori Pelatih Show',
     },
     {
         label: 'Daftar Tenaga Pendukung',
         onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`),
+        permission: 'Cabor Kategori Tenaga Pendukung Show',
     },
 ];
 
@@ -99,6 +105,7 @@ const deleteKategori = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Cabor Kategori"
+            module-name="Cabor Kategori"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/cabor-kategori/create'"

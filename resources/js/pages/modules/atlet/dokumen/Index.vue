@@ -97,14 +97,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/atlet/${props.atletId}/dokumen/${row.id}`),
+        permission: 'Atlet Dokumen Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/atlet/${props.atletId}/dokumen/${row.id}/edit`),
+        permission: 'Atlet Dokumen Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Atlet Dokumen Delete',
     },
 ];
 
@@ -214,6 +217,7 @@ const idsToDelete = ref<number[]>([]);
 
                     <HeaderActions
                         title="Dokumen"
+                        module-name="Atlet Dokumen"
                         :create-url="`/atlet/${props.atletId}/dokumen/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"

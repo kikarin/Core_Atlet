@@ -103,18 +103,22 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/pelatih/${row.id}`),
+        permission: 'Pelatih Detail',
     },
     {
         label: 'Lihat',
         onClick: () => router.visit(`/pelatih/${row.id}/edit`),
+        permission: 'Pelatih Edit',
     },
     {
         label: 'Riwayat Pemeriksaan',
         onClick: () => router.visit(`/pelatih/${row.id}/riwayat-pemeriksaan`),
+        permission: 'Pelatih Detail',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Pelatih Delete',
     },
 ];
 
@@ -233,6 +237,7 @@ function getLamaBergabung(tanggalBergabung: string) {
     <div class="space-y-4">
         <PageIndex
             title="Pelatih"
+            module-name="Pelatih"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/pelatih/create'"

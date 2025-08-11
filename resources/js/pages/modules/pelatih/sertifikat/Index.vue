@@ -105,14 +105,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat/${row.id}`),
+        permission: 'Pelatih Sertifikat Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat/${row.id}/edit`),
+        permission: 'Pelatih Sertifikat Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Pelatih Sertifikat Delete',
     },
 ];
 
@@ -222,6 +225,7 @@ const idsToDelete = ref<number[]>([]);
 
                     <HeaderActions
                         title="Sertifikat"
+                        module-name="Pelatih Sertifikat"
                         :create-url="`/pelatih/${props.pelatihId}/sertifikat/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"

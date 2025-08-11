@@ -17,9 +17,9 @@ const pageIndex = ref();
 const { toast } = useToast();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/cabor/${row.id}`) },
-    { label: 'Edit', onClick: () => router.visit(`/cabor/${row.id}/edit`) },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+    { label: 'Detail', onClick: () => router.visit(`/cabor/${row.id}`), permission: 'Cabor Detail' },
+    { label: 'Edit', onClick: () => router.visit(`/cabor/${row.id}/edit`), permission: 'Cabor Edit' },
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row), permission: 'Cabor Delete' },
 ];
 
 const deleteSelected = async () => {
@@ -54,6 +54,7 @@ const deleteRow = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Cabor"
+            module-name="Cabor"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/cabor/create'"

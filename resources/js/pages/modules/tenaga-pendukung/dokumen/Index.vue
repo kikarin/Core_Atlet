@@ -111,14 +111,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/${row.id}`),
+        permission: 'Tenaga Pendukung Dokumen Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen/${row.id}/edit`),
+        permission: 'Tenaga Pendukung Dokumen Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Tenaga Pendukung Dokumen Delete',
     },
 ];
 
@@ -223,6 +226,7 @@ const idsToDelete = ref<number[]>([]);
 
                     <HeaderActions
                         title="Dokumen"
+                        module-name="Tenaga Pendukung Dokumen"
                         :create-url="`/tenaga-pendukung/${props.tenagaPendukungId}/dokumen/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"

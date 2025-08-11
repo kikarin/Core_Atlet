@@ -26,18 +26,22 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/menu-permissions/roles/${row.id}`),
+        permission: 'Role Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/menu-permissions/roles/${row.id}/edit`),
+        permission: 'Role Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Role Delete',
     },
     {
         label: 'Set Permissions',
         onClick: () => router.visit(`/menu-permissions/roles/set-permissions/${row.id}`),
+        permission: 'Role Set Permission',
     },
 ];
 
@@ -85,6 +89,7 @@ const deleteRole = async (row: any) => {
 <template>
     <PageIndex
         title="Roles"
+        module-name="Role"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :create-url="'/menu-permissions/roles/create'"

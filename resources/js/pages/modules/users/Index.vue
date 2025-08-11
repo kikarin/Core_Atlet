@@ -61,20 +61,24 @@ const actions = (row: any) => {
         {
             label: 'Detail',
             onClick: () => router.visit(`/users/${row.id}`),
+            permission: 'Users Detail'
         },
         {
             label: 'Edit',
             onClick: () => router.visit(`/users/${row.id}/edit`),
+            permission: 'Users Edit'
         },
         {
             label: 'Delete',
             onClick: () => pageIndex.value.handleDeleteRow(row),
+            permission: 'Users Delete'
         },
     ];
     if (row.id !== currentUserId.value) {
         baseActions.push({
             label: 'Login As',
             onClick: () => router.visit(`/users/${row.id}/login-as`),
+            permission: 'Users Show'
         });
     }
     return baseActions;
@@ -125,6 +129,7 @@ const deleteUser = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Users"
+            module-name="Users"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/users/create'"

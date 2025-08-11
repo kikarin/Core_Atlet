@@ -27,13 +27,14 @@ const columns = [
     { key: 'tanggal', label: 'Tanggal', format: (row: any) => (row.tanggal ? new Date(row.tanggal).toLocaleDateString('id-ID') : '-') },
     { key: 'materi', label: 'Materi' },
     { key: 'lokasi_latihan', label: 'Lokasi Latihan' },
-    { key: 'peserta', label: 'Peserta' },
+    { key: 'peserta', label: 'Peserta', orderable: false, },
     {
         key: 'target_latihan',
         label: 'Target Latihan',
         format: (row: any) => row.target_latihan?.map((t: any) => t.deskripsi).join(', ') || '-',
+        orderable: false,
     },
-    { key: 'catatan', label: 'Catatan' },
+    { key: 'catatan', label: 'Catatan', orderable: false },
 ];
 
 const selected = ref<number[]>([]);
@@ -41,9 +42,9 @@ const pageIndex = ref();
 const { toast } = useToast();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/program-latihan/${info.value.program_latihan_id}/rencana-latihan/${row.id}`) },
-    { label: 'Edit', onClick: () => router.visit(`/program-latihan/${info.value.program_latihan_id}/rencana-latihan/${row.id}/edit`) },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+    { label: 'Detail', onClick: () => router.visit(`/program-latihan/${info.value.program_latihan_id}/rencana-latihan/${row.id}`), permission:'Rencana Latihan Detail'},
+    { label: 'Edit', onClick: () => router.visit(`/program-latihan/${info.value.program_latihan_id}/rencana-latihan/${row.id}/edit`), permission:'Rencana Latihan Edit'},
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row), permission:'Rencana Latihan Delete'},
 ];
 
 const deleteSelected = async () => {
@@ -82,6 +83,7 @@ const deleteRow = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Rencana Latihan"
+            module-name="Rencana Latihan"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="`/program-latihan/${info.program_latihan_id}/rencana-latihan/create`"

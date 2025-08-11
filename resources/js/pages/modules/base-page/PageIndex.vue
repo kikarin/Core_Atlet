@@ -62,9 +62,10 @@ watch([page, localLimit, () => sort.value.key, () => sort.value.order], (vals, o
 
 const props = defineProps<{
     title: string;
+    moduleName: string; 
     breadcrumbs: BreadcrumbItem[];
     columns: { key: string; label: string }[];
-    actions?: (row: any) => { label: string; onClick: () => void }[];
+    actions?: (row: any) => { label: string; onClick: () => void; permission?: string }[];
     createUrl: string;
     selected?: number[];
     onDeleteSelected?: () => void;
@@ -84,6 +85,12 @@ const props = defineProps<{
     showDelete?: boolean;
     hideSelectAll?: boolean;
     hideSelect?: boolean;
+    permissions?: {
+        create?: boolean;
+        delete?: boolean;
+        import?: boolean;
+        kelola?: boolean;
+    };
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
@@ -209,6 +216,7 @@ defineExpose({ fetchData });
                     <slot name="header-extra"></slot>
                     <HeaderActions
                         :title="title"
+                        :module-name="moduleName"
                         :selected="localSelected"
                         :on-delete-selected="() => (showConfirm = true)"
                         v-bind="createUrl ? { createUrl } : {}"
@@ -220,6 +228,7 @@ defineExpose({ fetchData });
                         :kelolaUrl="props.kelolaUrl"
                         :kelolaLabel="props.kelolaLabel"
                         :showDelete="props.showDelete"
+                        :permissions="permissions"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />
@@ -236,11 +245,17 @@ defineExpose({ fetchData });
                         :sort="sort"
                         :page="page"
                         :per-page="props.limit !== undefined ? props.limit : localLimit"
+                        :base-url="''"
+                        :module-name="moduleName"
+                        :permissions="permissions"
                         @update:search="handleSearchDebounced"
                         @update:sort="handleSort"
                         @update:page="handlePageChange"
                         @update:perPage="(val: any) => handleSearch({ limit: Number(val), page: 1 })"
                         @deleted="fetchData()"
+                        @detail="(id: string | number) => router.visit(`/${moduleName}/${id}`)"
+                        @edit="(id: string | number) => router.visit(`/${moduleName}/${id}/edit`)"
+                        @delete="(id: string | number) => handleDeleteRow({ id })"
                         :on-delete-row="handleDeleteRow"
                         :hide-pagination="props.hidePagination"
                         :disable-length="props.disableLength"

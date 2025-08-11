@@ -99,20 +99,23 @@ const { toast } = useToast();
 
 const actions = (row: any) => [
     {
-        label: 'Detail Pelatih',
+        label: 'Detail',
         onClick: () => router.visit(`/pelatih/${row.pelatih_id}`),
+        permission: 'Pelatih Detail',
     },
     {
         label: 'Edit Jenis Pelatih',
         onClick: () => router.visit(`/cabor-kategori-pelatih/${row.id}/edit`),
+        permission: 'Cabor Kategori Pelatih Edit',
     },
     {
-        label: 'Hapus',
+        label: 'Delete',
         onClick: () => {
             rowToDelete.value = row;
             showConfirmDelete.value = true;
         },
         variant: 'destructive',
+        permission: 'Cabor Kategori Pelatih Delete',
     },
 ];
 
@@ -156,6 +159,7 @@ const deletePelatih = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Daftar Pelatih"
+            module-name="Cabor Kategori Pelatih"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"

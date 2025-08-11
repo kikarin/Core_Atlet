@@ -32,9 +32,9 @@ const selected = ref<number[]>([]);
 const pageIndex = ref();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`) },
-    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}/edit`) },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`), permission: 'Pemeriksaan Parameter Detail' },
+    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}/edit`), permission: 'Pemeriksaan Parameter Edit' },
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row), permission: 'Pemeriksaan Parameter Delete' },
 ];
 
 const deleteSelected = async () => {
@@ -67,6 +67,7 @@ const deleteRow = async (row: any) => {
 <template>
     <PageIndex
         title="Parameter Pemeriksaan"
+        module-name="Pemeriksaan Parameter"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :create-url="`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter/create`"

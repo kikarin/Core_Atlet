@@ -52,9 +52,12 @@ const pageIndex = ref();
 const { toast } = useToast();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}`) },
-    { label: 'Edit', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}/edit`) },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row) },
+    { label: 'Detail', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}`),
+        permission: 'Target Latihan Detail' },
+    { label: 'Edit', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}/edit`),
+        permission: 'Target Latihan Edit' },
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Target Latihan Delete' },
 ];
 
 const deleteSelected = async () => {
@@ -108,6 +111,7 @@ const defaultApiEndpoint = computed(() => {
     <div class="space-y-4">
         <PageIndex
             title="Target Latihan"
+            module-name="Target Latihan"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="`/program-latihan/${info.program_latihan_id}/target-latihan/${info.jenis_target}/create`"

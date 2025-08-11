@@ -106,14 +106,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}`),
+        permission: 'Atlet Sertifikat Detail'
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat/${row.id}/edit`),
+        permission: 'Atlet Sertifikat Edit'
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Atlet Sertifikat Delete'
     },
 ];
 
@@ -231,6 +234,7 @@ const idsToDelete = ref<number[]>([]);
                         :create-url="`/atlet/${props.atletId}/sertifikat/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"
+                        module-name="Atlet Sertifikat"
                     />
                 </div>
 

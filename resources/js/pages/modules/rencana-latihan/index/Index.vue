@@ -30,16 +30,18 @@ const breadcrumbs = [
 
 const columns = computed(() => {
     const baseColumns = [
-        { key: 'nama', label: 'Nama' },
-        { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-' },
+        { key: 'nama', label: 'Nama', orderable: false },
+        { key: 'kehadiran', label: 'Kehadiran', format: (row: any) => row.kehadiran || '-', orderable: false },
         {
             key: 'keterangan',
             label: 'Keterangan',
             format: (row: any) => row.keterangan || '-',
+            orderable: false
         },
         {
             key: 'foto',
             label: 'Foto',
+            orderable: false,
             format: (row: any) => {
                 if (row.foto) {
                     return `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')">
@@ -53,20 +55,23 @@ const columns = computed(() => {
             key: 'jenis_kelamin',
             label: 'Jenis Kelamin',
             format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+            orderable: false
         },
-        { key: 'tempat_lahir', label: 'Tempat Lahir' },
+        { key: 'tempat_lahir', label: 'Tempat Lahir', orderable: false },
         {
             key: 'tanggal_lahir',
             label: 'Tanggal Lahir',
+            orderable: false,
             format: (row: any) =>
                 row.tanggal_lahir
                     ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'numeric', year: 'numeric' })
                     : '-',
         },
-        { key: 'no_hp', label: 'No HP' },
+        { key: 'no_hp', label: 'No HP', orderable: false },
         {
             key: 'kategori_is_active',
             label: 'Status',
+            orderable: false,
             format: (row: any) =>
                 row.kategori_is_active == 1
                     ? '<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aktif</span>'
@@ -77,20 +82,20 @@ const columns = computed(() => {
     // Tambahkan kolom spesifik sesuai jenis peserta
     if (jenisPeserta === 'atlet') {
         return [
-            { key: 'nama', label: 'Nama' },
-            { key: 'posisi_atlet_nama', label: 'Posisi', format: (row: any) => row.posisi_atlet_nama || '-' },
+            { key: 'nama', label: 'Nama', orderable: false },
+            { key: 'posisi_atlet_nama', label: 'Posisi', format: (row: any) => row.posisi_atlet_nama || '-', orderable: false },
             ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     } else if (jenisPeserta === 'pelatih') {
         return [
-            { key: 'nama', label: 'Nama' },
-            { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih', format: (row: any) => row.jenis_pelatih_nama || '-' },
+            { key: 'nama', label: 'Nama', orderable: false },
+            { key: 'jenis_pelatih_nama', label: 'Jenis Pelatih', format: (row: any) => row.jenis_pelatih_nama || '-', orderable: false },
             ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     } else if (jenisPeserta === 'tenaga-pendukung') {
         return [
-            { key: 'nama', label: 'Nama' },
-            { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung', format: (row: any) => row.jenis_tenaga_pendukung_nama || '-' },
+            { key: 'nama', label: 'Nama', orderable: false },
+            { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung', format: (row: any) => row.jenis_tenaga_pendukung_nama || '-', orderable: false },
             ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     }
@@ -110,6 +115,7 @@ const actions = (row: any) => [
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
         variant: 'destructive',
+        permission: `Rencana Latihan Delete`,
     },
 ];
 
@@ -172,6 +178,7 @@ const confirmSetKehadiran = async () => {
     <div class="space-y-4">
         <PageIndex
             :title="`Peserta (${jenisLabel[jenisPeserta] || jenisPeserta})`"
+            module-name="Rencana Latihan"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"

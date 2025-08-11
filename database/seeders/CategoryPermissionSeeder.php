@@ -5,15 +5,20 @@ namespace Database\Seeders;
 use App\Models\CategoryPermission;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class CategoryPermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Permission::truncate();
+        CategoryPermission::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $categoryPermissions = [
             [
                 'name'       => 'Dashboard',
-                'permission' => 'CRUD',
+                'permission' => [ 'Dashboard Show' ],
             ],
             [
                 'name'       => 'Users',
@@ -47,6 +52,7 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Atlet',
                 'permission' => 'CRUD',
+                'permission_common' => ['Atlet Import']
             ],
             [
                 'name'       => 'Atlet Orang Tua',
@@ -71,6 +77,7 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Pelatih',
                 'permission' => 'CRUD',
+                'permission_common' => ['Pelatih Import'],
             ],
             [
                 'name'       => 'Pelatih Sertifikat',
@@ -91,6 +98,7 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Tenaga Pendukung',
                 'permission' => 'CRUD',
+                'permission_common' => ['Tenaga Pendukung Import'],
             ],
             [
                 'name'       => 'Tenaga Pendukung Sertifikat',
@@ -158,15 +166,15 @@ class CategoryPermissionSeeder extends Seeder
             ],
             [
                 'name'       => 'Cabor Kategori Atlet',
-                'permission' => ['Cabor Kategori Atlet Show', 'Cabor Kategori Atlet Create', 'Cabor Kategori Atlet Edit', 'Cabor Kategori Atlet Delete' ],
+                'permission' => ['Cabor Kategori Atlet Show', 'Cabor Kategori Atlet Add', 'Cabor Kategori Atlet Edit', 'Cabor Kategori Atlet Delete' ],
             ],
             [
                 'name'       => 'Cabor Kategori Pelatih',
-                'permission' => ['Cabor Kategori Pelatih Show', 'Cabor Kategori Pelatih Create', 'Cabor Kategori Pelatih Edit', 'Cabor Kategori Pelatih Delete'],
+                'permission' => ['Cabor Kategori Pelatih Show', 'Cabor Kategori Pelatih Add', 'Cabor Kategori Pelatih Edit', 'Cabor Kategori Pelatih Delete'],
             ],
             [
                 'name'       => 'Cabor Kategori Tenaga Pendukung',
-                'permission' => ['Cabor Kategori Tenaga Pendukung Show', 'Cabor Kategori Tenaga Pendukung Create', 'Cabor Kategori Tenaga Pendukung Edit', 'Cabor Kategori Tenaga Pendukung Delete'],
+                'permission' => ['Cabor Kategori Tenaga Pendukung Show', 'Cabor Kategori Tenaga Pendukung Add', 'Cabor Kategori Tenaga Pendukung Edit', 'Cabor Kategori Tenaga Pendukung Delete'],
             ],
             [
                 'name'       => 'Program Latihan',
@@ -179,6 +187,7 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Rencana Latihan',
                 'permission' => 'CRUD',
+                'permission_common' => ['Rencana Latihan Kelola'],
             ],
             [
                 'name'       => 'Pemeriksaan',
@@ -191,6 +200,7 @@ class CategoryPermissionSeeder extends Seeder
             [
                 'name'       => 'Pemeriksaan Peserta',
                 'permission' => 'CRUD',
+                'permission_common' => ['Pemeriksaan Peserta Kelola'],
             ],
             [
                 'name'       => 'Pemeriksaan Peserta Parameter',

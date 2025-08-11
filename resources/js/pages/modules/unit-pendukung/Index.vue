@@ -23,14 +23,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/unit-pendukung/${row.id}`),
+        permission: 'Unit Pendukung Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/unit-pendukung/${row.id}/edit`),
+        permission: 'Unit Pendukung Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Unit Pendukung Delete',
     },
 ];
 
@@ -79,6 +82,7 @@ const deleteRow = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Unit Pendukung"
+            module-name="Unit Pendukung"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/unit-pendukung/create'"

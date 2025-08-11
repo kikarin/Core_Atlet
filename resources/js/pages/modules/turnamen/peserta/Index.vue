@@ -86,6 +86,7 @@ const actions = (row: any) => [
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
         variant: 'destructive',
+        permission: `Turnamen Delete`,
     },
 ];
 
@@ -129,6 +130,7 @@ watch(jenisPeserta, (newValue, oldValue) => {
     <div class="space-y-4">
         <PageIndex
             :title="`Peserta Turnamen (${jenisLabel[jenisPeserta] || jenisPeserta})`"
+            module-name="Turnamen"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"

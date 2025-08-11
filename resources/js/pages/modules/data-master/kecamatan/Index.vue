@@ -17,6 +17,7 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/data-master/kecamatan/${row.id}`),
+        permission: 'Mst Kecamatan Detail',
     },
 ];
 </script>

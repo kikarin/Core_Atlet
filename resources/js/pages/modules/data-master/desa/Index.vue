@@ -17,6 +17,7 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/data-master/desa/${row.id}`),
+        permission: 'Mst Desa Detail',
     },
 ];
 </script>

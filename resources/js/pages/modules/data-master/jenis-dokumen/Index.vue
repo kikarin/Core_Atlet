@@ -22,14 +22,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/data-master/jenis-dokumen/${row.id}`),
+        permission: 'Mst Jenis Dokumen Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/data-master/jenis-dokumen/${row.id}/edit`),
+        permission: 'Mst Jenis Dokumen Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Mst Jenis Dokumen Delete',
     },
 ];
 
@@ -78,6 +81,7 @@ const deleteRow = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Jenis Dokumen"
+            module-name="Mst Jenis Dokumen"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/data-master/jenis-dokumen/create'"

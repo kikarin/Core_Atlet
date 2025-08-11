@@ -30,10 +30,12 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/menu-permissions/logs/${row.id}`),
+        permission: 'Activity Log Detail',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Activity Log Delete',
     },
 ];
 
@@ -81,6 +83,7 @@ const deleteLog = async (row: any) => {
 <template>
     <PageIndex
         title="Activity Logs"
+        module-name="Activity Log"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :actions="actions"

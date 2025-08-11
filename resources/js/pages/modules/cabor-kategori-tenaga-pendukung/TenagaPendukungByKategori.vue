@@ -99,20 +99,23 @@ const { toast } = useToast();
 
 const actions = (row: any) => [
     {
-        label: 'Detail Tenaga Pendukung',
+        label: 'Detail',
         onClick: () => router.visit(`/tenaga-pendukung/${row.tenaga_pendukung_id}`),
+        permission: 'Tenaga Pendukung Detail',
     },
     {
         label: 'Edit Jenis Tenaga Pendukung',
         onClick: () => router.visit(`/cabor-kategori-tenaga-pendukung/${row.id}/edit`),
+        permission: 'Cabor Kategori Tenaga Pendukung Edit',
     },
     {
-        label: 'Hapus',
+        label: 'Delete',
         onClick: () => {
             rowToDelete.value = row;
             showConfirmDelete.value = true;
         },
         variant: 'destructive',
+        permission: 'Cabor Kategori Tenaga Pendukung Delete',
     },
 ];
 
@@ -156,6 +159,7 @@ const deleteTenagaPendukung = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Daftar Tenaga Pendukung"
+            module-name="Cabor Kategori Tenaga Pendukung"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"

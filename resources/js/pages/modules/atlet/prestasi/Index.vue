@@ -97,14 +97,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/atlet/${props.atletId}/prestasi/${row.id}`),
+        permission: 'Atlet Prestasi Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/atlet/${props.atletId}/prestasi/${row.id}/edit`),
+        permission: 'Atlet Prestasi Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Atlet Prestasi Delete',
     },
 ];
 
@@ -214,6 +217,7 @@ const idsToDelete = ref<number[]>([]);
 
                     <HeaderActions
                         title="Prestasi"
+                        module-name="Atlet Prestasi"
                         :create-url="`/atlet/${props.atletId}/prestasi/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"

@@ -37,14 +37,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/pemeriksaan/${row.id}`),
+        permission: 'Pemeriksaan Detail'
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/pemeriksaan/${row.id}/edit`),
+        permission: 'Pemeriksaan Edit'
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Pemeriksaan Delete'
     },
 ];
 
@@ -68,6 +71,7 @@ const deleteSelected = async () => {
 <template>
     <PageIndex
         title="Pemeriksaan"
+        module-name="Pemeriksaan"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :create-url="'/pemeriksaan/create'"
@@ -78,6 +82,7 @@ const deleteSelected = async () => {
         api-endpoint="/api/pemeriksaan"
         ref="pageIndex"
         :showImport="false"
+        :showDelete="false"
     >
         <template #cell-parameter="{ row }">
             <div class="flex justify-center">

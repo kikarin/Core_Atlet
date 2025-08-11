@@ -100,18 +100,22 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/atlet/${row.id}`),
+        permission: 'Atlet Detail'
     },
     {
         label: 'Lihat',
         onClick: () => router.visit(`/atlet/${row.id}/edit`),
+        permission: 'Atlet Edit'
     },
     {
         label: 'Riwayat Pemeriksaan',
         onClick: () => router.visit(`/atlet/${row.id}/riwayat-pemeriksaan`),
+        permission: 'Atlet Detail'
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Atlet Delete'
     },
 ];
 
@@ -249,6 +253,7 @@ function getLamaBergabung(tanggalBergabung: string) {
     <div class="space-y-4">
         <PageIndex
             title="Atlet"
+            module-name="Atlet"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/atlet/create'"

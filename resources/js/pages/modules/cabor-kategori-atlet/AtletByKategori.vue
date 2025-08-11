@@ -98,20 +98,23 @@ const { toast } = useToast();
 
 const actions = (row: any) => [
     {
-        label: 'Detail Atlet',
+        label: 'Detail',
         onClick: () => router.visit(`/atlet/${row.atlet_id}`),
+        permission: 'Atlet Detail',
     },
     {
         label: 'Edit Posisi',
         onClick: () => router.visit(`/cabor-kategori-atlet/${row.id}/edit`),
+        permission: 'Cabor Kategori Atlet Edit',
     },
     {
-        label: 'Hapus',
+        label: 'Delete',
         onClick: () => {
             rowToDelete.value = row;
             showConfirmDelete.value = true;
         },
         variant: 'destructive',
+        permission: 'Cabor Kategori Atlet Delete',
     },
 ];
 
@@ -155,6 +158,7 @@ const deleteAtlet = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Daftar Atlet"
+            module-name="Cabor Kategori Atlet"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :actions="actions"

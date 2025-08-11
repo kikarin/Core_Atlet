@@ -1,47 +1,152 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { MoreVertical, Eye, Edit, Trash2, FileText } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
+import permissionService from '@/services/permissionService';
 
 const props = defineProps<{
     id: string | number;
     baseUrl: string;
+    moduleName?: string; 
     actions?: { label: string; onClick: () => void; permission?: string }[];
     show?: boolean;
     edit?: boolean;
     delete?: boolean;
     onDelete?: () => void;
+    permissions?: {
+        detail?: boolean;
+        edit?: boolean;
+        delete?: boolean;
+    };
+    detailUrl?: string;
+    editUrl?: string;
+    deleteUrl?: string;
 }>();
 
-const items = computed(() => {
-    if (props.actions && props.actions.length > 0) {
-        return props.actions.map((action) => ({
-            label: action.label,
-            action: action.onClick,
-            icon: undefined,
-        }));
+defineEmits<{
+    detail: [id: string | number];
+    edit: [id: string | number];
+    delete: [id: string | number];
+}>();
+
+const permissionsLoaded = ref(false);
+
+onMounted(() => {
+    permissionService.refresh();
+    permissionsLoaded.value = true;
+    
+    setTimeout(() => {
+        if (!permissionsLoaded.value) {
+            permissionsLoaded.value = true;
+        }
+    }, 2000);
+});
+
+// Permission checking
+computed(() => {
+    if (props.permissions?.detail !== undefined) return props.permissions.detail;
+    if (!props.moduleName) return true;
+    return permissionService.canRead(props.moduleName);
+});
+
+computed(() => {
+    if (props.permissions?.edit !== undefined) return props.permissions.edit;
+    if (!props.moduleName) return true;
+    return permissionService.canUpdate(props.moduleName);
+});
+
+computed(() => {
+    if (props.permissions?.delete !== undefined) return props.permissions.delete;
+    if (!props.moduleName) return true;
+    return permissionService.canDelete(props.moduleName);
+});
+
+const canCustomAction = (permission?: string) => {
+    if (!permission) return true;
+    
+    try {
+        const result = permissionService.hasPermission(permission);
+        console.log(`Permission check for "${permission}":`, result);
+        return result;
+    } catch (error) {
+        console.warn(`Error checking permission "${permission}":`, error);
+        return false;
     }
+};
 
-    const links: { label: string; action: () => void; icon?: any }[] = [];
+// Get available actions
+const getAvailableActions = computed(() => {
+    const actions: Array<{
+        label: string;
+        action: () => void;
+        icon: any;
+    }> = [];
+    
+    if (props.actions && props.actions.length > 0) {
+        props.actions.forEach(action => {
+            if (canCustomAction(action.permission)) {
+                actions.push({
+                    label: action.label,
+                    action: action.onClick,
+                    icon: action.label === 'Detail' ? Eye : 
+                          action.label === 'Edit' ? Edit : 
+                          action.label === 'Delete' ? Trash2 : FileText,
+                });
+            }
+        });
+    }
+    
+    return actions;
+});
 
-    return links;
+const items = computed(() => {
+    return getAvailableActions.value;
+});
+
+const hasActions = computed(() => {
+    if (!permissionsLoaded.value) return false;
+    
+    if (!props.actions || props.actions.length === 0) return false;
+    
+    const availableActions = getAvailableActions.value;
+    const result = availableActions.length > 0;
+    
+    if (props.actions.length > 0 && availableActions.length === 0) {
+        console.log('RowActions Debug - Actions filtered out:', {
+            moduleName: props.moduleName,
+            totalActions: props.actions.length,
+            availableActions: availableActions.length,
+            actions: props.actions.map(a => ({ label: a.label, permission: a.permission })),
+            hasActions: result
+        });
+    }
+    
+    return result;
 });
 </script>
 
 <template>
-    <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-            <Button variant="outline" size="icon">
-                <MoreVertical class="h-4 w-4" />
-            </Button>
-        </DropdownMenuTrigger>
+    <div v-if="hasActions">
+        <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon">
+                    <MoreVertical class="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
 
-        <DropdownMenuContent class="w-40">
-            <DropdownMenuItem v-for="item in items" :key="item.label" @click="item.action" class="flex items-center gap-2">
-                <component :is="item.icon" class="h-4 w-4" v-if="item.icon" />
-                {{ item.label }}
-            </DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
+            <DropdownMenuContent class="w-40">
+                <DropdownMenuItem 
+                    v-for="item in items" 
+                    :key="item.label" 
+                    @click="item.action" 
+                    class="flex items-center gap-2"
+                    :class="item.label === 'Delete' ? 'text-red-600' : ''"
+                >
+                    <component :is="item.icon" class="h-4 w-4" v-if="item.icon" />
+                    {{ item.label }}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    </div>
 </template>

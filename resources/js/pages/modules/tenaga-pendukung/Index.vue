@@ -103,18 +103,22 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/tenaga-pendukung/${row.id}`),
+        permission: 'Tenaga Pendukung Detail',
     },
     {
         label: 'Lihat',
         onClick: () => router.visit(`/tenaga-pendukung/${row.id}/edit`),
+        permission: 'Tenaga Pendukung Edit',
     },
     {
         label: 'Riwayat Pemeriksaan',
         onClick: () => router.visit(`/tenaga-pendukung/${row.id}/riwayat-pemeriksaan`),
+        permission: 'Tenaga Pendukung Detail',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Tenaga Pendukung Delete',
     },
 ];
 
@@ -233,6 +237,7 @@ function getLamaBergabung(tanggalBergabung: string) {
     <div class="space-y-4">
         <PageIndex
             title="Tenaga Pendukung"
+            module-name="Tenaga Pendukung"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/tenaga-pendukung/create'"

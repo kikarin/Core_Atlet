@@ -68,10 +68,12 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/menu-permissions/menus/${row.id}`),
+        permission: 'Users Menu Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/menu-permissions/menus/${row.id}/edit`),
+        permission: 'Users Menu Edit',
     },
     {
         label: 'Delete',
@@ -80,6 +82,7 @@ const actions = (row: any) => [
                 router.delete(`/menu-permissions/menus/${row.id}`);
             }
         },
+        permission: 'Users Menu Delete',
     },
 ];
 
@@ -127,6 +130,7 @@ const deleteMenu = async (row: any) => {
 <template>
     <PageIndex
         title="Menus"
+        module-name="Users Menu"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :create-url="'/menu-permissions/menus/create'"

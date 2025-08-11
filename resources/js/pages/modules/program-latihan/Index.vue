@@ -65,14 +65,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/program-latihan/${row.id}`),
+        permission: 'Program Latihan Detail'
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/program-latihan/${row.id}/edit`),
+        permission: 'Program Latihan Edit'
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Program Latihan Delete'
     },
 ];
 
@@ -90,7 +93,7 @@ const deleteSelected = async () => {
     }
 };
 
-const deleteProgram = async (row: any) => {
+const deleteRow = async (row: any) => {
     await router.delete(`/program-latihan/${row.id}`, {
         onSuccess: () => {
             toast({ title: 'Data berhasil dihapus', variant: 'success' });
@@ -104,74 +107,73 @@ const deleteProgram = async (row: any) => {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <PageIndex
-            title="Program Latihan"
-            :breadcrumbs="breadcrumbs"
-            :columns="columns"
-            :create-url="'/program-latihan/create'"
-            :actions="actions"
-            :selected="selected"
-            @update:selected="(val: number[]) => (selected = val)"
-            :on-delete-selected="deleteSelected"
-            api-endpoint="/api/program-latihan"
-            ref="pageIndex"
-            :on-toast="toast"
-            :on-delete-row="deleteProgram"
-            :show-import="false"
-        >
-            <template #cell-rencana_latihan="{ row }">
-                <div class="flex justify-center">
-                    <BadgeGroup
-                        :badges="[
-                            {
-                                value: row.jumlah_rencana_latihan || 0,
-                                colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
-                                onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
-                            },
-                        ]"
-                    />
-                </div>
-            </template>
-
-            <template #cell-target_individu="{ row }">
+    <PageIndex
+        title="Program Latihan"
+        module-name="Program Latihan"
+        :breadcrumbs="breadcrumbs"
+        :columns="columns"
+        :create-url="'/program-latihan/create'"
+        :actions="actions"
+        :selected="selected"
+        @update:selected="(val) => (selected = val)"
+        :on-delete-selected="deleteSelected"
+        :on-delete-row="deleteRow"
+        api-endpoint="/api/program-latihan"
+        ref="pageIndex"
+        :showImport="false"
+        :showDelete="false"
+    >
+        <template #cell-rencana_latihan="{ row }">
+            <div class="flex justify-center">
                 <BadgeGroup
                     :badges="[
                         {
-                            label: 'Atlet',
-                            value: row.jumlah_target_atlet || 0,
-                            colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=atlet`),
-                        },
-                        {
-                            label: 'Pelatih',
-                            value: row.jumlah_target_pelatih || 0,
-                            colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=pelatih`),
-                        },
-                        {
-                            label: 'Tenaga Pendukung',
-                            value: row.jumlah_target_tenaga_pendukung || 0,
-                            colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
+                            value: row.jumlah_rencana_latihan || 0,
+                            colorClass: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
+                            onClick: () => router.visit(`/program-latihan/${row.id}/rencana-latihan`),
                         },
                     ]"
                 />
-            </template>
+            </div>
+        </template>
 
-            <template #cell-target_kelompok="{ row }">
-                <div class="flex justify-center">
-                    <BadgeGroup
-                        :badges="[
-                            {
-                                value: row.jumlah_target_kelompok || 0,
-                                colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
-                                onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),
-                            },
-                        ]"
-                    />
-                </div>
-            </template>
-        </PageIndex>
-    </div>
+        <template #cell-target_individu="{ row }">
+            <BadgeGroup
+                :badges="[
+                    {
+                        label: 'Atlet',
+                        value: row.jumlah_target_atlet || 0,
+                        colorClass: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                        onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=atlet`),
+                    },
+                    {
+                        label: 'Pelatih',
+                        value: row.jumlah_target_pelatih || 0,
+                        colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                        onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=pelatih`),
+                    },
+                    {
+                        label: 'Tenaga Pendukung',
+                        value: row.jumlah_target_tenaga_pendukung || 0,
+                        colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                        onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
+                    },
+                ]"
+            />
+        </template>
+
+        <template #cell-target_kelompok="{ row }">
+            <div class="flex justify-center">
+                <BadgeGroup
+                    :badges="[
+                        {
+                            value: row.jumlah_target_kelompok || 0,
+                            colorClass: 'bg-green-100 text-green-800 hover:bg-green-200',
+                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/kelompok`),
+                        },
+                    ]"
+                />
+            </div>
+        </template>
+    </PageIndex>
 </template>

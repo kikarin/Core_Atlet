@@ -5,29 +5,63 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import RowActions from '@/pages/modules/components/tables/RowActions.vue';
 
-import { computed, type PropType } from 'vue';
+import { computed } from 'vue';
 import type { Column, Sort } from './datatable/types';
 import { useDataTable } from './datatable/useDataTable';
 
-const props = defineProps({
-    columns: { type: Array as PropType<Column[]>, required: true },
-    rows: { type: Array as PropType<any[]>, required: true },
-    actions: { type: Function as PropType<(row: any) => { label: string; onClick: () => void; permission?: string }[]>, default: () => [] },
-    selected: { type: Array as PropType<number[]>, default: () => [] },
-    baseUrl: { type: String, default: '' },
-    total: { type: Number, required: true },
-    search: { type: String, default: '' },
-    sort: { type: Object as PropType<Sort>, default: () => ({ key: '', order: 'asc' }) },
-    page: { type: Number, default: 1 },
-    perPage: { type: Number, default: 10 },
-    hidePagination: { type: Boolean, default: false },
-    disableLength: { type: Boolean, default: false },
-    hideSearch: { type: Boolean, default: false },
-    hideSelectAll: { type: Boolean, default: false },
-    hideSelect: { type: Boolean, default: false },
+interface DataTableProps {
+    columns: Column[];
+    rows: any[];
+    actions: (row: any) => { label: string; onClick: () => void; permission?: string }[];
+    selected: number[];
+    baseUrl: string;
+    moduleName: string;
+    total: number;
+    search: string;
+    sort: Sort;
+    page: number;
+    perPage: number;
+    hidePagination: boolean;
+    disableLength: boolean;
+    hideSearch: boolean;
+    hideSelectAll: boolean;
+    hideSelect: boolean;
+    permissions?: {
+        detail?: boolean;
+        edit?: boolean;
+        delete?: boolean;
+    };
+    detailUrl?: string;
+    editUrl?: string;
+    deleteUrl?: string;
+}
+
+const props = withDefaults(defineProps<DataTableProps>(), {
+    selected: () => [],
+    baseUrl: '',
+    moduleName: '',
+    hidePagination: false,
+    disableLength: false,
+    hideSearch: false,
+    hideSelectAll: false,
+    hideSelect: false,
+    permissions: undefined,
+    detailUrl: undefined,
+    editUrl: undefined,
+    deleteUrl: undefined,
 });
 
-const emit = defineEmits(['update:selected', 'update:search', 'update:sort', 'update:page', 'update:perPage', 'deleted']);
+const emit = defineEmits<{
+    'update:selected': [value: number[]];
+    'update:search': [value: string];
+    'update:sort': [value: Sort];
+    'update:page': [value: number];
+    'update:perPage': [value: number];
+    deleted: [];
+    detail: [id: string | number];
+    edit: [id: string | number];
+    delete: [id: string | number];
+}>();
 
 const { visibleColumns, totalPages, getPageNumbers, sortBy, toggleSelect, toggleSelectAll } = useDataTable(
     props,
@@ -42,6 +76,18 @@ const selectLabel = computed(() => {
 const getValue = (obj: any, key: string) => {
     return key.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
 };
+
+const handleDetail = (id: string | number) => {
+    emit('detail', id);
+};
+
+const handleEdit = (id: string | number) => {
+    emit('edit', id);
+};
+
+const handleDelete = (id: string | number) => {
+    emit('delete', id);
+};
 </script>
 
 <template>
@@ -53,7 +99,7 @@ const getValue = (obj: any, key: string) => {
                 <span class="text-muted-foreground text-sm">Show</span>
                 <Select
                     :model-value="props.perPage.toString()"
-                    @update:model-value="(val) => emit('update:perPage', val === 'all' ? -1 : Number(val))"
+                    @update:model-value="(val: string) => emit('update:perPage', val === 'all' ? -1 : Number(val))"
                 >
                     <SelectTrigger class="w-24">
                         <SelectValue :placeholder="selectLabel" />
@@ -72,7 +118,7 @@ const getValue = (obj: any, key: string) => {
 
             <!-- Search (selalu tampil di kanan) -->
             <div v-if="!props.hideSearch" class="mr-2 w-full sm:w-64">
-                <Input :model-value="props.search" @update:model-value="(val) => emit('update:search', val)" placeholder="Search..." class="w-full" />
+                <Input :model-value="props.search" @update:model-value="(val: string) => emit('update:search', val)" placeholder="Search..." class="w-full" />
             </div>
         </div>
         <!-- Table -->
@@ -90,7 +136,7 @@ const getValue = (obj: any, key: string) => {
                                         type="checkbox"
                                         class="peer sr-only"
                                         :checked="props.selected.length > 0 && props.selected.length === props.rows.length"
-                                        @change="(e) => toggleSelectAll((e.target as HTMLInputElement).checked)"
+                                        @change="(e: Event) => toggleSelectAll((e.target as HTMLInputElement).checked)"
                                     />
                                     <div class="bg-primary h-3 w-3 scale-0 transform rounded-sm transition-all peer-checked:scale-100"></div>
                                 </label>
@@ -141,11 +187,17 @@ const getValue = (obj: any, key: string) => {
 
                             <TableCell class="px-2 text-center text-xs break-words whitespace-normal sm:px-4 sm:text-sm">
                                 <RowActions
-                                    v-if="actions(row).length > 0"
-                                    :actions="actions(row)"
                                     :id="row.id"
-                                    :base-url="baseUrl"
-                                    :on-delete="() => emit('deleted')"
+                                    :base-url="props.baseUrl"
+                                    :module-name="props.moduleName"
+                                    :actions="props.actions(row)"
+                                    :permissions="props.permissions"
+                                    :detail-url="props.detailUrl"
+                                    :edit-url="props.editUrl"
+                                    :delete-url="props.deleteUrl"
+                                    @detail="handleDetail"
+                                    @edit="handleEdit"
+                                    @delete="handleDelete"
                                 />
                             </TableCell>
                             <TableCell

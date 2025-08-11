@@ -186,18 +186,18 @@ const selected = ref<number[]>([]);
 const actions = (row: any) => [
     {
         label: 'Detail',
-        icon: 'eye',
         onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}`),
+        permission: 'Pemeriksaan Peserta Detail'
     },
     {
         label: 'Edit',
-        icon: 'pencil',
         onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`),
+        permission: 'Pemeriksaan Peserta Edit'
     },
     {
-        label: 'Hapus',
-        icon: 'trash',
+        label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Pemeriksaan Peserta Delete'
     },
 ];
 
@@ -218,6 +218,7 @@ const getPesertaLabel = computed(() => {
 <template>
     <PageIndex
         :title="`Peserta ${getPesertaLabel}`"
+        module-name="Pemeriksaan Peserta"
         :breadcrumbs="breadcrumbs"
         :columns="columns"
         :create-url="`/pemeriksaan/${pemeriksaan.id}/peserta/create?jenis_peserta=${jenisPeserta}`"

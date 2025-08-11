@@ -105,14 +105,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/sertifikat/${row.id}`),
+        permission: 'Tenaga Pendukung Sertifikat Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/tenaga-pendukung/${props.tenagaPendukungId}/sertifikat/${row.id}/edit`),
+        permission: 'Tenaga Pendukung Sertifikat Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
+        permission: 'Tenaga Pendukung Sertifikat Delete',
     },
 ];
 
@@ -222,6 +225,7 @@ const idsToDelete = ref<number[]>([]);
 
                     <HeaderActions
                         title="Sertifikat"
+                        module-name="Tenaga Pendukung Sertifikat"
                         :create-url="`/tenaga-pendukung/${props.tenagaPendukungId}/sertifikat/create`"
                         :selected="selected"
                         :on-delete-selected="deleteSelected"

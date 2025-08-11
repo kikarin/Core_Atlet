@@ -60,14 +60,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/turnamen/${row.id}`),
+        permission: 'Turnamen Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/turnamen/${row.id}/edit`),
+        permission: 'Turnamen Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Turnamen Delete',
     },
 ];
 
@@ -116,6 +119,7 @@ const deleteRow = async (row: any) => {
     <div class="space-y-4">
         <PageIndex
             title="Turnamen"
+            module-name="Turnamen"
             :breadcrumbs="breadcrumbs"
             :columns="columns"
             :create-url="'/turnamen/create'"
