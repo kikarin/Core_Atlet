@@ -79,7 +79,7 @@ class PemeriksaanRepository
         if ($auth->current_role_id == 35) {
             $query->where("caborKategori", function ($sub_query) use ($auth) {
                 $sub_query->where("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("atlet_id", $auth->atlet_id);
+                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
                 });
             });
         }
