@@ -168,6 +168,7 @@ const deleteAtlet = async (row: any) => {
             :api-endpoint="`/api/cabor-kategori-atlet?cabor_kategori_id=${caborKategori.id}`"
             ref="pageIndex"
             :on-toast="toast"
+            :on-delete-row="deleteAtlet"
             :show-import="false"
             :show-create="false"
             :show-multiple-button="true"
