@@ -75,6 +75,15 @@ class PemeriksaanRepository
             $query->where('nama_pemeriksaan', 'like', "%$search%");
         }
 
+        $auth = Auth::user();
+        if ($auth->current_role_id == 35) {
+            $query->where("caborKategori", function ($sub_query) use ($auth) {
+                $sub_query->where("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where("atlet_id", $auth->atlet_id);
+                });
+            });
+        }
+
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
 
