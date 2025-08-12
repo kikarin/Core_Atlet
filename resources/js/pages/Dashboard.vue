@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -396,24 +395,24 @@ const chartOptions = {
                                         <TableCell class="font-medium">{{ item.cabor_nama }}</TableCell>
                                         <TableCell>{{ item.nama }}</TableCell>
                                         <TableCell class="text-center">
-                                            <Badge variant="secondary" class="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                            <span class="font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100">
                                                 {{ item.jumlah_atlet }}
-                                            </Badge>
+                                            </span>
                                         </TableCell>
                                         <TableCell class="text-center">
-                                            <Badge variant="secondary" class="bg-green-100 text-green-800 hover:bg-green-200">
+                                            <span class="font-semibold text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100">
                                                 {{ item.jumlah_pelatih }}
-                                            </Badge>
+                                            </span>
                                         </TableCell>
                                         <TableCell class="text-center">
-                                            <Badge variant="secondary" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                                            <span class="font-semibold text-yellow-400 hover:text-yellow-500 dark:text-yellow-300 dark:hover:text-yellow-100">
                                                 {{ item.jumlah_tenaga_pendukung }}
-                                            </Badge>
+                                            </span>
                                         </TableCell>
                                         <TableCell class="text-center">
-                                            <Badge variant="default" class="bg-gray-100 text-gray-800 hover:bg-gray-200">
+                                            <span class="font-semibold text-gray-800 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
                                                 {{ item.total }}
-                                            </Badge>
+                                            </span>
                                         </TableCell>
                                     </TableRow>
                                     <TableRow v-if="rekapData.length === 0">

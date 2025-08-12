@@ -34,14 +34,14 @@ const actions = (row: any) => [
         permission: 'Role Edit',
     },
     {
-        label: 'Delete',
-        onClick: () => pageIndex.value.handleDeleteRow(row),
-        permission: 'Role Delete',
-    },
-    {
         label: 'Set Permissions',
         onClick: () => router.visit(`/menu-permissions/roles/set-permissions/${row.id}`),
         permission: 'Role Set Permission',
+    },
+    {
+        label: 'Delete',
+        onClick: () => pageIndex.value.handleDeleteRow(row),
+        permission: 'Role Delete',
     },
 ];
 

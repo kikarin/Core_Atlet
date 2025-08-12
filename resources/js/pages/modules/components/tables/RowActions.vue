@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Eye, Edit, Trash2, FileText } from 'lucide-vue-next';
+import { MoreVertical, Eye, Edit, Trash2, FileText, FolderKanban, Bolt } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import permissionService from '@/services/permissionService';
 
@@ -91,6 +91,9 @@ const getAvailableActions = computed(() => {
                     action: action.onClick,
                     icon: action.label === 'Detail' ? Eye : 
                           action.label === 'Edit' ? Edit : 
+                          action.label === 'Edit Posisi' ? Edit : 
+                            action.label === 'Lihat' ? FolderKanban :
+                            action.label === 'Set Permissions' ? Bolt :
                           action.label === 'Delete' ? Trash2 : FileText,
                 });
             }

@@ -45,6 +45,35 @@ class ProgramLatihanRepository
         } else {
             $query->orderBy('id', 'desc');
         }
+
+        $auth = Auth::user();
+        if ($auth->current_role_id == 35) {
+            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
+                $sub_query->whereHas("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
+                });
+            });
+        }
+
+        $auth = Auth::user();
+        if ($auth->current_role_id == 36) {
+            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
+                $sub_query->whereHas("caborKategoriPelatih", function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where("pelatih_id", $auth->pelatih->id);
+                });
+            });
+        }
+
+        $auth = Auth::user();
+        if ($auth->current_role_id == 37) {
+            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
+                $sub_query->whereHas("tenagaPendukung", function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where("tenaga_pendukung_id", $auth->tenagaPendukung->id);
+                });
+            });
+        }
+
+        
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
         if ($perPage === -1) {

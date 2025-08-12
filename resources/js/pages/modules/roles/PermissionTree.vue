@@ -45,15 +45,20 @@ const toggleGroup = (group: (typeof props.groups)[0]) => {
             </div>
             <!-- Permissions List -->
             <ul class="divide-y">
-                <li v-for="perm in group.children" :key="perm.id" class="flex items-center gap-2 px-4 py-2 text-sm">
-                    <input
-                        type="checkbox"
-                        class="form-checkbox accent-primary scale-110"
-                        :checked="isChecked(perm.id)"
-                        @change="() => toggle(perm.id)"
-                    />
-                    <span>{{ perm.label }}</span>
-                </li>
+            <li
+                v-for="perm in group.children"
+                :key="perm.id"
+                class="flex items-center gap-2 px-4 py-2 text-sm transition-colors"
+                :class="isChecked(perm.id) ? 'bg-gray-200 dark:bg-neutral-800' : ''"
+            >
+                <input
+                    type="checkbox"
+                    class="form-checkbox accent-primary scale-110"
+                    :checked="isChecked(perm.id)"
+                    @change="() => toggle(perm.id)"
+                />
+                <span>{{ perm.label }}</span>
+            </li>
                 <li v-if="!group.children.length" class="text-muted-foreground px-4 py-2 text-xs">Tidak ada permission</li>
             </ul>
         </div>

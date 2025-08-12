@@ -43,21 +43,6 @@ const actions = (row: any) => [
         onClick: () => pageIndex.value.handleDeleteRow(row),
         permission: 'Cabor Kategori Delete',
     },
-    {
-        label: 'Daftar Atlet',
-        onClick: () => router.visit(`/cabor-kategori/${row.id}/atlet`),
-        permission: 'Cabor Kategori Atlet Show',
-    },
-    {
-        label: 'Daftar Pelatih',
-        onClick: () => router.visit(`/cabor-kategori/${row.id}/pelatih`),
-        permission: 'Cabor Kategori Pelatih Show',
-    },
-    {
-        label: 'Daftar Tenaga Pendukung',
-        onClick: () => router.visit(`/cabor-kategori/${row.id}/tenaga-pendukung`),
-        permission: 'Cabor Kategori Tenaga Pendukung Show',
-    },
 ];
 
 const deleteSelected = async () => {

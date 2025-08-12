@@ -12,14 +12,14 @@ const columns = [
     { key: 'email', label: 'Email' },
     {
         key: 'role',
-        label: 'Current Role',
+        label: 'Level saat ini',
         format: (row: any) => {
             return row.role || '-';
         },
     },
     {
         key: 'all_roles',
-        label: 'All Roles',
+        label: 'Semua Role',
         sortable: false,
         format: (row: any) => {
             if (!row.all_roles) return '-';

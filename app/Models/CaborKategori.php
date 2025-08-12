@@ -46,7 +46,7 @@ class CaborKategori extends Model
 
     public function tenagaPendukung()
     {
-        return $this->hasMany(\App\Models\CaborKategoriTenagaPendukung::class, 'cabor_kategori_id')
+        return $this->hasMany(CaborKategoriTenagaPendukung::class, 'cabor_kategori_id')
             ->with(['tenagaPendukung', 'jenisTenagaPendukung', 'created_by_user', 'updated_by_user']);
     }
 
