@@ -243,7 +243,7 @@ function getLamaBergabung(tanggalBergabung: string) {
             :create-url="'/pelatih/create'"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             api-endpoint="/api/pelatih"
             ref="pageIndex"
@@ -251,6 +251,8 @@ function getLamaBergabung(tanggalBergabung: string) {
             :on-delete-row="deletePelatih"
             @import="openImportModal"
             :showImport="true"
+            :showStatistik="true"
+            statistik-url="/pelatih/karakteristik"
         />
         <Dialog v-model:open="showImportModal">
             <DialogContent>

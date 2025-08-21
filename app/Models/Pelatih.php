@@ -141,4 +141,20 @@ class Pelatih extends Model implements HasMedia
     {
         return $this->belongsTo(User::class, 'users_id');
     }
+
+    /**
+     * Scope filter untuk tanggal
+     */
+    public function scopeFilter($query, $data)
+    {
+        if (isset($data['filter_start_date']) && $data['filter_start_date']) {
+            $query->where('created_at', '>=', $data['filter_start_date']);
+        }
+        
+        if (isset($data['filter_end_date']) && $data['filter_end_date']) {
+            $query->where('created_at', '<=', $data['filter_end_date'] . ' 23:59:59');
+        }
+        
+        return $query;
+    }
 }

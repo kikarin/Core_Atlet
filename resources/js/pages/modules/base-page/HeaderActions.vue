@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/vue3';
+import { BarChart3 } from 'lucide-vue-next';
 import permissionService from '@/services/permissionService';
 
 const props = defineProps<{
@@ -24,6 +25,8 @@ const props = defineProps<{
         import?: boolean;
         kelola?: boolean;
     };
+    showStatistik?: boolean;
+    statistikUrl?: string;
 }>();
 
 const canCreate = () => {
@@ -86,6 +89,17 @@ const canKelola = () => {
                 :href="props.kelolaUrl"
             >
                 <Button variant="outline" size="sm">{{ props.kelolaLabel || 'Kelola' }}</Button>
+            </Link>
+
+            <!-- Button Statistik -->
+            <Link 
+                v-if="props.showStatistik && props.statistikUrl" 
+                :href="props.statistikUrl"
+            >
+                <Button variant="outline" size="sm" class="flex items-center gap-2">
+                    <BarChart3 class="h-4 w-4" />
+                    Statistik
+                </Button>
             </Link>
 
             <!-- Dropdown Set Kehadiran -->

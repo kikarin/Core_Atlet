@@ -259,7 +259,7 @@ function getLamaBergabung(tanggalBergabung: string) {
             :create-url="'/atlet/create'"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             api-endpoint="/api/atlet"
             ref="pageIndex"
@@ -267,6 +267,8 @@ function getLamaBergabung(tanggalBergabung: string) {
             :on-delete-row="deleteAtlet"
             @import="openImportModal"
             :showImport="true"
+            :showStatistik="true"
+            statistik-url="/atlet/karakteristik"
         />
         <Dialog v-model:open="showImportModal">
             <DialogContent>

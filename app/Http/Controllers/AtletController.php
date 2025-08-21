@@ -370,4 +370,38 @@ class AtletController extends Controller implements HasMiddleware
             ], 422);
         }
     }
+
+    /**
+     * Show karakteristik atlet
+     */
+    public function karakteristik()
+    {
+        return Inertia::render('modules/atlet/Karakteristik');
+    }
+
+    /**
+     * API untuk mendapatkan data karakteristik atlet
+     */
+    public function apiKarakteristik(Request $request)
+    {
+        try {
+            $data = $this->repository->jumlah_karakteristik([
+                'tanggal_awal'  => $request->tanggal_awal,
+                'tanggal_akhir' => $request->tanggal_akhir,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching karakteristik atlet: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data karakteristik atlet',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -91,6 +91,8 @@ const props = defineProps<{
         import?: boolean;
         kelola?: boolean;
     };
+    showStatistik?: boolean;
+    statistikUrl?: string;
 }>();
 
 const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
@@ -229,6 +231,8 @@ defineExpose({ fetchData });
                         :kelolaLabel="props.kelolaLabel"
                         :showDelete="props.showDelete"
                         :permissions="permissions"
+                        :showStatistik="props.showStatistik"
+                        :statistikUrl="props.statistikUrl"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                     />

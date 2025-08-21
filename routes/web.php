@@ -160,6 +160,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 Route::middleware(['auth', 'verified'])->group(function () {
     // ATLET
+    Route::get('/atlet/karakteristik', [AtletController::class, 'karakteristik'])->name('atlet.karakteristik');
+    Route::post('/atlet/api-karakteristik', [AtletController::class, 'apiKarakteristik'])->name('atlet.api-karakteristik');
+    
     Route::resource('/atlet', AtletController::class)->names('atlet');
     Route::get('/api/atlet', [AtletController::class, 'apiIndex']);
     Route::post('/atlet/destroy-selected', [AtletController::class, 'destroy_selected'])->name('atlet.destroy_selected');
@@ -208,6 +211,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('akun', [AtletController::class, 'updateAkun'])->name('atlet.akun.update');
     });
     // PELATIH
+    Route::get('/pelatih/karakteristik', [PelatihController::class, 'karakteristik'])->name('pelatih.karakteristik');
+    Route::post('/pelatih/api-karakteristik', [PelatihController::class, 'apiKarakteristik'])->name('pelatih.api-karakteristik');
+    
     Route::resource('/pelatih', PelatihController::class)->names('pelatih');
     Route::get('/api/pelatih', [PelatihController::class, 'apiIndex']);
     Route::post('/pelatih/destroy-selected', [PelatihController::class, 'destroy_selected'])->name('pelatih.destroy_selected');
@@ -251,6 +257,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('akun', [PelatihController::class, 'updateAkun'])->name('pelatih.akun.update');
     });
     // TENAGA PENDUKUNG
+    Route::get('/tenaga-pendukung/karakteristik', [TenagaPendukungController::class, 'karakteristik'])->name('tenaga-pendukung.karakteristik');
+    Route::post('/tenaga-pendukung/api-karakteristik', [TenagaPendukungController::class, 'apiKarakteristik'])->name('tenaga-pendukung.api-karakteristik');
+    
     Route::resource('/tenaga-pendukung', TenagaPendukungController::class)->names('tenaga-pendukung');
     Route::get('/api/tenaga-pendukung', [TenagaPendukungController::class, 'apiIndex']);
     Route::post('/tenaga-pendukung/destroy-selected', [TenagaPendukungController::class, 'destroy_selected'])->name('tenaga-pendukung.destroy_selected');
