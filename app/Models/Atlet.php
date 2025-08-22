@@ -147,6 +147,11 @@ class Atlet extends Model implements HasMedia
         return $this->belongsTo(User::class, 'users_id');
     }
 
+    public function caborKategoriAtlet()
+    {
+        return $this->hasMany(CaborKategoriAtlet::class, 'atlet_id');
+    }
+
     /**
      * Scope filter untuk tanggal
      */

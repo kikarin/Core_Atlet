@@ -6,6 +6,9 @@ use App\Http\Requests\CaborRequest;
 use App\Models\Cabor;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CaborRepository
 {
@@ -53,10 +56,29 @@ class CaborRepository
         if ($perPage === -1) {
             $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
+                // Hitung jumlah peserta unik per cabor
+                $jumlahAtlet = DB::table('cabor_kategori_atlet')
+                    ->where('cabor_id', $item->id)
+                    ->distinct('atlet_id')
+                    ->count('atlet_id');
+                
+                $jumlahPelatih = DB::table('cabor_kategori_pelatih')
+                    ->where('cabor_id', $item->id)
+                    ->distinct('pelatih_id')
+                    ->count('pelatih_id');
+                
+                $jumlahTenagaPendukung = DB::table('cabor_kategori_tenaga_pendukung')
+                    ->where('cabor_id', $item->id)
+                    ->distinct('tenaga_pendukung_id')
+                    ->count('tenaga_pendukung_id');
+
                 return [
                     'id'        => $item->id,
                     'nama'      => $item->nama,
                     'deskripsi' => $item->deskripsi,
+                    'jumlah_atlet' => $jumlahAtlet,
+                    'jumlah_pelatih' => $jumlahPelatih,
+                    'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
                 ];
             });
             $data += [
@@ -76,10 +98,29 @@ class CaborRepository
         $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
 
         $transformedData = collect($items->items())->map(function ($item) {
+            // Hitung jumlah peserta unik per cabor
+            $jumlahAtlet = DB::table('cabor_kategori_atlet')
+                ->where('cabor_id', $item->id)
+                ->distinct('atlet_id')
+                ->count('atlet_id');
+            
+            $jumlahPelatih = DB::table('cabor_kategori_pelatih')
+                ->where('cabor_id', $item->id)
+                ->distinct('pelatih_id')
+                ->count('pelatih_id');
+            
+            $jumlahTenagaPendukung = DB::table('cabor_kategori_tenaga_pendukung')
+                ->where('cabor_id', $item->id)
+                ->distinct('tenaga_pendukung_id')
+                ->count('tenaga_pendukung_id');
+
             return [
                 'id'        => $item->id,
                 'nama'      => $item->nama,
                 'deskripsi' => $item->deskripsi,
+                'jumlah_atlet' => $jumlahAtlet,
+                'jumlah_pelatih' => $jumlahPelatih,
+                'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
             ];
         });
 
@@ -131,7 +172,7 @@ class CaborRepository
 
         $itemArray = $item->toArray();
 
-        return \Inertia\Inertia::render('modules/cabor/Cabor/Show', [
+        return Inertia::render('modules/cabor/Cabor/Show', [
             'item' => $itemArray,
         ]);
     }
@@ -142,5 +183,82 @@ class CaborRepository
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
         return $request->validate($rules, $messages);
+    }
+
+    public function getPesertaByCabor($caborId, $tipe)
+    {
+        switch ($tipe) {
+            case 'atlet':
+                return DB::table('cabor_kategori_atlet as cka')
+                    ->join('atlets as a', 'cka.atlet_id', '=', 'a.id')
+                    ->where('cka.cabor_id', $caborId)
+                    ->select('a.id', 'a.nama', 'a.foto', 'a.jenis_kelamin', 'a.tanggal_lahir')
+                    ->distinct()
+                    ->get()
+                    ->map(function ($item) {
+                        // Hitung usia
+                        $usia = null;
+                        if ($item->tanggal_lahir) {
+                            $usia = Carbon::parse($item->tanggal_lahir)->age;
+                        }
+                        
+                        return [
+                            'id' => $item->id,
+                            'nama' => $item->nama,
+                            'foto' => $item->foto,
+                            'jenis_kelamin' => $item->jenis_kelamin,
+                            'usia' => $usia,
+                        ];
+                    });
+
+            case 'pelatih':
+                return DB::table('cabor_kategori_pelatih as ckp')
+                    ->join('pelatihs as p', 'ckp.pelatih_id', '=', 'p.id')
+                    ->where('ckp.cabor_id', $caborId)
+                    ->select('p.id', 'p.nama', 'p.foto', 'p.jenis_kelamin', 'p.tanggal_lahir')
+                    ->distinct()
+                    ->get()
+                    ->map(function ($item) {
+                        // Hitung usia
+                        $usia = null;
+                        if ($item->tanggal_lahir) {
+                            $usia = Carbon::parse($item->tanggal_lahir)->age;
+                        }
+                        
+                        return [
+                            'id' => $item->id,
+                            'nama' => $item->nama,
+                            'foto' => $item->foto,
+                            'jenis_kelamin' => $item->jenis_kelamin,
+                            'usia' => $usia,
+                        ];
+                    });
+
+            case 'tenaga_pendukung':
+                return DB::table('cabor_kategori_tenaga_pendukung as cktp')
+                    ->join('tenaga_pendukungs as tp', 'cktp.tenaga_pendukung_id', '=', 'tp.id')
+                    ->where('cktp.cabor_id', $caborId)
+                    ->select('tp.id', 'tp.nama', 'tp.foto', 'tp.jenis_kelamin', 'tp.tanggal_lahir')
+                    ->distinct()
+                    ->get()
+                    ->map(function ($item) {
+                        // Hitung usia
+                        $usia = null;
+                        if ($item->tanggal_lahir) {
+                            $usia = Carbon::parse($item->tanggal_lahir)->age;
+                        }
+                        
+                        return [
+                            'id' => $item->id,
+                            'nama' => $item->nama,
+                            'foto' => $item->foto,
+                            'jenis_kelamin' => $item->jenis_kelamin,
+                            'usia' => $usia,
+                        ];
+                    });
+
+            default:
+                return collect();
+        }
     }
 }

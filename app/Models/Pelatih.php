@@ -142,6 +142,11 @@ class Pelatih extends Model implements HasMedia
         return $this->belongsTo(User::class, 'users_id');
     }
 
+    public function caborKategoriPelatih()
+    {
+        return $this->hasMany(CaborKategoriPelatih::class, 'pelatih_id');
+    }
+
     /**
      * Scope filter untuk tanggal
      */

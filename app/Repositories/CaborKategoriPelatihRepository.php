@@ -30,6 +30,10 @@ class CaborKategoriPelatihRepository
         if (request('cabor_kategori_id')) {
             $query->where('cabor_kategori_pelatih.cabor_kategori_id', request('cabor_kategori_id'));
         }
+        // Filter by pelatih_id jika ada
+        if (request('pelatih_id')) {
+            $query->where('cabor_kategori_pelatih.pelatih_id', request('pelatih_id'));
+        }
         // Filter by is_active jika ada
         if (request('is_active') !== null) {
             $query->where('cabor_kategori_pelatih.is_active', request('is_active'));

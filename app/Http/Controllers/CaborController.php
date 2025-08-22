@@ -150,4 +150,15 @@ class CaborController extends Controller implements HasMiddleware
 
         return inertia('modules/cabor/Edit', $data);
     }
+
+    public function getPeserta($id, $tipe)
+    {
+        $peserta = $this->repository->getPesertaByCabor($id, $tipe);
+        
+        return response()->json([
+            'data' => $peserta,
+            'tipe' => $tipe,
+            'cabor_id' => $id
+        ]);
+    }
 }

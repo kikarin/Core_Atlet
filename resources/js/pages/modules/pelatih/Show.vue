@@ -9,6 +9,7 @@ import ShowDokumen from './dokumen/ShowDokumen.vue';
 import ShowPrestasi from './prestasi/ShowPrestasi.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
 import ShowKesehatan from './ShowKesehatan.vue';
+import ShowCabor from './ShowCabor.vue';
 
 const { toast } = useToast();
 
@@ -68,6 +69,31 @@ interface Kesehatan {
     updated_by_user?: { name: string } | null;
 }
 
+interface CaborData {
+    id: number;
+    cabor_id: number;
+    cabor_kategori_id: number;
+    pelatih_id: number;
+    jenis_pelatih_id: number;
+    is_active: boolean;
+    created_at: string;
+    cabor: {
+        id: number;
+        nama: string;
+        deskripsi: string;
+    };
+    cabor_kategori: {
+        id: number;
+        nama: string;
+        jenis_kelamin: string;
+        deskripsi: string;
+    };
+    jenis_pelatih: {
+        id: number;
+        nama: string;
+    };
+}
+
 const props = defineProps<{
     item: {
         id: number;
@@ -91,6 +117,7 @@ const props = defineProps<{
         prestasi?: Prestasi[];
         dokumen?: Dokumen[];
         kesehatan?: Kesehatan | null;
+        cabor_kategori_pelatih?: CaborData[];
         kecamatan?: { nama: string } | null;
         kelurahan?: { nama: string } | null;
         tanggal_bergabung?: string;
@@ -128,6 +155,8 @@ watch(
 const dynamicTitle = computed(() => {
     if (activeTab.value === 'pelatih-data') {
         return `Pelatih : ${props.item.nama}`;
+    } else if (activeTab.value === 'cabor-data') {
+        return `Cabor : ${props.item.nama}`;
     } else if (activeTab.value === 'sertifikat-data') {
         return `Sertifikat : ${props.item.nama}`;
     } else if (activeTab.value === 'prestasi-data') {
@@ -234,6 +263,10 @@ const tabsConfig = [
         label: 'Pelatih',
     },
     {
+        value: 'cabor-data',
+        label: 'Cabor',
+    },
+    {
         value: 'sertifikat-data',
         label: 'Sertifikat',
     },
@@ -288,6 +321,8 @@ const handleDeleteKesehatan = () => {
 const currentOnEditHandler = computed(() => {
     if (activeTab.value === 'pelatih-data') {
         return handleEditPelatih;
+    } else if (activeTab.value === 'cabor-data') {
+        return undefined;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
     } else if (activeTab.value === 'prestasi-data') {
@@ -303,6 +338,8 @@ const currentOnEditHandler = computed(() => {
 const currentOnDeleteHandler = computed(() => {
     if (activeTab.value === 'pelatih-data') {
         return handleDeletePelatih;
+    } else if (activeTab.value === 'cabor-data') {
+        return undefined;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
     } else if (activeTab.value === 'prestasi-data') {
@@ -352,7 +389,7 @@ function getLamaBergabung(tanggalBergabung: string) {
         :breadcrumbs="breadcrumbs"
         :fields="activeTab === 'pelatih-data' ? fields : []"
         :actionFields="
-            activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data'
+            activeTab === 'cabor-data' || activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data'
                 ? []
                 : activeTab === 'pelatih-data'
                   ? actionFields
@@ -395,6 +432,9 @@ function getLamaBergabung(tanggalBergabung: string) {
             <div v-if="activeTab === 'kesehatan-data'"></div>
         </template>
         <template #custom>
+            <div v-if="activeTab === 'cabor-data'">
+                <ShowCabor :cabor-list="props.item.cabor_kategori_pelatih || []" :pelatih-id="props.item.id" />
+            </div>
             <div v-if="activeTab === 'sertifikat-data'">
                 <ShowSertifikat :sertifikat-list="props.item.sertifikat || []" :pelatih-id="props.item.id" />
             </div>

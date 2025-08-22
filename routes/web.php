@@ -315,6 +315,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CABOR
     Route::resource('/cabor', CaborController::class)->names('cabor');
+    Route::get('/cabor/{id}/peserta/{tipe}', [CaborController::class, 'getPeserta'])->name('cabor.peserta');
     Route::get('/api/cabor', [CaborController::class, 'apiIndex']);
     Route::post('/cabor/destroy-selected', [CaborController::class, 'destroy_selected'])->name('cabor.destroy_selected');
     // KATEGORI (CaborKategori)

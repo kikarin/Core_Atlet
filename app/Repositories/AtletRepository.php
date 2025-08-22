@@ -42,6 +42,8 @@ class AtletRepository
             'kesehatan',
             'kesehatan.created_by_user',
             'kesehatan.updated_by_user',
+            'caborKategoriAtlet.cabor',
+            'caborKategoriAtlet.caborKategori',
         ];
     }
 
@@ -60,10 +62,9 @@ class AtletRepository
                     ->whereNull('cabor_kategori_atlet.deleted_at'); // hanya relasi aktif
             });
         }
-        // Filter jenis kelamin jika ada
-        if (request('jenis_kelamin') && in_array(request('jenis_kelamin'), ['L', 'P'])) {
-            $query->where('jenis_kelamin', request('jenis_kelamin'));
-        }
+
+        // Apply filters
+        $this->applyFilters($query);
 
         if (request('search')) {
             $search = request('search');
@@ -94,7 +95,18 @@ class AtletRepository
         if ($perPage === -1) {
             $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
-                return $item->toArray();
+                // relasi caborKategoriAtlet dimuat
+                $item->load(['caborKategoriAtlet.cabor']);
+                $itemArray = $item->toArray();
+                if (!isset($itemArray['cabor_kategori_atlet'])) {
+                    $itemArray['cabor_kategori_atlet'] = $item->caborKategoriAtlet->map(function($cabor) {
+                        return [
+                            'id' => $cabor->id,
+                            'cabor' => $cabor->cabor ? $cabor->cabor->toArray() : null,
+                        ];
+                    })->toArray();
+                }
+                return $itemArray;
             });
             $data += [
                 'atlets'      => $transformed,
@@ -111,7 +123,18 @@ class AtletRepository
         $pageForPaginate = $page < 1 ? 1 : $page;
         $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformed     = collect($items->items())->map(function ($item) {
-            return $item->toArray();
+            // relasi caborKategoriAtlet dimuat
+            $item->load(['caborKategoriAtlet.cabor']);
+            $itemArray = $item->toArray();
+            if (!isset($itemArray['cabor_kategori_atlet'])) {
+                $itemArray['cabor_kategori_atlet'] = $item->caborKategoriAtlet->map(function($cabor) {
+                    return [
+                        'id' => $cabor->id,
+                        'cabor' => $cabor->cabor ? $cabor->cabor->toArray() : null,
+                    ];
+                })->toArray();
+            }
+            return $itemArray;
         });
         $data += [
             'atlets'      => $transformed,
@@ -124,6 +147,102 @@ class AtletRepository
         ];
 
         return $data;
+    }
+
+    /**
+     * Apply filters to the query
+     */
+    protected function applyFilters($query)
+    {
+        // Filter by jenis kelamin
+        if (request('jenis_kelamin') && request('jenis_kelamin') !== 'all') {
+            $query->where('jenis_kelamin', request('jenis_kelamin'));
+        }
+
+        // Filter by status (is_active)
+        if (request('status') && request('status') !== 'all') {
+            $statusValue = request('status');
+            Log::info('Filtering by status:', ['status' => $statusValue, 'type' => gettype($statusValue)]);
+            
+            // Convert string to boolean/integer for database query
+            if ($statusValue === '1' || $statusValue === 1 || $statusValue === true) {
+                $query->where('is_active', 1);
+            } elseif ($statusValue === '0' || $statusValue === 0 || $statusValue === false) {
+                $query->where('is_active', 0);
+            }
+        }
+
+        // Filter by kategori usia
+        if (request('kategori_usia') && request('kategori_usia') !== 'all') {
+            $this->applyKategoriUsiaFilter($query, request('kategori_usia'));
+        }
+
+        // Filter by lama bergabung
+        if (request('lama_bergabung') && request('lama_bergabung') !== 'all') {
+            $this->applyLamaBergabungFilter($query, request('lama_bergabung'));
+        }
+
+        // Filter by date range
+        if (request('filter_start_date') && request('filter_end_date')) {
+            $query->whereBetween('created_at', [
+                request('filter_start_date') . ' 00:00:00',
+                request('filter_end_date') . ' 23:59:59'
+            ]);
+        }
+    }
+
+    /**
+     * Apply kategori usia filter
+     */
+    protected function applyKategoriUsiaFilter($query, $kategori)
+    {
+        $today = now();
+        
+        switch ($kategori) {
+            case 'anak':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(12));
+                break;
+            case 'remaja':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(17))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(13));
+                break;
+            case 'dewasa_muda':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(25))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(18));
+                break;
+            case 'dewasa':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(35))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(26));
+                break;
+            case 'dewasa_tua':
+                $query->where('tanggal_lahir', '<', $today->copy()->subYears(36));
+                break;
+        }
+    }
+
+    /**
+     * Apply lama bergabung filter
+     */
+    protected function applyLamaBergabungFilter($query, $kategori)
+    {
+        $today = now();
+        
+        switch ($kategori) {
+            case 'baru':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYear());
+                break;
+            case 'sedang':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(3))
+                      ->where('tanggal_bergabung', '<', $today->copy()->subYear());
+                break;
+            case 'lama':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(5))
+                      ->where('tanggal_bergabung', '<', $today->copy()->subYears(3));
+                break;
+            case 'sangat_lama':
+                $query->where('tanggal_bergabung', '<', $today->copy()->subYears(5));
+                break;
+        }
     }
 
     public function customCreateEdit($data, $item = null)

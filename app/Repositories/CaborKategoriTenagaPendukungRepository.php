@@ -36,6 +36,9 @@ class CaborKategoriTenagaPendukungRepository
         if (request('cabor_kategori_id')) {
             $query->where('cabor_kategori_tenaga_pendukung.cabor_kategori_id', request('cabor_kategori_id'));
         }
+        if (request('tenaga_pendukung_id')) {
+            $query->where('cabor_kategori_tenaga_pendukung.tenaga_pendukung_id', request('tenaga_pendukung_id'));
+        }
         if (request('is_active') !== null) {
             $query->where('cabor_kategori_tenaga_pendukung.is_active', request('is_active'));
         }

@@ -146,6 +146,13 @@ class PelatihController extends Controller implements HasMiddleware
     public function show($id)
     {
         $item = $this->repository->getDetailWithRelations($id);
+        
+        Log::info('Pelatih show data:', [
+            'id' => $id,
+            'nama' => $item->nama,
+            'cabor_count' => $item->caborKategoriPelatih ? $item->caborKategoriPelatih->count() : 0,
+            'cabor_data' => $item->caborKategoriPelatih ? $item->caborKategoriPelatih->toArray() : []
+        ]);
 
         return Inertia::render('modules/pelatih/Show', [
             'item' => $item,

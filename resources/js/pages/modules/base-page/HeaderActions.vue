@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/vue3';
-import { BarChart3 } from 'lucide-vue-next';
+import { BarChart3, SlidersHorizontal } from 'lucide-vue-next';
 import permissionService from '@/services/permissionService';
 
 const props = defineProps<{
@@ -27,7 +27,9 @@ const props = defineProps<{
     };
     showStatistik?: boolean;
     statistikUrl?: string;
+    showFilter?: boolean;
 }>();
+
 
 const canCreate = () => {
     if (props.permissions?.create !== undefined) return props.permissions.create;
@@ -57,6 +59,17 @@ const canKelola = () => {
         </h1>
 
         <div class="flex flex-wrap items-center gap-2">
+            <!-- Button Filter -->
+            <Button
+                v-if="props.showFilter"
+                variant="outline"
+                size="sm"
+                class="flex items-center gap-2"
+                @click="$emit('filter')"
+            >
+                <SlidersHorizontal class="h-4 w-4" />
+                Filter
+            </Button>
             <!-- Button Import -->
             <Button 
                 v-if="props.showImport && canImport()" 

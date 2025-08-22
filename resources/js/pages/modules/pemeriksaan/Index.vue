@@ -5,6 +5,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
+import FilterModal from '@/components/FilterModal.vue';
 
 const { toast } = useToast();
 const breadcrumbs = [{ title: 'Pemeriksaan', href: '/pemeriksaan' }];
@@ -32,6 +33,10 @@ const columns = [
 ];
 
 const selected = ref<number[]>([]);
+
+// Filter state
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
 
 const actions = (row: any) => [
     {
@@ -66,6 +71,17 @@ const deleteSelected = async () => {
         toast({ title: error.response?.data?.message || 'Gagal menghapus data', variant: 'destructive' });
     }
 };
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    // Apply filters to the data table
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+};
 </script>
 
 <template>
@@ -77,12 +93,14 @@ const deleteSelected = async () => {
         :create-url="'/pemeriksaan/create'"
         :actions="actions"
         :selected="selected"
-        @update:selected="(val) => (selected = val)"
+        @update:selected="(val: number[]) => (selected = val)"
         :on-delete-selected="deleteSelected"
         api-endpoint="/api/pemeriksaan"
         ref="pageIndex"
         :showImport="false"
         :showDelete="false"
+        :showFilter="true"
+        @filter="bukaFilterModal"
     >
         <template #cell-parameter="{ row }">
             <div class="flex justify-center">
@@ -122,4 +140,13 @@ const deleteSelected = async () => {
             />
         </template>
     </PageIndex>
+
+    <!-- Filter Modal -->
+    <FilterModal
+        :open="showFilterModal"
+        @update:open="showFilterModal = $event"
+        module-type="pemeriksaan"
+        :initial-filters="currentFilters"
+        @filter="handleFilter"
+    />
 </template>

@@ -45,6 +45,9 @@ class PemeriksaanRepository
                 },
             ]);
 
+        // Apply filters
+        $this->applyFilters($query);
+
         $sortField = request('sort');
         $order     = request('order', 'asc');
 
@@ -161,6 +164,30 @@ class PemeriksaanRepository
         ];
 
         return $data;
+    }
+
+    /**
+     * Apply filters to the query
+     */
+    protected function applyFilters($query)
+    {
+        // Filter by cabor_id
+        if (request('cabor_id') && request('cabor_id') !== 'all') {
+            $query->where('cabor_id', request('cabor_id'));
+        }
+
+        // Filter by cabor_kategori_id
+        if (request('cabor_kategori_id') && request('cabor_kategori_id') !== 'all') {
+            $query->where('cabor_kategori_id', request('cabor_kategori_id'));
+        }
+
+        // Filter by date range
+        if (request('filter_start_date') && request('filter_end_date')) {
+            $query->whereBetween('created_at', [
+                request('filter_start_date') . ' 00:00:00',
+                request('filter_end_date') . ' 23:59:59'
+            ]);
+        }
     }
 
     public function customCreateEdit($data, $item = null)

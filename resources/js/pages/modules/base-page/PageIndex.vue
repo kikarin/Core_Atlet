@@ -25,15 +25,24 @@ const sort = ref<{ key: string; order: 'asc' | 'desc' }>({ key: '', order: 'asc'
 const fetchData = async () => {
     loading.value = true;
     try {
-        const response = await axios.get(props.apiEndpoint, {
-            params: {
-                search: search.value,
-                page: localLimit.value === -1 ? undefined : page.value < 1 ? 1 : page.value,
-                per_page: props.limit !== undefined ? props.limit : localLimit.value,
-                sort: sort.value.key,
-                order: sort.value.order,
-            },
-        });
+        const params: any = {
+            search: search.value,
+            page: localLimit.value === -1 ? undefined : page.value < 1 ? 1 : page.value,
+            per_page: props.limit !== undefined ? props.limit : localLimit.value,
+            sort: sort.value.key,
+            order: sort.value.order,
+        };
+
+        // Add filters to params
+        if (currentFilters.value) {
+            Object.keys(currentFilters.value).forEach(key => {
+                if (currentFilters.value[key]) {
+                    params[key] = currentFilters.value[key];
+                }
+            });
+        }
+
+        const response = await axios.get(props.apiEndpoint, { params });
 
         tableRows.value = response.data.data;
         const meta = response.data.meta || {};
@@ -93,11 +102,15 @@ const props = defineProps<{
     };
     showStatistik?: boolean;
     statistikUrl?: string;
+    showFilter?: boolean;
 }>();
 
-const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran']);
+const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran', 'filter']);
 
 const localSelected = ref<number[]>([]);
+
+// Filter state
+const currentFilters = ref<any>({});
 
 watch(
     () => props.selected,
@@ -206,7 +219,14 @@ const rowsWithCustom = computed(() => {
     });
 });
 
-defineExpose({ fetchData });
+// Handle filter from parent
+const handleFilterFromParent = (filters: any) => {
+    currentFilters.value = filters;
+    fetchData();
+};
+
+// Expose filter handler
+defineExpose({ fetchData, handleFilterFromParent });
 </script>
 
 <template>
@@ -233,8 +253,10 @@ defineExpose({ fetchData });
                         :permissions="permissions"
                         :showStatistik="props.showStatistik"
                         :statistikUrl="props.statistikUrl"
+                        :showFilter="props.showFilter"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
+                        @filter="$emit('filter')"
                     />
                 </div>
                 <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">

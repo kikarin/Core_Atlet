@@ -5,6 +5,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
+import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];
 
@@ -22,10 +23,12 @@ const columns = [
 ];
 
 const selected = ref<number[]>([]);
-
 const pageIndex = ref();
-
 const { toast } = useToast();
+
+// Filter state
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
 
 const actions = (row: any) => [
     {
@@ -84,6 +87,17 @@ const deleteKategori = async (row: any) => {
         },
     });
 };
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    // Apply filters to the data table
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+};
 </script>
 
 <template>
@@ -96,13 +110,14 @@ const deleteKategori = async (row: any) => {
             :create-url="'/cabor-kategori/create'"
             :actions="actions"
             :selected="selected"
-            @update:selected="(val) => (selected = val)"
+            @update:selected="(val: number[]) => (selected = val)"
             :on-delete-selected="deleteSelected"
             api-endpoint="/api/cabor-kategori"
             ref="pageIndex"
             :on-toast="toast"
             :on-delete-row="deleteKategori"
-            :show-import="false"
+            :showFilter="true"
+            @filter="bukaFilterModal"
         >
             <template #cell-peserta="{ row }">
                 <BadgeGroup
@@ -129,5 +144,14 @@ const deleteKategori = async (row: any) => {
                 />
             </template>
         </PageIndex>
+
+        <!-- Filter Modal -->
+        <FilterModal
+            :open="showFilterModal"
+            @update:open="showFilterModal = $event"
+            module-type="cabor-kategori"
+            :initial-filters="currentFilters"
+            @filter="handleFilter"
+        />
     </div>
 </template>

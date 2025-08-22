@@ -141,6 +141,11 @@ class TenagaPendukung extends Model implements HasMedia
         return $this->belongsTo(User::class, 'users_id');
     }
 
+    public function caborKategoriTenagaPendukung()
+    {
+        return $this->hasMany(CaborKategoriTenagaPendukung::class, 'tenaga_pendukung_id');
+    }
+
     /**
      * Scope filter untuk tanggal
      */

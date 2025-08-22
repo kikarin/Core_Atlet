@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/toast/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { Calendar, ChevronRight } from 'lucide-vue-next';
+import { Calendar } from 'lucide-vue-next';
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 

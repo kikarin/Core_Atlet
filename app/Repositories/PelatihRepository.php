@@ -41,6 +41,9 @@ class PelatihRepository
             'dokumen.created_by_user',
             'dokumen.updated_by_user',
             'dokumen.jenis_dokumen',
+            'caborKategoriPelatih.cabor',
+            'caborKategoriPelatih.caborKategori',
+            'caborKategoriPelatih.jenisPelatih',
         ];
     }
 
@@ -59,6 +62,9 @@ class PelatihRepository
                     ->whereNull('cabor_kategori_pelatih.deleted_at'); // hanya relasi aktif
             });
         }
+
+        // Apply filters
+        $this->applyFilters($query);
 
         if (request('search')) {
             $search = request('search');
@@ -89,6 +95,8 @@ class PelatihRepository
         if ($perPage === -1) {
             $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
+                // Pastikan relasi cabor dimuat sebelum konversi ke array
+                $item->load(['caborKategoriPelatih.cabor', 'caborKategoriPelatih.caborKategori', 'caborKategoriPelatih.jenisPelatih']);
                 return $item->toArray();
             });
             $data += [
@@ -106,6 +114,8 @@ class PelatihRepository
         $pageForPaginate = $page < 1 ? 1 : $page;
         $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformed     = collect($items->items())->map(function ($item) {
+            // Pastikan relasi cabor dimuat sebelum konversi ke array
+            $item->load(['caborKategoriPelatih.cabor', 'caborKategoriPelatih.caborKategori', 'caborKategoriPelatih.jenisPelatih']);
             return $item->toArray();
         });
         $data += [
@@ -119,6 +129,103 @@ class PelatihRepository
         ];
 
         return $data;
+    }
+
+    /**
+     * Apply filters to the query
+     */
+    protected function applyFilters($query)
+    {
+        // Filter by jenis kelamin
+        if (request('jenis_kelamin') && request('jenis_kelamin') !== 'all') {
+            $query->where('jenis_kelamin', request('jenis_kelamin'));
+        }
+
+        // Filter by status (is_active)
+        if (request('status') && request('status') !== 'all') {
+            $statusValue = request('status');
+            Log::info('Filtering by status:', ['status' => $statusValue, 'type' => gettype($statusValue)]);
+            
+            // Convert string to boolean/integer for database query
+            if ($statusValue === '1' || $statusValue === 1 || $statusValue === true) {
+                $query->where('is_active', 1);
+            } elseif ($statusValue === '0' || $statusValue === 0 || $statusValue === false) {
+                $query->where('is_active', 0);
+            }
+        }
+
+        // Filter by kategori usia
+        if (request('kategori_usia') && request('kategori_usia') !== 'all') {
+            $this->applyKategoriUsiaFilter($query, request('kategori_usia'));
+        }
+
+        // Filter by lama bergabung
+        if (request('lama_bergabung') && request('lama_bergabung') !== 'all') {
+            $this->applyLamaBergabungFilter($query, request('lama_bergabung'));
+        }
+
+        // Filter by date range
+        if (request('filter_start_date') && request('filter_end_date')) {
+            $query->whereBetween('created_at', [
+                request('filter_start_date') . ' 00:00:00',
+                request('filter_end_date') . ' 23:59:59'
+            ]);
+        }
+    }
+
+    /**
+     * Apply kategori usia filter
+     */
+    protected function applyKategoriUsiaFilter($query, $kategori)
+    {
+        $today = now();
+        
+        switch ($kategori) {
+            case 'dewasa_muda':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(25))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(18));
+                break;
+            case 'dewasa':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(35))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(26));
+                break;
+            case 'dewasa_tua':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(45))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(36));
+                break;
+            case 'senior':
+                $query->where('tanggal_lahir', '>=', $today->copy()->subYears(55))
+                      ->where('tanggal_lahir', '<', $today->copy()->subYears(46));
+                break;
+            case 'veteran':
+                $query->where('tanggal_lahir', '<', $today->copy()->subYears(56));
+                break;
+        }
+    }
+
+    /**
+     * Apply lama bergabung filter
+     */
+    protected function applyLamaBergabungFilter($query, $kategori)
+    {
+        $today = now();
+        
+        switch ($kategori) {
+            case 'baru':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(2));
+                break;
+            case 'sedang':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(5))
+                      ->where('tanggal_bergabung', '<', $today->copy()->subYears(2));
+                break;
+            case 'lama':
+                $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(10))
+                      ->where('tanggal_bergabung', '<', $today->copy()->subYears(5));
+                break;
+            case 'sangat_lama':
+                $query->where('tanggal_bergabung', '<', $today->copy()->subYears(10));
+                break;
+        }
     }
 
     public function customCreateEdit($data, $item = null)
@@ -208,7 +315,11 @@ class PelatihRepository
     {
         $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
 
-        return $this->model->with($with)->findOrFail($id);
+        $pelatih = $this->model->with($with)->findOrFail($id);
+        
+        $pelatih->load(['caborKategoriPelatih.cabor', 'caborKategoriPelatih.caborKategori', 'caborKategoriPelatih.jenisPelatih']);
+        
+        return $pelatih;
     }
 
     /**

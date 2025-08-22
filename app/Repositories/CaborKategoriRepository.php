@@ -35,10 +35,10 @@ class CaborKategoriRepository
                     ->orWhere('deskripsi', 'like', '%'.$search.'%');
             });
         }
-        if (request('cabor_id')) {
-            $query->where('cabor_id', request('cabor_id'));
-        }
-
+        
+        // Apply filters
+        $this->applyFilters($query);
+        
         if (request('sort')) {
             $order        = request('order', 'asc');
             $sortField    = request('sort');
@@ -111,6 +111,30 @@ class CaborKategoriRepository
         ];
 
         return $data;
+    }
+
+    /**
+     * Apply filters to the query
+     */
+    protected function applyFilters($query)
+    {
+        // Filter by cabor_id
+        if (request('cabor_id') && request('cabor_id') !== 'all') {
+            $query->where('cabor_id', request('cabor_id'));
+        }
+
+        // Filter by cabor_kategori_id (nama kategori)
+        if (request('cabor_kategori_id') && request('cabor_kategori_id') !== 'all') {
+            $query->where('id', request('cabor_kategori_id'));
+        }
+
+        // Filter by date range
+        if (request('filter_start_date') && request('filter_end_date')) {
+            $query->whereBetween('created_at', [
+                request('filter_start_date') . ' 00:00:00',
+                request('filter_end_date') . ' 23:59:59'
+            ]);
+        }
     }
 
     public function customDataCreateUpdate($data, $record = null)

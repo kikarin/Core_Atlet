@@ -9,6 +9,7 @@ import ShowDokumen from './dokumen/ShowDokumen.vue';
 import ShowPrestasi from './prestasi/ShowPrestasi.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
 import ShowKesehatan from './ShowKesehatan.vue';
+import ShowCabor from './ShowCabor.vue';
 
 const { toast } = useToast();
 
@@ -68,6 +69,15 @@ interface Kesehatan {
     updated_by_user?: { name: string } | null;
 }
 
+interface CaborData {
+    id: number;
+    cabor_nama: string;
+    cabor_kategori_nama: string;
+    jenis_tenaga_pendukung_nama: string;
+    is_active: boolean;
+    created_at: string;
+}
+
 const props = defineProps<{
     item: {
         id: number;
@@ -91,6 +101,7 @@ const props = defineProps<{
         prestasi?: Prestasi[];
         dokumen?: Dokumen[];
         kesehatan?: Kesehatan | null;
+        cabor_kategori_tenaga_pendukung?: CaborData[];
         kecamatan?: { nama: string } | null;
         kelurahan?: { nama: string } | null;
         tanggal_bergabung?: string;
@@ -127,6 +138,8 @@ watch(
 const dynamicTitle = computed(() => {
     if (activeTab.value === 'tenaga-pendukung-data') {
         return `Tenaga Pendukung : ${props.item.nama}`;
+    } else if (activeTab.value === 'cabor-data') {
+        return `Cabor : ${props.item.nama}`;
     } else if (activeTab.value === 'sertifikat-data') {
         return `Sertifikat : ${props.item.nama}`;
     } else if (activeTab.value === 'prestasi-data') {
@@ -233,6 +246,10 @@ const tabsConfig = [
         label: 'Tenaga Pendukung',
     },
     {
+        value: 'cabor-data',
+        label: 'Cabor',
+    },
+    {
         value: 'sertifikat-data',
         label: 'Sertifikat',
     },
@@ -292,6 +309,8 @@ const handleDeleteKesehatan = () => {
 const currentOnEditHandler = computed(() => {
     if (activeTab.value === 'tenaga-pendukung-data') {
         return handleEditTenagaPendukung;
+    } else if (activeTab.value === 'cabor-data') {
+        return undefined;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
     } else if (activeTab.value === 'prestasi-data') {
@@ -307,6 +326,8 @@ const currentOnEditHandler = computed(() => {
 const currentOnDeleteHandler = computed(() => {
     if (activeTab.value === 'tenaga-pendukung-data') {
         return handleDeleteTenagaPendukung;
+    } else if (activeTab.value === 'cabor-data') {
+        return undefined;
     } else if (activeTab.value === 'sertifikat-data') {
         return undefined;
     } else if (activeTab.value === 'prestasi-data') {
@@ -356,7 +377,7 @@ function getLamaBergabung(tanggalBergabung: string) {
         :breadcrumbs="breadcrumbs"
         :fields="activeTab === 'tenaga-pendukung-data' ? fields : []"
         :actionFields="
-            activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data'
+            activeTab === 'cabor-data' || activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data'
                 ? []
                 : activeTab === 'tenaga-pendukung-data'
                   ? actionFields
@@ -399,6 +420,9 @@ function getLamaBergabung(tanggalBergabung: string) {
             <div v-if="activeTab === 'kesehatan-data'"></div>
         </template>
         <template #custom>
+            <div v-if="activeTab === 'cabor-data'">
+                <ShowCabor :cabor-list="props.item.cabor_kategori_tenaga_pendukung || []" :tenaga-pendukung-id="props.item.id" />
+            </div>
             <div v-if="activeTab === 'sertifikat-data'">
                 <ShowSertifikat :sertifikat-list="props.item.sertifikat || []" :tenaga_pendukung-id="props.item.id" />
             </div>

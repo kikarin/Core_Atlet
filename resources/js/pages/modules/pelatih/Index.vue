@@ -6,6 +6,7 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
+import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Pelatih', href: '/pelatih' }];
 
@@ -98,6 +99,10 @@ const columns = [
 
 const selected = ref<number[]>([]);
 const { toast } = useToast();
+
+// Filter state
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
 
 const actions = (row: any) => [
     {
@@ -231,6 +236,17 @@ function getLamaBergabung(tanggalBergabung: string) {
     if (!result) result = 'Kurang dari 1 bulan';
     return result.trim();
 }
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    // Apply filters to the data table
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+};
 </script>
 
 <template>
@@ -253,7 +269,19 @@ function getLamaBergabung(tanggalBergabung: string) {
             :showImport="true"
             :showStatistik="true"
             statistik-url="/pelatih/karakteristik"
+            :showFilter="true"
+            @filter="bukaFilterModal"
         />
+
+        <!-- Filter Modal -->
+        <FilterModal
+            :open="showFilterModal"
+            @update:open="showFilterModal = $event"
+            module-type="pelatih"
+            :initial-filters="currentFilters"
+            @filter="handleFilter"
+        />
+
         <Dialog v-model:open="showImportModal">
             <DialogContent>
                 <DialogHeader>

@@ -6,6 +6,7 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
+import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Atlet', href: '/atlet' }];
 const calculateAge = (birthDate: string | null | undefined): number | string => {
@@ -80,7 +81,20 @@ const columns = [
         label: 'Lama Bergabung',
         format: (row: any) => getLamaBergabung(row.tanggal_bergabung),
     },
-
+    {
+        key: 'cabor',
+        label: 'Cabor',
+        format: (row: any) => {
+            if (row.cabor_kategori_atlet && row.cabor_kategori_atlet.length > 0) {
+                const caborList = row.cabor_kategori_atlet.map((item: any) => {
+                    const caborName = item.cabor?.nama || '-';
+                    return `${caborName}`;
+                });
+                return caborList.join(', ');
+            }
+            return '-';
+        },
+    },
     { key: 'no_hp', label: 'No HP' },
     {
         key: 'is_active',
@@ -95,6 +109,10 @@ const columns = [
 
 const selected = ref<number[]>([]);
 const { toast } = useToast();
+
+// Filter state
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
 
 const actions = (row: any) => [
     {
@@ -247,6 +265,17 @@ function getLamaBergabung(tanggalBergabung: string) {
     if (!result) result = 'Kurang dari 1 bulan';
     return result.trim();
 }
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    // Apply filters to the data table
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+};
 </script>
 
 <template>
@@ -269,7 +298,19 @@ function getLamaBergabung(tanggalBergabung: string) {
             :showImport="true"
             :showStatistik="true"
             statistik-url="/atlet/karakteristik"
+            :showFilter="true"
+            @filter="bukaFilterModal"
         />
+
+        <!-- Filter Modal -->
+        <FilterModal
+            :open="showFilterModal"
+            @update:open="showFilterModal = $event"
+            module-type="atlet"
+            :initial-filters="currentFilters"
+            @filter="handleFilter"
+        />
+
         <Dialog v-model:open="showImportModal">
             <DialogContent>
                 <DialogHeader>

@@ -5,6 +5,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
+import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Program Latihan', href: '/program-latihan' }];
 
@@ -61,6 +62,10 @@ const selected = ref<number[]>([]);
 const pageIndex = ref();
 const { toast } = useToast();
 
+// Filter state
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
+
 const actions = (row: any) => [
     {
         label: 'Detail',
@@ -104,6 +109,17 @@ const deleteRow = async (row: any) => {
         },
     });
 };
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    // Apply filters to the data table
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+};
 </script>
 
 <template>
@@ -115,13 +131,15 @@ const deleteRow = async (row: any) => {
         :create-url="'/program-latihan/create'"
         :actions="actions"
         :selected="selected"
-        @update:selected="(val) => (selected = val)"
+        @update:selected="(val: number[]) => (selected = val)"
         :on-delete-selected="deleteSelected"
         :on-delete-row="deleteRow"
         api-endpoint="/api/program-latihan"
         ref="pageIndex"
         :showImport="false"
         :showDelete="false"
+        :showFilter="true"
+        @filter="bukaFilterModal"
     >
         <template #cell-rencana_latihan="{ row }">
             <div class="flex justify-center">
@@ -156,7 +174,7 @@ const deleteRow = async (row: any) => {
                         label: 'Tenaga Pendukung',
                         value: row.jumlah_target_tenaga_pendukung || 0,
                         colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                        onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
+                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
                     },
                 ]"
             />
@@ -176,4 +194,13 @@ const deleteRow = async (row: any) => {
             </div>
         </template>
     </PageIndex>
+
+    <!-- Filter Modal -->
+    <FilterModal
+        :open="showFilterModal"
+        @update:open="showFilterModal = $event"
+        module-type="program-latihan"
+        :initial-filters="currentFilters"
+        @filter="handleFilter"
+    />
 </template>
