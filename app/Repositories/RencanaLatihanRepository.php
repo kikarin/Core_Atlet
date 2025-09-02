@@ -174,6 +174,69 @@ class RencanaLatihanRepository
         return $this->model->with($this->with)->findOrFail($id);
     }
 
+    /**
+     * Listing rencana latihan untuk mobile per program
+     */
+    public function getForMobile($request, int $programId)
+    {
+        $query = $this->model
+            ->with(['targetLatihan'])
+            ->withCount(['atlets', 'pelatihs', 'tenagaPendukung'])
+            ->where('program_latihan_id', $programId);
+
+        // Search by materi/lokasi/catatan
+        if (!empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('materi', 'like', "%$search%")
+                  ->orWhere('lokasi_latihan', 'like', "%$search%")
+                  ->orWhere('catatan', 'like', "%$search%");
+            });
+        }
+
+        // Filter by exact date (YYYY-MM-DD)
+        if (!empty($request->date)) {
+            $query->whereDate('tanggal', $request->date);
+        }
+
+        // Default sort by tanggal desc, then id desc
+        $query->orderBy('tanggal', 'desc')->orderBy('id', 'desc');
+
+        $perPage = (int) ($request->per_page ?? 10);
+        $page    = (int) ($request->page ?? 1);
+
+        $items = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $transformed = collect($items->items())->map(function ($item) {
+            $targets = $item->targetLatihan->pluck('deskripsi')->toArray();
+            $targetText = implode(', ', $targets);
+
+            return [
+                'id' => $item->id,
+                'tanggal' => $item->tanggal,
+                'materi' => $item->materi,
+                'lokasi' => $item->lokasi_latihan,
+                'catatan' => $item->catatan,
+                'targetLatihan' => $targetText,
+                'jumlah_atlet' => $item->atlets_count,
+                'jumlah_pelatih' => $item->pelatihs_count,
+                'jumlah_tenaga_pendukung' => $item->tenaga_pendukung_count,
+                'total_peserta' => ($item->atlets_count + $item->pelatihs_count + $item->tenaga_pendukung_count),
+            ];
+        })->values();
+
+        return [
+            'data' => $transformed,
+            'total' => $items->total(),
+            'currentPage' => $items->currentPage(),
+            'perPage' => $items->perPage(),
+            'search' => $request->search ?? '',
+            'filters' => [
+                'date' => $request->date ?? null,
+            ],
+        ];
+    }
+
     public function validateRequest($request)
     {
         $rules    = method_exists($request, 'rules') ? $request->rules() : [];
