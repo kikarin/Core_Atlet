@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import FilterModal from '@/components/FilterModal.vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
-import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Program Latihan', href: '/program-latihan' }];
 
@@ -70,17 +70,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/program-latihan/${row.id}`),
-        permission: 'Program Latihan Detail'
+        permission: 'Program Latihan Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/program-latihan/${row.id}/edit`),
-        permission: 'Program Latihan Edit'
+        permission: 'Program Latihan Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
-        permission: 'Program Latihan Delete'
+        permission: 'Program Latihan Delete',
     },
 ];
 
@@ -174,7 +174,7 @@ const handleFilter = (filters: any) => {
                         label: 'Tenaga Pendukung',
                         value: row.jumlah_target_tenaga_pendukung || 0,
                         colorClass: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                            onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
+                        onClick: () => router.visit(`/program-latihan/${row.id}/target-latihan/individu?peruntukan=tenaga-pendukung`),
                     },
                 ]"
             />

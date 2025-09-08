@@ -26,24 +26,24 @@ class TurnamenController extends Controller
             $data = $this->repository->getForMobile($request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data turnamen berhasil diambil',
-                'data' => $data['data'],
-                'meta' => [
-                    'total' => $data['total'],
+                'data'    => $data['data'],
+                'meta'    => [
+                    'total'        => $data['total'],
                     'current_page' => $data['currentPage'],
-                    'per_page' => $data['perPage'],
-                    'search' => $data['search'],
-                    'filters' => [
-                        'cabor_id' => $data['filters']['cabor_id'] ?? null,
+                    'per_page'     => $data['perPage'],
+                    'search'       => $data['search'],
+                    'filters'      => [
+                        'cabor_id'   => $data['filters']['cabor_id']   ?? null,
                         'start_date' => $data['filters']['start_date'] ?? null,
-                        'end_date' => $data['filters']['end_date'] ?? null,
-                    ]
+                        'end_date'   => $data['filters']['end_date']   ?? null,
+                    ],
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data turnamen: ' . $e->getMessage(),
             ], 500);
         }
@@ -59,49 +59,49 @@ class TurnamenController extends Controller
 
             if (!$turnamen) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Turnamen tidak ditemukan',
                 ], 404);
             }
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Detail turnamen berhasil diambil',
-                'data' => [
-                    'id' => $turnamen->id,
-                    'nama' => $turnamen->nama,
+                'data'    => [
+                    'id'    => $turnamen->id,
+                    'nama'  => $turnamen->nama,
                     'cabor' => [
-                        'id' => $turnamen->caborKategori->cabor->id ?? null,
+                        'id'   => $turnamen->caborKategori->cabor->id   ?? null,
                         'nama' => $turnamen->caborKategori->cabor->nama ?? null,
                     ],
                     'kategori' => [
-                        'id' => $turnamen->caborKategori->id ?? null,
+                        'id'   => $turnamen->caborKategori->id   ?? null,
                         'nama' => $turnamen->caborKategori->nama ?? null,
                     ],
                     'periode' => [
-                        'mulai' => $turnamen->tanggal_mulai,
-                        'selesai' => $turnamen->tanggal_selesai,
+                        'mulai'     => $turnamen->tanggal_mulai,
+                        'selesai'   => $turnamen->tanggal_selesai,
                         'formatted' => $this->formatPeriode($turnamen->tanggal_mulai, $turnamen->tanggal_selesai),
                     ],
                     'tingkat' => [
-                        'id' => $turnamen->tingkat->id ?? null,
+                        'id'   => $turnamen->tingkat->id   ?? null,
                         'nama' => $turnamen->tingkat->nama ?? null,
                     ],
                     'lokasi' => $turnamen->lokasi,
-                    'juara' => [
-                        'id' => $turnamen->juara->id ?? null,
+                    'juara'  => [
+                        'id'   => $turnamen->juara->id   ?? null,
                         'nama' => $turnamen->juara->nama ?? null,
                     ],
-                    'hasil' => $turnamen->hasil,
-                    'evaluasi' => $turnamen->evaluasi,
+                    'hasil'          => $turnamen->hasil,
+                    'evaluasi'       => $turnamen->evaluasi,
                     'jumlah_peserta' => $this->getTotalPeserta($turnamen->id),
-                    'created_at' => $turnamen->created_at,
-                    'updated_at' => $turnamen->updated_at,
+                    'created_at'     => $turnamen->created_at,
+                    'updated_at'     => $turnamen->updated_at,
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil detail turnamen: ' . $e->getMessage(),
             ], 500);
         }
@@ -116,13 +116,13 @@ class TurnamenController extends Controller
             $caborList = $this->repository->getCaborList();
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data cabor berhasil diambil',
-                'data' => $caborList,
+                'data'    => $caborList,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data cabor: ' . $e->getMessage(),
             ], 500);
         }
@@ -135,10 +135,10 @@ class TurnamenController extends Controller
     {
         try {
             $turnamen = $this->repository->getDetailWithRelations($turnamenId);
-            
+
             if (!$turnamen) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Turnamen tidak ditemukan',
                 ], 404);
             }
@@ -146,28 +146,28 @@ class TurnamenController extends Controller
             $pesertaData = $this->repository->getPesertaForMobile($turnamenId, $request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data peserta turnamen berhasil diambil',
-                'data' => [
+                'data'    => [
                     'turnamen' => [
-                        'id' => $turnamen->id,
-                        'nama' => $turnamen->nama,
-                        'tanggal_mulai' => $turnamen->tanggal_mulai,
+                        'id'              => $turnamen->id,
+                        'nama'            => $turnamen->nama,
+                        'tanggal_mulai'   => $turnamen->tanggal_mulai,
                         'tanggal_selesai' => $turnamen->tanggal_selesai,
                     ],
-                    'atlet' => $pesertaData['atlet'],
-                    'pelatih' => $pesertaData['pelatih'],
+                    'atlet'           => $pesertaData['atlet'],
+                    'pelatih'         => $pesertaData['pelatih'],
                     'tenagaPendukung' => $pesertaData['tenagaPendukung'],
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Error in peserta turnamen API: ' . $e->getMessage(), [
                 'turnamenId' => $turnamenId,
-                'trace' => $e->getTraceAsString()
+                'trace'      => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data peserta turnamen: ' . $e->getMessage(),
             ], 500);
         }
@@ -183,15 +183,15 @@ class TurnamenController extends Controller
         }
 
         $start = new \DateTime($startDate);
-        $end = new \DateTime($endDate);
+        $end   = new \DateTime($endDate);
 
-        $startDay = $start->format('j');
+        $startDay   = $start->format('j');
         $startMonth = $this->getIndonesianMonth($start->format('n'));
-        $startYear = $start->format('Y');
+        $startYear  = $start->format('Y');
 
-        $endDay = $end->format('j');
+        $endDay   = $end->format('j');
         $endMonth = $this->getIndonesianMonth($end->format('n'));
-        $endYear = $end->format('Y');
+        $endYear  = $end->format('Y');
 
         // Jika tahun sama
         if ($startYear === $endYear) {
@@ -214,15 +214,15 @@ class TurnamenController extends Controller
     private function getIndonesianMonth($monthNumber): string
     {
         $months = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
+            1  => 'Januari',
+            2  => 'Februari',
+            3  => 'Maret',
+            4  => 'April',
+            5  => 'Mei',
+            6  => 'Juni',
+            7  => 'Juli',
+            8  => 'Agustus',
+            9  => 'September',
             10 => 'Oktober',
             11 => 'November',
             12 => 'Desember',

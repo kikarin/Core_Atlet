@@ -36,14 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/profile', [AuthController::class, 'profile']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
-    
+
     // Settings routes
     Route::get('/settings', [SettingsController::class, 'getSettings']);
     Route::put('/settings/profile', [SettingsController::class, 'updateProfile']);
     Route::put('/settings/password', [SettingsController::class, 'changePassword']);
     Route::post('/settings/reset-password', [SettingsController::class, 'resetPassword']);
     Route::delete('/settings/account', [SettingsController::class, 'deleteAccount']);
-    
+
     // Program Latihan (Mobile)
     Route::get('/program-latihan/mobile', [ProgramLatihanController::class, 'index']);
     Route::get('/program-latihan/{id}', [ProgramLatihanController::class, 'show']);
@@ -53,11 +53,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/program-latihan/{programId}/rencana-latihan', [ApiRencanaLatihanController::class, 'index']);
     Route::get('/rencana-latihan/{id}', [ApiRencanaLatihanController::class, 'show']);
     Route::get('/rencana-latihan/{rencanaId}/peserta', [ApiRencanaLatihanController::class, 'participants']);
-    
+
     // Target Latihan (Mobile)
     Route::get('/rencana-latihan/{rencanaId}/targets', [ApiRencanaLatihanController::class, 'targets']);
     Route::get('/rencana-latihan/{rencanaId}/targets/{targetId}', [ApiRencanaLatihanController::class, 'targetDetail']);
-    
+
+    // Target Latihan Peserta (Mobile)
+    Route::get('/program-latihan/{programId}/rencana/{rencanaId}/peserta/{pesertaId}/targets/{pesertaType?}', [ApiRencanaLatihanController::class, 'participantTargets']);
+    Route::get('/program-latihan/{programId}/rencana/{rencanaId}/peserta/{pesertaId}/target/{targetId}/grafik/{pesertaType?}', [ApiRencanaLatihanController::class, 'participantTargetChart']);
+
     // Pemeriksaan (Mobile)
     Route::get('/pemeriksaan/mobile', [PemeriksaanController::class, 'index']);
     Route::get('/pemeriksaan/{id}', [PemeriksaanController::class, 'show']);
@@ -65,21 +69,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pemeriksaan/{pemeriksaanId}/peserta', [PemeriksaanController::class, 'peserta']);
     Route::get('/pemeriksaan/{pemeriksaanId}/parameter', [PemeriksaanController::class, 'parameter']);
     Route::get('/pemeriksaan/{pemeriksaanId}/parameter/{parameterId}', [PemeriksaanController::class, 'parameterDetail']);
-    
+    Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{pesertaId}/parameter', [PemeriksaanController::class, 'pesertaParameterList']);
+    Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{pesertaId}/parameter/{parameterId}/grafik', [PemeriksaanController::class, 'pesertaParameterChart']);
+
     // Turnamen (Mobile)
     Route::get('/turnamen/mobile', [TurnamenController::class, 'index']);
-    Route::get('/turnamen/{id}', [TurnamenController::class, 'show']);
+    Route::get('/turnamen/{id}/mobile', [TurnamenController::class, 'show']);
     Route::get('/turnamen/cabor/list', [TurnamenController::class, 'getCaborList']);
     Route::get('/turnamen/{turnamenId}/peserta', [TurnamenController::class, 'peserta']);
 
     // Home (Mobile)
     Route::get('/home', [HomeController::class, 'index']);
-    
+
     // User routes
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    
+
     Route::get('/users-menu', [UsersMenuController::class, 'getMenus']);
     Route::get('/users', [UsersController::class, 'apiIndex']);
 });

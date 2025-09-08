@@ -47,10 +47,10 @@ class TenagaPendukungRepository
     public function customIndex($data)
     {
         $query = $this->model->query();
-        
+
         // Apply filters
         $this->applyFilters($query);
-        
+
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
@@ -130,7 +130,7 @@ class TenagaPendukungRepository
         if (request('status') && request('status') !== 'all') {
             $statusValue = request('status');
             \Log::info('Filtering by status:', ['status' => $statusValue, 'type' => gettype($statusValue)]);
-            
+
             // Convert string to boolean/integer for database query
             if ($statusValue === '1' || $statusValue === 1 || $statusValue === true) {
                 $query->where('is_active', 1);
@@ -153,7 +153,7 @@ class TenagaPendukungRepository
         if (request('filter_start_date') && request('filter_end_date')) {
             $query->whereBetween('created_at', [
                 request('filter_start_date') . ' 00:00:00',
-                request('filter_end_date') . ' 23:59:59'
+                request('filter_end_date') . ' 23:59:59',
             ]);
         }
     }
@@ -164,7 +164,7 @@ class TenagaPendukungRepository
     protected function applyKategoriUsiaFilter($query, $kategori)
     {
         $today = now();
-        
+
         switch ($kategori) {
             case 'dewasa_muda':
                 $query->where('tanggal_lahir', '>=', $today->copy()->subYears(25))
@@ -194,7 +194,7 @@ class TenagaPendukungRepository
     protected function applyLamaBergabungFilter($query, $kategori)
     {
         $today = now();
-        
+
         switch ($kategori) {
             case 'baru':
                 $query->where('tanggal_bergabung', '>=', $today->copy()->subYears(2));
@@ -292,10 +292,10 @@ class TenagaPendukungRepository
         $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
 
         $tenagaPendukung = $this->model->with($with)->findOrFail($id);
-        
+
         // Pastikan relasi cabor dimuat dengan benar
         $tenagaPendukung->load(['caborKategoriTenagaPendukung.cabor', 'caborKategoriTenagaPendukung.caborKategori', 'caborKategoriTenagaPendukung.jenisTenagaPendukung']);
-        
+
         return $tenagaPendukung;
     }
 
@@ -369,170 +369,174 @@ class TenagaPendukungRepository
      */
     public function jumlah_karakteristik($data = [])
     {
-        $tanggal_awal  = $data['tanggal_awal'] ?? null;
+        $tanggal_awal  = $data['tanggal_awal']  ?? null;
         $tanggal_akhir = $data['tanggal_akhir'] ?? null;
 
         // Ambil semua data yang akan direkap
         $this->with = [];
-        $getData = $this->getAll([
-            "filter_start_date" => $tanggal_awal,
-            "filter_end_date"   => $tanggal_akhir,
+        $getData    = $this->getAll([
+            'filter_start_date' => $tanggal_awal,
+            'filter_end_date'   => $tanggal_akhir,
         ]);
         $totalData = count($getData); // total keseluruhan
 
         $result = [];
 
         // Jenis Kelamin
-        $listIndikator = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
-        $listIndikator['NULL'] = "-"; 
+        $listIndikator         = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
+        $listIndikator['NULL'] = '-';
 
         $indikatorData = [];
         foreach ($listIndikator as $key => $value) {
-            $jumlah = collect($getData)->filter(function($item) use ($key) {
+            $jumlah = collect($getData)->filter(function ($item) use ($key) {
                 $key_value = $item->jenis_kelamin ?? null;
-        
+
                 if ($key === 'NULL') {
                     return is_null($key_value);
                 }
-        
+
                 return $key_value == $key;
             })->count();
             $persentase = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
-    
+
             $indikatorData[] = [
-                "nama_indikator" => $value,
-                "jumlah"         => $jumlah,
-                "persentase"     => $persentase,
+                'nama_indikator' => $value,
+                'jumlah'         => $jumlah,
+                'persentase'     => $persentase,
             ];
         }
-    
+
         $result[] = [
-            "key"  => "jenis_kelamin",
-            "name" => "Jenis Kelamin",
-            "data" => $indikatorData,
+            'key'  => 'jenis_kelamin',
+            'name' => 'Jenis Kelamin',
+            'data' => $indikatorData,
         ];
 
         // Status Aktif
-        $listIndikator = [1 => 'Aktif', 0 => 'Nonaktif'];
-        $listIndikator['NULL'] = "-"; 
-    
+        $listIndikator         = [1 => 'Aktif', 0 => 'Nonaktif'];
+        $listIndikator['NULL'] = '-';
+
         $indikatorData = [];
         foreach ($listIndikator as $key => $value) {
-            $jumlah = collect($getData)->filter(function($item) use ($key) {
+            $jumlah = collect($getData)->filter(function ($item) use ($key) {
                 $key_value = $item->is_active ?? null;
-        
+
                 if ($key === 'NULL') {
                     return is_null($key_value);
                 }
-        
+
                 return $key_value == $key;
             })->count();
             $persentase = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
-    
+
             $indikatorData[] = [
-                "nama_indikator" => $value,
-                "jumlah"         => $jumlah,
-                "persentase"     => $persentase,
+                'nama_indikator' => $value,
+                'jumlah'         => $jumlah,
+                'persentase'     => $persentase,
             ];
         }
-    
+
         $result[] = [
-            "key"  => "status_aktif",
-            "name" => "Status Aktif",
-            "data" => $indikatorData,
+            'key'  => 'status_aktif',
+            'name' => 'Status Aktif',
+            'data' => $indikatorData,
         ];
 
         // Usia (dibagi berdasarkan range)
         $usiaRanges = [
             'dewasa_muda' => ['min' => 18, 'max' => 25, 'label' => 'Dewasa Muda (18-25 tahun)'],
-            'dewasa' => ['min' => 26, 'max' => 35, 'label' => 'Dewasa (26-35 tahun)'],
-            'dewasa_tua' => ['min' => 36, 'max' => 45, 'label' => 'Dewasa Tua (36-45 tahun)'],
-            'senior' => ['min' => 46, 'max' => 55, 'label' => 'Senior (46-55 tahun)'],
-            'veteran' => ['min' => 56, 'max' => 100, 'label' => 'Veteran (56+ tahun)'],
+            'dewasa'      => ['min' => 26, 'max' => 35, 'label' => 'Dewasa (26-35 tahun)'],
+            'dewasa_tua'  => ['min' => 36, 'max' => 45, 'label' => 'Dewasa Tua (36-45 tahun)'],
+            'senior'      => ['min' => 46, 'max' => 55, 'label' => 'Senior (46-55 tahun)'],
+            'veteran'     => ['min' => 56, 'max' => 100, 'label' => 'Veteran (56+ tahun)'],
         ];
 
         $indikatorData = [];
         foreach ($usiaRanges as $key => $range) {
-            $jumlah = collect($getData)->filter(function($item) use ($range) {
-                if (!$item->tanggal_lahir) return false;
-                
+            $jumlah = collect($getData)->filter(function ($item) use ($range) {
+                if (!$item->tanggal_lahir) {
+                    return false;
+                }
+
                 $usia = date_diff(date_create($item->tanggal_lahir), date_create('today'))->y;
                 return $usia >= $range['min'] && $usia <= $range['max'];
             })->count();
-            
+
             $persentase = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
-    
+
             $indikatorData[] = [
-                "nama_indikator" => $range['label'],
-                "jumlah"         => $jumlah,
-                "persentase"     => $persentase,
+                'nama_indikator' => $range['label'],
+                'jumlah'         => $jumlah,
+                'persentase'     => $persentase,
             ];
         }
 
         // Tambahkan kategori "Tidak ada data tanggal lahir"
-        $jumlahNoTanggalLahir = collect($getData)->filter(function($item) {
+        $jumlahNoTanggalLahir = collect($getData)->filter(function ($item) {
             return !$item->tanggal_lahir;
         })->count();
-        
+
         if ($jumlahNoTanggalLahir > 0) {
-            $persentase = $totalData > 0 ? round(($jumlahNoTanggalLahir / $totalData) * 100, 2) : 0;
+            $persentase      = $totalData > 0 ? round(($jumlahNoTanggalLahir / $totalData) * 100, 2) : 0;
             $indikatorData[] = [
-                "nama_indikator" => "Tidak ada data tanggal lahir",
-                "jumlah"         => $jumlahNoTanggalLahir,
-                "persentase"     => $persentase,
+                'nama_indikator' => 'Tidak ada data tanggal lahir',
+                'jumlah'         => $jumlahNoTanggalLahir,
+                'persentase'     => $persentase,
             ];
         }
-    
+
         $result[] = [
-            "key"  => "usia",
-            "name" => "Kategori Usia",
-            "data" => $indikatorData,
+            'key'  => 'usia',
+            'name' => 'Kategori Usia',
+            'data' => $indikatorData,
         ];
 
         // Lama Bergabung
         $lamaBergabungRanges = [
-            'baru' => ['min' => 0, 'max' => 2, 'label' => 'Baru bergabung (< 2 tahun)'],
-            'sedang' => ['min' => 2, 'max' => 5, 'label' => 'Sedang (2-5 tahun)'],
-            'lama' => ['min' => 5, 'max' => 10, 'label' => 'Lama (5-10 tahun)'],
+            'baru'        => ['min' => 0, 'max' => 2, 'label' => 'Baru bergabung (< 2 tahun)'],
+            'sedang'      => ['min' => 2, 'max' => 5, 'label' => 'Sedang (2-5 tahun)'],
+            'lama'        => ['min' => 5, 'max' => 10, 'label' => 'Lama (5-10 tahun)'],
             'sangat_lama' => ['min' => 10, 'max' => 100, 'label' => 'Sangat lama (10+ tahun)'],
         ];
 
         $indikatorData = [];
         foreach ($lamaBergabungRanges as $key => $range) {
-            $jumlah = collect($getData)->filter(function($item) use ($range) {
-                if (!$item->tanggal_bergabung) return false;
-                
+            $jumlah = collect($getData)->filter(function ($item) use ($range) {
+                if (!$item->tanggal_bergabung) {
+                    return false;
+                }
+
                 $lamaBergabung = date_diff(date_create($item->tanggal_bergabung), date_create('today'))->y;
                 return $lamaBergabung >= $range['min'] && $lamaBergabung <= $range['max'];
             })->count();
-            
+
             $persentase = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
-    
+
             $indikatorData[] = [
-                "nama_indikator" => $range['label'],
-                "jumlah"         => $jumlah,
-                "persentase"     => $persentase,
+                'nama_indikator' => $range['label'],
+                'jumlah'         => $jumlah,
+                'persentase'     => $persentase,
             ];
         }
 
         // Tambahkan kategori "Tidak ada data tanggal bergabung"
-        $jumlahNoTanggalBergabung = collect($getData)->filter(function($item) {
+        $jumlahNoTanggalBergabung = collect($getData)->filter(function ($item) {
             return !$item->tanggal_bergabung;
         })->count();
-        
+
         if ($jumlahNoTanggalBergabung > 0) {
-            $persentase = $totalData > 0 ? round(($jumlahNoTanggalBergabung / $totalData) * 100, 2) : 0;
+            $persentase      = $totalData > 0 ? round(($jumlahNoTanggalBergabung / $totalData) * 100, 2) : 0;
             $indikatorData[] = [
-                "nama_indikator" => "Tidak ada data tanggal bergabung",
-                "jumlah"         => $jumlahNoTanggalBergabung,
-                "persentase"     => $persentase,
+                'nama_indikator' => 'Tidak ada data tanggal bergabung',
+                'jumlah'         => $jumlahNoTanggalBergabung,
+                'persentase'     => $persentase,
             ];
         }
-    
+
         $result[] = [
-            "key"  => "lama_bergabung",
-            "name" => "Lama Bergabung",
-            "data" => $indikatorData,
+            'key'  => 'lama_bergabung',
+            'name' => 'Lama Bergabung',
+            'data' => $indikatorData,
         ];
 
         return $result;

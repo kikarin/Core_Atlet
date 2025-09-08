@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FilterModal from '@/components/FilterModal.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast/useToast';
@@ -6,7 +7,6 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Pelatih', href: '/pelatih' }];
 

@@ -33,7 +33,10 @@ const formInputs = computed(() => [
         name: 'pemeriksaan_parameter_id',
         label: 'Parameter',
         type: 'select' as const,
-        options: (props.parameters || []).map((item: any) => ({ value: item.id, label: item.nama_parameter })),
+        options: (props.parameters || []).map((item: any) => ({
+            value: item.id,
+            label: item.mst_parameter ? `${item.mst_parameter.nama} (${item.mst_parameter.satuan})` : item.nama_parameter,
+        })),
         placeholder: 'Pilih Parameter',
         required: true,
         modelValue: selectedParameterId.value,

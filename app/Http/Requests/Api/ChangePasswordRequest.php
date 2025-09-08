@@ -42,16 +42,16 @@ class ChangePasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'old_password.required' => 'Password lama wajib diisi.',
-            'old_password.string' => 'Password lama harus berupa string.',
-            'old_password.min' => 'Password lama minimal 1 karakter.',
-            'new_password.required' => 'Password baru wajib diisi.',
-            'new_password.string' => 'Password baru harus berupa string.',
-            'new_password.min' => 'Password baru minimal 8 karakter.',
-            'new_password.regex' => 'Password baru harus mengandung huruf kecil, huruf besar, dan angka.',
-            'new_password.not_in' => 'Password baru tidak boleh menggunakan kata yang mudah ditebak.',
+            'old_password.required'     => 'Password lama wajib diisi.',
+            'old_password.string'       => 'Password lama harus berupa string.',
+            'old_password.min'          => 'Password lama minimal 1 karakter.',
+            'new_password.required'     => 'Password baru wajib diisi.',
+            'new_password.string'       => 'Password baru harus berupa string.',
+            'new_password.min'          => 'Password baru minimal 8 karakter.',
+            'new_password.regex'        => 'Password baru harus mengandung huruf kecil, huruf besar, dan angka.',
+            'new_password.not_in'       => 'Password baru tidak boleh menggunakan kata yang mudah ditebak.',
             'confirm_password.required' => 'Konfirmasi password wajib diisi.',
-            'confirm_password.same' => 'Konfirmasi password tidak cocok dengan password baru.',
+            'confirm_password.same'     => 'Konfirmasi password tidak cocok dengan password baru.',
         ];
     }
 
@@ -63,8 +63,8 @@ class ChangePasswordRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'old_password' => 'password lama',
-            'new_password' => 'password baru',
+            'old_password'     => 'password lama',
+            'new_password'     => 'password baru',
             'confirm_password' => 'konfirmasi password',
         ];
     }

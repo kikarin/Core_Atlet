@@ -146,12 +146,12 @@ class PelatihController extends Controller implements HasMiddleware
     public function show($id)
     {
         $item = $this->repository->getDetailWithRelations($id);
-        
+
         Log::info('Pelatih show data:', [
-            'id' => $id,
-            'nama' => $item->nama,
+            'id'          => $id,
+            'nama'        => $item->nama,
             'cabor_count' => $item->caborKategoriPelatih ? $item->caborKategoriPelatih->count() : 0,
-            'cabor_data' => $item->caborKategoriPelatih ? $item->caborKategoriPelatih->toArray() : []
+            'cabor_data'  => $item->caborKategoriPelatih ? $item->caborKategoriPelatih->toArray() : [],
         ]);
 
         return Inertia::render('modules/pelatih/Show', [
@@ -272,13 +272,13 @@ class PelatihController extends Controller implements HasMiddleware
 
         $parameters = [];
         if ($pemeriksaanPeserta) {
-            $parameters = PemeriksaanPesertaParameter::with(['pemeriksaanParameter'])
+            $parameters = PemeriksaanPesertaParameter::with(['pemeriksaanParameter.mstParameter'])
                 ->where('pemeriksaan_peserta_id', $pemeriksaanPeserta->id)
                 ->get()
                 ->map(function ($item) {
                     return [
                         'id'             => $item->id,
-                        'nama_parameter' => $item->pemeriksaanParameter->nama_parameter ?? '-',
+                        'nama_parameter' => $item->pemeriksaanParameter->mstParameter->nama ?? '-',
                         'nilai'          => $item->nilai,
                         'trend'          => $item->trend,
                     ];

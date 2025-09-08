@@ -30,7 +30,10 @@ const breadcrumbs = [
 ];
 
 const fields = computed(() => [
-    { label: 'Parameter', value: typeof item.value?.parameter === 'string' ? item.value.parameter : item.value?.parameter?.nama_parameter || '-' },
+    {
+        label: 'Parameter',
+        value: typeof item.value?.parameter === 'string' ? item.value.parameter : item.value?.parameter?.nama_parameter || '-',
+    },
     { label: 'Nilai', value: item.value?.nilai ?? '-' },
     { label: 'Trend', value: item.value?.trend || '-' },
     { label: 'Pemeriksaan', value: pemeriksaan.value?.nama_pemeriksaan || '-' },

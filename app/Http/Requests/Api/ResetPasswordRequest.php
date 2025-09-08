@@ -35,8 +35,8 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.exists' => 'Email tidak terdaftar dalam sistem.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.exists'   => 'Email tidak terdaftar dalam sistem.',
         ];
     }
 

@@ -177,6 +177,13 @@ class UsersMenuSeeder extends Seeder
                         'urutan'        => 8,
                         'permission_id' => 'Mst Juara Show',
                     ],
+                    [
+                        'nama'          => 'Parameter',
+                        'kode'          => 'DATA-MASTER-PARAMETER',
+                        'url'           => '/data-master/parameter',
+                        'urutan'        => 9,
+                        'permission_id' => 'Mst Parameter Show',
+                    ],
                 ],
             ],
             [

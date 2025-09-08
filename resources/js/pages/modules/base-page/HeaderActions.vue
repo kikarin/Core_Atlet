@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import permissionService from '@/services/permissionService';
 import { Link } from '@inertiajs/vue3';
 import { BarChart3, SlidersHorizontal } from 'lucide-vue-next';
-import permissionService from '@/services/permissionService';
 
 const props = defineProps<{
     title: string;
-    moduleName: string; 
+    moduleName: string;
     createUrl?: string;
     createMultipleUrl?: string;
     showMultipleButton?: boolean;
@@ -29,7 +29,6 @@ const props = defineProps<{
     statistikUrl?: string;
     showFilter?: boolean;
 }>();
-
 
 const canCreate = () => {
     if (props.permissions?.create !== undefined) return props.permissions.create;
@@ -60,55 +59,30 @@ const canKelola = () => {
 
         <div class="flex flex-wrap items-center gap-2">
             <!-- Button Filter -->
-            <Button
-                v-if="props.showFilter"
-                variant="outline"
-                size="sm"
-                class="flex items-center gap-2"
-                @click="$emit('filter')"
-            >
+            <Button v-if="props.showFilter" variant="outline" size="sm" class="flex items-center gap-2" @click="$emit('filter')">
                 <SlidersHorizontal class="h-4 w-4" />
                 Filter
             </Button>
             <!-- Button Import -->
-            <Button 
-                v-if="props.showImport && canImport()" 
-                variant="secondary" 
-                size="sm" 
-                @click="$emit('import')"
-            > 
-                Import Excel 
-            </Button>
+            <Button v-if="props.showImport && canImport()" variant="secondary" size="sm" @click="$emit('import')"> Import Excel </Button>
 
             <!-- Button Tambah Multiple -->
-            <Link 
-                v-if="props.showMultipleButton && props.createMultipleUrl && canCreate()" 
-                :href="props.createMultipleUrl"
-            >
+            <Link v-if="props.showMultipleButton && props.createMultipleUrl && canCreate()" :href="props.createMultipleUrl">
                 <Button variant="outline" size="sm">+ Tambah Multiple</Button>
             </Link>
 
             <!-- Button Create -->
-            <Link 
-                v-if="props.createUrl && canCreate()" 
-                :href="props.createUrl"
-            >
+            <Link v-if="props.createUrl && canCreate()" :href="props.createUrl">
                 <Button variant="outline" size="sm">+ Create</Button>
             </Link>
 
             <!-- Button Kelola -->
-            <Link 
-                v-if="props.showKelola && props.kelolaUrl && canKelola()" 
-                :href="props.kelolaUrl"
-            >
+            <Link v-if="props.showKelola && props.kelolaUrl && canKelola()" :href="props.kelolaUrl">
                 <Button variant="outline" size="sm">{{ props.kelolaLabel || 'Kelola' }}</Button>
             </Link>
 
             <!-- Button Statistik -->
-            <Link 
-                v-if="props.showStatistik && props.statistikUrl" 
-                :href="props.statistikUrl"
-            >
+            <Link v-if="props.showStatistik && props.statistikUrl" :href="props.statistikUrl">
                 <Button variant="outline" size="sm" class="flex items-center gap-2">
                     <BarChart3 class="h-4 w-4" />
                     Statistik
@@ -118,15 +92,7 @@ const canKelola = () => {
             <!-- Dropdown Set Kehadiran -->
             <DropdownMenu v-if="props.showKehadiran">
                 <DropdownMenuTrigger as-child>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        :disabled="selected.length === 0" 
-                        class="mr-2" 
-                        type="button"
-                    > 
-                        Set Kehadiran 
-                    </Button>
+                    <Button variant="outline" size="sm" :disabled="selected.length === 0" class="mr-2" type="button"> Set Kehadiran </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem @click="$emit('setKehadiran', 'Hadir')">Hadir</DropdownMenuItem>
@@ -137,11 +103,11 @@ const canKelola = () => {
             </DropdownMenu>
 
             <!-- Button Delete Selected -->
-            <Button 
-                v-if="props.showDelete !== true && canDelete()" 
-                variant="destructive" 
-                size="sm" 
-                :disabled="selected.length === 0" 
+            <Button
+                v-if="props.showDelete !== true && canDelete()"
+                variant="destructive"
+                size="sm"
+                :disabled="selected.length === 0"
                 @click="onDeleteSelected"
             >
                 Delete Selected ({{ selected.length }})

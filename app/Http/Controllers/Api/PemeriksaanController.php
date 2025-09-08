@@ -25,32 +25,32 @@ class PemeriksaanController extends Controller
         try {
             // Add logging untuk debug
             Log::info('Pemeriksaan Mobile API called', [
-                'user' => auth()->user(),
-                'user_id' => auth()->id(),
+                'user'            => auth()->user(),
+                'user_id'         => auth()->id(),
                 'current_role_id' => auth()->user()->current_role_id ?? 'no role',
-                'headers' => $request->headers->all()
+                'headers'         => $request->headers->all(),
             ]);
-            
+
             $data = $this->repository->getForMobile($request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data pemeriksaan berhasil diambil',
-                'data' => $data['data'],
-                'meta' => [
-                    'total' => $data['total'],
+                'data'    => $data['data'],
+                'meta'    => [
+                    'total'        => $data['total'],
                     'current_page' => $data['currentPage'],
-                    'per_page' => $data['perPage'],
-                    'search' => $data['search'],
-                    'filters' => [
-                        'cabor_id' => $data['filters']['cabor_id'] ?? null,
+                    'per_page'     => $data['perPage'],
+                    'search'       => $data['search'],
+                    'filters'      => [
+                        'cabor_id'            => $data['filters']['cabor_id']            ?? null,
                         'tanggal_pemeriksaan' => $data['filters']['tanggal_pemeriksaan'] ?? null,
-                    ]
+                    ],
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data pemeriksaan: ' . $e->getMessage(),
             ], 500);
         }
@@ -66,43 +66,43 @@ class PemeriksaanController extends Controller
 
             if (!$pemeriksaan) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Pemeriksaan tidak ditemukan',
                 ], 404);
             }
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Detail pemeriksaan berhasil diambil',
-                'data' => [
-                    'id' => $pemeriksaan->id,
+                'data'    => [
+                    'id'               => $pemeriksaan->id,
                     'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
-                    'cabor' => [
-                        'id' => $pemeriksaan->cabor->id ?? null,
+                    'cabor'            => [
+                        'id'   => $pemeriksaan->cabor->id   ?? null,
                         'nama' => $pemeriksaan->cabor->nama ?? null,
                     ],
                     'kategori' => [
-                        'id' => $pemeriksaan->caborKategori->id ?? null,
+                        'id'   => $pemeriksaan->caborKategori->id   ?? null,
                         'nama' => $pemeriksaan->caborKategori->nama ?? null,
                     ],
                     'tenaga_pendukung' => [
-                        'id' => $pemeriksaan->tenagaPendukung->id ?? null,
+                        'id'   => $pemeriksaan->tenagaPendukung->id   ?? null,
                         'nama' => $pemeriksaan->tenagaPendukung->nama ?? null,
                     ],
-                    'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
-                    'status' => $pemeriksaan->status,
-                    'jumlah_parameter' => $pemeriksaan->pemeriksaanParameter()->count(),
-                    'jumlah_peserta' => $pemeriksaan->pemeriksaanPeserta()->count(),
-                    'jumlah_atlet' => $pemeriksaan->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Atlet')->count(),
-                    'jumlah_pelatih' => $pemeriksaan->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Pelatih')->count(),
+                    'tanggal_pemeriksaan'     => $pemeriksaan->tanggal_pemeriksaan,
+                    'status'                  => $pemeriksaan->status,
+                    'jumlah_parameter'        => $pemeriksaan->pemeriksaanParameter()->count(),
+                    'jumlah_peserta'          => $pemeriksaan->pemeriksaanPeserta()->count(),
+                    'jumlah_atlet'            => $pemeriksaan->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Atlet')->count(),
+                    'jumlah_pelatih'          => $pemeriksaan->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\Pelatih')->count(),
                     'jumlah_tenaga_pendukung' => $pemeriksaan->pemeriksaanPeserta()->where('peserta_type', 'App\\Models\\TenagaPendukung')->count(),
-                    'created_at' => $pemeriksaan->created_at,
-                    'updated_at' => $pemeriksaan->updated_at,
+                    'created_at'              => $pemeriksaan->created_at,
+                    'updated_at'              => $pemeriksaan->updated_at,
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil detail pemeriksaan: ' . $e->getMessage(),
             ], 500);
         }
@@ -117,13 +117,13 @@ class PemeriksaanController extends Controller
             $caborList = $this->repository->getCaborList();
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data cabor berhasil diambil',
-                'data' => $caborList,
+                'data'    => $caborList,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data cabor: ' . $e->getMessage(),
             ], 500);
         }
@@ -136,10 +136,10 @@ class PemeriksaanController extends Controller
     {
         try {
             $pemeriksaan = $this->repository->getDetailWithRelations($pemeriksaanId);
-            
+
             if (!$pemeriksaan) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Pemeriksaan tidak ditemukan',
                 ], 404);
             }
@@ -147,23 +147,23 @@ class PemeriksaanController extends Controller
             $pesertaData = $this->repository->getPesertaForMobile($pemeriksaanId, $request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data peserta pemeriksaan berhasil diambil',
-                'data' => [
+                'data'    => [
                     'pemeriksaan' => [
-                        'id' => $pemeriksaan->id,
-                        'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                        'id'                  => $pemeriksaan->id,
+                        'nama_pemeriksaan'    => $pemeriksaan->nama_pemeriksaan,
                         'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
-                        'status' => $pemeriksaan->status,
+                        'status'              => $pemeriksaan->status,
                     ],
-                    'atlet' => $pesertaData['atlet'],
-                    'pelatih' => $pesertaData['pelatih'],
+                    'atlet'           => $pesertaData['atlet'],
+                    'pelatih'         => $pesertaData['pelatih'],
                     'tenagaPendukung' => $pesertaData['tenagaPendukung'],
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data peserta pemeriksaan: ' . $e->getMessage(),
             ], 500);
         }
@@ -176,10 +176,10 @@ class PemeriksaanController extends Controller
     {
         try {
             $pemeriksaan = $this->repository->getDetailWithRelations($pemeriksaanId);
-            
+
             if (!$pemeriksaan) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Pemeriksaan tidak ditemukan',
                 ], 404);
             }
@@ -187,12 +187,12 @@ class PemeriksaanController extends Controller
             $parameterData = $this->repository->getParameterForMobile($pemeriksaanId, $request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data parameter pemeriksaan berhasil diambil',
-                'data' => [
+                'data'    => [
                     'pemeriksaan' => [
-                        'id' => $pemeriksaan->id,
-                        'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                        'id'                  => $pemeriksaan->id,
+                        'nama_pemeriksaan'    => $pemeriksaan->nama_pemeriksaan,
                         'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
                     ],
                     'parameter' => $parameterData,
@@ -200,7 +200,7 @@ class PemeriksaanController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data parameter pemeriksaan: ' . $e->getMessage(),
             ], 500);
         }
@@ -213,19 +213,19 @@ class PemeriksaanController extends Controller
     {
         try {
             $pemeriksaan = $this->repository->getDetailWithRelations($pemeriksaanId);
-            
+
             if (!$pemeriksaan) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Pemeriksaan tidak ditemukan',
                 ], 404);
             }
 
             $parameter = $this->repository->getParameterDetail($parameterId);
-            
+
             if (!$parameter) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Parameter tidak ditemukan',
                 ], 404);
             }
@@ -233,28 +233,123 @@ class PemeriksaanController extends Controller
             $pesertaData = $this->repository->getPesertaParameterForMobile($pemeriksaanId, $parameterId, $request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data detail parameter pemeriksaan berhasil diambil',
-                'data' => [
+                'data'    => [
                     'pemeriksaan' => [
-                        'id' => $pemeriksaan->id,
-                        'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                        'id'                  => $pemeriksaan->id,
+                        'nama_pemeriksaan'    => $pemeriksaan->nama_pemeriksaan,
                         'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
                     ],
                     'parameter' => [
-                        'id' => $parameter->id,
+                        'id'             => $parameter->id,
                         'nama_parameter' => $parameter->nama_parameter,
-                        'satuan' => $parameter->satuan,
+                        'satuan'         => $parameter->satuan,
                     ],
-                    'atlet' => $pesertaData['atlet'],
-                    'pelatih' => $pesertaData['pelatih'],
+                    'atlet'           => $pesertaData['atlet'],
+                    'pelatih'         => $pesertaData['pelatih'],
                     'tenagaPendukung' => $pesertaData['tenagaPendukung'],
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data detail parameter pemeriksaan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * List parameter pemeriksaan yang dimiliki peserta
+     */
+    public function pesertaParameterList(Request $request, int $pemeriksaanId, int $pesertaId): JsonResponse
+    {
+        try {
+            // Get participant info (peserta_type will be determined from database)
+            $pesertaInfo = $this->repository->getParticipantInfo($pesertaId, null, $pemeriksaanId);
+
+            if (!$pesertaInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Peserta tidak ditemukan',
+                ], 404);
+            }
+
+            // Get parameter list for this participant
+            $parameterList = $this->repository->getParticipantParameterList($pemeriksaanId, $pesertaId, null);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data parameter pemeriksaan peserta berhasil diambil',
+                'data'    => [
+                    'pesertaInfo'   => $pesertaInfo,
+                    'parameterList' => $parameterList,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal mengambil parameter pemeriksaan peserta: ' . $e->getMessage(), [
+                'exception'      => $e,
+                'pemeriksaan_id' => $pemeriksaanId,
+                'peserta_id'     => $pesertaId,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil parameter pemeriksaan peserta: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Grafik parameter pemeriksaan individu setiap peserta
+     */
+    public function pesertaParameterChart(Request $request, int $pemeriksaanId, int $pesertaId, int $parameterId): JsonResponse
+    {
+        try {
+            // Get participant info (peserta_type will be determined from database)
+            $pesertaInfo = $this->repository->getParticipantInfo($pesertaId, null, $pemeriksaanId);
+
+            if (!$pesertaInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Peserta tidak ditemukan',
+                ], 404);
+            }
+
+            // Get parameter info
+            $parameterInfo = $this->repository->getParameterInfo($parameterId, $pemeriksaanId, $pesertaId, null);
+
+            if (!$parameterInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Parameter pemeriksaan tidak ditemukan',
+                ], 404);
+            }
+
+            // Get chart data
+            $chartData = $this->repository->getParticipantParameterChartData($pemeriksaanId, $pesertaId, null, $parameterId);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data grafik parameter pemeriksaan peserta berhasil diambil',
+                'data'    => [
+                    'pesertaInfo'   => $pesertaInfo,
+                    'parameterInfo' => $parameterInfo,
+                    'chartData'     => $chartData['chartData'],
+                    'detailData'    => $chartData['detailData'],
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal mengambil grafik parameter pemeriksaan peserta: ' . $e->getMessage(), [
+                'exception'      => $e,
+                'pemeriksaan_id' => $pemeriksaanId,
+                'peserta_id'     => $pesertaId,
+                'parameter_id'   => $parameterId,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil grafik parameter pemeriksaan peserta: ' . $e->getMessage(),
             ], 500);
         }
     }

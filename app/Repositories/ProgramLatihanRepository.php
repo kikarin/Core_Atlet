@@ -30,10 +30,10 @@ class ProgramLatihanRepository
                     ->orWhere('keterangan', 'like', "%$search%");
             });
         }
-        
+
         // Apply filters
         $this->applyFilters($query);
-        
+
         if (request('sort')) {
             $order        = request('order', 'asc');
             $sortField    = request('sort');
@@ -49,32 +49,32 @@ class ProgramLatihanRepository
 
         $auth = Auth::user();
         if ($auth->current_role_id == 35) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriAtlet', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('atlet_id', $auth->atlet->id);
                 });
             });
         }
 
         $auth = Auth::user();
         if ($auth->current_role_id == 36) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriPelatih", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("pelatih_id", $auth->pelatih->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriPelatih', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('pelatih_id', $auth->pelatih->id);
                 });
             });
         }
 
         $auth = Auth::user();
         if ($auth->current_role_id == 37) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("tenagaPendukung", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("tenaga_pendukung_id", $auth->tenagaPendukung->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('tenagaPendukung', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('tenaga_pendukung_id', $auth->tenagaPendukung->id);
                 });
             });
         }
 
-        
+
         $perPage = (int) request('per_page', 10);
         $page    = (int) request('page', 1);
         if ($perPage === -1) {
@@ -156,7 +156,7 @@ class ProgramLatihanRepository
         if (request('filter_start_date') && request('filter_end_date')) {
             $query->whereBetween('created_at', [
                 request('filter_start_date') . ' 00:00:00',
-                request('filter_end_date') . ' 23:59:59'
+                request('filter_end_date') . ' 23:59:59',
             ]);
         }
     }
@@ -201,7 +201,7 @@ class ProgramLatihanRepository
     {
         $query = $this->model->with(['caborKategori', 'cabor'])
             ->withCount(['rencanaLatihan']);
-            $this->applyRoleBasedFiltering($query);
+        $this->applyRoleBasedFiltering($query);
 
         // Search functionality
         if ($request->search) {
@@ -217,47 +217,47 @@ class ProgramLatihanRepository
                     });
             });
         }
-        
+
         // Apply filters
         $this->applyFilters($query);
-        
+
         // Apply role-based filtering
         $this->applyRoleBasedFiltering($query);
-        
+
         // Sorting
         $query->orderBy('id', 'desc');
 
         // Pagination
         $perPage = (int) $request->per_page ?: 10;
-        $page = (int) $request->page ?: 1;
-        
+        $page    = (int) $request->page ?: 1;
+
         $items = $query->paginate($perPage, ['*'], 'page', $page);
-        
+
         // Transform data for mobile
         $transformed = collect($items->items())->map(function ($item) {
             return [
-                'id' => $item->id,
-                'nama_program' => $item->nama_program,
-                'cabor' => $item->cabor?->nama ?? '-',
-                'kategori' => $item->caborKategori?->nama ?? '-',
-                'periode' => $this->formatPeriodeForMobile($item->periode_mulai, $item->periode_selesai),
-                'keterangan' => $item->keterangan,
+                'id'                     => $item->id,
+                'nama_program'           => $item->nama_program,
+                'cabor'                  => $item->cabor?->nama         ?? '-',
+                'kategori'               => $item->caborKategori?->nama ?? '-',
+                'periode'                => $this->formatPeriodeForMobile($item->periode_mulai, $item->periode_selesai),
+                'keterangan'             => $item->keterangan,
                 'jumlah_rencana_latihan' => $item->rencana_latihan_count,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
+                'created_at'             => $item->created_at,
+                'updated_at'             => $item->updated_at,
             ];
         });
 
         return [
-            'data' => $transformed,
-            'total' => $items->total(),
+            'data'        => $transformed,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => $request->search ?? '',
-            'filters' => [
-                'cabor_id' => $request->cabor_id,
+            'perPage'     => $items->perPage(),
+            'search'      => $request->search ?? '',
+            'filters'     => [
+                'cabor_id'   => $request->cabor_id,
                 'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'end_date'   => $request->end_date,
             ],
         ];
     }
@@ -273,7 +273,7 @@ class ProgramLatihanRepository
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->cabor->id ?? null,
+                    'id'   => $item->cabor->id   ?? null,
                     'nama' => $item->cabor->nama ?? null,
                 ];
             })
@@ -293,15 +293,15 @@ class ProgramLatihanRepository
         }
 
         $start = new \DateTime($startDate);
-        $end = new \DateTime($endDate);
+        $end   = new \DateTime($endDate);
 
-        $startDay = $start->format('j');
+        $startDay   = $start->format('j');
         $startMonth = $this->getIndonesianMonth($start->format('n'));
-        $startYear = $start->format('Y');
+        $startYear  = $start->format('Y');
 
-        $endDay = $end->format('j');
+        $endDay   = $end->format('j');
         $endMonth = $this->getIndonesianMonth($end->format('n'));
-        $endYear = $end->format('Y');
+        $endYear  = $end->format('Y');
 
         // Jika tahun sama
         if ($startYear === $endYear) {
@@ -324,15 +324,15 @@ class ProgramLatihanRepository
     private function getIndonesianMonth($monthNumber)
     {
         $months = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
+            1  => 'Januari',
+            2  => 'Februari',
+            3  => 'Maret',
+            4  => 'April',
+            5  => 'Mei',
+            6  => 'Juni',
+            7  => 'Juli',
+            8  => 'Agustus',
+            9  => 'September',
             10 => 'Oktober',
             11 => 'November',
             12 => 'Desember',
@@ -347,27 +347,27 @@ class ProgramLatihanRepository
     protected function applyRoleBasedFiltering($query)
     {
         $auth = Auth::user();
-        
+
         if ($auth->current_role_id == 35) { // Atlet
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriAtlet', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('atlet_id', $auth->atlet->id);
                 });
             });
         }
 
         if ($auth->current_role_id == 36) { // Pelatih
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriPelatih", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("pelatih_id", $auth->pelatih->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriPelatih', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('pelatih_id', $auth->pelatih->id);
                 });
             });
         }
 
         if ($auth->current_role_id == 37) { // Tenaga Pendukung
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("tenagaPendukung", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("tenaga_pendukung_id", $auth->tenagaPendukung->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('tenagaPendukung', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('tenaga_pendukung_id', $auth->tenagaPendukung->id);
                 });
             });
         }

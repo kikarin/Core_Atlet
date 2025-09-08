@@ -154,11 +154,11 @@ class CaborController extends Controller implements HasMiddleware
     public function getPeserta($id, $tipe)
     {
         $peserta = $this->repository->getPesertaByCabor($id, $tipe);
-        
+
         return response()->json([
-            'data' => $peserta,
-            'tipe' => $tipe,
-            'cabor_id' => $id
+            'data'     => $peserta,
+            'tipe'     => $tipe,
+            'cabor_id' => $id,
         ]);
     }
 }

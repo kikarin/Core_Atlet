@@ -249,13 +249,13 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
         $parameters = [];
         if ($pemeriksaanPeserta) {
-            $parameters = PemeriksaanPesertaParameter::with(['pemeriksaanParameter'])
+            $parameters = PemeriksaanPesertaParameter::with(['pemeriksaanParameter.mstParameter'])
                 ->where('pemeriksaan_peserta_id', $pemeriksaanPeserta->id)
                 ->get()
                 ->map(function ($item) {
                     return [
                         'id'             => $item->id,
-                        'nama_parameter' => $item->pemeriksaanParameter->nama_parameter ?? '-',
+                        'nama_parameter' => $item->pemeriksaanParameter->mstParameter->nama ?? '-',
                         'nilai'          => $item->nilai,
                         'trend'          => $item->trend,
                     ];

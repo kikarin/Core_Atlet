@@ -35,7 +35,7 @@ const fetchData = async () => {
 
         // Add filters to params
         if (currentFilters.value) {
-            Object.keys(currentFilters.value).forEach(key => {
+            Object.keys(currentFilters.value).forEach((key) => {
                 if (currentFilters.value[key]) {
                     params[key] = currentFilters.value[key];
                 }
@@ -71,7 +71,7 @@ watch([page, localLimit, () => sort.value.key, () => sort.value.order], (vals, o
 
 const props = defineProps<{
     title: string;
-    moduleName: string; 
+    moduleName: string;
     breadcrumbs: BreadcrumbItem[];
     columns: { key: string; label: string }[];
     actions?: (row: any) => { label: string; onClick: () => void; permission?: string }[];

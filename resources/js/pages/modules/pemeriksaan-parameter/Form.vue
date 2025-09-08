@@ -7,6 +7,7 @@ import { computed } from 'vue';
 const { save } = useHandleFormSave();
 const page = usePage();
 const pemeriksaan = computed(() => page.props.pemeriksaan || {});
+const mstParameters = computed(() => page.props.mstParameters || []);
 const pemeriksaanId = computed(() => pemeriksaan.value.id || (typeof window !== 'undefined' ? window.location.pathname.split('/')[2] : ''));
 
 const props = defineProps<{
@@ -15,23 +16,21 @@ const props = defineProps<{
 }>();
 
 const formInitialData = computed(() => ({
-    nama_parameter: props.initialData?.nama_parameter || '',
-    satuan: props.initialData?.satuan || '',
+    mst_parameter_id: props.initialData?.mst_parameter_id || '',
     id: props.initialData?.id || undefined,
 }));
 
 const formInputs = computed(() => [
     {
-        name: 'nama_parameter',
-        label: 'Nama Parameter',
-        type: 'text' as const,
+        name: 'mst_parameter_id',
+        label: 'Parameter',
+        type: 'select' as const,
         required: true,
-    },
-    {
-        name: 'satuan',
-        label: 'Satuan',
-        type: 'text' as const,
-        required: false,
+        options: mstParameters.value.map((param: any) => ({
+            value: param.id,
+            label: `${param.nama} (${param.satuan})`,
+        })),
+        placeholder: 'Pilih Parameter',
     },
 ]);
 

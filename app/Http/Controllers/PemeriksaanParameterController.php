@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeriksaanParameterRequest;
+use App\Models\MstParameter;
 use App\Models\Pemeriksaan;
 use App\Repositories\PemeriksaanParameterRepository;
 use App\Traits\BaseTrait;
@@ -36,7 +37,7 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
         $permission = trim(implode(' ', preg_split('/(?=[A-Z])/', $permission)));
 
         return [
-            new Middleware("can:$permission Show", only: ['index']),
+            new Middleware("can:$permission Show", only: ['index', 'nestedIndex']),
             new Middleware("can:$permission Add", only: ['create', 'store']),
             new Middleware("can:$permission Detail", only: ['show']),
             new Middleware("can:$permission Edit", only: ['edit', 'update']),
@@ -61,8 +62,9 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function create(Pemeriksaan $pemeriksaan)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
+        $mstParameters = MstParameter::where('deleted_at', null)->get(['id', 'nama', 'satuan']);
         $this->repository->customProperty(__FUNCTION__);
-        $data = $this->commonData + ['item' => null, 'pemeriksaan' => $pemeriksaan];
+        $data = $this->commonData + ['item' => null, 'pemeriksaan' => $pemeriksaan, 'mstParameters' => $mstParameters];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }
@@ -91,9 +93,10 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function edit(Pemeriksaan $pemeriksaan, $id)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
+        $mstParameters = MstParameter::where('deleted_at', null)->get(['id', 'nama', 'satuan']);
         $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
         $item = $this->repository->getById($id);
-        $data = $this->commonData + ['item' => $item, 'pemeriksaan' => $pemeriksaan];
+        $data = $this->commonData + ['item' => $item, 'pemeriksaan' => $pemeriksaan, 'mstParameters' => $mstParameters];
         if ($this->check_permission == true) {
             $data = array_merge($data, $this->getPermission());
         }

@@ -187,17 +187,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}`),
-        permission: 'Pemeriksaan Peserta Detail'
+        permission: 'Pemeriksaan Peserta Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/pemeriksaan/${props.pemeriksaan.id}/peserta/${row.id}/edit?jenis_peserta=${jenisPeserta.value}`),
-        permission: 'Pemeriksaan Peserta Edit'
+        permission: 'Pemeriksaan Peserta Edit',
     },
     {
         label: 'Delete',
         onClick: () => handleDeleteRow(row),
-        permission: 'Pemeriksaan Peserta Delete'
+        permission: 'Pemeriksaan Peserta Delete',
     },
 ];
 

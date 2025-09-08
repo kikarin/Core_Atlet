@@ -35,10 +35,10 @@ class CaborKategoriRepository
                     ->orWhere('deskripsi', 'like', '%'.$search.'%');
             });
         }
-        
+
         // Apply filters
         $this->applyFilters($query);
-        
+
         if (request('sort')) {
             $order        = request('order', 'asc');
             $sortField    = request('sort');
@@ -132,7 +132,7 @@ class CaborKategoriRepository
         if (request('filter_start_date') && request('filter_end_date')) {
             $query->whereBetween('created_at', [
                 request('filter_start_date') . ' 00:00:00',
-                request('filter_end_date') . ' 23:59:59'
+                request('filter_end_date') . ' 23:59:59',
             ]);
         }
     }

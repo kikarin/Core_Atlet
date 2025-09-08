@@ -52,11 +52,11 @@ class AuthController extends Controller
         activity()->event('Mobile Login')->performedOn($user)->log('Auth');
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Login berhasil',
-            'data' => [
-                'user' => new UserResource($user->load(['role', 'users_role.role'])),
-                'token' => $token,
+            'data'    => [
+                'user'       => new UserResource($user->load(['role', 'users_role.role'])),
+                'token'      => $token,
                 'token_type' => 'Bearer',
             ],
         ]);
@@ -68,15 +68,15 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = $request->user();
-        
+
         // Log activity
         activity()->event('Mobile Logout')->performedOn($user)->log('Auth');
-        
+
         // Revoke current token
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Logout berhasil',
         ]);
     }
@@ -90,7 +90,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data'   => [
                 'user' => new UserResource($user),
             ],
         ]);
@@ -102,18 +102,18 @@ class AuthController extends Controller
     public function refresh(Request $request)
     {
         $user = $request->user();
-        
+
         // Revoke current token
         $request->user()->currentAccessToken()->delete();
-        
+
         // Create new token
         $token = $user->createToken('mobile-app-refresh')->plainTextToken;
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Token berhasil diperbarui',
-            'data' => [
-                'token' => $token,
+            'data'    => [
+                'token'      => $token,
                 'token_type' => 'Bearer',
             ],
         ]);

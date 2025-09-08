@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Eye, Edit, Trash2, FileText, FolderKanban, Bolt } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
 import permissionService from '@/services/permissionService';
+import { Bolt, Edit, Eye, FileText, FolderKanban, MoreVertical, Trash2 } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
     id: string | number;
     baseUrl: string;
-    moduleName?: string; 
+    moduleName?: string;
     actions?: { label: string; onClick: () => void; permission?: string }[];
     show?: boolean;
     edit?: boolean;
@@ -35,7 +35,7 @@ const permissionsLoaded = ref(false);
 onMounted(() => {
     permissionService.refresh();
     permissionsLoaded.value = true;
-    
+
     setTimeout(() => {
         if (!permissionsLoaded.value) {
             permissionsLoaded.value = true;
@@ -64,7 +64,7 @@ computed(() => {
 
 const canCustomAction = (permission?: string) => {
     if (!permission) return true;
-    
+
     try {
         const result = permissionService.hasPermission(permission);
         console.log(`Permission check for "${permission}":`, result);
@@ -82,24 +82,32 @@ const getAvailableActions = computed(() => {
         action: () => void;
         icon: any;
     }> = [];
-    
+
     if (props.actions && props.actions.length > 0) {
-        props.actions.forEach(action => {
+        props.actions.forEach((action) => {
             if (canCustomAction(action.permission)) {
                 actions.push({
                     label: action.label,
                     action: action.onClick,
-                    icon: action.label === 'Detail' ? Eye : 
-                          action.label === 'Edit' ? Edit : 
-                          action.label === 'Edit Posisi' ? Edit : 
-                            action.label === 'Lihat' ? FolderKanban :
-                            action.label === 'Set Permissions' ? Bolt :
-                          action.label === 'Delete' ? Trash2 : FileText,
+                    icon:
+                        action.label === 'Detail'
+                            ? Eye
+                            : action.label === 'Edit'
+                              ? Edit
+                              : action.label === 'Edit Posisi'
+                                ? Edit
+                                : action.label === 'Lihat'
+                                  ? FolderKanban
+                                  : action.label === 'Set Permissions'
+                                    ? Bolt
+                                    : action.label === 'Delete'
+                                      ? Trash2
+                                      : FileText,
                 });
             }
         });
     }
-    
+
     return actions;
 });
 
@@ -109,22 +117,22 @@ const items = computed(() => {
 
 const hasActions = computed(() => {
     if (!permissionsLoaded.value) return false;
-    
+
     if (!props.actions || props.actions.length === 0) return false;
-    
+
     const availableActions = getAvailableActions.value;
     const result = availableActions.length > 0;
-    
+
     if (props.actions.length > 0 && availableActions.length === 0) {
         console.log('RowActions Debug - Actions filtered out:', {
             moduleName: props.moduleName,
             totalActions: props.actions.length,
             availableActions: availableActions.length,
-            actions: props.actions.map(a => ({ label: a.label, permission: a.permission })),
-            hasActions: result
+            actions: props.actions.map((a) => ({ label: a.label, permission: a.permission })),
+            hasActions: result,
         });
     }
-    
+
     return result;
 });
 </script>
@@ -139,10 +147,10 @@ const hasActions = computed(() => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent class="w-40">
-                <DropdownMenuItem 
-                    v-for="item in items" 
-                    :key="item.label" 
-                    @click="item.action" 
+                <DropdownMenuItem
+                    v-for="item in items"
+                    :key="item.label"
+                    @click="item.action"
                     class="flex items-center gap-2"
                     :class="item.label === 'Delete' ? 'text-red-600' : ''"
                 >

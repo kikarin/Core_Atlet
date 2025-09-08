@@ -8,10 +8,10 @@ use App\Models\Atlet;
 use App\Models\Pelatih;
 use App\Models\TenagaPendukung;
 use App\Repositories\RencanaLatihanRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class RencanaLatihanController extends Controller
 {
@@ -23,7 +23,7 @@ class RencanaLatihanController extends Controller
     }
 
     /**
-     * List rencana latihan untuk mobile per program
+     * Get list of rencana latihan for mobile
      */
     public function index(Request $request, int $programId): JsonResponse
     {
@@ -31,61 +31,67 @@ class RencanaLatihanController extends Controller
             $data = $this->repository->getForMobile($request, $programId);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data rencana latihan berhasil diambil',
-                'data' => $data['data'],
-                'meta' => [
-                    'total' => $data['total'],
+                'data'    => $data['data'],
+                'meta'    => [
+                    'total'        => $data['total'],
                     'current_page' => $data['currentPage'],
-                    'per_page' => $data['perPage'],
-                    'search' => $data['search'],
-                    'filters' => [
-                        'date' => $data['filters']['date'] ?? null,
-                    ],
+                    'per_page'     => $data['perPage'],
+                    'search'       => $data['search'],
+                    'filters'      => $data['filters'],
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data rencana latihan: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Detail rencana latihan (opsional untuk mobile)
+     * Get detail rencana latihan by ID
      */
     public function show(int $id): JsonResponse
     {
         try {
             $rencana = $this->repository->getDetailWithRelations($id);
 
+            if (!$rencana) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Rencana latihan tidak ditemukan',
+                ], 404);
+            }
+
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Detail rencana latihan berhasil diambil',
-                'data' => [
-                    'id' => $rencana->id,
-                    'tanggal' => $rencana->tanggal,
-                    'materi' => $rencana->materi,
-                    'lokasi' => $rencana->lokasi_latihan,
-                    'catatan' => $rencana->catatan,
-                    'target_latihan' => $rencana->targetLatihan->map(function ($t) {
+                'data'    => [
+                    'id'            => $rencana->id,
+                    'tanggal'       => $rencana->tanggal,
+                    'materi'        => $rencana->materi,
+                    'lokasi'        => $rencana->lokasi_latihan,
+                    'catatan'       => $rencana->catatan,
+                    'targetLatihan' => $rencana->targetLatihan->map(function ($target) {
                         return [
-                            'id' => $t->id,
-                            'deskripsi' => $t->deskripsi,
-                            'satuan' => $t->satuan,
-                            'jenis_target' => $t->jenis_target,
+                            'id'           => $target->id,
+                            'deskripsi'    => $target->deskripsi,
+                            'nilai_target' => $target->nilai_target,
+                            'satuan'       => $target->satuan,
                         ];
-                    })->values(),
-                    'jumlah_atlet' => $rencana->atlets()->count(),
-                    'jumlah_pelatih' => $rencana->pelatihs()->count(),
-                    'jumlah_tenaga_pendukung' => $rencana->tenagaPendukung()->count(),
-                    'total_peserta' => $rencana->atlets()->count() + $rencana->pelatihs()->count() + $rencana->tenagaPendukung()->count(),
+                    }),
+                    'jumlah_atlet'            => $rencana->atlets->count(),
+                    'jumlah_pelatih'          => $rencana->pelatihs->count(),
+                    'jumlah_tenaga_pendukung' => $rencana->tenagaPendukung->count(),
+                    'created_at'              => $rencana->created_at,
+                    'updated_at'              => $rencana->updated_at,
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil detail rencana latihan: ' . $e->getMessage(),
             ], 500);
         }
@@ -97,134 +103,16 @@ class RencanaLatihanController extends Controller
     public function participants(Request $request, int $rencanaId): JsonResponse
     {
         try {
-            $rencana = RencanaLatihan::with(['programLatihan'])->findOrFail($rencanaId);
-            $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
-
-            // ATLET - menggunakan Eloquent untuk akses accessor foto
-            $atletIds = DB::table('rencana_latihan_atlet')
-                ->where('rencana_latihan_id', $rencanaId)
-                ->pluck('atlet_id');
-
-            $atletQuery = Atlet::with(['media'])
-                ->whereIn('atlets.id', $atletIds)
-                ->leftJoin('cabor_kategori_atlet', function ($join) use ($caborKategoriId) {
-                    $join->on('atlets.id', '=', 'cabor_kategori_atlet.atlet_id')
-                        ->where('cabor_kategori_atlet.cabor_kategori_id', $caborKategoriId)
-                        ->whereNull('cabor_kategori_atlet.deleted_at');
-                })
-                ->leftJoin('mst_posisi_atlet', 'cabor_kategori_atlet.posisi_atlet_id', '=', 'mst_posisi_atlet.id')
-                ->leftJoin('rencana_latihan_atlet', function ($join) use ($rencanaId) {
-                    $join->on('atlets.id', '=', 'rencana_latihan_atlet.atlet_id')
-                        ->where('rencana_latihan_atlet.rencana_latihan_id', $rencanaId);
-                })
-                ->select(
-                    'atlets.*',
-                    DB::raw("COALESCE(mst_posisi_atlet.nama, '-') as posisi"),
-                    'rencana_latihan_atlet.kehadiran as kehadiran'
-                );
-
-            // PELATIH - menggunakan Eloquent untuk akses accessor foto
-            $pelatihIds = DB::table('rencana_latihan_pelatih')
-                ->where('rencana_latihan_id', $rencanaId)
-                ->pluck('pelatih_id');
-
-            $pelatihQuery = Pelatih::with(['media'])
-                ->whereIn('pelatihs.id', $pelatihIds)
-                ->leftJoin('cabor_kategori_pelatih', function ($join) use ($caborKategoriId) {
-                    $join->on('pelatihs.id', '=', 'cabor_kategori_pelatih.pelatih_id')
-                        ->where('cabor_kategori_pelatih.cabor_kategori_id', $caborKategoriId)
-                        ->whereNull('cabor_kategori_pelatih.deleted_at');
-                })
-                ->leftJoin('mst_jenis_pelatih', 'cabor_kategori_pelatih.jenis_pelatih_id', '=', 'mst_jenis_pelatih.id')
-                ->leftJoin('rencana_latihan_pelatih', function ($join) use ($rencanaId) {
-                    $join->on('pelatihs.id', '=', 'rencana_latihan_pelatih.pelatih_id')
-                        ->where('rencana_latihan_pelatih.rencana_latihan_id', $rencanaId);
-                })
-                ->select(
-                    'pelatihs.*',
-                    DB::raw("COALESCE(mst_jenis_pelatih.nama, '-') as jenis_pelatih"),
-                    'rencana_latihan_pelatih.kehadiran as kehadiran'
-                );
-
-            // TENAGA PENDUKUNG - menggunakan Eloquent untuk akses accessor foto
-            $tenagaIds = DB::table('rencana_latihan_tenaga_pendukung')
-                ->where('rencana_latihan_id', $rencanaId)
-                ->pluck('tenaga_pendukung_id');
-
-            $tenagaQuery = TenagaPendukung::with(['media'])
-                ->whereIn('tenaga_pendukungs.id', $tenagaIds)
-                ->leftJoin('cabor_kategori_tenaga_pendukung', function ($join) use ($caborKategoriId) {
-                    $join->on('tenaga_pendukungs.id', '=', 'cabor_kategori_tenaga_pendukung.tenaga_pendukung_id')
-                        ->where('cabor_kategori_tenaga_pendukung.cabor_kategori_id', $caborKategoriId)
-                        ->whereNull('cabor_kategori_tenaga_pendukung.deleted_at');
-                })
-                ->leftJoin('mst_jenis_tenaga_pendukung', 'cabor_kategori_tenaga_pendukung.jenis_tenaga_pendukung_id', '=', 'mst_jenis_tenaga_pendukung.id')
-                ->leftJoin('rencana_latihan_tenaga_pendukung', function ($join) use ($rencanaId) {
-                    $join->on('tenaga_pendukungs.id', '=', 'rencana_latihan_tenaga_pendukung.tenaga_pendukung_id')
-                        ->where('rencana_latihan_tenaga_pendukung.rencana_latihan_id', $rencanaId);
-                })
-                ->select(
-                    'tenaga_pendukungs.*',
-                    DB::raw("COALESCE(mst_jenis_tenaga_pendukung.nama, '-') as jenis_tenaga_pendukung"),
-                    'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran'
-                );
-
-            // Optional search by name
-            if ($request->filled('search')) {
-                $keyword = '%' . $request->search . '%';
-                $atletQuery->where('atlets.nama', 'like', $keyword);
-                $pelatihQuery->where('pelatihs.nama', 'like', $keyword);
-                $tenagaQuery->where('tenaga_pendukungs.nama', 'like', $keyword);
-            }
-
-            $atlet = $atletQuery->orderBy('atlets.nama')->get()->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $item->foto,
-                    'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
-                    'posisi' => $item->posisi,
-                    'kehadiran' => $item->kehadiran,
-                ];
-            });
-
-            $pelatih = $pelatihQuery->orderBy('pelatihs.nama')->get()->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $item->foto,
-                    'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
-                    'jenisPelatih' => $item->jenis_pelatih,
-                    'kehadiran' => $item->kehadiran,
-                ];
-            });
-
-            $tenaga = $tenagaQuery->orderBy('tenaga_pendukungs.nama')->get()->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $item->foto,
-                    'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
-                    'jenisTenagaPendukung' => $item->jenis_tenaga_pendukung,
-                    'kehadiran' => $item->kehadiran,
-                ];
-            });
+            $pesertaData = $this->repository->getPesertaForMobile($rencanaId, $request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data peserta berhasil diambil',
-                'data' => [
-                    'atlet' => $atlet->values(),
-                    'pelatih' => $pelatih->values(),
-                    'tenagaPendukung' => $tenaga->values(),
-                ],
+                'data'    => $pesertaData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data peserta: ' . $e->getMessage(),
             ], 500);
         }
@@ -235,19 +123,17 @@ class RencanaLatihanController extends Controller
      */
     private function getFullPhotoUrl($photoPath): ?string
     {
-        if (empty($photoPath)) {
+        if (!$photoPath) {
             return null;
         }
 
+        // Check if it's already a full URL
         if (filter_var($photoPath, FILTER_VALIDATE_URL)) {
             return $photoPath;
         }
 
-        if (str_starts_with($photoPath, '/')) {
-            return config('app.url') . $photoPath;
-        }
-
-        return config('app.url') . '/storage/' . $photoPath;
+        // Return full URL
+        return url('storage/' . $photoPath);
     }
 
     /**
@@ -255,8 +141,12 @@ class RencanaLatihanController extends Controller
      */
     private function mapJenisKelamin($jenisKelamin): string
     {
-        if ($jenisKelamin === 'L') return 'Laki-laki';
-        if ($jenisKelamin === 'P') return 'Perempuan';
+        if ($jenisKelamin === 'L') {
+            return 'Laki-laki';
+        }
+        if ($jenisKelamin === 'P') {
+            return 'Perempuan';
+        }
         return '-';
     }
 
@@ -265,11 +155,13 @@ class RencanaLatihanController extends Controller
      */
     private function calculateAge($tanggalLahir): int|string
     {
-        if (!$tanggalLahir) return '-';
-        
+        if (!$tanggalLahir) {
+            return '-';
+        }
+
         try {
-            $tanggalLahir = new Carbon($tanggalLahir);
-            $today = Carbon::today();
+            $tanggalLahir = new \Carbon\Carbon($tanggalLahir);
+            $today        = \Carbon\Carbon::today();
             return (int) $tanggalLahir->diffInYears($today);
         } catch (\Exception $e) {
             return '-';
@@ -277,7 +169,7 @@ class RencanaLatihanController extends Controller
     }
 
     /**
-     * Daftar target latihan berdasarkan rencana latihan (mobile)
+     * Get list of targets for rencana latihan
      */
     public function targets(Request $request, int $rencanaId): JsonResponse
     {
@@ -289,9 +181,9 @@ class RencanaLatihanController extends Controller
                 return $target->jenis_target === 'individu';
             })->map(function ($target) {
                 return [
-                    'id' => $target->id,
-                    'nama' => $target->deskripsi,
-                    'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
+                    'id'      => $target->id,
+                    'nama'    => $target->deskripsi,
+                    'target'  => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
                     'peserta' => ucfirst($target->peruntukan ?? 'Semua'),
                 ];
             })->values();
@@ -306,21 +198,21 @@ class RencanaLatihanController extends Controller
                     ->first();
 
                 return [
-                    'id' => $target->id,
-                    'nama' => $target->deskripsi,
+                    'id'     => $target->id,
+                    'nama'   => $target->deskripsi,
                     'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
-                    'nilai' => $pivotData->nilai ?? null,
-                    'trend' => $pivotData->trend ?? null,
+                    'nilai'  => $pivotData->nilai ?? null,
+                    'trend'  => $pivotData->trend ?? null,
                 ];
             })->values();
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data target latihan berhasil diambil',
-                'data' => [
+                'data'    => [
                     'rencana' => [
-                        'id' => $rencana->id,
-                        'materi' => $rencana->materi,
+                        'id'      => $rencana->id,
+                        'materi'  => $rencana->materi,
                         'tanggal' => $rencana->tanggal,
                     ],
                     'targetIndividu' => $targetIndividu,
@@ -329,24 +221,24 @@ class RencanaLatihanController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data target latihan: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Detail target individu dengan daftar peserta dan nilai mereka (mobile)
+     * Get detail target latihan
      */
     public function targetDetail(Request $request, int $rencanaId, int $targetId): JsonResponse
     {
         try {
             $rencana = RencanaLatihan::with(['programLatihan'])->findOrFail($rencanaId);
-            $target = $rencana->targetLatihan()->where('target_latihan.id', $targetId)->first();
+            $target  = $rencana->targetLatihan()->where('target_latihan.id', $targetId)->first();
 
             if (!$target) {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Target latihan tidak ditemukan',
                 ], 404);
             }
@@ -378,17 +270,17 @@ class RencanaLatihanController extends Controller
                     ->get();
 
                 foreach ($atletData as $atlet) {
-                    $atletModel = \App\Models\Atlet::find($atlet->id);
+                    $atletModel    = Atlet::find($atlet->id);
                     $pesertaData[] = [
-                        'id' => $atlet->id,
-                        'nama' => $atlet->nama,
-                        'foto' => $atletModel ? $atletModel->foto : null,
+                        'id'           => $atlet->id,
+                        'nama'         => $atlet->nama,
+                        'foto'         => $atletModel ? $atletModel->foto : null,
                         'jenisKelamin' => $this->mapJenisKelamin($atlet->jenis_kelamin),
-                        'usia' => $this->calculateAge($atlet->tanggal_lahir),
-                        'posisi' => $atlet->posisi,
-                        'nilai' => $atlet->nilai,
-                        'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
-                        'trend' => ucfirst($atlet->trend ?? 'stabil'),
+                        'usia'         => $this->calculateAge($atlet->tanggal_lahir),
+                        'posisi'       => $atlet->posisi,
+                        'nilai'        => $atlet->nilai,
+                        'target'       => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
+                        'trend'        => ucfirst($atlet->trend ?? 'stabil'),
                     ];
                 }
             }
@@ -417,17 +309,17 @@ class RencanaLatihanController extends Controller
                     ->get();
 
                 foreach ($pelatihData as $pelatih) {
-                    $pelatihModel = \App\Models\Pelatih::find($pelatih->id);
+                    $pelatihModel  = Pelatih::find($pelatih->id);
                     $pesertaData[] = [
-                        'id' => $pelatih->id,
-                        'nama' => $pelatih->nama,
-                        'foto' => $pelatihModel ? $pelatihModel->foto : null,
+                        'id'           => $pelatih->id,
+                        'nama'         => $pelatih->nama,
+                        'foto'         => $pelatihModel ? $pelatihModel->foto : null,
                         'jenisKelamin' => $this->mapJenisKelamin($pelatih->jenis_kelamin),
-                        'usia' => $this->calculateAge($pelatih->tanggal_lahir),
-                        'posisi' => $pelatih->posisi,
-                        'nilai' => $pelatih->nilai,
-                        'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
-                        'trend' => ucfirst($pelatih->trend ?? 'stabil'),
+                        'usia'         => $this->calculateAge($pelatih->tanggal_lahir),
+                        'posisi'       => $pelatih->posisi,
+                        'nilai'        => $pelatih->nilai,
+                        'target'       => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
+                        'trend'        => ucfirst($pelatih->trend ?? 'stabil'),
                     ];
                 }
             }
@@ -456,34 +348,34 @@ class RencanaLatihanController extends Controller
                     ->get();
 
                 foreach ($tenagaData as $tenaga) {
-                    $tenagaModel = \App\Models\TenagaPendukung::find($tenaga->id);
+                    $tenagaModel   = TenagaPendukung::find($tenaga->id);
                     $pesertaData[] = [
-                        'id' => $tenaga->id,
-                        'nama' => $tenaga->nama,
-                        'foto' => $tenagaModel ? $tenagaModel->foto : null,
+                        'id'           => $tenaga->id,
+                        'nama'         => $tenaga->nama,
+                        'foto'         => $tenagaModel ? $tenagaModel->foto : null,
                         'jenisKelamin' => $this->mapJenisKelamin($tenaga->jenis_kelamin),
-                        'usia' => $this->calculateAge($tenaga->tanggal_lahir),
-                        'posisi' => $tenaga->posisi,
-                        'nilai' => $tenaga->nilai,
-                        'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
-                        'trend' => ucfirst($tenaga->trend ?? 'stabil'),
+                        'usia'         => $this->calculateAge($tenaga->tanggal_lahir),
+                        'posisi'       => $tenaga->posisi,
+                        'nilai'        => $tenaga->nilai,
+                        'target'       => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
+                        'trend'        => ucfirst($tenaga->trend ?? 'stabil'),
                     ];
                 }
             }
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Detail target latihan berhasil diambil',
-                'data' => [
+                'data'    => [
                     'target' => [
-                        'id' => $target->id,
-                        'nama' => $target->deskripsi,
-                        'target' => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
+                        'id'      => $target->id,
+                        'nama'    => $target->deskripsi,
+                        'target'  => ($target->nilai_target ?? '') . ' ' . ($target->satuan ?? ''),
                         'peserta' => ucfirst($target->peruntukan ?? 'Semua'),
                     ],
                     'rencana' => [
-                        'id' => $rencana->id,
-                        'materi' => $rencana->materi,
+                        'id'      => $rencana->id,
+                        'materi'  => $rencana->materi,
                         'tanggal' => $rencana->tanggal,
                     ],
                     'pesertaTarget' => $pesertaData,
@@ -491,9 +383,127 @@ class RencanaLatihanController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil detail target latihan: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get target latihan list for specific participant (mobile)
+     */
+    public function participantTargets(Request $request, int $programId, int $rencanaId, int $pesertaId, string $pesertaType = 'atlet'): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            // Use URL parameter first, fallback to query parameter, then default to 'atlet'
+            $pesertaType = $pesertaType ?? $request->get('peserta_type', 'atlet');
+
+            // Get participant info - pesertaId is the pivot table ID for pelatih/tenaga, or actual ID for atlet
+            $pesertaInfo = $this->repository->getParticipantInfoFromPivot($pesertaId, $pesertaType, $programId, $rencanaId);
+
+            if (!$pesertaInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Peserta tidak ditemukan',
+                ], 404);
+            }
+
+            // Get target latihan for this participant
+            $targets = $this->repository->getParticipantTargets($programId, $pesertaInfo['actual_peserta_id'], $pesertaType);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data target latihan peserta berhasil diambil',
+                'data'    => [
+                    'pesertaInfo' => $pesertaInfo,
+                    'targets'     => $targets,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal mengambil target latihan peserta: ' . $e->getMessage(), [
+                'exception'  => $e,
+                'program_id' => $programId,
+                'rencana_id' => $rencanaId,
+                'peserta_id' => $pesertaId,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil target latihan peserta: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get target latihan chart data for specific participant (mobile)
+     */
+    public function participantTargetChart(Request $request, int $programId, int $rencanaId, int $pesertaId, int $targetId, string $pesertaType = 'atlet'): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            // Use URL parameter first, fallback to query parameter, then default to 'atlet'
+            $pesertaType = $pesertaType ?? $request->get('peserta_type', 'atlet');
+
+            // Get participant info - pesertaId is the pivot table ID for pelatih/tenaga, or actual ID for atlet
+            $pesertaInfo = $this->repository->getParticipantInfoFromPivot($pesertaId, $pesertaType, $programId, $rencanaId);
+
+            if (!$pesertaInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Peserta tidak ditemukan',
+                ], 404);
+            }
+
+            // Get target info
+            $targetInfo = $this->repository->getTargetInfo($targetId, $programId, $pesertaInfo['actual_peserta_id'], $pesertaType);
+
+            if (!$targetInfo) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Target latihan tidak ditemukan',
+                ], 404);
+            }
+
+            // Get chart data
+            $chartData = $this->repository->getParticipantTargetChartData($programId, $pesertaInfo['actual_peserta_id'], $pesertaType, $targetId);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data grafik target latihan peserta berhasil diambil',
+                'data'    => [
+                    'pesertaInfo' => $pesertaInfo,
+                    'targetInfo'  => $targetInfo,
+                    'chartData'   => $chartData['chartData'],
+                    'detailData'  => $chartData['detailData'],
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal mengambil grafik target latihan peserta: ' . $e->getMessage(), [
+                'exception'  => $e,
+                'program_id' => $programId,
+                'rencana_id' => $rencanaId,
+                'peserta_id' => $pesertaId,
+                'target_id'  => $targetId,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil grafik target latihan peserta: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Map trend status to Indonesian
+     */
+    private function mapTrendStatus($trend)
+    {
+        return match ($trend) {
+            'stabil' => 'Stabil',
+            'naik'   => 'Naik',
+            'turun'  => 'Turun',
+            default  => 'Stabil',
+        };
     }
 }

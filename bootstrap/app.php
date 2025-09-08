@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             InjectUserPermissions::class,
+            // EnsureFrontendRequestsAreStateful::class,
         ]);
 
         $middleware->api(append: [
@@ -33,11 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ApiResponseMiddleware::class,
         ]);
 
-        // Sanctum middleware untuk stateful API
+        // Sanctum middleware untuk stateful API (Remove)
         $middleware->statefulApi([
             EnsureFrontendRequestsAreStateful::class,
         ]);
-        
+
         // CSRF token validation exceptions
         $middleware->validateCsrfTokens(except: [
             'api/*',

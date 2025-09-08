@@ -61,23 +61,23 @@ class CaborRepository
                     ->where('cabor_id', $item->id)
                     ->distinct('atlet_id')
                     ->count('atlet_id');
-                
+
                 $jumlahPelatih = DB::table('cabor_kategori_pelatih')
                     ->where('cabor_id', $item->id)
                     ->distinct('pelatih_id')
                     ->count('pelatih_id');
-                
+
                 $jumlahTenagaPendukung = DB::table('cabor_kategori_tenaga_pendukung')
                     ->where('cabor_id', $item->id)
                     ->distinct('tenaga_pendukung_id')
                     ->count('tenaga_pendukung_id');
 
                 return [
-                    'id'        => $item->id,
-                    'nama'      => $item->nama,
-                    'deskripsi' => $item->deskripsi,
-                    'jumlah_atlet' => $jumlahAtlet,
-                    'jumlah_pelatih' => $jumlahPelatih,
+                    'id'                      => $item->id,
+                    'nama'                    => $item->nama,
+                    'deskripsi'               => $item->deskripsi,
+                    'jumlah_atlet'            => $jumlahAtlet,
+                    'jumlah_pelatih'          => $jumlahPelatih,
                     'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
                 ];
             });
@@ -103,23 +103,23 @@ class CaborRepository
                 ->where('cabor_id', $item->id)
                 ->distinct('atlet_id')
                 ->count('atlet_id');
-            
+
             $jumlahPelatih = DB::table('cabor_kategori_pelatih')
                 ->where('cabor_id', $item->id)
                 ->distinct('pelatih_id')
                 ->count('pelatih_id');
-            
+
             $jumlahTenagaPendukung = DB::table('cabor_kategori_tenaga_pendukung')
                 ->where('cabor_id', $item->id)
                 ->distinct('tenaga_pendukung_id')
                 ->count('tenaga_pendukung_id');
 
             return [
-                'id'        => $item->id,
-                'nama'      => $item->nama,
-                'deskripsi' => $item->deskripsi,
-                'jumlah_atlet' => $jumlahAtlet,
-                'jumlah_pelatih' => $jumlahPelatih,
+                'id'                      => $item->id,
+                'nama'                    => $item->nama,
+                'deskripsi'               => $item->deskripsi,
+                'jumlah_atlet'            => $jumlahAtlet,
+                'jumlah_pelatih'          => $jumlahPelatih,
                 'jumlah_tenaga_pendukung' => $jumlahTenagaPendukung,
             ];
         });
@@ -201,13 +201,13 @@ class CaborRepository
                         if ($item->tanggal_lahir) {
                             $usia = Carbon::parse($item->tanggal_lahir)->age;
                         }
-                        
+
                         return [
-                            'id' => $item->id,
-                            'nama' => $item->nama,
-                            'foto' => $item->foto,
+                            'id'            => $item->id,
+                            'nama'          => $item->nama,
+                            'foto'          => $item->foto,
                             'jenis_kelamin' => $item->jenis_kelamin,
-                            'usia' => $usia,
+                            'usia'          => $usia,
                         ];
                     });
 
@@ -224,13 +224,13 @@ class CaborRepository
                         if ($item->tanggal_lahir) {
                             $usia = Carbon::parse($item->tanggal_lahir)->age;
                         }
-                        
+
                         return [
-                            'id' => $item->id,
-                            'nama' => $item->nama,
-                            'foto' => $item->foto,
+                            'id'            => $item->id,
+                            'nama'          => $item->nama,
+                            'foto'          => $item->foto,
                             'jenis_kelamin' => $item->jenis_kelamin,
-                            'usia' => $usia,
+                            'usia'          => $usia,
                         ];
                     });
 
@@ -247,13 +247,13 @@ class CaborRepository
                         if ($item->tanggal_lahir) {
                             $usia = Carbon::parse($item->tanggal_lahir)->age;
                         }
-                        
+
                         return [
-                            'id' => $item->id,
-                            'nama' => $item->nama,
-                            'foto' => $item->foto,
+                            'id'            => $item->id,
+                            'nama'          => $item->nama,
+                            'foto'          => $item->foto,
                             'jenis_kelamin' => $item->jenis_kelamin,
-                            'usia' => $usia,
+                            'usia'          => $usia,
                         ];
                     });
 

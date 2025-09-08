@@ -47,7 +47,6 @@ const getJenisKelaminLabel = (jenisKelamin: string) => {
     }
 };
 
-
 const handleClose = () => {
     emit('close');
 };
@@ -55,11 +54,9 @@ const handleClose = () => {
 
 <template>
     <Dialog :open="show" @update:open="handleClose">
-        <DialogContent class="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent class="max-h-[80vh] max-w-4xl overflow-y-auto">
             <DialogHeader>
-                <DialogTitle class="text-xl font-semibold">
-                    Daftar {{ getTipeLabel(tipe) }}
-                </DialogTitle>
+                <DialogTitle class="text-xl font-semibold"> Daftar {{ getTipeLabel(tipe) }} </DialogTitle>
             </DialogHeader>
 
             <div class="mt-6">
@@ -80,7 +77,7 @@ const handleClose = () => {
                         </tr>
                         <tr v-for="(peserta, idx) in data" :key="peserta.id" class="hover:bg-muted/50">
                             <td class="border px-2 py-2 text-center">{{ idx + 1 }}</td>
-                            <td class="border px-3 py-2 flex items-center space-x-3">
+                            <td class="flex items-center space-x-3 border px-3 py-2">
                                 <span class="truncate" :title="peserta.nama">{{ peserta.nama }}</span>
                             </td>
                             <td class="border px-3 py-2 text-center">
@@ -95,11 +92,8 @@ const handleClose = () => {
             </div>
 
             <div class="mt-6 flex justify-end">
-                <Button variant="outline" @click="handleClose">
-                    Tutup
-                </Button>
+                <Button variant="outline" @click="handleClose"> Tutup </Button>
             </div>
         </DialogContent>
     </Dialog>
 </template>
-

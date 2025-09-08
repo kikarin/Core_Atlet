@@ -19,8 +19,10 @@ const breadcrumbs = [
 ];
 
 const fields = computed(() => [
-    { label: 'Nama Parameter', value: props.item?.nama_parameter || '-' },
-    { label: 'Satuan', value: props.item?.satuan || '-' },
+    {
+        label: 'Parameter',
+        value: props.item?.mst_parameter ? `${props.item.mst_parameter.nama} (${props.item.mst_parameter.satuan})` : '-',
+    },
     { label: 'Pemeriksaan', value: props.item?.pemeriksaan?.nama_pemeriksaan || '-' },
 ]);
 

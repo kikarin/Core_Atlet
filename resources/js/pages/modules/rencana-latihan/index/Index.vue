@@ -36,7 +36,7 @@ const columns = computed(() => {
             key: 'keterangan',
             label: 'Keterangan',
             format: (row: any) => row.keterangan || '-',
-            orderable: false
+            orderable: false,
         },
         {
             key: 'foto',
@@ -55,7 +55,7 @@ const columns = computed(() => {
             key: 'jenis_kelamin',
             label: 'Jenis Kelamin',
             format: (row: any) => (row.jenis_kelamin === 'L' ? 'Laki-laki' : row.jenis_kelamin === 'P' ? 'Perempuan' : '-'),
-            orderable: false
+            orderable: false,
         },
         { key: 'tempat_lahir', label: 'Tempat Lahir', orderable: false },
         {
@@ -95,7 +95,12 @@ const columns = computed(() => {
     } else if (jenisPeserta === 'tenaga-pendukung') {
         return [
             { key: 'nama', label: 'Nama', orderable: false },
-            { key: 'jenis_tenaga_pendukung_nama', label: 'Jenis Tenaga Pendukung', format: (row: any) => row.jenis_tenaga_pendukung_nama || '-', orderable: false },
+            {
+                key: 'jenis_tenaga_pendukung_nama',
+                label: 'Jenis Tenaga Pendukung',
+                format: (row: any) => row.jenis_tenaga_pendukung_nama || '-',
+                orderable: false,
+            },
             ...baseColumns.slice(1), // Skip nama karena sudah ada di atas
         ];
     }

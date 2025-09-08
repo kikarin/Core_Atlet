@@ -118,7 +118,12 @@ const handleDelete = (id: string | number) => {
 
             <!-- Search (selalu tampil di kanan) -->
             <div v-if="!props.hideSearch" class="mr-2 w-full sm:w-64">
-                <Input :model-value="props.search" @update:model-value="(val: string) => emit('update:search', val)" placeholder="Search..." class="w-full" />
+                <Input
+                    :model-value="props.search"
+                    @update:model-value="(val: string) => emit('update:search', val)"
+                    placeholder="Search..."
+                    class="w-full"
+                />
             </div>
         </div>
         <!-- Table -->

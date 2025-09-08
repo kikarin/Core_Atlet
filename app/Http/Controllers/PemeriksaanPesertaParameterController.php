@@ -76,7 +76,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
             'item'        => null,
             'pemeriksaan' => $pemeriksaan,
             'peserta'     => $peserta,
-            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
+            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->with('mstParameter')->get(),
         ];
         $data = $this->repository->customCreateEdit($data);
 
@@ -115,7 +115,7 @@ class PemeriksaanPesertaParameterController extends Controller implements HasMid
             'item'        => $item,
             'pemeriksaan' => $pemeriksaan,
             'peserta'     => $peserta,
-            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->get(),
+            'parameters'  => PemeriksaanParameter::where('pemeriksaan_id', $pemeriksaan->id)->with('mstParameter')->get(),
         ];
         $data = $this->repository->customCreateEdit($data, $item);
 

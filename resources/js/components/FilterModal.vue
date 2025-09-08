@@ -4,9 +4,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ref, watch, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { CalendarIcon } from 'lucide-vue-next';
+import { computed, onMounted, ref, watch } from 'vue';
 
 interface FilterData {
     filter_start_date?: string;
@@ -61,57 +61,63 @@ onMounted(async () => {
 });
 
 // Watch cabor_id changes to load cabor_kategoris
-watch(() => filters.value.cabor_id, async (newCaborId) => {
-    if (newCaborId && newCaborId !== 'all') {
-        loadingCaborKategoris.value = true;
-        try {
-            const response = await axios.get(`/api/cabor-kategori-by-cabor/${newCaborId}`);
-            caborKategoris.value = response.data;
-        } catch (error) {
-            console.error('Gagal load cabor kategori:', error);
+watch(
+    () => filters.value.cabor_id,
+    async (newCaborId) => {
+        if (newCaborId && newCaborId !== 'all') {
+            loadingCaborKategoris.value = true;
+            try {
+                const response = await axios.get(`/api/cabor-kategori-by-cabor/${newCaborId}`);
+                caborKategoris.value = response.data;
+            } catch (error) {
+                console.error('Gagal load cabor kategori:', error);
+                caborKategoris.value = [];
+            } finally {
+                loadingCaborKategoris.value = false;
+            }
+        } else {
             caborKategoris.value = [];
-        } finally {
-            loadingCaborKategoris.value = false;
+            filters.value.cabor_kategori_id = 'all';
         }
-    } else {
-        caborKategoris.value = [];
-        filters.value.cabor_kategori_id = 'all';
-    }
-});
+    },
+);
 
 // Watch props.open to reset filters when modal opens
-watch(() => props.open, (newOpen) => {
-    if (newOpen) {
-        if (props.initialFilters) {
-            filters.value = { ...props.initialFilters };
-        } else {
-            // Set default values based on module type
-            filters.value = {
-                filter_start_date: '',
-                filter_end_date: '',
-                cabor_id: 'all',
-                cabor_kategori_id: 'all',
-                jenis_kelamin: 'all',
-                kategori_usia: 'all',
-                lama_bergabung: 'all',
-            };
+watch(
+    () => props.open,
+    (newOpen) => {
+        if (newOpen) {
+            if (props.initialFilters) {
+                filters.value = { ...props.initialFilters };
+            } else {
+                // Set default values based on module type
+                filters.value = {
+                    filter_start_date: '',
+                    filter_end_date: '',
+                    cabor_id: 'all',
+                    cabor_kategori_id: 'all',
+                    jenis_kelamin: 'all',
+                    kategori_usia: 'all',
+                    lama_bergabung: 'all',
+                };
+            }
         }
-    }
-});
+    },
+);
 
 const handleFilter = () => {
     // Clean up empty values before emitting
     const cleanFilters: FilterData = {};
-    Object.keys(filters.value).forEach(key => {
+    Object.keys(filters.value).forEach((key) => {
         if (filters.value[key] && filters.value[key] !== 'all') {
             cleanFilters[key] = filters.value[key];
         }
     });
-    
+
     // Debug logging untuk filter status
     console.log('Filter values before cleaning:', filters.value);
     console.log('Clean filters to be sent:', cleanFilters);
-    
+
     emit('filter', cleanFilters);
     emit('update:open', false);
 };
@@ -223,9 +229,7 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
         <DialogContent class="sm:max-w-[600px]">
             <DialogHeader>
                 <DialogTitle>{{ getTitle() }}</DialogTitle>
-                <DialogDescription>
-                    Pilih filter untuk mempersempit hasil pencarian
-                </DialogDescription>
+                <DialogDescription> Pilih filter untuk mempersempit hasil pencarian </DialogDescription>
             </DialogHeader>
 
             <div class="grid gap-4 py-4">
@@ -280,11 +284,7 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Jenis Kelamin</SelectItem>
-                                <SelectItem
-                                    v-for="option in getJenisKelaminOptions()"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
+                                <SelectItem v-for="option in getJenisKelaminOptions()" :key="option.value" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>
@@ -300,11 +300,7 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Kategori Usia</SelectItem>
-                                <SelectItem
-                                    v-for="option in getKategoriUsiaOptions()"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
+                                <SelectItem v-for="option in getKategoriUsiaOptions()" :key="option.value" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>
@@ -320,11 +316,7 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua Lama Bergabung</SelectItem>
-                                <SelectItem
-                                    v-for="option in getLamaBergabungOptions()"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
+                                <SelectItem v-for="option in getLamaBergabungOptions()" :key="option.value" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>
@@ -355,11 +347,7 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                                 </div>
                                 <!-- Filtered options -->
                                 <SelectItem value="all">Semua Cabor</SelectItem>
-                                <SelectItem
-                                    v-for="cabor in getFilteredOptions(cabors, 'cabor_id')"
-                                    :key="cabor.id"
-                                    :value="cabor.id.toString()"
-                                >
+                                <SelectItem v-for="cabor in getFilteredOptions(cabors, 'cabor_id')" :key="cabor.id" :value="cabor.id.toString()">
                                     {{ cabor.nama }}
                                 </SelectItem>
                             </SelectContent>
@@ -369,7 +357,10 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                     <!-- Filter Cabor Kategori (hanya untuk program-latihan dan pemeriksaan) -->
                     <div v-if="props.moduleType !== 'cabor-kategori'" class="space-y-2">
                         <Label for="cabor_kategori_id">Kategori</Label>
-                        <Select v-model="filters.cabor_kategori_id" :disabled="!filters.cabor_id || filters.cabor_id === 'all' || loadingCaborKategoris">
+                        <Select
+                            v-model="filters.cabor_kategori_id"
+                            :disabled="!filters.cabor_id || filters.cabor_id === 'all' || loadingCaborKategoris"
+                        >
                             <SelectTrigger class="w-full">
                                 <SelectValue :placeholder="loadingCaborKategoris ? 'Loading...' : 'Pilih Kategori'" />
                             </SelectTrigger>
@@ -401,7 +392,10 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                     <!-- Filter khusus untuk cabor-kategori -->
                     <div v-if="props.moduleType === 'cabor-kategori'" class="space-y-2">
                         <Label for="cabor_kategori_id">Nama Kategori</Label>
-                        <Select v-model="filters.cabor_kategori_id" :disabled="!filters.cabor_id || filters.cabor_id === 'all' || loadingCaborKategoris">
+                        <Select
+                            v-model="filters.cabor_kategori_id"
+                            :disabled="!filters.cabor_id || filters.cabor_id === 'all' || loadingCaborKategoris"
+                        >
                             <SelectTrigger class="w-full">
                                 <SelectValue :placeholder="loadingCaborKategoris ? 'Loading...' : 'Pilih Kategori'" />
                             </SelectTrigger>
@@ -433,12 +427,8 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
             </div>
 
             <DialogFooter>
-                <Button variant="outline" @click="resetFilters">
-                    Reset
-                </Button>
-                <Button @click="handleFilter">
-                    Terapkan Filter
-                </Button>
+                <Button variant="outline" @click="resetFilters"> Reset </Button>
+                <Button @click="handleFilter"> Terapkan Filter </Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

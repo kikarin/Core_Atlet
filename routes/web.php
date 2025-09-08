@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AllParameterController;
 use App\Http\Controllers\AtletController;
 use App\Http\Controllers\AtletDokumenController;
 use App\Http\Controllers\AtletKesehatanController;
@@ -48,6 +49,7 @@ use App\Http\Controllers\TenagaPendukungSertifikatController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UsersMenuController;
 use App\Http\Controllers\MstJenisUnitPendukungController;
+use App\Http\Controllers\MstParameterController;
 use App\Http\Controllers\UnitPendukungController;
 use App\Http\Controllers\TurnamenController;
 use App\Models\Cabor;
@@ -85,6 +87,7 @@ Route::get('/api/jenis-pelatih', [MstJenisPelatihController::class, 'apiIndex'])
 Route::get('/api/jenis-tenaga-pendukung', [MstJenisTenagaPendukungController::class, 'apiIndex']);
 Route::get('/api/jenis-unit-pendukung', [MstJenisUnitPendukungController::class, 'apiIndex']);
 Route::get('/api/juara', [MstJuaraController::class, 'apiIndex']);
+Route::get('/api/parameter', [MstParameterController::class, 'apiIndex']);
 
 // select
 Route::get('/api/tingkat-list', function () {
@@ -113,6 +116,9 @@ Route::get('/api/jenis-unit-pendukung-list', function () {
 });
 Route::get('/api/juara-list', function () {
     return MstJuara::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/parameter-list', function () {
+    return MstParameter::select('id', 'nama')->orderBy('nama')->get();
 });
 
 // =====================
@@ -162,7 +168,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ATLET
     Route::get('/atlet/karakteristik', [AtletController::class, 'karakteristik'])->name('atlet.karakteristik');
     Route::post('/atlet/api-karakteristik', [AtletController::class, 'apiKarakteristik'])->name('atlet.api-karakteristik');
-    
+
     Route::resource('/atlet', AtletController::class)->names('atlet');
     Route::get('/api/atlet', [AtletController::class, 'apiIndex']);
     Route::post('/atlet/destroy-selected', [AtletController::class, 'destroy_selected'])->name('atlet.destroy_selected');
@@ -213,7 +219,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // PELATIH
     Route::get('/pelatih/karakteristik', [PelatihController::class, 'karakteristik'])->name('pelatih.karakteristik');
     Route::post('/pelatih/api-karakteristik', [PelatihController::class, 'apiKarakteristik'])->name('pelatih.api-karakteristik');
-    
+
     Route::resource('/pelatih', PelatihController::class)->names('pelatih');
     Route::get('/api/pelatih', [PelatihController::class, 'apiIndex']);
     Route::post('/pelatih/destroy-selected', [PelatihController::class, 'destroy_selected'])->name('pelatih.destroy_selected');
@@ -259,7 +265,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // TENAGA PENDUKUNG
     Route::get('/tenaga-pendukung/karakteristik', [TenagaPendukungController::class, 'karakteristik'])->name('tenaga-pendukung.karakteristik');
     Route::post('/tenaga-pendukung/api-karakteristik', [TenagaPendukungController::class, 'apiKarakteristik'])->name('tenaga-pendukung.api-karakteristik');
-    
+
     Route::resource('/tenaga-pendukung', TenagaPendukungController::class)->names('tenaga-pendukung');
     Route::get('/api/tenaga-pendukung', [TenagaPendukungController::class, 'apiIndex']);
     Route::post('/tenaga-pendukung/destroy-selected', [TenagaPendukungController::class, 'destroy_selected'])->name('tenaga-pendukung.destroy_selected');
@@ -405,6 +411,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [TargetLatihanController::class, 'nestedStore'])->name('program-latihan.target-latihan.store');
         Route::get('/{target_id}', [TargetLatihanController::class, 'nestedShow'])->name('program-latihan.target-latihan.show');
         Route::get('/{target_id}/edit', [TargetLatihanController::class, 'nestedEdit'])->name('program-latihan.target-latihan.edit');
+        Route::get('/{target_id}/statistik', [TargetLatihanController::class, 'nestedStatistik'])->name('program-latihan.target-latihan.statistik');
+        Route::get('/{target_id}/chart', [TargetLatihanController::class, 'nestedChart'])->name('program-latihan.target-latihan.chart');
         Route::put('/{target_id}', [TargetLatihanController::class, 'nestedUpdate'])->name('program-latihan.target-latihan.update');
         Route::delete('/{target_id}', [TargetLatihanController::class, 'nestedDestroy'])->name('program-latihan.target-latihan.destroy');
         Route::post('/destroy-selected', [TargetLatihanController::class, 'nestedDestroySelected'])->name('program-latihan.target-latihan.destroy-selected');
@@ -416,10 +424,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/target-latihan', TargetLatihanController::class)->names('target-latihan');
-    Route::get('/api/target-latihan', [TargetLatihanController::class, 'apiIndex']);
     Route::post('/target-latihan/destroy-selected', [TargetLatihanController::class, 'destroy_selected'])->name('target-latihan.destroy_selected');
     // Route index by program & jenis target (opsional, bisa pakai query param di index)
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/api/target-latihan', [TargetLatihanController::class, 'apiIndex']);
+    Route::get('/api/target-latihan/statistik', [TargetLatihanController::class, 'apiStatistik'])->name('api.target-latihan.statistik');
+    Route::get('/api/target-latihan/{id}', [TargetLatihanController::class, 'apiShow']);
+});
+
 
 // =====================
 // RENCANA LATIHAN (NESTED MODULAR)
@@ -487,6 +501,9 @@ Route::prefix('data-master')->group(function () {
     // Master Juara
     Route::resource('/juara', MstJuaraController::class)->names('juara');
     Route::post('/juara/destroy-selected', [MstJuaraController::class, 'destroy_selected'])->name('juara.destroy_selected');
+    // Master Parameter
+    Route::resource('/parameter', MstParameterController::class)->names('parameter');
+    Route::post('/parameter/destroy-selected', [MstParameterController::class, 'destroy_selected'])->name('parameter.destroy_selected');
 
 });
 
@@ -508,6 +525,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('pemeriksaan-parameter/{id}', [PemeriksaanParameterController::class, 'update'])->name('pemeriksaan.parameter.update');
         Route::delete('pemeriksaan-parameter/{id}', [PemeriksaanParameterController::class, 'destroy'])->name('pemeriksaan.parameter.destroy');
         Route::post('pemeriksaan-parameter/destroy-selected', [PemeriksaanParameterController::class, 'destroy_selected'])->name('pemeriksaan.parameter.destroy_selected');
+    });
+
+    // All Parameter Routes
+    Route::prefix('pemeriksaan-parameter')->group(function () {
+        Route::get('AllParameter', [AllParameterController::class, 'index'])->name('all.parameter.index');
+        Route::get('AllParameter/{parameter_id}/statistik', [AllParameterController::class, 'show'])->name('all.parameter.statistik');
+        Route::get('AllParameter/{parameter_id}/chart', [AllParameterController::class, 'chart'])->name('all.parameter.chart');
     });
 
     // Nested Pemeriksaan Peserta - Web Routes
@@ -539,8 +563,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate'])->name('pemeriksaan.peserta.parameter.bulk-update');
 });
 
-// API nested
-Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
+Route::middleware(['auth', 'verified'])->group(function () {
+    // API nested
+    Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
+    // API untuk All Parameter
+    Route::get('/api/pemeriksaan-parameter/AllParameter', [AllParameterController::class, 'apiIndex']);
+    Route::get('/api/pemeriksaan-parameter/AllParameter/{parameter_id}/statistik', [AllParameterController::class, 'apiStatistik']);
+});
 
 // API untuk pemeriksaan peserta parameter
 Route::get('/api/pemeriksaan/{pemeriksaan}/peserta/{peserta}/parameter', [PemeriksaanPesertaParameterController::class, 'apiIndex']);

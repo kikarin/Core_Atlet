@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import FilterModal from '@/components/FilterModal.vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
-import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Cabor Kategori', href: '/cabor-kategori' }];
 

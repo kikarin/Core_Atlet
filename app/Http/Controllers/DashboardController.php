@@ -172,7 +172,7 @@ class DashboardController extends Controller implements HasMiddleware
                     'jumlah_parameter'      => $item->pemeriksaanParameter()->count(),
                     'jumlah_peserta'        => $item->pemeriksaanPeserta()->count(),
                     'cabor_nama'            => $item->cabor?->nama ?? '-',
-                    'parameter_list'        => $item->pemeriksaanParameter()->limit(3)->pluck('nama_parameter')->toArray(),
+                    'parameter_list'        => $item->pemeriksaanParameter()->with('mstParameter')->limit(3)->get()->pluck('mstParameter.nama')->toArray(),
                     'peserta_list'          => $item->pemeriksaanPeserta()->with('peserta')->limit(3)->get()->map(function ($peserta) {
                         // Cek field nama di model morph (Atlet, Pelatih, TenagaPendukung)
                         return $peserta->peserta?->nama ?? '-';
@@ -313,7 +313,7 @@ class DashboardController extends Controller implements HasMiddleware
 
         if (empty($minValues) || empty($maxValues)) {
             return [
-                'years' => [],
+                'years'  => [],
                 'series' => [
                     ['name' => 'Atlet', 'data' => []],
                     ['name' => 'Pelatih', 'data' => []],

@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import FilterModal from '@/components/FilterModal.vue';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
-import FilterModal from '@/components/FilterModal.vue';
 
 const { toast } = useToast();
 const breadcrumbs = [{ title: 'Pemeriksaan', href: '/pemeriksaan' }];
@@ -42,17 +42,17 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/pemeriksaan/${row.id}`),
-        permission: 'Pemeriksaan Detail'
+        permission: 'Pemeriksaan Detail',
     },
     {
         label: 'Edit',
         onClick: () => router.visit(`/pemeriksaan/${row.id}/edit`),
-        permission: 'Pemeriksaan Edit'
+        permission: 'Pemeriksaan Edit',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
-        permission: 'Pemeriksaan Delete'
+        permission: 'Pemeriksaan Delete',
     },
 ];
 
@@ -100,6 +100,8 @@ const handleFilter = (filters: any) => {
         :showImport="false"
         :showDelete="false"
         :showFilter="true"
+        :showStatistik="true"
+        statistik-url="/pemeriksaan-parameter/AllParameter"
         @filter="bukaFilterModal"
     >
         <template #cell-parameter="{ row }">

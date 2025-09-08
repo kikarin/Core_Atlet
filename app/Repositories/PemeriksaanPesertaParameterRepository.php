@@ -18,7 +18,7 @@ class PemeriksaanPesertaParameterRepository
         $this->with  = [
             'pemeriksaan',
             'pemeriksaanPeserta.peserta',
-            'pemeriksaanParameter',
+            'pemeriksaanParameter.mstParameter',
             'created_by_user',
             'updated_by_user',
         ];
@@ -40,8 +40,8 @@ class PemeriksaanPesertaParameterRepository
         // Handle search kolom relasi
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->whereHas('pemeriksaanParameter', function ($q2) use ($search) {
-                    $q2->where('nama_parameter', 'like', "%$search%");
+                $q->whereHas('pemeriksaanParameter.mstParameter', function ($q2) use ($search) {
+                    $q2->where('nama', 'like', "%$search%");
                 });
                 $q->orWhereHas('pemeriksaanPeserta.peserta', function ($q2) use ($search) {
                     $q2->where('nama', 'like', "%$search%");
@@ -52,7 +52,8 @@ class PemeriksaanPesertaParameterRepository
         // Handle sort kolom relasi dan kolom utama
         if ($sortField === 'parameter') {
             $query->leftJoin('pemeriksaan_parameter', 'pemeriksaan_peserta_parameter.pemeriksaan_parameter_id', '=', 'pemeriksaan_parameter.id')
-                ->orderBy('pemeriksaan_parameter.nama_parameter', $order)
+                ->leftJoin('mst_parameter', 'pemeriksaan_parameter.mst_parameter_id', '=', 'mst_parameter.id')
+                ->orderBy('mst_parameter.nama', $order)
                 ->select('pemeriksaan_peserta_parameter.*');
         } elseif (in_array($sortField, ['nilai', 'trend'])) {
             $query->orderBy('pemeriksaan_peserta_parameter.'.$sortField, $order);
@@ -72,7 +73,7 @@ class PemeriksaanPesertaParameterRepository
                     'pemeriksaan_id'           => $item->pemeriksaan_id,
                     'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
                     'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                    'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                    'parameter'                => $item->pemeriksaanParameter?->mstParameter?->nama ?? '-',
                     'nilai'                    => $item->nilai,
                     'trend'                    => $item->trend,
                     'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
@@ -102,7 +103,7 @@ class PemeriksaanPesertaParameterRepository
                 'pemeriksaan_id'           => $item->pemeriksaan_id,
                 'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
                 'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-                'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+                'parameter'                => $item->pemeriksaanParameter?->mstParameter?->nama ?? '-',
                 'nilai'                    => $item->nilai,
                 'trend'                    => $item->trend,
                 'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',
@@ -166,7 +167,7 @@ class PemeriksaanPesertaParameterRepository
             'pemeriksaan_id'           => $item->pemeriksaan_id,
             'pemeriksaan_peserta_id'   => $item->pemeriksaan_peserta_id,
             'pemeriksaan_parameter_id' => $item->pemeriksaan_parameter_id,
-            'parameter'                => $item->pemeriksaanParameter?->nama_parameter ?? '-',
+            'parameter'                => $item->pemeriksaanParameter?->mstParameter?->nama ?? '-',
             'nilai'                    => $item->nilai,
             'trend'                    => $item->trend,
             'peserta'                  => $item->pemeriksaanPeserta?->peserta?->nama ?? '-',

@@ -20,12 +20,12 @@ class SettingsController extends Controller
     public function updateProfile(UpdateProfileRequest $request)
     {
         $user = $request->user();
-        
+
         try {
             $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'no_hp' => $request->no_hp,
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'no_hp'         => $request->no_hp,
                 'tanggal_lahir' => $request->tanggal_lahir,
             ]);
 
@@ -33,15 +33,15 @@ class SettingsController extends Controller
             activity()->event('Update Profile')->performedOn($user)->log('Settings');
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Profile berhasil diperbarui',
-                'data' => [
+                'data'    => [
                     'user' => new UserResource($user->load(['role', 'users_role.role'])),
                 ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal memperbarui profile: ' . $e->getMessage(),
             ], 500);
         }
@@ -77,12 +77,12 @@ class SettingsController extends Controller
             activity()->event('Change Password')->performedOn($user)->log('Settings');
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Password berhasil diubah',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengubah password: ' . $e->getMessage(),
             ], 500);
         }
@@ -98,18 +98,18 @@ class SettingsController extends Controller
 
             if ($status === Password::RESET_LINK_SENT) {
                 return response()->json([
-                    'status' => 'success',
+                    'status'  => 'success',
                     'message' => 'Link reset password telah dikirim ke email Anda',
                 ]);
             } else {
                 return response()->json([
-                    'status' => 'error',
+                    'status'  => 'error',
                     'message' => 'Gagal mengirim link reset password',
                 ], 400);
             }
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengirim link reset password: ' . $e->getMessage(),
             ], 500);
         }
@@ -144,12 +144,12 @@ class SettingsController extends Controller
             $user->delete();
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Akun berhasil dihapus',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal menghapus akun: ' . $e->getMessage(),
             ], 500);
         }
@@ -164,7 +164,7 @@ class SettingsController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data'   => [
                 'user' => new UserResource($user),
             ],
         ]);

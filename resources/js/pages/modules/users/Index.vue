@@ -61,24 +61,24 @@ const actions = (row: any) => {
         {
             label: 'Detail',
             onClick: () => router.visit(`/users/${row.id}`),
-            permission: 'Users Detail'
+            permission: 'Users Detail',
         },
         {
             label: 'Edit',
             onClick: () => router.visit(`/users/${row.id}/edit`),
-            permission: 'Users Edit'
+            permission: 'Users Edit',
         },
         {
             label: 'Delete',
             onClick: () => pageIndex.value.handleDeleteRow(row),
-            permission: 'Users Delete'
+            permission: 'Users Delete',
         },
     ];
     if (row.id !== currentUserId.value) {
         baseActions.push({
             label: 'Login As',
             onClick: () => router.visit(`/users/${row.id}/login-as`),
-            permission: 'Users Show'
+            permission: 'Users Show',
         });
     }
     return baseActions;

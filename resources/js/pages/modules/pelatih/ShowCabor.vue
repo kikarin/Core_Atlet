@@ -36,7 +36,6 @@ const props = defineProps<{
     onDeleteSelectedCabor?: (ids: number[]) => void;
 }>();
 
-
 const selected = ref<number[]>(props.selectedIds ? [...props.selectedIds] : []);
 
 watch(
@@ -49,20 +48,20 @@ watch(
 );
 
 const columns = [
-    { 
-        key: 'cabor.nama', 
+    {
+        key: 'cabor.nama',
         label: 'Cabor',
-        format: (row: CaborData) => row.cabor?.nama || '-'
+        format: (row: CaborData) => row.cabor?.nama || '-',
     },
-    { 
-        key: 'cabor_kategori.nama', 
+    {
+        key: 'cabor_kategori.nama',
         label: 'Kategori',
-        format: (row: CaborData) => row.cabor_kategori?.nama || '-'
+        format: (row: CaborData) => row.cabor_kategori?.nama || '-',
     },
-    { 
-        key: 'jenis_pelatih.nama', 
+    {
+        key: 'jenis_pelatih.nama',
         label: 'Jenis Pelatih',
-        format: (row: CaborData) => row.jenis_pelatih?.nama || '-'
+        format: (row: CaborData) => row.jenis_pelatih?.nama || '-',
     },
     {
         key: 'is_active',

@@ -22,8 +22,7 @@ class PemeriksaanParameter extends Model
 
     protected $fillable = [
         'pemeriksaan_id',
-        'nama_parameter',
-        'satuan',
+        'mst_parameter_id',
         'created_by',
         'updated_by',
     ];
@@ -31,6 +30,11 @@ class PemeriksaanParameter extends Model
     public function pemeriksaan()
     {
         return $this->belongsTo(Pemeriksaan::class, 'pemeriksaan_id');
+    }
+
+    public function mstParameter()
+    {
+        return $this->belongsTo(MstParameter::class, 'mst_parameter_id');
     }
 
     public function created_by_user()

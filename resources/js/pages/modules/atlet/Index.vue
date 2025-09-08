@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FilterModal from '@/components/FilterModal.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast/useToast';
@@ -6,7 +7,6 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import FilterModal from '@/components/FilterModal.vue';
 
 const breadcrumbs = [{ title: 'Atlet', href: '/atlet' }];
 const calculateAge = (birthDate: string | null | undefined): number | string => {
@@ -118,22 +118,22 @@ const actions = (row: any) => [
     {
         label: 'Detail',
         onClick: () => router.visit(`/atlet/${row.id}`),
-        permission: 'Atlet Detail'
+        permission: 'Atlet Detail',
     },
     {
         label: 'Lihat',
         onClick: () => router.visit(`/atlet/${row.id}/edit`),
-        permission: 'Atlet Edit'
+        permission: 'Atlet Edit',
     },
     {
         label: 'Riwayat Pemeriksaan',
         onClick: () => router.visit(`/atlet/${row.id}/riwayat-pemeriksaan`),
-        permission: 'Atlet Detail'
+        permission: 'Atlet Detail',
     },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),
-        permission: 'Atlet Delete'
+        permission: 'Atlet Delete',
     },
 ];
 

@@ -32,14 +32,14 @@ class PermissionService {
         if (!Array.isArray(permissionNames)) {
             permissionNames = [permissionNames];
         }
-        return permissionNames.some(permission => this.hasPermission(permission));
+        return permissionNames.some((permission) => this.hasPermission(permission));
     }
 
     hasAllPermissions(permissionNames) {
         if (!Array.isArray(permissionNames)) {
             permissionNames = [permissionNames];
         }
-        return permissionNames.every(permission => this.hasPermission(permission));
+        return permissionNames.every((permission) => this.hasPermission(permission));
     }
 
     canCreate(moduleName) {

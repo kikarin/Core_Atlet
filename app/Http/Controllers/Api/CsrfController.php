@@ -15,7 +15,7 @@ class CsrfController extends Controller
     {
         // Sanctum akan otomatis menangani CSRF cookie
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'CSRF cookie set successfully',
         ], 204);
     }

@@ -32,8 +32,16 @@ const selected = ref<number[]>([]);
 const pageIndex = ref();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`), permission: 'Pemeriksaan Parameter Detail' },
-    { label: 'Edit', onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}/edit`), permission: 'Pemeriksaan Parameter Edit' },
+    {
+        label: 'Detail',
+        onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}`),
+        permission: 'Pemeriksaan Parameter Detail',
+    },
+    {
+        label: 'Edit',
+        onClick: () => router.visit(`/pemeriksaan/${pemeriksaanId.value}/pemeriksaan-parameter/${row.id}/edit`),
+        permission: 'Pemeriksaan Parameter Edit',
+    },
     { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row), permission: 'Pemeriksaan Parameter Delete' },
 ];
 
@@ -73,7 +81,7 @@ const deleteRow = async (row: any) => {
         :create-url="`/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter/create`"
         :actions="actions"
         :selected="selected"
-        @update:selected="(val) => (selected = val)"
+        @update:selected="(val: number[]) => (selected = val)"
         :on-delete-selected="deleteSelected"
         :api-endpoint="`/api/pemeriksaan/${pemeriksaanId}/pemeriksaan-parameter`"
         ref="pageIndex"

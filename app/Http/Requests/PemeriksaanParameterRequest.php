@@ -14,20 +14,18 @@ class PemeriksaanParameterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'pemeriksaan_id' => 'sometimes|exists:pemeriksaan,id',
-            'nama_parameter' => 'required|string|max:200',
-            'satuan'         => 'nullable|string|max:100',
+            'pemeriksaan_id'   => 'sometimes|exists:pemeriksaan,id',
+            'mst_parameter_id' => 'required|exists:mst_parameter,id',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'pemeriksaan_id.required' => 'Pemeriksaan wajib dipilih.',
-            'pemeriksaan_id.exists'   => 'Pemeriksaan tidak valid.',
-            'nama_parameter.required' => 'Nama parameter wajib diisi.',
-            'nama_parameter.max'      => 'Nama parameter maksimal 200 karakter.',
-            'satuan.max'              => 'Satuan maksimal 100 karakter.',
+            'pemeriksaan_id.required'   => 'Pemeriksaan wajib dipilih.',
+            'pemeriksaan_id.exists'     => 'Pemeriksaan tidak valid.',
+            'mst_parameter_id.required' => 'Parameter wajib dipilih.',
+            'mst_parameter_id.exists'   => 'Parameter tidak valid.',
         ];
     }
 }

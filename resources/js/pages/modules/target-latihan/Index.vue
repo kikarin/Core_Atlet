@@ -52,12 +52,22 @@ const pageIndex = ref();
 const { toast } = useToast();
 
 const actions = (row: any) => [
-    { label: 'Detail', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}`),
-        permission: 'Target Latihan Detail' },
-    { label: 'Edit', onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}/edit`),
-        permission: 'Target Latihan Edit' },
-    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row),
-        permission: 'Target Latihan Delete' },
+    {
+        label: 'Detail',
+        onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}`),
+        permission: 'Target Latihan Detail',
+    },
+    {
+        label: 'Edit',
+        onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}/edit`),
+        permission: 'Target Latihan Edit',
+    },
+    {
+        label: 'Statistik',
+        onClick: () => router.visit(`/program-latihan/${programId.value}/target-latihan/${jenisTarget.value}/${row.id}/statistik`),
+        permission: 'Target Latihan Detail',
+    },
+    { label: 'Delete', onClick: () => pageIndex.value.handleDeleteRow(row), permission: 'Target Latihan Delete' },
 ];
 
 const deleteSelected = async () => {

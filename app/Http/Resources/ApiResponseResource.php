@@ -15,11 +15,11 @@ class ApiResponseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'status' => 'success',
+            'status'  => 'success',
             'message' => $this->message ?? 'Success',
-            'data' => $this->data ?? $this->resource,
-            'meta' => $this->when($this->meta, $this->meta),
-            'errors' => $this->when($this->errors, $this->errors),
+            'data'    => $this->data    ?? $this->resource,
+            'meta'    => $this->when($this->meta, $this->meta),
+            'errors'  => $this->when($this->errors, $this->errors),
         ];
     }
 
@@ -29,10 +29,10 @@ class ApiResponseResource extends JsonResource
     public static function success($data = null, $message = 'Success', $meta = null)
     {
         return new static([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => $message,
-            'data' => $data,
-            'meta' => $meta,
+            'data'    => $data,
+            'meta'    => $meta,
         ]);
     }
 
@@ -42,9 +42,9 @@ class ApiResponseResource extends JsonResource
     public static function error($message = 'Error', $errors = null, $status = 400)
     {
         return new static([
-            'status' => 'error',
+            'status'  => 'error',
             'message' => $message,
-            'errors' => $errors,
+            'errors'  => $errors,
         ]);
     }
 }

@@ -400,12 +400,16 @@ const chartOptions = {
                                             </span>
                                         </TableCell>
                                         <TableCell class="text-center">
-                                            <span class="font-semibold text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100">
+                                            <span
+                                                class="font-semibold text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100"
+                                            >
                                                 {{ item.jumlah_pelatih }}
                                             </span>
                                         </TableCell>
                                         <TableCell class="text-center">
-                                            <span class="font-semibold text-yellow-400 hover:text-yellow-500 dark:text-yellow-300 dark:hover:text-yellow-100">
+                                            <span
+                                                class="font-semibold text-yellow-400 hover:text-yellow-500 dark:text-yellow-300 dark:hover:text-yellow-100"
+                                            >
                                                 {{ item.jumlah_tenaga_pendukung }}
                                             </span>
                                         </TableCell>

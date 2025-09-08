@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MstParameter;
 use App\Models\Pemeriksaan;
 use App\Models\PemeriksaanParameter;
 use Illuminate\Database\Seeder;
@@ -14,25 +15,20 @@ class PemeriksaanParameterSeeder extends Seeder
         if (! $pemeriksaan) {
             return;
         }
-        $data = [
-            [
-                'pemeriksaan_id' => $pemeriksaan->id,
-                'nama_parameter' => 'Tekanan Darah',
-                'satuan'         => 'mmHg',
-            ],
-            [
-                'pemeriksaan_id' => $pemeriksaan->id,
-                'nama_parameter' => 'Denyut Nadi',
-                'satuan'         => 'bpm',
-            ],
-            [
-                'pemeriksaan_id' => $pemeriksaan->id,
-                'nama_parameter' => 'Suhu Tubuh',
-                'satuan'         => '°C',
-            ],
-        ];
-        foreach ($data as $item) {
-            PemeriksaanParameter::create($item);
+
+        // Ambil semua master parameter yang tersedia
+        $mstParameters = MstParameter::all();
+
+        if ($mstParameters->isEmpty()) {
+            return;
+        }
+
+        // Buat pemeriksaan parameter untuk setiap master parameter
+        foreach ($mstParameters as $mstParameter) {
+            PemeriksaanParameter::create([
+                'pemeriksaan_id'   => $pemeriksaan->id,
+                'mst_parameter_id' => $mstParameter->id,
+            ]);
         }
     }
 }

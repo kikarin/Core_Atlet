@@ -10,8 +10,7 @@ return new class () extends Migration {
         Schema::create('pemeriksaan_parameter', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pemeriksaan_id');
-            $table->string('nama_parameter', 200);
-            $table->string('satuan', 100)->nullable();
+            $table->unsignedBigInteger('mst_parameter_id');
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();
@@ -19,6 +18,7 @@ return new class () extends Migration {
             $table->unsignedBigInteger('deleted_by')->nullable();
 
             $table->foreign('pemeriksaan_id')->references('id')->on('pemeriksaan')->onDelete('cascade');
+            $table->foreign('mst_parameter_id')->references('id')->on('mst_parameter')->onDelete('cascade');
         });
     }
 

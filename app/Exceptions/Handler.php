@@ -56,50 +56,50 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof ValidationException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Validation error',
-                'errors' => $exception->errors(),
+                'errors'  => $exception->errors(),
             ], 422);
         }
 
         if ($exception instanceof AuthenticationException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Unauthenticated',
             ], 401);
         }
 
         if ($exception instanceof AuthorizationException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Forbidden',
             ], 403);
         }
 
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Resource not found',
             ], 404);
         }
 
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Route not found',
             ], 404);
         }
 
         if ($exception instanceof MethodNotAllowedHttpException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Method not allowed',
             ], 405);
         }
 
         if ($exception instanceof HttpException) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => $exception->getMessage() ?: 'HTTP error',
             ], $exception->getStatusCode());
         }
@@ -107,16 +107,16 @@ class Handler extends ExceptionHandler
         // Handle other exceptions
         if (config('app.debug')) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTrace(),
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+                'trace'   => $exception->getTrace(),
             ], 500);
         }
 
         return response()->json([
-            'status' => 'error',
+            'status'  => 'error',
             'message' => 'Internal server error',
         ], 500);
     }

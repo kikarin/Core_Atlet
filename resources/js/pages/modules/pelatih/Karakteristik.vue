@@ -7,15 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/toast/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { Calendar } from 'lucide-vue-next';
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { Calendar } from 'lucide-vue-next';
+import { onMounted, ref } from 'vue';
 
 const { toast } = useToast();
 
 const breadcrumbs = [
     { title: 'Pelatih', href: '/pelatih' },
-    { title: 'Karakteristik', href: '/pelatih/karakteristik' }
+    { title: 'Karakteristik', href: '/pelatih/karakteristik' },
 ];
 
 const tanggalAwal = ref('');
@@ -61,86 +61,80 @@ onMounted(() => {
 
 <template>
     <Head title="Karakteristik Pelatih" />
-    
+
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-6 space-y-6">
+        <div class="space-y-6 p-6">
             <!-- Filter Section -->
             <Card>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
-                <!-- Bagian Title + Description -->
-                <div>
-                <CardTitle>Filter Data</CardTitle>
-                <CardDescription>
-                    Pilih rentang tanggal untuk menganalisis data karakteristik pelatih
-                </CardDescription>
-                </div>
-
-                <!-- Bagian Content Filter -->
-                <div class="flex flex-col sm:flex-row gap-4 items-end">
-                <div class="space-y-2">
-                    <Label for="tanggal_awal">Tanggal Awal</Label>
-                    <div class="relative">
-                    <Input
-                        id="tanggal_awal"
-                        v-model="tanggalAwal"
-                        type="date"
-                        class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
-                    />
-                    <div
-                        class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
-                        @click="() => triggerDatePicker('tanggal_awal')"
-                    >
-                        <Calendar class="h-4 w-4 text-muted-foreground" />
+                <div class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+                    <!-- Bagian Title + Description -->
+                    <div>
+                        <CardTitle>Filter Data</CardTitle>
+                        <CardDescription> Pilih rentang tanggal untuk menganalisis data karakteristik pelatih </CardDescription>
                     </div>
+
+                    <!-- Bagian Content Filter -->
+                    <div class="flex flex-col items-end gap-4 sm:flex-row">
+                        <div class="space-y-2">
+                            <Label for="tanggal_awal">Tanggal Awal</Label>
+                            <div class="relative">
+                                <Input
+                                    id="tanggal_awal"
+                                    v-model="tanggalAwal"
+                                    type="date"
+                                    class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
+                                />
+                                <div
+                                    class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
+                                    @click="() => triggerDatePicker('tanggal_awal')"
+                                >
+                                    <Calendar class="text-muted-foreground h-4 w-4" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-muted-foreground">s.d</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label for="tanggal_akhir">Tanggal Akhir</Label>
+                            <div class="relative">
+                                <Input
+                                    id="tanggal_akhir"
+                                    v-model="tanggalAkhir"
+                                    type="date"
+                                    class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
+                                />
+                                <div
+                                    class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
+                                    @click="() => triggerDatePicker('tanggal_akhir')"
+                                >
+                                    <Calendar class="text-muted-foreground h-4 w-4" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <Button @click="handleSearch" :disabled="loading">
+                            {{ loading ? 'Mencari...' : 'Cari' }}
+                        </Button>
                     </div>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <span class="text-muted-foreground">s.d</span>
-                </div>
-
-                <div class="space-y-2">
-                    <Label for="tanggal_akhir">Tanggal Akhir</Label>
-                    <div class="relative">
-                    <Input
-                        id="tanggal_akhir"
-                        v-model="tanggalAkhir"
-                        type="date"
-                        class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
-                    />
-                    <div
-                        class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
-                        @click="() => triggerDatePicker('tanggal_akhir')"
-                    >
-                        <Calendar class="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    </div>
-                </div>
-
-                <Button @click="handleSearch" :disabled="loading">
-                    {{ loading ? 'Mencari...' : 'Cari' }}
-                </Button>
-                </div>
-            </div>
             </Card>
 
             <!-- Data Table -->
             <Card>
                 <CardHeader>
                     <CardTitle>Jumlah Karakteristik</CardTitle>
-                    <CardDescription>
-                        Tabel detail karakteristik pelatih berdasarkan kategori
-                    </CardDescription>
+                    <CardDescription> Tabel detail karakteristik pelatih berdasarkan kategori </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div v-if="loading" class="flex justify-center py-8">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <div class="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
                     </div>
-                    
-                    <div v-else-if="dataKarakteristik.length === 0" class="text-center py-8 text-muted-foreground">
-                        Tidak ada data karakteristik
-                    </div>
-                    
+
+                    <div v-else-if="dataKarakteristik.length === 0" class="text-muted-foreground py-8 text-center">Tidak ada data karakteristik</div>
+
                     <div v-else class="overflow-x-auto">
                         <Table>
                             <TableHeader class="bg-gray-200 dark:bg-neutral-800">
@@ -165,11 +159,11 @@ onMounted(() => {
                                             <TableCell>{{ item.nama_indikator }}</TableCell>
                                             <TableCell class="text-center">{{ item.jumlah }}</TableCell>
                                             <TableCell class="text-center">
-                                                <span class="font-bold text-primary">{{ item.persentase }}%</span>
+                                                <span class="text-primary font-bold">{{ item.persentase }}%</span>
                                             </TableCell>
                                         </TableRow>
                                     </template>
-                                    
+
                                     <!-- Separator row between different characteristics -->
                                     <TableRow v-if="index < dataKarakteristik.length - 1" class="bg-muted/50">
                                         <TableCell colspan="5" class="h-2"></TableCell>

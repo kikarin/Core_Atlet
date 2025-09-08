@@ -48,20 +48,20 @@ watch(
 );
 
 const columns = [
-    { 
-        key: 'cabor.nama', 
+    {
+        key: 'cabor.nama',
         label: 'Cabor',
-        format: (row: CaborData) => row.cabor?.nama || '-'
+        format: (row: CaborData) => row.cabor?.nama || '-',
     },
-    { 
-        key: 'cabor_kategori.nama', 
+    {
+        key: 'cabor_kategori.nama',
         label: 'Kategori',
-        format: (row: CaborData) => row.cabor_kategori?.nama || '-'
+        format: (row: CaborData) => row.cabor_kategori?.nama || '-',
     },
-    { 
-        key: 'jenis_tenaga_pendukung.nama', 
+    {
+        key: 'jenis_tenaga_pendukung.nama',
         label: 'Jenis Tenaga Pendukung',
-        format: (row: CaborData) => row.jenis_tenaga_pendukung?.nama || '-'
+        format: (row: CaborData) => row.jenis_tenaga_pendukung?.nama || '-',
     },
     {
         key: 'is_active',

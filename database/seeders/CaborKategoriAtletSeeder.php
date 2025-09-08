@@ -23,8 +23,12 @@ class CaborKategoriAtletSeeder extends Seeder
             // filter atlet sesuai jenis kelamin kategori
             $eligibleAtlets = $atletList->filter(function ($atlet) use ($kategori, $atletCaborMap) {
                 // cek gender
-                if ($kategori->jenis_kelamin === 'L' && $atlet->jenis_kelamin !== 'L') return false;
-                if ($kategori->jenis_kelamin === 'P' && $atlet->jenis_kelamin !== 'P') return false;
+                if ($kategori->jenis_kelamin === 'L' && $atlet->jenis_kelamin !== 'L') {
+                    return false;
+                }
+                if ($kategori->jenis_kelamin === 'P' && $atlet->jenis_kelamin !== 'P') {
+                    return false;
+                }
                 // 'C' berarti campuran → boleh semua
 
                 // cek apakah atlet sudah punya cabor lain

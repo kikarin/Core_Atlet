@@ -50,9 +50,9 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => ['Dashboard Show'],
             ],
             [
-                'name'       => 'Atlet',
-                'permission' => 'CRUD',
-                'permission_common' => ['Atlet Import']
+                'name'              => 'Atlet',
+                'permission'        => 'CRUD',
+                'permission_common' => ['Atlet Import'],
             ],
             [
                 'name'       => 'Atlet Orang Tua',
@@ -75,8 +75,8 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
-                'name'       => 'Pelatih',
-                'permission' => 'CRUD',
+                'name'              => 'Pelatih',
+                'permission'        => 'CRUD',
                 'permission_common' => ['Pelatih Import'],
             ],
             [
@@ -96,8 +96,8 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
-                'name'       => 'Tenaga Pendukung',
-                'permission' => 'CRUD',
+                'name'              => 'Tenaga Pendukung',
+                'permission'        => 'CRUD',
                 'permission_common' => ['Tenaga Pendukung Import'],
             ],
             [
@@ -157,6 +157,10 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name'       => 'Mst Parameter',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name'       => 'Cabor',
                 'permission' => 'CRUD',
             ],
@@ -185,8 +189,8 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
-                'name'       => 'Rencana Latihan',
-                'permission' => 'CRUD',
+                'name'              => 'Rencana Latihan',
+                'permission'        => 'CRUD',
                 'permission_common' => ['Rencana Latihan Kelola'],
             ],
             [
@@ -198,8 +202,8 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
-                'name'       => 'Pemeriksaan Peserta',
-                'permission' => 'CRUD',
+                'name'              => 'Pemeriksaan Peserta',
+                'permission'        => 'CRUD',
                 'permission_common' => ['Pemeriksaan Peserta Kelola'],
             ],
             [

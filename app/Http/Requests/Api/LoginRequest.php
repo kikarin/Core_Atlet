@@ -22,8 +22,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required|string|min:1',
+            'email'       => 'required|email',
+            'password'    => 'required|string|min:1',
             'device_name' => 'nullable|string|max:255',
         ];
     }
@@ -36,13 +36,13 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
-            'password.string' => 'Password harus berupa string.',
-            'password.min' => 'Password minimal 1 karakter.',
+            'email.required'     => 'Email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'password.required'  => 'Password wajib diisi.',
+            'password.string'    => 'Password harus berupa string.',
+            'password.min'       => 'Password minimal 1 karakter.',
             'device_name.string' => 'Nama device harus berupa string.',
-            'device_name.max' => 'Nama device maksimal 255 karakter.',
+            'device_name.max'    => 'Nama device maksimal 255 karakter.',
         ];
     }
 
@@ -54,8 +54,8 @@ class LoginRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'email' => 'email',
-            'password' => 'password',
+            'email'       => 'email',
+            'password'    => 'password',
             'device_name' => 'nama device',
         ];
     }

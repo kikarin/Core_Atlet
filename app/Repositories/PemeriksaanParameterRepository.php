@@ -15,7 +15,7 @@ class PemeriksaanParameterRepository
     public function __construct(PemeriksaanParameter $model)
     {
         $this->model = $model;
-        $this->with  = ['pemeriksaan', 'created_by_user', 'updated_by_user'];
+        $this->with  = ['pemeriksaan', 'mstParameter', 'created_by_user', 'updated_by_user'];
     }
 
     public function customIndex($data)
@@ -27,14 +27,16 @@ class PemeriksaanParameterRepository
         if (request('search')) {
             $search = request('search');
             $query->where(function ($q) use ($search) {
-                $q->where('nama_parameter', 'like', "%$search%")
-                    ->orWhere('satuan', 'like', "%$search%");
+                $q->whereHas('mstParameter', function ($q2) use ($search) {
+                    $q2->where('nama', 'like', "%$search%")
+                        ->orWhere('satuan', 'like', "%$search%");
+                });
             });
         }
         if (request('sort')) {
             $order        = request('order', 'asc');
             $sortField    = request('sort');
-            $validColumns = ['id', 'nama_parameter', 'satuan', 'created_at', 'updated_at'];
+            $validColumns = ['id', 'created_at', 'updated_at'];
             if (in_array($sortField, $validColumns)) {
                 $query->orderBy($sortField, $order);
             } else {
@@ -49,10 +51,12 @@ class PemeriksaanParameterRepository
             $all         = $query->get();
             $transformed = collect($all)->map(function ($item) {
                 return [
-                    'id'             => $item->id,
-                    'pemeriksaan_id' => $item->pemeriksaan_id,
-                    'nama_parameter' => $item->nama_parameter,
-                    'satuan'         => $item->satuan,
+                    'id'               => $item->id,
+                    'pemeriksaan_id'   => $item->pemeriksaan_id,
+                    'mst_parameter_id' => $item->mst_parameter_id,
+                    'nama_parameter'   => $item->mstParameter?->nama,
+                    'satuan'           => $item->mstParameter?->satuan,
+                    'mst_parameter'    => $item->mstParameter,
                 ];
             });
             $data += [
@@ -71,10 +75,12 @@ class PemeriksaanParameterRepository
         $items           = $query->paginate($perPage, ['*'], 'page', $pageForPaginate)->withQueryString();
         $transformed     = collect($items->items())->map(function ($item) {
             return [
-                'id'             => $item->id,
-                'pemeriksaan_id' => $item->pemeriksaan_id,
-                'nama_parameter' => $item->nama_parameter,
-                'satuan'         => $item->satuan,
+                'id'               => $item->id,
+                'pemeriksaan_id'   => $item->pemeriksaan_id,
+                'mst_parameter_id' => $item->mst_parameter_id,
+                'nama_parameter'   => $item->mstParameter?->nama,
+                'satuan'           => $item->mstParameter?->satuan,
+                'mst_parameter'    => $item->mstParameter,
             ];
         });
         $data += [

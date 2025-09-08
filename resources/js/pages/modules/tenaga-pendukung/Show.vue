@@ -8,8 +8,8 @@ import { computed, ref, watch } from 'vue';
 import ShowDokumen from './dokumen/ShowDokumen.vue';
 import ShowPrestasi from './prestasi/ShowPrestasi.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
-import ShowKesehatan from './ShowKesehatan.vue';
 import ShowCabor from './ShowCabor.vue';
+import ShowKesehatan from './ShowKesehatan.vue';
 
 const { toast } = useToast();
 

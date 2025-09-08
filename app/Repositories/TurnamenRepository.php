@@ -49,29 +49,29 @@ class TurnamenRepository
             $query->orderBy('id', 'desc');
         }
 
-                $auth = Auth::user();
+        $auth = Auth::user();
         if ($auth->current_role_id == 35) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriAtlet', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('atlet_id', $auth->atlet->id);
                 });
             });
         }
 
         $auth = Auth::user();
         if ($auth->current_role_id == 36) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriPelatih", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("pelatih_id", $auth->pelatih->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriPelatih', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('pelatih_id', $auth->pelatih->id);
                 });
             });
         }
 
         $auth = Auth::user();
         if ($auth->current_role_id == 37) {
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("tenagaPendukung", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("tenaga_pendukung_id", $auth->tenagaPendukung->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('tenagaPendukung', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('tenaga_pendukung_id', $auth->tenagaPendukung->id);
                 });
             });
         }
@@ -270,43 +270,43 @@ class TurnamenRepository
 
         // Pagination
         $perPage = (int) $request->get('per_page', 10);
-        $page = (int) $request->get('page', 1);
+        $page    = (int) $request->get('page', 1);
 
         if ($perPage === -1) {
-            $all = $query->get();
+            $all         = $query->get();
             $transformed = $all->map(function ($item) {
                 return $this->transformTurnamenForMobile($item);
             });
 
             return [
-                'data' => $transformed,
-                'total' => $transformed->count(),
+                'data'        => $transformed,
+                'total'       => $transformed->count(),
                 'currentPage' => 1,
-                'perPage' => -1,
-                'search' => $request->get('search', ''),
-                'filters' => [
-                    'cabor_id' => $request->get('cabor_id'),
+                'perPage'     => -1,
+                'search'      => $request->get('search', ''),
+                'filters'     => [
+                    'cabor_id'   => $request->get('cabor_id'),
                     'start_date' => $request->get('start_date'),
-                    'end_date' => $request->get('end_date'),
+                    'end_date'   => $request->get('end_date'),
                 ],
             ];
         }
 
-        $items = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
+        $items       = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
         $transformed = collect($items->items())->map(function ($item) {
             return $this->transformTurnamenForMobile($item);
         });
 
         return [
-            'data' => $transformed,
-            'total' => $items->total(),
+            'data'        => $transformed,
+            'total'       => $items->total(),
             'currentPage' => $items->currentPage(),
-            'perPage' => $items->perPage(),
-            'search' => $request->get('search', ''),
-            'filters' => [
-                'cabor_id' => $request->get('cabor_id'),
+            'perPage'     => $items->perPage(),
+            'search'      => $request->get('search', ''),
+            'filters'     => [
+                'cabor_id'   => $request->get('cabor_id'),
                 'start_date' => $request->get('start_date'),
-                'end_date' => $request->get('end_date'),
+                'end_date'   => $request->get('end_date'),
             ],
         ];
     }
@@ -342,23 +342,23 @@ class TurnamenRepository
     protected function applyRoleFilter($query)
     {
         $auth = Auth::user();
-        
+
         if ($auth->current_role_id == 35) { // Atlet
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriAtlet", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("atlet_id", $auth->atlet->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriAtlet', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('atlet_id', $auth->atlet->id);
                 });
             });
         } elseif ($auth->current_role_id == 36) { // Pelatih
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("caborKategoriPelatih", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("pelatih_id", $auth->pelatih->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('caborKategoriPelatih', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('pelatih_id', $auth->pelatih->id);
                 });
             });
         } elseif ($auth->current_role_id == 37) { // Tenaga Pendukung
-            $query->whereHas("caborKategori", function ($sub_query) use ($auth) {
-                $sub_query->whereHas("tenagaPendukung", function ($sub_sub_query) use ($auth) {
-                    $sub_sub_query->where("tenaga_pendukung_id", $auth->tenagaPendukung->id);
+            $query->whereHas('caborKategori', function ($sub_query) use ($auth) {
+                $sub_query->whereHas('tenagaPendukung', function ($sub_sub_query) use ($auth) {
+                    $sub_sub_query->where('tenaga_pendukung_id', $auth->tenagaPendukung->id);
                 });
             });
         }
@@ -370,18 +370,18 @@ class TurnamenRepository
     protected function transformTurnamenForMobile($item)
     {
         $pesertaCounts = $this->getPesertaCount($item->id);
-        $totalPeserta = $pesertaCounts['atlet'] + $pesertaCounts['pelatih'] + $pesertaCounts['tenaga_pendukung'];
+        $totalPeserta  = $pesertaCounts['atlet'] + $pesertaCounts['pelatih'] + $pesertaCounts['tenaga_pendukung'];
 
         return [
-            'id' => $item->id,
-            'nama' => $item->nama,
-            'cabor' => $item->caborKategori->cabor->nama ?? '-',
-            'kategori' => $item->caborKategori->nama ?? '-',
-            'periode' => $this->formatPeriodeForMobile($item->tanggal_mulai, $item->tanggal_selesai),
-            'tingkat' => $item->tingkat->nama ?? '-',
-            'lokasi' => $item->lokasi,
-            'juara' => $item->juara->nama ?? '-',
-            'hasil' => $item->hasil ?? '-',
+            'id'            => $item->id,
+            'nama'          => $item->nama,
+            'cabor'         => $item->caborKategori->cabor->nama ?? '-',
+            'kategori'      => $item->caborKategori->nama        ?? '-',
+            'periode'       => $this->formatPeriodeForMobile($item->tanggal_mulai, $item->tanggal_selesai),
+            'tingkat'       => $item->tingkat->nama ?? '-',
+            'lokasi'        => $item->lokasi,
+            'juara'         => $item->juara->nama ?? '-',
+            'hasil'         => $item->hasil       ?? '-',
             'jumlahPeserta' => $totalPeserta,
         ];
     }
@@ -417,7 +417,7 @@ class TurnamenRepository
      */
     public function getPesertaForMobile($turnamenId, $request)
     {
-        $turnamen = $this->model->findOrFail($turnamenId);
+        $turnamen        = $this->model->findOrFail($turnamenId);
         $caborKategoriId = $turnamen->cabor_kategori_id;
 
         // Get atlet IDs from turnamen_peserta table
@@ -490,40 +490,40 @@ class TurnamenRepository
 
         $atlet = $atletQuery->orderBy('atlets.nama')->get()->map(function ($item) {
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'foto' => $item->foto,
+                'id'           => $item->id,
+                'nama'         => $item->nama,
+                'foto'         => $item->foto,
                 'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                'usia' => $this->calculateAge($item->tanggal_lahir),
-                'posisi' => $item->posisi,
+                'usia'         => $this->calculateAge($item->tanggal_lahir),
+                'posisi'       => $item->posisi,
             ];
         });
 
         $pelatih = $pelatihQuery->orderBy('pelatihs.nama')->get()->map(function ($item) {
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'foto' => $item->foto,
+                'id'           => $item->id,
+                'nama'         => $item->nama,
+                'foto'         => $item->foto,
                 'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                'usia' => $this->calculateAge($item->tanggal_lahir),
+                'usia'         => $this->calculateAge($item->tanggal_lahir),
                 'jenisPelatih' => $item->jenis_pelatih,
             ];
         });
 
         $tenaga = $tenagaQuery->orderBy('tenaga_pendukungs.nama')->get()->map(function ($item) {
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'foto' => $item->foto,
-                'jenisKelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                'usia' => $this->calculateAge($item->tanggal_lahir),
+                'id'                   => $item->id,
+                'nama'                 => $item->nama,
+                'foto'                 => $item->foto,
+                'jenisKelamin'         => $this->mapJenisKelamin($item->jenis_kelamin),
+                'usia'                 => $this->calculateAge($item->tanggal_lahir),
                 'jenisTenagaPendukung' => $item->jenis_tenaga_pendukung,
             ];
         });
 
         return [
-            'atlet' => $atlet,
-            'pelatih' => $pelatih,
+            'atlet'           => $atlet,
+            'pelatih'         => $pelatih,
             'tenagaPendukung' => $tenaga,
         ];
     }
@@ -533,8 +533,12 @@ class TurnamenRepository
      */
     protected function mapJenisKelamin($jenisKelamin)
     {
-        if ($jenisKelamin === 'L') return 'Laki-laki';
-        if ($jenisKelamin === 'P') return 'Perempuan';
+        if ($jenisKelamin === 'L') {
+            return 'Laki-laki';
+        }
+        if ($jenisKelamin === 'P') {
+            return 'Perempuan';
+        }
         return '-';
     }
 
@@ -543,11 +547,13 @@ class TurnamenRepository
      */
     protected function calculateAge($tanggalLahir)
     {
-        if (!$tanggalLahir) return '-';
-        
+        if (!$tanggalLahir) {
+            return '-';
+        }
+
         try {
             $tanggalLahir = new \Carbon\Carbon($tanggalLahir);
-            $today = \Carbon\Carbon::today();
+            $today        = \Carbon\Carbon::today();
             return (int) $tanggalLahir->diffInYears($today);
         } catch (\Exception $e) {
             return '-';

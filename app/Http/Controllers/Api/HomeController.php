@@ -24,26 +24,26 @@ class HomeController extends Controller
     {
         try {
             Log::info('Home Mobile API called', [
-                'user' => auth()->user(),
-                'user_id' => auth()->id(),
+                'user'            => auth()->user(),
+                'user_id'         => auth()->id(),
                 'current_role_id' => auth()->user()->current_role_id ?? 'no role',
             ]);
 
             $data = $this->repository->getHomeData($request);
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Data home berhasil diambil',
-                'data' => $data,
+                'data'    => $data,
             ]);
         } catch (\Exception $e) {
             Log::error('Gagal mengambil data home: ' . $e->getMessage(), [
                 'exception' => $e,
-                'user_id' => auth()->id(),
+                'user_id'   => auth()->id(),
             ]);
-            
+
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data home: ' . $e->getMessage(),
             ], 500);
         }
