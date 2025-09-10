@@ -48,6 +48,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/program-latihan/mobile', [ProgramLatihanController::class, 'index']);
     Route::get('/program-latihan/{id}', [ProgramLatihanController::class, 'show']);
     Route::get('/program-latihan/cabor/list', [ProgramLatihanController::class, 'getCaborList']);
+    Route::get('/program-latihan/cabor/list-for-create', [ProgramLatihanController::class, 'getCaborListForCreate']);
+    Route::get('/program-latihan/cabor/{caborId}/kategori', [ProgramLatihanController::class, 'getCaborKategoriByCabor']);
+
+    // Program Latihan CRUD (Restricted to Superadmin and Pelatih)
+    Route::middleware('program.latihan.permission')->group(function () {
+        Route::post('/program-latihan', [ProgramLatihanController::class, 'store']);
+        Route::put('/program-latihan/{id}', [ProgramLatihanController::class, 'update']);
+        Route::delete('/program-latihan/{id}', [ProgramLatihanController::class, 'destroy']);
+    });
 
     // Rencana Latihan (Mobile)
     Route::get('/program-latihan/{programId}/rencana-latihan', [ApiRencanaLatihanController::class, 'index']);
