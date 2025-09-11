@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\TargetLatihan;
+use App\Models\CaborKategoriAtlet;
+use App\Models\CaborKategoriPelatih;
+use App\Models\CaborKategoriTenagaPendukung;
 
 class RencanaLatihanController extends Controller
 {
@@ -505,5 +509,392 @@ class RencanaLatihanController extends Controller
             'turun'  => 'Turun',
             default  => 'Stabil',
         };
+    }
+
+    /**
+     * Get target latihan list for form step 2 (Mobile)
+     */
+    public function getTargetLatihanList(Request $request, int $programId): JsonResponse
+    {
+        try {
+            $search = $request->get('search', '');
+
+            $query = TargetLatihan::where('program_latihan_id', $programId);
+
+            if ($search) {
+                $query->where('deskripsi', 'like', "%{$search}%");
+            }
+
+            $targets = $query->orderBy('deskripsi')->get();
+
+            $data = $targets->map(function ($target) {
+                return [
+                    'id'           => $target->id,
+                    'deskripsi'    => $target->deskripsi,
+                    'peruntukan'   => $target->peruntukan ?? '-',
+                    'jenis_target' => $target->jenis_target,
+                ];
+            });
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data target latihan berhasil diambil',
+                'data'    => $data,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data target latihan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get atlet list for form step 3 (Mobile)
+     */
+    public function getAtletList(Request $request, int $caborKategoriId): JsonResponse
+    {
+        try {
+            $search = $request->get('search', '');
+
+            $query = CaborKategoriAtlet::with(['atlet', 'posisiAtlet'])
+                ->where('cabor_kategori_id', $caborKategoriId);
+
+            if ($search) {
+                $query->whereHas('atlet', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                });
+            }
+
+            $atletList = $query->get();
+
+            $data = $atletList->map(function ($item) {
+                $atlet = $item->atlet;
+                return [
+                    'id'             => $atlet->id,
+                    'nama'           => $atlet->nama,
+                    'foto'           => $atlet->foto,
+                    'posisi'         => $item->posisiAtlet?->nama ?? '-',
+                    'jenis_kelamin'  => $this->mapJenisKelamin($atlet->jenis_kelamin),
+                    'usia'           => $this->calculateAge($atlet->tanggal_lahir),
+                    'lama_bergabung' => $this->getLamaBergabung($atlet->tanggal_bergabung),
+                ];
+            });
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data atlet berhasil diambil',
+                'data'    => $data,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data atlet: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get pelatih list for form step 3 (Mobile)
+     */
+    public function getPelatihList(Request $request, int $caborKategoriId): JsonResponse
+    {
+        try {
+            $search = $request->get('search', '');
+
+            $query = CaborKategoriPelatih::with(['pelatih', 'jenisPelatih'])
+                ->where('cabor_kategori_id', $caborKategoriId);
+
+            if ($search) {
+                $query->whereHas('pelatih', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                });
+            }
+
+            $pelatihList = $query->get();
+
+            $data = $pelatihList->map(function ($item) {
+                $pelatih = $item->pelatih;
+                return [
+                    'id'             => $pelatih->id,
+                    'nama'           => $pelatih->nama,
+                    'foto'           => $pelatih->foto,
+                    'jenis_pelatih'  => $item->jenisPelatih?->nama ?? '-',
+                    'jenis_kelamin'  => $this->mapJenisKelamin($pelatih->jenis_kelamin),
+                    'usia'           => $this->calculateAge($pelatih->tanggal_lahir),
+                    'lama_bergabung' => $this->getLamaBergabung($pelatih->tanggal_bergabung),
+                ];
+            });
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data pelatih berhasil diambil',
+                'data'    => $data,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data pelatih: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get tenaga pendukung list for form step 3 (Mobile)
+     */
+    public function getTenagaPendukungList(Request $request, int $caborKategoriId): JsonResponse
+    {
+        try {
+            $search = $request->get('search', '');
+
+            $query = CaborKategoriTenagaPendukung::with(['tenagaPendukung', 'jenisTenagaPendukung'])
+                ->where('cabor_kategori_id', $caborKategoriId);
+
+            if ($search) {
+                $query->whereHas('tenagaPendukung', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                });
+            }
+
+            $tenagaList = $query->get();
+
+            $data = $tenagaList->map(function ($item) {
+                $tenaga = $item->tenagaPendukung;
+                return [
+                    'id'                     => $tenaga->id,
+                    'nama'                   => $tenaga->nama,
+                    'foto'                   => $tenaga->foto,
+                    'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
+                    'jenis_kelamin'          => $this->mapJenisKelamin($tenaga->jenis_kelamin),
+                    'usia'                   => $this->calculateAge($tenaga->tanggal_lahir),
+                    'lama_bergabung'         => $this->getLamaBergabung($tenaga->tanggal_bergabung),
+                ];
+            });
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data tenaga pendukung berhasil diambil',
+                'data'    => $data,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data tenaga pendukung: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Create new rencana latihan (Mobile)
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'program_latihan_id'     => 'required|exists:program_latihan,id',
+                'tanggal'                => 'required|date',
+                'materi'                 => 'required|string|max:255',
+                'lokasi_latihan'         => 'required|string|max:255',
+                'catatan'                => 'nullable|string',
+                'target_latihan_ids'     => 'nullable|array',
+                'target_latihan_ids.*'   => 'exists:target_latihan,id',
+                'atlet_ids'              => 'nullable|array',
+                'atlet_ids.*'            => 'exists:atlets,id',
+                'pelatih_ids'            => 'nullable|array',
+                'pelatih_ids.*'          => 'exists:pelatihs,id',
+                'tenaga_pendukung_ids'   => 'nullable|array',
+                'tenaga_pendukung_ids.*' => 'exists:tenaga_pendukungs,id',
+            ], [
+                'program_latihan_id.required' => 'Program latihan wajib dipilih.',
+                'program_latihan_id.exists'   => 'Program latihan tidak valid.',
+                'tanggal.required'            => 'Tanggal wajib diisi.',
+                'tanggal.date'                => 'Tanggal harus berupa tanggal yang valid.',
+                'materi.required'             => 'Materi wajib diisi.',
+                'lokasi_latihan.required'     => 'Lokasi latihan wajib diisi.',
+            ]);
+
+            $data = $request->only([
+                'program_latihan_id',
+                'tanggal',
+                'materi',
+                'lokasi_latihan',
+                'catatan',
+            ]);
+
+            // Create rencana latihan with relations
+            $rencana = $this->repository->createWithRelations([
+                ...$data,
+                'target_latihan_ids'   => $request->target_latihan_ids   ?? [],
+                'atlet_ids'            => $request->atlet_ids            ?? [],
+                'pelatih_ids'          => $request->pelatih_ids          ?? [],
+                'tenaga_pendukung_ids' => $request->tenaga_pendukung_ids ?? [],
+            ]);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Rencana latihan berhasil dibuat',
+                'data'    => [
+                    'id'             => $rencana->id,
+                    'tanggal'        => $rencana->tanggal,
+                    'materi'         => $rencana->materi,
+                    'lokasi_latihan' => $rencana->lokasi_latihan,
+                    'catatan'        => $rencana->catatan,
+                    'created_at'     => $rencana->created_at,
+                    'updated_at'     => $rencana->updated_at,
+                ],
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal membuat rencana latihan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update rencana latihan (Mobile)
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        try {
+            $rencana = $this->repository->getDetailWithRelations($id);
+
+            if (!$rencana) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Rencana latihan tidak ditemukan',
+                ], 404);
+            }
+
+            $request->validate([
+                'program_latihan_id'     => 'required|exists:program_latihan,id',
+                'tanggal'                => 'required|date',
+                'materi'                 => 'required|string|max:255',
+                'lokasi_latihan'         => 'required|string|max:255',
+                'catatan'                => 'nullable|string',
+                'target_latihan_ids'     => 'nullable|array',
+                'target_latihan_ids.*'   => 'exists:target_latihan,id',
+                'atlet_ids'              => 'nullable|array',
+                'atlet_ids.*'            => 'exists:atlets,id',
+                'pelatih_ids'            => 'nullable|array',
+                'pelatih_ids.*'          => 'exists:pelatihs,id',
+                'tenaga_pendukung_ids'   => 'nullable|array',
+                'tenaga_pendukung_ids.*' => 'exists:tenaga_pendukungs,id',
+            ], [
+                'program_latihan_id.required' => 'Program latihan wajib dipilih.',
+                'program_latihan_id.exists'   => 'Program latihan tidak valid.',
+                'tanggal.required'            => 'Tanggal wajib diisi.',
+                'tanggal.date'                => 'Tanggal harus berupa tanggal yang valid.',
+                'materi.required'             => 'Materi wajib diisi.',
+                'lokasi_latihan.required'     => 'Lokasi latihan wajib diisi.',
+            ]);
+
+            $data = $request->only([
+                'program_latihan_id',
+                'tanggal',
+                'materi',
+                'lokasi_latihan',
+                'catatan',
+            ]);
+
+            // Update rencana latihan with relations
+            $updatedRencana = $this->repository->updateWithRelations($id, [
+                ...$data,
+                'target_latihan_ids'   => $request->target_latihan_ids   ?? [],
+                'atlet_ids'            => $request->atlet_ids            ?? [],
+                'pelatih_ids'          => $request->pelatih_ids          ?? [],
+                'tenaga_pendukung_ids' => $request->tenaga_pendukung_ids ?? [],
+            ]);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Rencana latihan berhasil diperbarui',
+                'data'    => [
+                    'id'             => $updatedRencana->id,
+                    'tanggal'        => $updatedRencana->tanggal,
+                    'materi'         => $updatedRencana->materi,
+                    'lokasi_latihan' => $updatedRencana->lokasi_latihan,
+                    'catatan'        => $updatedRencana->catatan,
+                    'created_at'     => $updatedRencana->created_at,
+                    'updated_at'     => $updatedRencana->updated_at,
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal memperbarui rencana latihan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete rencana latihan (Mobile)
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        try {
+            $rencana = $this->repository->getDetailWithRelations($id);
+
+            if (!$rencana) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Rencana latihan tidak ditemukan',
+                ], 404);
+            }
+
+            $this->repository->delete($id);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Rencana latihan berhasil dihapus',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menghapus rencana latihan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Calculate lama bergabung
+     */
+    private function getLamaBergabung($tanggalBergabung)
+    {
+        if (!$tanggalBergabung) {
+            return '-';
+        }
+
+        $start = new \DateTime($tanggalBergabung);
+        $now   = new \DateTime();
+        $diff  = $start->diff($now);
+
+        $tahun = $diff->y;
+        $bulan = $diff->m;
+
+        $result = '';
+        if ($tahun > 0) {
+            $result .= $tahun . ' tahun ';
+        }
+        if ($bulan > 0) {
+            $result .= $bulan . ' bulan';
+        }
+        if (!$result) {
+            $result = 'Kurang dari 1 bulan';
+        }
+
+        return trim($result);
     }
 }

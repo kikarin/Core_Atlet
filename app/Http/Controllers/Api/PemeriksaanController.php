@@ -353,4 +353,280 @@ class PemeriksaanController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get list of cabor for form create pemeriksaan
+     * Filtered by user role - peserta only see their cabor
+     */
+    public function getCaborListForCreate(): JsonResponse
+    {
+        try {
+            $caborList = $this->repository->getCaborListForCreate();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data cabor untuk form create berhasil diambil',
+                'data'    => $caborList,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data cabor untuk form create: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get list of cabor kategori by cabor ID
+     */
+    public function getCaborKategoriByCabor(int $caborId): JsonResponse
+    {
+        try {
+            $caborKategoriList = $this->repository->getCaborKategoriByCabor($caborId);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data kategori cabor berhasil diambil',
+                'data'    => $caborKategoriList,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data kategori cabor: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get list of tenaga pendukung by cabor kategori ID
+     */
+    public function getTenagaPendukungByCaborKategori(int $caborKategoriId): JsonResponse
+    {
+        try {
+            $tenagaPendukungList = $this->repository->getTenagaPendukungByCaborKategori($caborKategoriId);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data tenaga pendukung berhasil diambil',
+                'data'    => $tenagaPendukungList,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengambil data tenaga pendukung: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Create new pemeriksaan
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'cabor_id'            => 'required|exists:cabor,id',
+                'cabor_kategori_id'   => 'required|exists:cabor_kategori,id',
+                'tenaga_pendukung_id' => 'required|exists:tenaga_pendukungs,id',
+                'nama_pemeriksaan'    => 'required|string|max:200',
+                'tanggal_pemeriksaan' => 'required|date',
+                'status'              => 'required|in:belum,sebagian,selesai',
+            ], [
+                'cabor_id.required'            => 'Cabor wajib dipilih.',
+                'cabor_id.exists'              => 'Cabor tidak valid.',
+                'cabor_kategori_id.required'   => 'Kategori wajib dipilih.',
+                'cabor_kategori_id.exists'     => 'Kategori tidak valid.',
+                'tenaga_pendukung_id.required' => 'Tenaga pendukung wajib dipilih.',
+                'tenaga_pendukung_id.exists'   => 'Tenaga pendukung tidak valid.',
+                'nama_pemeriksaan.required'    => 'Nama pemeriksaan wajib diisi.',
+                'nama_pemeriksaan.max'         => 'Nama pemeriksaan maksimal 200 karakter.',
+                'tanggal_pemeriksaan.required' => 'Tanggal pemeriksaan wajib diisi.',
+                'tanggal_pemeriksaan.date'     => 'Tanggal pemeriksaan harus berupa tanggal.',
+                'status.required'              => 'Status wajib dipilih.',
+                'status.in'                    => 'Status harus berupa: belum, sebagian, atau selesai.',
+            ]);
+
+            $data = $request->only([
+                'cabor_id',
+                'cabor_kategori_id',
+                'tenaga_pendukung_id',
+                'nama_pemeriksaan',
+                'tanggal_pemeriksaan',
+                'status',
+            ]);
+
+            $pemeriksaan = $this->repository->create($data);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Pemeriksaan berhasil dibuat',
+                'data'    => [
+                    'id'               => $pemeriksaan->id,
+                    'nama_pemeriksaan' => $pemeriksaan->nama_pemeriksaan,
+                    'cabor'            => [
+                        'id'   => $pemeriksaan->cabor->id   ?? null,
+                        'nama' => $pemeriksaan->cabor->nama ?? null,
+                    ],
+                    'kategori' => [
+                        'id'   => $pemeriksaan->caborKategori->id   ?? null,
+                        'nama' => $pemeriksaan->caborKategori->nama ?? null,
+                    ],
+                    'tenaga_pendukung' => [
+                        'id'   => $pemeriksaan->tenagaPendukung->id   ?? null,
+                        'nama' => $pemeriksaan->tenagaPendukung->nama ?? null,
+                    ],
+                    'tanggal_pemeriksaan' => $pemeriksaan->tanggal_pemeriksaan,
+                    'status'              => $pemeriksaan->status,
+                    'created_at'          => $pemeriksaan->created_at,
+                    'updated_at'          => $pemeriksaan->updated_at,
+                ],
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Gagal membuat pemeriksaan: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id'   => auth()->id(),
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal membuat pemeriksaan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update pemeriksaan
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        try {
+            $pemeriksaan = $this->repository->getById($id);
+
+            if (!$pemeriksaan) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Pemeriksaan tidak ditemukan',
+                ], 404);
+            }
+
+            // Validate request
+            $request->validate([
+                'cabor_id'            => 'required|exists:cabor,id',
+                'cabor_kategori_id'   => 'required|exists:cabor_kategori,id',
+                'tenaga_pendukung_id' => 'required|exists:tenaga_pendukungs,id',
+                'nama_pemeriksaan'    => 'required|string|max:200',
+                'tanggal_pemeriksaan' => 'required|date',
+                'status'              => 'required|in:belum,sebagian,selesai',
+            ], [
+                'cabor_id.required'            => 'Cabor wajib dipilih.',
+                'cabor_id.exists'              => 'Cabor tidak valid.',
+                'cabor_kategori_id.required'   => 'Kategori wajib dipilih.',
+                'cabor_kategori_id.exists'     => 'Kategori tidak valid.',
+                'tenaga_pendukung_id.required' => 'Tenaga pendukung wajib dipilih.',
+                'tenaga_pendukung_id.exists'   => 'Tenaga pendukung tidak valid.',
+                'nama_pemeriksaan.required'    => 'Nama pemeriksaan wajib diisi.',
+                'nama_pemeriksaan.max'         => 'Nama pemeriksaan maksimal 200 karakter.',
+                'tanggal_pemeriksaan.required' => 'Tanggal pemeriksaan wajib diisi.',
+                'tanggal_pemeriksaan.date'     => 'Tanggal pemeriksaan harus berupa tanggal.',
+                'status.required'              => 'Status wajib dipilih.',
+                'status.in'                    => 'Status harus berupa: belum, sebagian, atau selesai.',
+            ]);
+
+            $data = $request->only([
+                'cabor_id',
+                'cabor_kategori_id',
+                'tenaga_pendukung_id',
+                'nama_pemeriksaan',
+                'tanggal_pemeriksaan',
+                'status',
+            ]);
+
+            $this->repository->update($id, $data);
+            $updatedPemeriksaan = $this->repository->getDetailWithRelations($id);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Pemeriksaan berhasil diperbarui',
+                'data'    => [
+                    'id'               => $updatedPemeriksaan->id,
+                    'nama_pemeriksaan' => $updatedPemeriksaan->nama_pemeriksaan,
+                    'cabor'            => [
+                        'id'   => $updatedPemeriksaan->cabor->id   ?? null,
+                        'nama' => $updatedPemeriksaan->cabor->nama ?? null,
+                    ],
+                    'kategori' => [
+                        'id'   => $updatedPemeriksaan->caborKategori->id   ?? null,
+                        'nama' => $updatedPemeriksaan->caborKategori->nama ?? null,
+                    ],
+                    'tenaga_pendukung' => [
+                        'id'   => $updatedPemeriksaan->tenagaPendukung->id   ?? null,
+                        'nama' => $updatedPemeriksaan->tenagaPendukung->nama ?? null,
+                    ],
+                    'tanggal_pemeriksaan' => $updatedPemeriksaan->tanggal_pemeriksaan,
+                    'status'              => $updatedPemeriksaan->status,
+                    'created_at'          => $updatedPemeriksaan->created_at,
+                    'updated_at'          => $updatedPemeriksaan->updated_at,
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Gagal memperbarui pemeriksaan: ' . $e->getMessage(), [
+                'exception'      => $e,
+                'user_id'        => auth()->id(),
+                'pemeriksaan_id' => $id,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal memperbarui pemeriksaan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete pemeriksaan
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        try {
+            $pemeriksaan = $this->repository->getById($id);
+
+            if (!$pemeriksaan) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Pemeriksaan tidak ditemukan',
+                ], 404);
+            }
+
+            $this->repository->delete($id);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Pemeriksaan berhasil dihapus',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal menghapus pemeriksaan: ' . $e->getMessage(), [
+                'exception'      => $e,
+                'user_id'        => auth()->id(),
+                'pemeriksaan_id' => $id,
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menghapus pemeriksaan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

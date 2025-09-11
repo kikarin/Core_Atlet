@@ -13,6 +13,9 @@ use App\Models\PemeriksaanParameter;
 use App\Models\Atlet;
 use App\Models\Pelatih;
 use App\Models\TenagaPendukung;
+use App\Models\Cabor;
+use App\Models\CaborKategori;
+use App\Models\CaborKategoriTenagaPendukung;
 use Illuminate\Support\Facades\Log;
 
 class PemeriksaanRepository
@@ -1045,5 +1048,97 @@ class PemeriksaanRepository
     private function formatDateForDetail($date)
     {
         return Carbon::parse($date)->format('d/m');
+    }
+
+    /**
+     * Get list of cabor for form create pemeriksaan
+     * Filtered by user role - peserta only see their cabor
+     */
+    public function getCaborListForCreate()
+    {
+        $auth = Auth::user();
+
+        // Non-peserta (Superadmin, Admin) - lihat semua cabor
+        if (!in_array($auth->current_role_id, [35, 36, 37])) {
+            return Cabor::select('id', 'nama')
+                ->orderBy('nama')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id'   => $item->id,
+                        'nama' => $item->nama,
+                    ];
+                });
+        }
+
+        // Peserta (Atlet, Pelatih, Tenaga Pendukung) - hanya cabor mereka
+        $caborIds = collect();
+
+        if ($auth->current_role_id == 35) { // Atlet
+            $caborIds = \App\Models\CaborKategoriAtlet::where('atlet_id', $auth->atlet->id)
+                ->join('cabor_kategori', 'cabor_kategori_atlet.cabor_kategori_id', '=', 'cabor_kategori.id')
+                ->pluck('cabor_kategori.cabor_id')
+                ->unique();
+        }
+
+        if ($auth->current_role_id == 36) { // Pelatih
+            $caborIds = \App\Models\CaborKategoriPelatih::where('pelatih_id', $auth->pelatih->id)
+                ->join('cabor_kategori', 'cabor_kategori_pelatih.cabor_kategori_id', '=', 'cabor_kategori.id')
+                ->pluck('cabor_kategori.cabor_id')
+                ->unique();
+        }
+
+        if ($auth->current_role_id == 37) { // Tenaga Pendukung
+            $caborIds = CaborKategoriTenagaPendukung::where('tenaga_pendukung_id', $auth->tenagaPendukung->id)
+                ->join('cabor_kategori', 'cabor_kategori_tenaga_pendukung.cabor_kategori_id', '=', 'cabor_kategori.id')
+                ->pluck('cabor_kategori.cabor_id')
+                ->unique();
+        }
+
+        return Cabor::whereIn('id', $caborIds)
+            ->select('id', 'nama')
+            ->orderBy('nama')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'   => $item->id,
+                    'nama' => $item->nama,
+                ];
+            });
+    }
+
+    /**
+     * Get list of cabor kategori by cabor ID
+     */
+    public function getCaborKategoriByCabor($caborId)
+    {
+        return CaborKategori::where('cabor_id', $caborId)
+            ->select('id', 'nama')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'   => $item->id,
+                    'nama' => $item->nama,
+                ];
+            });
+    }
+
+    /**
+     * Get list of tenaga pendukung by cabor kategori ID
+     */
+    public function getTenagaPendukungByCaborKategori($caborKategoriId)
+    {
+        return TenagaPendukung::whereHas('caborKategoriTenagaPendukung', function ($query) use ($caborKategoriId) {
+            $query->where('cabor_kategori_id', $caborKategoriId);
+        })
+            ->select('id', 'nama')
+            ->orderBy('nama')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'   => $item->id,
+                    'nama' => $item->nama,
+                ];
+            });
     }
 }

@@ -5,7 +5,9 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\InjectUserPermissions;
 use App\Http\Middleware\ApiResponseMiddleware;
 use App\Http\Middleware\CheckProgramLatihanPermission;
+use App\Http\Middleware\CheckPemeriksaanPermission;
 use Illuminate\Http\Middleware\HandleCors;
+use App\Http\Middleware\CheckTargetLatihanPermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -38,6 +40,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register custom middleware
         $middleware->alias([
             'program.latihan.permission' => CheckProgramLatihanPermission::class,
+            'pemeriksaan.permission'     => CheckPemeriksaanPermission::class,
+            'target.latihan.permission'  => CheckTargetLatihanPermission::class,
         ]);
 
         // Sanctum middleware untuk stateful API (Remove)
