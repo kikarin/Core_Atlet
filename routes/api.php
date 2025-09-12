@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\PemeriksaanParameterController as ApiPemeriksaanPar
 use App\Http\Controllers\Api\TurnamenController;
 use App\Http\Controllers\Api\TargetLatihanController as ApiTargetLatihanController;
 use App\Http\Controllers\Api\PemeriksaanPesertaController as ApiPemeriksaanPesertaController;
+use App\Http\Controllers\Api\PemeriksaanPesertaParameterController;
+use App\Http\Controllers\Api\RencanaLatihanTargetController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\UsersController;
@@ -89,6 +91,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/program-latihan/{programId}/rencana/{rencanaId}/peserta/{pesertaId}/targets/{pesertaType?}', [ApiRencanaLatihanController::class, 'participantTargets']);
     Route::get('/program-latihan/{programId}/rencana/{rencanaId}/peserta/{pesertaId}/target/{targetId}/grafik/{pesertaType?}', [ApiRencanaLatihanController::class, 'participantTargetChart']);
 
+    // Rencana Latihan Target Mapping (Mobile)
+    Route::get('/rencana-latihan/{rencanaId}/target-mapping/participant', [RencanaLatihanTargetController::class, 'getParticipantTargetMapping']);
+    Route::get('/program-latihan/{programId}/target-mapping/group', [RencanaLatihanTargetController::class, 'getGroupTargetMapping']);
+    Route::post('/rencana-latihan/{rencanaId}/target-mapping/participant/bulk-update', [RencanaLatihanTargetController::class, 'bulkUpdateParticipantTargets']);
+    Route::post('/program-latihan/{programId}/target-mapping/group/bulk-update', [RencanaLatihanTargetController::class, 'bulkUpdateGroupTargets']);
+
     // Target Latihan (Mobile + CRUD)
     Route::get('/program-latihan/{programId}/target-latihan', [ApiTargetLatihanController::class, 'index']);
     Route::get('/target-latihan/{id}', [ApiTargetLatihanController::class, 'show']);
@@ -109,7 +117,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pemeriksaan/cabor-kategori/{caborKategoriId}/tenaga-pendukung', [PemeriksaanController::class, 'getTenagaPendukungByCaborKategori']);
     Route::get('/pemeriksaan/{pemeriksaanId}/peserta', [PemeriksaanController::class, 'peserta']);
     Route::get('/pemeriksaan/{pemeriksaanId}/parameter', [PemeriksaanController::class, 'parameter']);
-    Route::get('/pemeriksaan/{pemeriksaanId}/parameter/{parameterId}', [PemeriksaanController::class, 'parameterDetail']);
+    Route::get('/pemeriksaan/{pemeriksaanId}/parameter/{parameterId}', [PemeriksaanController::class, 'parameterDetail'])
+        ->whereNumber('pemeriksaanId')
+        ->whereNumber('parameterId');
     // Ref Status Pemeriksaan (read-only)
     Route::get('/pemeriksaan/ref-status/list', [RefStatusPemeriksaanController::class, 'index']);
 
@@ -159,4 +169,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Master Parameter (Reference list for dropdown)
     Route::get('/mst-parameter', [MstParameterController::class, 'apiIndex']);
+
+    // Pemeriksaan Peserta Parameter (Mobile)
+    Route::get('/pemeriksaan/{pemeriksaanId}/parameter/pemetaan', [PemeriksaanPesertaParameterController::class, 'getParameterPemeriksaan']);
+    Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{jenisPeserta}/parameter/pemetaan', [PemeriksaanPesertaParameterController::class, 'getPesertaWithParameters']);
+    Route::post('/pemeriksaan/{pemeriksaanId}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdateParameterPeserta']);
+    Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{pesertaId}/parameter/pemetaan', [PemeriksaanPesertaParameterController::class, 'getPesertaParameter']);
 });

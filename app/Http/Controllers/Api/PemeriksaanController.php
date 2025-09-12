@@ -209,9 +209,19 @@ class PemeriksaanController extends Controller
     /**
      * Get detail parameter pemeriksaan dengan peserta dan nilai
      */
-    public function parameterDetail(Request $request, int $pemeriksaanId, int $parameterId): JsonResponse
+    public function parameterDetail(Request $request, $pemeriksaanId, $parameterId): JsonResponse
     {
         try {
+            // Validate numeric route params and cast to int
+            if (!is_numeric($pemeriksaanId) || !is_numeric($parameterId)) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Parameter route tidak valid',
+                ], 400);
+            }
+            $pemeriksaanId = (int) $pemeriksaanId;
+            $parameterId   = (int) $parameterId;
+
             $pemeriksaan = $this->repository->getDetailWithRelations($pemeriksaanId);
 
             if (!$pemeriksaan) {
