@@ -8,6 +8,9 @@ use App\Http\Controllers\Api\RencanaLatihanController as ApiRencanaLatihanContro
 use App\Http\Controllers\Api\PemeriksaanController;
 use App\Http\Controllers\Api\PemeriksaanParameterController as ApiPemeriksaanParameterController;
 use App\Http\Controllers\Api\TurnamenController;
+use App\Http\Controllers\Api\TurnamenCrudController;
+use App\Http\Controllers\Api\TurnamenFormController;
+use App\Http\Controllers\Api\TurnamenPesertaController;
 use App\Http\Controllers\Api\TargetLatihanController as ApiTargetLatihanController;
 use App\Http\Controllers\Api\PemeriksaanPesertaController as ApiPemeriksaanPesertaController;
 use App\Http\Controllers\Api\PemeriksaanPesertaParameterController;
@@ -155,6 +158,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/turnamen/{id}/mobile', [TurnamenController::class, 'show']);
     Route::get('/turnamen/cabor/list', [TurnamenController::class, 'getCaborList']);
     Route::get('/turnamen/{turnamenId}/peserta', [TurnamenController::class, 'peserta']);
+
+    // Turnamen CRUD (Restricted to Superadmin, Admin, and Pelatih)
+    Route::middleware('turnamen.permission')->group(function () {
+        Route::get('/turnamen/crud', [TurnamenCrudController::class, 'index']);
+        Route::get('/turnamen/crud/{id}', [TurnamenCrudController::class, 'show']);
+        Route::post('/turnamen/crud', [TurnamenCrudController::class, 'store']);
+        Route::put('/turnamen/crud/{id}', [TurnamenCrudController::class, 'update']);
+        Route::delete('/turnamen/crud/{id}', [TurnamenCrudController::class, 'destroy']);
+    });
+
+    // Turnamen Form Support (Mobile)
+    Route::get('/turnamen/form/cabor-kategori', [TurnamenFormController::class, 'getCaborKategoriList']);
+    Route::get('/turnamen/form/cabor-kategori/{caborKategoriId}/atlet', [TurnamenFormController::class, 'getAtletByCaborKategori']);
+    Route::get('/turnamen/form/cabor-kategori/{caborKategoriId}/pelatih', [TurnamenFormController::class, 'getPelatihByCaborKategori']);
+    Route::get('/turnamen/form/cabor-kategori/{caborKategoriId}/tenaga-pendukung', [TurnamenFormController::class, 'getTenagaPendukungByCaborKategori']);
+    Route::get('/turnamen/form/tingkat', [TurnamenFormController::class, 'getTingkatList']);
+    Route::get('/turnamen/form/juara', [TurnamenFormController::class, 'getJuaraList']);
+
+    // Turnamen Peserta Management (Mobile)
+    Route::middleware('turnamen.permission')->group(function () {
+        Route::get('/turnamen/{turnamenId}/peserta/kelola', [TurnamenPesertaController::class, 'index']);
+        Route::post('/turnamen/{turnamenId}/peserta/kelola', [TurnamenPesertaController::class, 'store']);
+        Route::delete('/turnamen/{turnamenId}/peserta/kelola/{pesertaId}', [TurnamenPesertaController::class, 'destroy']);
+        Route::get('/turnamen/{turnamenId}/peserta/kelola/available', [TurnamenPesertaController::class, 'availablePeserta']);
+    });
 
     // Home (Mobile)
     Route::get('/home', [HomeController::class, 'index']);

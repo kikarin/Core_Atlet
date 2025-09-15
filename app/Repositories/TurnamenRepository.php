@@ -6,6 +6,7 @@ use App\Http\Requests\TurnamenRequest;
 use App\Models\Turnamen;
 use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TurnamenRepository
@@ -206,16 +207,50 @@ class TurnamenRepository
             return false;
         }
 
-        if (isset($pesertaData['atlet_ids'])) {
-            $turnamen->peserta()->sync($pesertaData['atlet_ids']);
+        // Clear existing peserta
+        DB::table('turnamen_peserta')->where('turnamen_id', $turnamenId)->delete();
+
+        // Insert new peserta
+        $insertData = [];
+
+        if (isset($pesertaData['atlet_ids']) && is_array($pesertaData['atlet_ids'])) {
+            foreach ($pesertaData['atlet_ids'] as $atletId) {
+                $insertData[] = [
+                    'turnamen_id' => $turnamenId,
+                    'peserta_type' => 'App\\Models\\Atlet',
+                    'peserta_id' => $atletId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        if (isset($pesertaData['pelatih_ids'])) {
-            $turnamen->pelatihPeserta()->sync($pesertaData['pelatih_ids']);
+        if (isset($pesertaData['pelatih_ids']) && is_array($pesertaData['pelatih_ids'])) {
+            foreach ($pesertaData['pelatih_ids'] as $pelatihId) {
+                $insertData[] = [
+                    'turnamen_id' => $turnamenId,
+                    'peserta_type' => 'App\\Models\\Pelatih',
+                    'peserta_id' => $pelatihId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        if (isset($pesertaData['tenaga_pendukung_ids'])) {
-            $turnamen->tenagaPendukungPeserta()->sync($pesertaData['tenaga_pendukung_ids']);
+        if (isset($pesertaData['tenaga_pendukung_ids']) && is_array($pesertaData['tenaga_pendukung_ids'])) {
+            foreach ($pesertaData['tenaga_pendukung_ids'] as $tenagaId) {
+                $insertData[] = [
+                    'turnamen_id' => $turnamenId,
+                    'peserta_type' => 'App\\Models\\TenagaPendukung',
+                    'peserta_id' => $tenagaId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        if (!empty($insertData)) {
+            DB::table('turnamen_peserta')->insert($insertData);
         }
 
         return true;
@@ -566,5 +601,161 @@ class TurnamenRepository
     public function getDetailWithRelations($id)
     {
         return $this->model->with(['caborKategori.cabor', 'tingkat', 'juara'])->find($id);
+    }
+
+    /**
+     * Get data for CRUD operations
+     */
+    public function getForCrud($request)
+    {
+        $query = $this->model->with(['caborKategori.cabor', 'tingkat', 'juara']);
+
+        // Apply search
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('lokasi', 'like', "%{$search}%")
+                  ->orWhere('hasil', 'like', "%{$search}%")
+                  ->orWhereHas('caborKategori.cabor', function ($cq) use ($search) {
+                      $cq->where('nama', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('caborKategori', function ($cq) use ($search) {
+                      $cq->where('nama', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('tingkat', function ($tq) use ($search) {
+                      $tq->where('nama', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply filters
+        if ($request->has('cabor_kategori_id') && !empty($request->cabor_kategori_id)) {
+            $query->where('cabor_kategori_id', $request->cabor_kategori_id);
+        }
+
+        if ($request->has('tingkat_id') && !empty($request->tingkat_id)) {
+            $query->where('tingkat_id', $request->tingkat_id);
+        }
+
+        if ($request->has('start_date') && !empty($request->start_date)) {
+            $query->where('tanggal_mulai', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date') && !empty($request->end_date)) {
+            $query->where('tanggal_selesai', '<=', $request->end_date);
+        }
+
+        // Apply role-based filtering
+        $this->applyRoleFilter($query);
+
+        // Get total count before pagination
+        $total = $query->count();
+
+        // Apply pagination
+        $perPage = $request->get('per_page', 10);
+        $currentPage = $request->get('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+
+        $data = $query->orderBy('id', 'desc')
+            ->offset($offset)
+            ->limit($perPage)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->nama,
+                    'cabor' => $item->caborKategori->cabor->nama ?? '-',
+                    'kategori' => $item->caborKategori->nama ?? '-',
+                    'tanggal_mulai' => $item->tanggal_mulai,
+                    'tanggal_selesai' => $item->tanggal_selesai,
+                    'periode' => $this->formatPeriodeForMobile($item->tanggal_mulai, $item->tanggal_selesai),
+                    'tingkat' => $item->tingkat->nama ?? '-',
+                    'lokasi' => $item->lokasi,
+                    'juara' => $item->juara->nama ?? '-',
+                    'hasil' => $item->hasil,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+        return [
+            'data' => $data,
+            'total' => $total,
+            'currentPage' => $currentPage,
+            'perPage' => $perPage,
+            'search' => $request->search ?? '',
+            'filters' => [
+                'cabor_kategori_id' => $request->cabor_kategori_id ?? null,
+                'tingkat_id' => $request->tingkat_id ?? null,
+                'start_date' => $request->start_date ?? null,
+                'end_date' => $request->end_date ?? null,
+            ],
+        ];
+    }
+
+    /**
+     * Get peserta data for CRUD
+     */
+    public function getPesertaForCrud($turnamenId)
+    {
+        $turnamen = $this->model->find($turnamenId);
+        
+        if (!$turnamen) {
+            return [
+                'atlet' => [],
+                'pelatih' => [],
+                'tenaga_pendukung' => [],
+            ];
+        }
+
+        // Get atlet dari polymorphic relationship
+        $atlet = $turnamen->peserta()->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->nama,
+                'posisi' => $item->posisi ?? null,
+            ];
+        });
+
+        // Get pelatih dari polymorphic relationship
+        $pelatih = $turnamen->pelatihPeserta()->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->nama,
+                'jenis_pelatih' => $item->jenis_pelatih ?? null,
+            ];
+        });
+
+        // Get tenaga pendukung dari polymorphic relationship
+        $tenagaPendukung = $turnamen->tenagaPendukungPeserta()->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->nama,
+                'jenis_tenaga_pendukung' => $item->jenis_tenaga_pendukung ?? null,
+            ];
+        });
+
+        return [
+            'atlet' => $atlet,
+            'pelatih' => $pelatih,
+            'tenaga_pendukung' => $tenagaPendukung,
+        ];
+    }
+
+    /**
+     * Create new turnamen
+     */
+    public function create($data)
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Find turnamen by ID
+     */
+    public function find($id)
+    {
+        return $this->model->find($id);
     }
 }
