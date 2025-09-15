@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\Atlet;
+use App\Models\Pelatih;
+use App\Models\TenagaPendukung;
 
 class TurnamenPesertaController extends Controller
 {
@@ -371,10 +374,24 @@ class TurnamenPesertaController extends Controller
         $atlets = $query->get();
 
         return $atlets->map(function ($atlet) {
+            // Foto dari kolom, jika kosong coba ambil dari media library
+            $fotoUrl = null;
+            if (!empty($atlet->foto)) {
+                $fotoUrl = url('storage/' . ltrim($atlet->foto, '/'));
+            } else {
+                $model = Atlet::find($atlet->id);
+                if ($model && method_exists($model, 'getFirstMedia')) {
+                    $media = $model->getFirstMedia('images');
+                    if ($media) {
+                        $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                    }
+                }
+            }
+
             return [
                 'id'           => $atlet->id,
                 'nama'         => $atlet->nama,
-                'foto'         => $atlet->foto ? url('storage/' . $atlet->foto) : null,
+                'foto'         => $fotoUrl,
                 'jenisKelamin' => $this->mapJenisKelamin($atlet->jenis_kelamin),
                 'usia'         => $this->calculateAge($atlet->tanggal_lahir),
                 'posisi'       => $atlet->posisi ?? '-',
@@ -414,10 +431,23 @@ class TurnamenPesertaController extends Controller
         $pelatihs = $query->get();
 
         return $pelatihs->map(function ($pelatih) {
+            $fotoUrl = null;
+            if (!empty($pelatih->foto)) {
+                $fotoUrl = url('storage/' . ltrim($pelatih->foto, '/'));
+            } else {
+                $model = Pelatih::find($pelatih->id);
+                if ($model && method_exists($model, 'getFirstMedia')) {
+                    $media = $model->getFirstMedia('images');
+                    if ($media) {
+                        $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                    }
+                }
+            }
+
             return [
                 'id'           => $pelatih->id,
                 'nama'         => $pelatih->nama,
-                'foto'         => $pelatih->foto ? url('storage/' . $pelatih->foto) : null,
+                'foto'         => $fotoUrl,
                 'jenisKelamin' => $this->mapJenisKelamin($pelatih->jenis_kelamin),
                 'usia'         => $this->calculateAge($pelatih->tanggal_lahir),
                 'jenisPelatih' => $pelatih->jenis_pelatih ?? '-',
@@ -457,10 +487,23 @@ class TurnamenPesertaController extends Controller
         $tenagaPendukungs = $query->get();
 
         return $tenagaPendukungs->map(function ($tenagaPendukung) {
+            $fotoUrl = null;
+            if (!empty($tenagaPendukung->foto)) {
+                $fotoUrl = url('storage/' . ltrim($tenagaPendukung->foto, '/'));
+            } else {
+                $model = TenagaPendukung::find($tenagaPendukung->id);
+                if ($model && method_exists($model, 'getFirstMedia')) {
+                    $media = $model->getFirstMedia('images');
+                    if ($media) {
+                        $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                    }
+                }
+            }
+
             return [
                 'id'                     => $tenagaPendukung->id,
                 'nama'                   => $tenagaPendukung->nama,
-                'foto'                   => $tenagaPendukung->foto ? url('storage/' . $tenagaPendukung->foto) : null,
+                'foto'                   => $fotoUrl,
                 'jenisKelamin'           => $this->mapJenisKelamin($tenagaPendukung->jenis_kelamin),
                 'usia'                   => $this->calculateAge($tenagaPendukung->tanggal_lahir),
                 'jenisTenagaPendukung'   => $tenagaPendukung->jenis_tenaga_pendukung ?? '-',

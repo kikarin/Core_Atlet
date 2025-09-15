@@ -8,6 +8,9 @@ use App\Traits\RepositoryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Models\Atlet;
+use App\Models\Pelatih;
+use App\Models\TenagaPendukung;
 
 class TurnamenRepository
 {
@@ -456,13 +459,13 @@ class TurnamenRepository
         $caborKategoriId = $turnamen->cabor_kategori_id;
 
         // Get atlet IDs from turnamen_peserta table
-        $atletIds = \Illuminate\Support\Facades\DB::table('turnamen_peserta')
+        $atletIds = DB::table('turnamen_peserta')
             ->where('turnamen_id', $turnamenId)
             ->where('peserta_type', 'App\\Models\\Atlet')
             ->pluck('peserta_id');
 
         // Get atlet
-        $atletQuery = \App\Models\Atlet::with(['media'])
+        $atletQuery = Atlet::with(['media'])
             ->whereIn('atlets.id', $atletIds)
             ->leftJoin('cabor_kategori_atlet', function ($join) use ($caborKategoriId) {
                 $join->on('atlets.id', '=', 'cabor_kategori_atlet.atlet_id')
@@ -472,17 +475,17 @@ class TurnamenRepository
             ->leftJoin('mst_posisi_atlet', 'cabor_kategori_atlet.posisi_atlet_id', '=', 'mst_posisi_atlet.id')
             ->select(
                 'atlets.*',
-                \Illuminate\Support\Facades\DB::raw("COALESCE(mst_posisi_atlet.nama, '-') as posisi")
+                DB::raw("COALESCE(mst_posisi_atlet.nama, '-') as posisi")
             );
 
         // Get pelatih IDs from turnamen_peserta table
-        $pelatihIds = \Illuminate\Support\Facades\DB::table('turnamen_peserta')
+        $pelatihIds = DB::table('turnamen_peserta')
             ->where('turnamen_id', $turnamenId)
             ->where('peserta_type', 'App\\Models\\Pelatih')
             ->pluck('peserta_id');
 
         // Get pelatih
-        $pelatihQuery = \App\Models\Pelatih::with(['media'])
+        $pelatihQuery = Pelatih::with(['media'])
             ->whereIn('pelatihs.id', $pelatihIds)
             ->leftJoin('cabor_kategori_pelatih', function ($join) use ($caborKategoriId) {
                 $join->on('pelatihs.id', '=', 'cabor_kategori_pelatih.pelatih_id')
@@ -492,17 +495,17 @@ class TurnamenRepository
             ->leftJoin('mst_jenis_pelatih', 'cabor_kategori_pelatih.jenis_pelatih_id', '=', 'mst_jenis_pelatih.id')
             ->select(
                 'pelatihs.*',
-                \Illuminate\Support\Facades\DB::raw("COALESCE(mst_jenis_pelatih.nama, '-') as jenis_pelatih")
+                DB::raw("COALESCE(mst_jenis_pelatih.nama, '-') as jenis_pelatih")
             );
 
         // Get tenaga pendukung IDs from turnamen_peserta table
-        $tenagaIds = \Illuminate\Support\Facades\DB::table('turnamen_peserta')
+        $tenagaIds = DB::table('turnamen_peserta')
             ->where('turnamen_id', $turnamenId)
             ->where('peserta_type', 'App\\Models\\TenagaPendukung')
             ->pluck('peserta_id');
 
         // Get tenaga pendukung
-        $tenagaQuery = \App\Models\TenagaPendukung::with(['media'])
+        $tenagaQuery = TenagaPendukung::with(['media'])
             ->whereIn('tenaga_pendukungs.id', $tenagaIds)
             ->leftJoin('cabor_kategori_tenaga_pendukung', function ($join) use ($caborKategoriId) {
                 $join->on('tenaga_pendukungs.id', '=', 'cabor_kategori_tenaga_pendukung.tenaga_pendukung_id')
@@ -512,7 +515,7 @@ class TurnamenRepository
             ->leftJoin('mst_jenis_tenaga_pendukung', 'cabor_kategori_tenaga_pendukung.jenis_tenaga_pendukung_id', '=', 'mst_jenis_tenaga_pendukung.id')
             ->select(
                 'tenaga_pendukungs.*',
-                \Illuminate\Support\Facades\DB::raw("COALESCE(mst_jenis_tenaga_pendukung.nama, '-') as jenis_tenaga_pendukung")
+                DB::raw("COALESCE(mst_jenis_tenaga_pendukung.nama, '-') as jenis_tenaga_pendukung")
             );
 
         // Apply search if provided
@@ -711,28 +714,113 @@ class TurnamenRepository
 
         // Get atlet dari polymorphic relationship
         $atlet = $turnamen->peserta()->get()->map(function ($item) {
+            // Tentukan URL foto: gunakan URL absolut jika sudah ada; jika relative, prefix dengan storage; jika kosong, coba dari media library
+            $fotoUrl = null;
+            if (!empty($item->foto)) {
+                if (filter_var($item->foto, FILTER_VALIDATE_URL)) {
+                    $fotoUrl = $item->foto;
+                } else {
+                    $path = ltrim($item->foto, '/');
+                    if (str_starts_with($path, 'storage/')) {
+                        $fotoUrl = url($path);
+                    } elseif (str_starts_with($path, 'media/')) {
+                        $fotoUrl = url('storage/' . $path);
+                    } else {
+                        $fotoUrl = url('storage/' . $path);
+                    }
+                }
+            } elseif (method_exists($item, 'getFirstMedia')) {
+                $media = $item->getFirstMedia('images');
+                if ($media) {
+                    // gunakan konversi webp jika ada, fallback ke url asli
+                    $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                }
+            }
+
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'posisi' => $item->posisi ?? null,
+                'id'            => $item->id,
+                'nama'          => $item->nama,
+                'jenis_kelamin' => $this->mapJenisKelamin($item->jenis_kelamin ?? null),
+                'usia'          => $this->calculateAge($item->tanggal_lahir ?? null),
+                'foto'          => $fotoUrl,
             ];
         });
 
         // Get pelatih dari polymorphic relationship
         $pelatih = $turnamen->pelatihPeserta()->get()->map(function ($item) {
+            $fotoUrl = null;
+            if (!empty($item->foto)) {
+                if (filter_var($item->foto, FILTER_VALIDATE_URL)) {
+                    $fotoUrl = $item->foto;
+                } else {
+                    $path = ltrim($item->foto, '/');
+                    if (str_starts_with($path, 'storage/')) {
+                        $fotoUrl = url($path);
+                    } elseif (str_starts_with($path, 'media/')) {
+                        $fotoUrl = url('storage/' . $path);
+                    } else {
+                        $fotoUrl = url('storage/' . $path);
+                    }
+                }
+            } elseif (method_exists($item, 'getFirstMedia')) {
+                $media = $item->getFirstMedia('images');
+                if ($media) {
+                    $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                }
+            }
+
+            // Ambil nama jenis pelatih jika relasi tersedia
+            $jenisPelatihNama = null;
+            if (method_exists($item, 'jenisPelatih') && $item->relationLoaded('jenisPelatih')) {
+                $jenisPelatihNama = $item->jenisPelatih?->nama;
+            }
+
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'jenis_pelatih' => $item->jenis_pelatih ?? null,
+                'id'             => $item->id,
+                'nama'           => $item->nama,
+                'jenis_pelatih'  => $jenisPelatihNama,
+                'jenis_kelamin'  => $this->mapJenisKelamin($item->jenis_kelamin ?? null),
+                'usia'           => $this->calculateAge($item->tanggal_lahir ?? null),
+                'foto'           => $fotoUrl,
             ];
         });
 
         // Get tenaga pendukung dari polymorphic relationship
         $tenagaPendukung = $turnamen->tenagaPendukungPeserta()->get()->map(function ($item) {
+            $fotoUrl = null;
+            if (!empty($item->foto)) {
+                if (filter_var($item->foto, FILTER_VALIDATE_URL)) {
+                    $fotoUrl = $item->foto;
+                } else {
+                    $path = ltrim($item->foto, '/');
+                    if (str_starts_with($path, 'storage/')) {
+                        $fotoUrl = url($path);
+                    } elseif (str_starts_with($path, 'media/')) {
+                        $fotoUrl = url('storage/' . $path);
+                    } else {
+                        $fotoUrl = url('storage/' . $path);
+                    }
+                }
+            } elseif (method_exists($item, 'getFirstMedia')) {
+                $media = $item->getFirstMedia('images');
+                if ($media) {
+                    $fotoUrl = method_exists($media, 'getUrl') ? $media->getUrl('webp') : $media->getUrl();
+                }
+            }
+
+            // Ambil nama jenis tenaga pendukung jika relasi tersedia
+            $jenisTenagaNama = null;
+            if (method_exists($item, 'jenisTenagaPendukung') && $item->relationLoaded('jenisTenagaPendukung')) {
+                $jenisTenagaNama = $item->jenisTenagaPendukung?->nama;
+            }
+
             return [
-                'id' => $item->id,
-                'nama' => $item->nama,
-                'jenis_tenaga_pendukung' => $item->jenis_tenaga_pendukung ?? null,
+                'id'                       => $item->id,
+                'nama'                     => $item->nama,
+                'jenis_tenaga_pendukung'   => $jenisTenagaNama,
+                'jenis_kelamin'            => $this->mapJenisKelamin($item->jenis_kelamin ?? null),
+                'usia'                     => $this->calculateAge($item->tanggal_lahir ?? null),
+                'foto'                     => $fotoUrl,
             ];
         });
 

@@ -14,12 +14,21 @@ class ApiResponseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Pastikan aman ketika resource berupa array, object, atau tipe lain
+        $payload = is_array($this->resource) ? $this->resource : (array) ($this->resource ?? []);
+
+        $status  = $payload['status']  ?? 'success';
+        $message = $payload['message'] ?? 'Success';
+        $data    = array_key_exists('data', $payload) ? $payload['data'] : $this->resource;
+        $meta    = $payload['meta']    ?? null;
+        $errors  = $payload['errors']  ?? null;
+
         return [
-            'status'  => 'success',
-            'message' => $this->message ?? 'Success',
-            'data'    => $this->data    ?? $this->resource,
-            'meta'    => $this->when($this->meta, $this->meta),
-            'errors'  => $this->when($this->errors, $this->errors),
+            'status'  => $status,
+            'message' => $message,
+            'data'    => $data,
+            'meta'    => $this->when($meta, $meta),
+            'errors'  => $this->when($errors, $errors),
         ];
     }
 

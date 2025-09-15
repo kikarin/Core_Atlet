@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\TargetLatihanController as ApiTargetLatihanControll
 use App\Http\Controllers\Api\PemeriksaanPesertaController as ApiPemeriksaanPesertaController;
 use App\Http\Controllers\Api\PemeriksaanPesertaParameterController;
 use App\Http\Controllers\Api\RencanaLatihanTargetController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\UsersController;
@@ -203,4 +204,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{jenisPeserta}/parameter/pemetaan', [PemeriksaanPesertaParameterController::class, 'getPesertaWithParameters']);
     Route::post('/pemeriksaan/{pemeriksaanId}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdateParameterPeserta']);
     Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{pesertaId}/parameter/pemetaan', [PemeriksaanPesertaParameterController::class, 'getPesertaParameter']);
+
+    // Profil Peserta (tanpa permission khusus, hanya auth)
+    Route::get('/profil/me', [ProfileController::class, 'me']);
+    Route::get('/profil/atlet', [ProfileController::class, 'myAtlet']);
+    Route::get('/profil/pelatih', [ProfileController::class, 'myPelatih']);
+    Route::get('/profil/tenaga-pendukung', [ProfileController::class, 'myTenagaPendukung']);
 });

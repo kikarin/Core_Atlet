@@ -245,17 +245,25 @@ class PemeriksaanPesertaController extends Controller
             });
         }
 
-        $data = $query->get()->map(function ($item) {
-            $tenaga = $item->tenagaPendukung;
-            return [
-                'id'                     => $tenaga->id,
-                'nama'                   => $tenaga->nama,
-                'foto'                   => $tenaga->foto,
-                'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
-                'jenis_kelamin'          => $tenaga->jenis_kelamin,
-                'usia'                   => $this->calculateAge($tenaga->tanggal_lahir),
-            ];
-        });
+oke         // Pastikan hanya data dengan relasi tenagaPendukung yang valid
+        $query->whereHas('tenagaPendukung');
+
+        $data = $query->get()
+            ->filter(function ($item) {
+                return !is_null($item->tenagaPendukung);
+            })
+            ->map(function ($item) {
+                $tenaga = $item->tenagaPendukung;
+                return [
+                    'id'                     => $tenaga?->id,
+                    'nama'                   => $tenaga?->nama,
+                    'foto'                   => $tenaga?->foto,
+                    'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
+                    'jenis_kelamin'          => $tenaga?->jenis_kelamin,
+                    'usia'                   => $this->calculateAge($tenaga?->tanggal_lahir),
+                ];
+            })
+            ->values();
 
         return response()->json(['status' => 'success', 'message' => 'Data tenaga pendukung tersedia berhasil diambil', 'data' => $data]);
     }
