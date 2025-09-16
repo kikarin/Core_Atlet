@@ -219,11 +219,11 @@ class TurnamenRepository
         if (isset($pesertaData['atlet_ids']) && is_array($pesertaData['atlet_ids'])) {
             foreach ($pesertaData['atlet_ids'] as $atletId) {
                 $insertData[] = [
-                    'turnamen_id' => $turnamenId,
+                    'turnamen_id'  => $turnamenId,
                     'peserta_type' => 'App\\Models\\Atlet',
-                    'peserta_id' => $atletId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'peserta_id'   => $atletId,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
                 ];
             }
         }
@@ -231,11 +231,11 @@ class TurnamenRepository
         if (isset($pesertaData['pelatih_ids']) && is_array($pesertaData['pelatih_ids'])) {
             foreach ($pesertaData['pelatih_ids'] as $pelatihId) {
                 $insertData[] = [
-                    'turnamen_id' => $turnamenId,
+                    'turnamen_id'  => $turnamenId,
                     'peserta_type' => 'App\\Models\\Pelatih',
-                    'peserta_id' => $pelatihId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'peserta_id'   => $pelatihId,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
                 ];
             }
         }
@@ -243,11 +243,11 @@ class TurnamenRepository
         if (isset($pesertaData['tenaga_pendukung_ids']) && is_array($pesertaData['tenaga_pendukung_ids'])) {
             foreach ($pesertaData['tenaga_pendukung_ids'] as $tenagaId) {
                 $insertData[] = [
-                    'turnamen_id' => $turnamenId,
+                    'turnamen_id'  => $turnamenId,
                     'peserta_type' => 'App\\Models\\TenagaPendukung',
-                    'peserta_id' => $tenagaId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'peserta_id'   => $tenagaId,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
                 ];
             }
         }
@@ -656,9 +656,9 @@ class TurnamenRepository
         $total = $query->count();
 
         // Apply pagination
-        $perPage = $request->get('per_page', 10);
+        $perPage     = $request->get('per_page', 10);
         $currentPage = $request->get('page', 1);
-        $offset = ($currentPage - 1) * $perPage;
+        $offset      = ($currentPage - 1) * $perPage;
 
         $data = $query->orderBy('id', 'desc')
             ->offset($offset)
@@ -666,33 +666,33 @@ class TurnamenRepository
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'cabor' => $item->caborKategori->cabor->nama ?? '-',
-                    'kategori' => $item->caborKategori->nama ?? '-',
-                    'tanggal_mulai' => $item->tanggal_mulai,
+                    'id'              => $item->id,
+                    'nama'            => $item->nama,
+                    'cabor'           => $item->caborKategori->cabor->nama ?? '-',
+                    'kategori'        => $item->caborKategori->nama        ?? '-',
+                    'tanggal_mulai'   => $item->tanggal_mulai,
                     'tanggal_selesai' => $item->tanggal_selesai,
-                    'periode' => $this->formatPeriodeForMobile($item->tanggal_mulai, $item->tanggal_selesai),
-                    'tingkat' => $item->tingkat->nama ?? '-',
-                    'lokasi' => $item->lokasi,
-                    'juara' => $item->juara->nama ?? '-',
-                    'hasil' => $item->hasil,
-                    'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at,
+                    'periode'         => $this->formatPeriodeForMobile($item->tanggal_mulai, $item->tanggal_selesai),
+                    'tingkat'         => $item->tingkat->nama ?? '-',
+                    'lokasi'          => $item->lokasi,
+                    'juara'           => $item->juara->nama ?? '-',
+                    'hasil'           => $item->hasil,
+                    'created_at'      => $item->created_at,
+                    'updated_at'      => $item->updated_at,
                 ];
             });
 
         return [
-            'data' => $data,
-            'total' => $total,
+            'data'        => $data,
+            'total'       => $total,
             'currentPage' => $currentPage,
-            'perPage' => $perPage,
-            'search' => $request->search ?? '',
-            'filters' => [
+            'perPage'     => $perPage,
+            'search'      => $request->search ?? '',
+            'filters'     => [
                 'cabor_kategori_id' => $request->cabor_kategori_id ?? null,
-                'tingkat_id' => $request->tingkat_id ?? null,
-                'start_date' => $request->start_date ?? null,
-                'end_date' => $request->end_date ?? null,
+                'tingkat_id'        => $request->tingkat_id        ?? null,
+                'start_date'        => $request->start_date        ?? null,
+                'end_date'          => $request->end_date          ?? null,
             ],
         ];
     }
@@ -703,11 +703,11 @@ class TurnamenRepository
     public function getPesertaForCrud($turnamenId)
     {
         $turnamen = $this->model->find($turnamenId);
-        
+
         if (!$turnamen) {
             return [
-                'atlet' => [],
-                'pelatih' => [],
+                'atlet'            => [],
+                'pelatih'          => [],
                 'tenaga_pendukung' => [],
             ];
         }
@@ -825,8 +825,8 @@ class TurnamenRepository
         });
 
         return [
-            'atlet' => $atlet,
-            'pelatih' => $pelatih,
+            'atlet'            => $atlet,
+            'pelatih'          => $pelatih,
             'tenaga_pendukung' => $tenagaPendukung,
         ];
     }

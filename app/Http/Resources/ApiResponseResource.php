@@ -20,8 +20,8 @@ class ApiResponseResource extends JsonResource
         $status  = $payload['status']  ?? 'success';
         $message = $payload['message'] ?? 'Success';
         $data    = array_key_exists('data', $payload) ? $payload['data'] : $this->resource;
-        $meta    = $payload['meta']    ?? null;
-        $errors  = $payload['errors']  ?? null;
+        $meta    = $payload['meta']   ?? null;
+        $errors  = $payload['errors'] ?? null;
 
         return [
             'status'  => $status,

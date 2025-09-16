@@ -48,8 +48,8 @@ class TurnamenPesertaController extends Controller
                         'tanggal_mulai'   => $turnamen->tanggal_mulai,
                         'tanggal_selesai' => $turnamen->tanggal_selesai,
                     ],
-                    'atlet'             => $pesertaData['atlet'] ?? [],
-                    'pelatih'           => $pesertaData['pelatih'] ?? [],
+                    'atlet'             => $pesertaData['atlet']            ?? [],
+                    'pelatih'           => $pesertaData['pelatih']          ?? [],
                     'tenaga_pendukung'  => $pesertaData['tenaga_pendukung'] ?? [],
                 ],
             ]);
@@ -90,7 +90,7 @@ class TurnamenPesertaController extends Controller
                 ], 404);
             }
 
-            $pesertaId = $request->peserta_id;
+            $pesertaId    = $request->peserta_id;
             $jenisPeserta = $request->jenis_peserta;
 
             // Determine peserta type class
@@ -110,7 +110,7 @@ class TurnamenPesertaController extends Controller
 
             // Validate peserta exists
             $pesertaModel = app($pesertaType);
-            $peserta = $pesertaModel->find($pesertaId);
+            $peserta      = $pesertaModel->find($pesertaId);
             if (!$peserta) {
                 return response()->json([
                     'status'  => 'error',
@@ -145,8 +145,8 @@ class TurnamenPesertaController extends Controller
                 'status'  => 'success',
                 'message' => 'Peserta berhasil ditambahkan ke turnamen',
                 'data'    => [
-                    'turnamen_id'  => $turnamenId,
-                    'peserta_id'   => $pesertaId,
+                    'turnamen_id'   => $turnamenId,
+                    'peserta_id'    => $pesertaId,
                     'jenis_peserta' => $jenisPeserta,
                 ],
             ], 201);
@@ -281,7 +281,7 @@ class TurnamenPesertaController extends Controller
             }
 
             $jenisPeserta = $request->jenis_peserta;
-            $search = $request->search ?? '';
+            $search       = $request->search ?? '';
 
             $availablePeserta = $this->getAvailablePesertaByType($turnamenId, $turnamen->cabor_kategori_id, $jenisPeserta, $search);
 
@@ -323,7 +323,7 @@ class TurnamenPesertaController extends Controller
             'tenaga-pendukung'  => 'App\\Models\\TenagaPendukung',
         ];
 
-        $pesertaType = $pesertaTypeMap[$jenisPeserta];
+        $pesertaType        = $pesertaTypeMap[$jenisPeserta];
         $existingPesertaIds = DB::table('turnamen_peserta')
             ->where('turnamen_id', $turnamenId)
             ->where('peserta_type', $pesertaType)
@@ -530,8 +530,8 @@ class TurnamenPesertaController extends Controller
 
         try {
             $birthDate = new \DateTime($tanggalLahir);
-            $today = new \DateTime();
-            $age = $today->diff($birthDate)->y;
+            $today     = new \DateTime();
+            $age       = $today->diff($birthDate)->y;
             return $age;
         } catch (\Exception $e) {
             return '-';

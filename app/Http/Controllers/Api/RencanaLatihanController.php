@@ -648,7 +648,8 @@ class RencanaLatihanController extends Controller
             $search = $request->get('search', '');
 
             $query = CaborKategoriTenagaPendukung::with(['tenagaPendukung', 'jenisTenagaPendukung'])
-                ->where('cabor_kategori_id', $caborKategoriId);
+                ->where('cabor_kategori_id', $caborKategoriId)
+                ->whereHas('tenagaPendukung');
 
             if ($search) {
                 $query->whereHas('tenagaPendukung', function ($q) use ($search) {
@@ -658,18 +659,23 @@ class RencanaLatihanController extends Controller
 
             $tenagaList = $query->get();
 
-            $data = $tenagaList->map(function ($item) {
-                $tenaga = $item->tenagaPendukung;
-                return [
-                    'id'                     => $tenaga->id,
-                    'nama'                   => $tenaga->nama,
-                    'foto'                   => $tenaga->foto,
-                    'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
-                    'jenis_kelamin'          => $this->mapJenisKelamin($tenaga->jenis_kelamin),
-                    'usia'                   => $this->calculateAge($tenaga->tanggal_lahir),
-                    'lama_bergabung'         => $this->getLamaBergabung($tenaga->tanggal_bergabung),
-                ];
-            });
+            $data = $tenagaList
+                ->filter(function ($item) {
+                    return !is_null($item->tenagaPendukung);
+                })
+                ->map(function ($item) {
+                    $tenaga = $item->tenagaPendukung;
+                    return [
+                        'id'                     => $tenaga?->id,
+                        'nama'                   => $tenaga?->nama,
+                        'foto'                   => $tenaga?->foto,
+                        'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
+                        'jenis_kelamin'          => $this->mapJenisKelamin($tenaga?->jenis_kelamin),
+                        'usia'                   => $this->calculateAge($tenaga?->tanggal_lahir),
+                        'lama_bergabung'         => $this->getLamaBergabung($tenaga?->tanggal_bergabung),
+                    ];
+                })
+                ->values();
 
             return response()->json([
                 'status'  => 'success',

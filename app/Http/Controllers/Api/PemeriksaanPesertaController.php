@@ -245,7 +245,7 @@ class PemeriksaanPesertaController extends Controller
             });
         }
 
-oke         // Pastikan hanya data dengan relasi tenagaPendukung yang valid
+        // Pastikan hanya data dengan relasi tenagaPendukung yang valid
         $query->whereHas('tenagaPendukung');
 
         $data = $query->get()

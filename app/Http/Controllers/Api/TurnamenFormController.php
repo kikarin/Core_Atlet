@@ -9,9 +9,6 @@ use App\Models\Pelatih;
 use App\Models\TenagaPendukung;
 use App\Models\MstTingkat;
 use App\Models\MstJuara;
-use App\Models\MstJenisPelatih;
-use App\Models\MstJenisTenagaPendukung;
-use App\Models\MstPosisiAtlet;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -31,10 +28,10 @@ class TurnamenFormController extends Controller
 
             $data = $caborKategori->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
+                    'id'    => $item->id,
+                    'nama'  => $item->nama,
                     'cabor' => [
-                        'id' => $item->cabor->id,
+                        'id'   => $item->cabor->id,
                         'nama' => $item->cabor->nama,
                     ],
                 ];
@@ -84,14 +81,14 @@ class TurnamenFormController extends Controller
             ->get()
             ->map(function ($item) {
                 $posisi = $item->caborKategoriAtlet->first()?->posisiAtlet?->nama ?? '-';
-                
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $this->getFullPhotoUrl($item->foto),
-                    'posisi' => $posisi,
-                    'jenis_kelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
+                    'id'             => $item->id,
+                    'nama'           => $item->nama,
+                    'foto'           => $this->getFullPhotoUrl($item->foto),
+                    'posisi'         => $posisi,
+                    'jenis_kelamin'  => $this->mapJenisKelamin($item->jenis_kelamin),
+                    'usia'           => $this->calculateAge($item->tanggal_lahir),
                     'lama_bergabung' => $this->getLamaBergabung($item->tanggal_bergabung),
                 ];
             });
@@ -104,7 +101,7 @@ class TurnamenFormController extends Controller
         } catch (\Exception $e) {
             Log::error('Error getting atlet by cabor kategori: ' . $e->getMessage(), [
                 'cabor_kategori_id' => $caborKategoriId,
-                'trace' => $e->getTraceAsString(),
+                'trace'             => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -141,14 +138,14 @@ class TurnamenFormController extends Controller
             ->get()
             ->map(function ($item) {
                 $jenisPelatih = $item->caborKategoriPelatih->first()?->jenisPelatih?->nama ?? '-';
-                
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $this->getFullPhotoUrl($item->foto),
-                    'jenis_pelatih' => $jenisPelatih,
-                    'jenis_kelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
+                    'id'             => $item->id,
+                    'nama'           => $item->nama,
+                    'foto'           => $this->getFullPhotoUrl($item->foto),
+                    'jenis_pelatih'  => $jenisPelatih,
+                    'jenis_kelamin'  => $this->mapJenisKelamin($item->jenis_kelamin),
+                    'usia'           => $this->calculateAge($item->tanggal_lahir),
                     'lama_bergabung' => $this->getLamaBergabung($item->tanggal_bergabung),
                 ];
             });
@@ -161,7 +158,7 @@ class TurnamenFormController extends Controller
         } catch (\Exception $e) {
             Log::error('Error getting pelatih by cabor kategori: ' . $e->getMessage(), [
                 'cabor_kategori_id' => $caborKategoriId,
-                'trace' => $e->getTraceAsString(),
+                'trace'             => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -198,15 +195,15 @@ class TurnamenFormController extends Controller
             ->get()
             ->map(function ($item) {
                 $jenisTenagaPendukung = $item->caborKategoriTenagaPendukung->first()?->jenisTenagaPendukung?->nama ?? '-';
-                
+
                 return [
-                    'id' => $item->id,
-                    'nama' => $item->nama,
-                    'foto' => $this->getFullPhotoUrl($item->foto),
+                    'id'                     => $item->id,
+                    'nama'                   => $item->nama,
+                    'foto'                   => $this->getFullPhotoUrl($item->foto),
                     'jenis_tenaga_pendukung' => $jenisTenagaPendukung,
-                    'jenis_kelamin' => $this->mapJenisKelamin($item->jenis_kelamin),
-                    'usia' => $this->calculateAge($item->tanggal_lahir),
-                    'lama_bergabung' => $this->getLamaBergabung($item->tanggal_bergabung),
+                    'jenis_kelamin'          => $this->mapJenisKelamin($item->jenis_kelamin),
+                    'usia'                   => $this->calculateAge($item->tanggal_lahir),
+                    'lama_bergabung'         => $this->getLamaBergabung($item->tanggal_bergabung),
                 ];
             });
 
@@ -218,7 +215,7 @@ class TurnamenFormController extends Controller
         } catch (\Exception $e) {
             Log::error('Error getting tenaga pendukung by cabor kategori: ' . $e->getMessage(), [
                 'cabor_kategori_id' => $caborKategoriId,
-                'trace' => $e->getTraceAsString(),
+                'trace'             => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -238,7 +235,7 @@ class TurnamenFormController extends Controller
                 ->get()
                 ->map(function ($item) {
                     return [
-                        'id' => $item->id,
+                        'id'   => $item->id,
                         'nama' => $item->nama,
                     ];
                 });
@@ -270,7 +267,7 @@ class TurnamenFormController extends Controller
                 ->get()
                 ->map(function ($item) {
                     return [
-                        'id' => $item->id,
+                        'id'   => $item->id,
                         'nama' => $item->nama,
                     ];
                 });
@@ -314,8 +311,8 @@ class TurnamenFormController extends Controller
     private function mapJenisKelamin($jenisKelamin): string
     {
         return match ($jenisKelamin) {
-            'L' => 'Laki-laki',
-            'P' => 'Perempuan',
+            'L'     => 'Laki-laki',
+            'P'     => 'Perempuan',
             default => $jenisKelamin,
         };
     }
@@ -330,8 +327,8 @@ class TurnamenFormController extends Controller
         }
 
         $birthDate = new \DateTime($tanggalLahir);
-        $today = new \DateTime();
-        $age = $today->diff($birthDate)->y;
+        $today     = new \DateTime();
+        $age       = $today->diff($birthDate)->y;
 
         return $age;
     }
@@ -346,10 +343,10 @@ class TurnamenFormController extends Controller
         }
 
         $joinDate = new \DateTime($tanggalBergabung);
-        $today = new \DateTime();
-        $diff = $today->diff($joinDate);
+        $today    = new \DateTime();
+        $diff     = $today->diff($joinDate);
 
-        $years = $diff->y;
+        $years  = $diff->y;
         $months = $diff->m;
 
         if ($years > 0 && $months > 0) {

@@ -76,8 +76,8 @@ class ProfileController extends Controller
      */
     public function myAtlet(Request $request): JsonResponse
     {
-        $user   = $request->user();
-        $atlet  = $user ? $this->findAtletByUserId($user->id) : null;
+        $user  = $request->user();
+        $atlet = $user ? $this->findAtletByUserId($user->id) : null;
 
         if (! $atlet) {
             return response()->json([
@@ -118,8 +118,8 @@ class ProfileController extends Controller
      */
     public function myTenagaPendukung(Request $request): JsonResponse
     {
-        $user             = $request->user();
-        $tenagaPendukung  = $user ? $this->findTenagaPendukungByUserId($user->id) : null;
+        $user            = $request->user();
+        $tenagaPendukung = $user ? $this->findTenagaPendukungByUserId($user->id) : null;
 
         if (! $tenagaPendukung) {
             return response()->json([
@@ -205,29 +205,29 @@ class ProfileController extends Controller
 
             'ibu' => [
                 'nama'         => $orangTua->nama_ibu_kandung ?? null,
-                'tempatLahir'  => $orangTua->tempat_lahir_ibu   ?? null,
+                'tempatLahir'  => $orangTua->tempat_lahir_ibu ?? null,
                 'tanggalLahir' => $this->formatDate($orangTua->tanggal_lahir_ibu ?? null),
-                'noHP'         => $orangTua->no_hp_ibu          ?? null,
-                'pekerjaan'    => $orangTua->pekerjaan_ibu      ?? null,
-                'alamat'       => $orangTua->alamat_ibu         ?? null,
+                'noHP'         => $orangTua->no_hp_ibu     ?? null,
+                'pekerjaan'    => $orangTua->pekerjaan_ibu ?? null,
+                'alamat'       => $orangTua->alamat_ibu    ?? null,
             ],
 
             'ayah' => [
                 'nama'         => $orangTua->nama_ayah_kandung ?? null,
-                'tempatLahir'  => $orangTua->tempat_lahir_ayah  ?? null,
+                'tempatLahir'  => $orangTua->tempat_lahir_ayah ?? null,
                 'tanggalLahir' => $this->formatDate($orangTua->tanggal_lahir_ayah ?? null),
-                'noHP'         => $orangTua->no_hp_ayah         ?? null,
-                'pekerjaan'    => $orangTua->pekerjaan_ayah     ?? null,
-                'alamat'       => $orangTua->alamat_ayah        ?? null,
+                'noHP'         => $orangTua->no_hp_ayah     ?? null,
+                'pekerjaan'    => $orangTua->pekerjaan_ayah ?? null,
+                'alamat'       => $orangTua->alamat_ayah    ?? null,
             ],
 
             'wali' => [
-                'nama'         => $orangTua->nama_wali          ?? null,
-                'tempatLahir'  => $orangTua->tempat_lahir_wali  ?? null,
+                'nama'         => $orangTua->nama_wali         ?? null,
+                'tempatLahir'  => $orangTua->tempat_lahir_wali ?? null,
                 'tanggalLahir' => $this->formatDate($orangTua->tanggal_lahir_wali ?? null),
-                'noHP'         => $orangTua->no_hp_wali         ?? null,
-                'pekerjaan'    => $orangTua->pekerjaan_wali     ?? null,
-                'alamat'       => $orangTua->alamat_wali        ?? null,
+                'noHP'         => $orangTua->no_hp_wali     ?? null,
+                'pekerjaan'    => $orangTua->pekerjaan_wali ?? null,
+                'alamat'       => $orangTua->alamat_wali    ?? null,
             ],
 
             'sertifikat' => $atlet->sertifikat->map(function ($item) {
@@ -438,5 +438,3 @@ class ProfileController extends Controller
         }
     }
 }
-
-

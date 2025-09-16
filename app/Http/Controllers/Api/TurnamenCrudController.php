@@ -38,9 +38,9 @@ class TurnamenCrudController extends Controller
                     'search'       => $data['search'],
                     'filters'      => [
                         'cabor_kategori_id' => $data['filters']['cabor_kategori_id'] ?? null,
-                        'tingkat_id'        => $data['filters']['tingkat_id'] ?? null,
-                        'start_date'        => $data['filters']['start_date'] ?? null,
-                        'end_date'          => $data['filters']['end_date'] ?? null,
+                        'tingkat_id'        => $data['filters']['tingkat_id']        ?? null,
+                        'start_date'        => $data['filters']['start_date']        ?? null,
+                        'end_date'          => $data['filters']['end_date']          ?? null,
                     ],
                 ],
             ]);
@@ -78,10 +78,10 @@ class TurnamenCrudController extends Controller
                 'status'  => 'success',
                 'message' => 'Detail turnamen berhasil diambil',
                 'data'    => [
-                    'id'    => $turnamen->id,
-                    'nama'  => $turnamen->nama,
+                    'id'                => $turnamen->id,
+                    'nama'              => $turnamen->nama,
                     'cabor_kategori_id' => $turnamen->cabor_kategori_id,
-                    'cabor' => [
+                    'cabor'             => [
                         'id'   => $turnamen->caborKategori->cabor->id   ?? null,
                         'nama' => $turnamen->caborKategori->cabor->nama ?? null,
                     ],
@@ -91,14 +91,14 @@ class TurnamenCrudController extends Controller
                     ],
                     'tanggal_mulai'   => $turnamen->tanggal_mulai,
                     'tanggal_selesai' => $turnamen->tanggal_selesai,
-                    'tingkat_id' => $turnamen->tingkat_id,
-                    'tingkat' => [
+                    'tingkat_id'      => $turnamen->tingkat_id,
+                    'tingkat'         => [
                         'id'   => $turnamen->tingkat->id   ?? null,
                         'nama' => $turnamen->tingkat->nama ?? null,
                     ],
-                    'lokasi' => $turnamen->lokasi,
+                    'lokasi'   => $turnamen->lokasi,
                     'juara_id' => $turnamen->juara_id,
-                    'juara'  => [
+                    'juara'    => [
                         'id'   => $turnamen->juara->id   ?? null,
                         'nama' => $turnamen->juara->nama ?? null,
                     ],
@@ -112,7 +112,7 @@ class TurnamenCrudController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in turnamen CRUD show: ' . $e->getMessage(), [
                 'turnamen_id' => $id,
-                'trace' => $e->getTraceAsString(),
+                'trace'       => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -130,7 +130,7 @@ class TurnamenCrudController extends Controller
         try {
             DB::beginTransaction();
 
-            $data = $request->validated();
+            $data   = $request->validated();
             $userId = auth()->id();
 
             // Create turnamen
@@ -142,7 +142,7 @@ class TurnamenCrudController extends Controller
                 'tingkat_id'        => $data['tingkat_id'],
                 'lokasi'            => $data['lokasi'],
                 'juara_id'          => $data['juara_id'] ?? null,
-                'hasil'             => $data['hasil'] ?? null,
+                'hasil'             => $data['hasil']    ?? null,
                 'evaluasi'          => $data['evaluasi'] ?? null,
                 'created_by'        => $userId,
                 'updated_by'        => $userId,
@@ -154,8 +154,8 @@ class TurnamenCrudController extends Controller
             // Sync peserta if provided
             if (!empty($data['atlet_ids']) || !empty($data['pelatih_ids']) || !empty($data['tenaga_pendukung_ids'])) {
                 $this->repository->syncPeserta($turnamen->id, [
-                    'atlet_ids' => $data['atlet_ids'] ?? [],
-                    'pelatih_ids' => $data['pelatih_ids'] ?? [],
+                    'atlet_ids'            => $data['atlet_ids']            ?? [],
+                    'pelatih_ids'          => $data['pelatih_ids']          ?? [],
                     'tenaga_pendukung_ids' => $data['tenaga_pendukung_ids'] ?? [],
                 ]);
             }
@@ -181,7 +181,7 @@ class TurnamenCrudController extends Controller
                     ],
                     'tanggal_mulai'   => $turnamen->tanggal_mulai,
                     'tanggal_selesai' => $turnamen->tanggal_selesai,
-                    'tingkat' => [
+                    'tingkat'         => [
                         'id'   => $turnamen->tingkat->id   ?? null,
                         'nama' => $turnamen->tingkat->nama ?? null,
                     ],
@@ -199,7 +199,7 @@ class TurnamenCrudController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating turnamen: ' . $e->getMessage(), [
-                'data' => $request->all(),
+                'data'  => $request->all(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -227,7 +227,7 @@ class TurnamenCrudController extends Controller
 
             DB::beginTransaction();
 
-            $data = $request->validated();
+            $data   = $request->validated();
             $userId = auth()->id();
 
             // Update turnamen
@@ -239,7 +239,7 @@ class TurnamenCrudController extends Controller
                 'tingkat_id'        => $data['tingkat_id'],
                 'lokasi'            => $data['lokasi'],
                 'juara_id'          => $data['juara_id'] ?? null,
-                'hasil'             => $data['hasil'] ?? null,
+                'hasil'             => $data['hasil']    ?? null,
                 'evaluasi'          => $data['evaluasi'] ?? null,
                 'updated_by'        => $userId,
             ]);
@@ -250,8 +250,8 @@ class TurnamenCrudController extends Controller
             // Sync peserta if provided
             if (isset($data['atlet_ids']) || isset($data['pelatih_ids']) || isset($data['tenaga_pendukung_ids'])) {
                 $this->repository->syncPeserta($turnamen->id, [
-                    'atlet_ids' => $data['atlet_ids'] ?? [],
-                    'pelatih_ids' => $data['pelatih_ids'] ?? [],
+                    'atlet_ids'            => $data['atlet_ids']            ?? [],
+                    'pelatih_ids'          => $data['pelatih_ids']          ?? [],
                     'tenaga_pendukung_ids' => $data['tenaga_pendukung_ids'] ?? [],
                 ]);
             }
@@ -277,7 +277,7 @@ class TurnamenCrudController extends Controller
                     ],
                     'tanggal_mulai'   => $turnamen->tanggal_mulai,
                     'tanggal_selesai' => $turnamen->tanggal_selesai,
-                    'tingkat' => [
+                    'tingkat'         => [
                         'id'   => $turnamen->tingkat->id   ?? null,
                         'nama' => $turnamen->tingkat->nama ?? null,
                     ],
@@ -296,8 +296,8 @@ class TurnamenCrudController extends Controller
             DB::rollBack();
             Log::error('Error updating turnamen: ' . $e->getMessage(), [
                 'turnamen_id' => $id,
-                'data' => $request->all(),
-                'trace' => $e->getTraceAsString(),
+                'data'        => $request->all(),
+                'trace'       => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -345,7 +345,7 @@ class TurnamenCrudController extends Controller
             DB::rollBack();
             Log::error('Error deleting turnamen: ' . $e->getMessage(), [
                 'turnamen_id' => $id,
-                'trace' => $e->getTraceAsString(),
+                'trace'       => $e->getTraceAsString(),
             ]);
 
             return response()->json([
