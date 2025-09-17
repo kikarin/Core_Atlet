@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PemeriksaanPesertaController as ApiPemeriksaanPeser
 use App\Http\Controllers\Api\PemeriksaanPesertaParameterController;
 use App\Http\Controllers\Api\RencanaLatihanTargetController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ParticipantProfileController;
 use App\Http\Controllers\RefStatusPemeriksaanController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\UsersController;
@@ -90,6 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Target Latihan (Mobile)
     Route::get('/rencana-latihan/{rencanaId}/targets', [ApiRencanaLatihanController::class, 'targets']);
     Route::get('/rencana-latihan/{rencanaId}/targets/{targetId}', [ApiRencanaLatihanController::class, 'targetDetail']);
+    // Rencana Latihan Peserta - Bulk set kehadiran
+    Route::post('/rencana-latihan/{rencanaId}/peserta/{jenisPeserta}/bulk-kehadiran', [ApiRencanaLatihanController::class, 'bulkSetKehadiran']);
 
     // Target Latihan Peserta (Mobile)
     Route::get('/program-latihan/{programId}/rencana/{rencanaId}/peserta/{pesertaId}/targets/{pesertaType?}', [ApiRencanaLatihanController::class, 'participantTargets']);
@@ -159,6 +162,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/turnamen/{id}/mobile', [TurnamenController::class, 'show']);
     Route::get('/turnamen/cabor/list', [TurnamenController::class, 'getCaborList']);
     Route::get('/turnamen/{turnamenId}/peserta', [TurnamenController::class, 'peserta']);
+    // Profil peserta by-id dari listing
+    Route::get('/rencana-latihan/{rencanaId}/peserta/{jenis}/profil/{pesertaId}', [ParticipantProfileController::class, 'rencanaProfil']);
+    Route::get('/pemeriksaan/{pemeriksaanId}/peserta/{jenis}/profil/{pesertaId}', [ParticipantProfileController::class, 'pemeriksaanProfil']);
+    Route::get('/turnamen/{turnamenId}/peserta/{jenis}/profil/{pesertaId}', [ParticipantProfileController::class, 'turnamenProfil']);
 
     // Turnamen CRUD (Restricted to Superadmin, Admin, and Pelatih)
     Route::middleware('turnamen.permission')->group(function () {

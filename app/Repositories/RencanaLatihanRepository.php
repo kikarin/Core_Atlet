@@ -258,11 +258,25 @@ class RencanaLatihanRepository
         $rencana         = $this->model->findOrFail($rencanaId);
         $program         = ProgramLatihan::find($rencana->program_latihan_id);
         $caborKategoriId = $program->cabor_kategori_id;
+        $auth            = Auth::user();
 
         // Get atlet
         $atletIds = DB::table('rencana_latihan_atlet')
             ->where('rencana_latihan_id', $rencanaId)
             ->pluck('atlet_id');
+
+        // Jika role Atlet, batasi hanya dirinya sendiri
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $authAtletId = optional($auth->atlet)->id;
+            if ($authAtletId) {
+                $atletIds = $atletIds->filter(function ($id) use ($authAtletId) {
+                    return (int) $id === (int) $authAtletId;
+                })->values();
+            } else {
+                // Tidak ada mapping atlet untuk user ini -> kosongkan
+                $atletIds = collect([]);
+            }
+        }
 
         $atletQuery = Atlet::with(['media'])
             ->whereIn('atlets.id', $atletIds)
@@ -287,6 +301,11 @@ class RencanaLatihanRepository
             ->where('rencana_latihan_id', $rencanaId)
             ->pluck('pelatih_id');
 
+        // Role Atlet tidak boleh melihat pelatih
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $pelatihIds = collect([]);
+        }
+
         $pelatihQuery = Pelatih::with(['media'])
             ->whereIn('pelatihs.id', $pelatihIds)
             ->leftJoin('cabor_kategori_pelatih', function ($join) use ($caborKategoriId) {
@@ -310,6 +329,11 @@ class RencanaLatihanRepository
         $tenagaIds = DB::table('rencana_latihan_tenaga_pendukung')
             ->where('rencana_latihan_id', $rencanaId)
             ->pluck('tenaga_pendukung_id');
+
+        // Role Atlet tidak boleh melihat tenaga pendukung
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $tenagaIds = collect([]);
+        }
 
         $tenagaQuery = TenagaPendukung::with(['media'])
             ->whereIn('tenaga_pendukungs.id', $tenagaIds)

@@ -415,21 +415,40 @@ class PemeriksaanRepository
     {
         $pemeriksaan     = $this->model->findOrFail($pemeriksaanId);
         $caborKategoriId = $pemeriksaan->cabor_kategori_id;
+        $auth            = Auth::user();
 
         // Get atlet
         $atletQuery = PemeriksaanPeserta::with(['peserta', 'status'])
             ->where('pemeriksaan_id', $pemeriksaanId)
             ->where('peserta_type', 'App\\Models\\Atlet');
 
+        // Role Atlet: hanya dirinya sendiri
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $authAtletId = optional($auth->atlet)->id;
+            $atletQuery->when($authAtletId, function ($q) use ($authAtletId) {
+                $q->where('peserta_id', $authAtletId);
+            });
+        }
+
         // Get pelatih
         $pelatihQuery = PemeriksaanPeserta::with(['peserta', 'status'])
             ->where('pemeriksaan_id', $pemeriksaanId)
             ->where('peserta_type', 'App\\Models\\Pelatih');
 
+        // Role Atlet: sembunyikan pelatih
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $pelatihQuery->whereRaw('1=0');
+        }
+
         // Get tenaga pendukung
         $tenagaQuery = PemeriksaanPeserta::with(['peserta', 'status'])
             ->where('pemeriksaan_id', $pemeriksaanId)
             ->where('peserta_type', 'App\\Models\\TenagaPendukung');
+
+        // Role Atlet: sembunyikan tenaga pendukung
+        if ($auth && (int) ($auth->current_role_id) === 35) {
+            $tenagaQuery->whereRaw('1=0');
+        }
 
         // Apply search if provided
         if ($request->filled('search')) {

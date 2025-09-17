@@ -123,6 +123,89 @@ class RencanaLatihanController extends Controller
     }
 
     /**
+     * Bulk set kehadiran peserta rencana latihan (Mobile)
+     * Body: { ids: number[], kehadiran: string, by?: 'entity'|'pivot' }
+     * jenisPeserta: atlet | pelatih | tenaga-pendukung
+     */
+    public function bulkSetKehadiran(Request $request, int $rencanaId, string $jenisPeserta): JsonResponse
+    {
+        try {
+            $request->validate([
+                'ids'       => 'required|array|min:1',
+                'ids.*'     => 'integer',
+                'kehadiran' => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
+                'by'        => 'nullable|in:entity,pivot',
+            ], [
+                'kehadiran.in' => 'Kehadiran harus salah satu dari: Hadir, Tidak Hadir, Izin, Sakit.',
+            ]);
+
+            $jenis = strtolower($jenisPeserta);
+            $by    = $request->get('by', 'entity');
+            $ids   = $request->ids;
+
+            switch ($jenis) {
+                case 'atlet':
+                    \DB::table('rencana_latihan_atlet')
+                        ->where('rencana_latihan_id', $rencanaId)
+                        ->whereIn('atlet_id', $ids)
+                        ->update([
+                            'kehadiran' => $request->kehadiran,
+                        ]);
+                    break;
+
+                case 'pelatih':
+                    $query = \DB::table('rencana_latihan_pelatih')
+                        ->where('rencana_latihan_id', $rencanaId);
+                    if ($by === 'pivot') {
+                        $query->whereIn('id', $ids);
+                    } else {
+                        $query->whereIn('pelatih_id', $ids);
+                    }
+                    $query->update([
+                        'kehadiran' => $request->kehadiran,
+                    ]);
+                    break;
+
+                case 'tenaga-pendukung':
+                case 'tenaga_pendukung':
+                    $query = \DB::table('rencana_latihan_tenaga_pendukung')
+                        ->where('rencana_latihan_id', $rencanaId);
+                    if ($by === 'pivot') {
+                        $query->whereIn('id', $ids);
+                    } else {
+                        $query->whereIn('tenaga_pendukung_id', $ids);
+                    }
+                    $query->update([
+                        'kehadiran' => $request->kehadiran,
+                    ]);
+                    break;
+
+                default:
+                    return response()->json([
+                        'status'  => 'error',
+                        'message' => 'Jenis peserta tidak valid',
+                    ], 422);
+            }
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Kehadiran peserta berhasil diperbarui',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal memperbarui kehadiran: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Get full photo URL
      */
     private function getFullPhotoUrl($photoPath): ?string
@@ -648,8 +731,7 @@ class RencanaLatihanController extends Controller
             $search = $request->get('search', '');
 
             $query = CaborKategoriTenagaPendukung::with(['tenagaPendukung', 'jenisTenagaPendukung'])
-                ->where('cabor_kategori_id', $caborKategoriId)
-                ->whereHas('tenagaPendukung');
+                ->where('cabor_kategori_id', $caborKategoriId);
 
             if ($search) {
                 $query->whereHas('tenagaPendukung', function ($q) use ($search) {
@@ -659,23 +741,18 @@ class RencanaLatihanController extends Controller
 
             $tenagaList = $query->get();
 
-            $data = $tenagaList
-                ->filter(function ($item) {
-                    return !is_null($item->tenagaPendukung);
-                })
-                ->map(function ($item) {
-                    $tenaga = $item->tenagaPendukung;
-                    return [
-                        'id'                     => $tenaga?->id,
-                        'nama'                   => $tenaga?->nama,
-                        'foto'                   => $tenaga?->foto,
-                        'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
-                        'jenis_kelamin'          => $this->mapJenisKelamin($tenaga?->jenis_kelamin),
-                        'usia'                   => $this->calculateAge($tenaga?->tanggal_lahir),
-                        'lama_bergabung'         => $this->getLamaBergabung($tenaga?->tanggal_bergabung),
-                    ];
-                })
-                ->values();
+            $data = $tenagaList->map(function ($item) {
+                $tenaga = $item->tenagaPendukung;
+                return [
+                    'id'                     => $tenaga->id,
+                    'nama'                   => $tenaga->nama,
+                    'foto'                   => $tenaga->foto,
+                    'jenis_tenaga_pendukung' => $item->jenisTenagaPendukung?->nama ?? '-',
+                    'jenis_kelamin'          => $this->mapJenisKelamin($tenaga->jenis_kelamin),
+                    'usia'                   => $this->calculateAge($tenaga->tanggal_lahir),
+                    'lama_bergabung'         => $this->getLamaBergabung($tenaga->tanggal_bergabung),
+                ];
+            });
 
             return response()->json([
                 'status'  => 'success',
