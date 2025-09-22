@@ -19,7 +19,7 @@ library.add(faFutbol, faBasketballBall, faTableTennis, faVolleyballBall, faRunni
 </script>
 
 <template>
-    <Head title="Welcome - DISPORA">
+    <Head title="Welcome">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
