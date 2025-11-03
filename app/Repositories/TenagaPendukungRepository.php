@@ -121,6 +121,30 @@ class TenagaPendukungRepository
      */
     protected function applyFilters($query)
     {
+        // Filter by cabor_id
+        if (request('cabor_id') && request('cabor_id') !== 'all') {
+            $caborId = request('cabor_id');
+            $query->whereExists(function ($sub) use ($caborId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_tenaga_pendukung as cktp')
+                    ->whereColumn('cktp.tenaga_pendukung_id', 'tenaga_pendukungs.id')
+                    ->where('cktp.cabor_id', $caborId)
+                    ->whereNull('cktp.deleted_at');
+            });
+        }
+
+        // Filter by cabor_kategori_id
+        if (request('cabor_kategori_id') && request('cabor_kategori_id') !== 'all') {
+            $caborKategoriId = request('cabor_kategori_id');
+            $query->whereExists(function ($sub) use ($caborKategoriId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_tenaga_pendukung as cktp')
+                    ->whereColumn('cktp.tenaga_pendukung_id', 'tenaga_pendukungs.id')
+                    ->where('cktp.cabor_kategori_id', $caborKategoriId)
+                    ->whereNull('cktp.deleted_at');
+            });
+        }
+
         // Filter by jenis kelamin
         if (request('jenis_kelamin') && request('jenis_kelamin') !== 'all') {
             $query->where('jenis_kelamin', request('jenis_kelamin'));
@@ -538,6 +562,50 @@ class TenagaPendukungRepository
             'name' => 'Lama Bergabung',
             'data' => $indikatorData,
         ];
+
+        // Cabor (agregasi berdasarkan relasi cabor kategori -> cabor)
+        try {
+            $tpIds = collect($getData)->pluck('id')->filter()->values()->all();
+            if (!empty($tpIds)) {
+                $rows = DB::table('cabor_kategori_tenaga_pendukung as cktp')
+                    ->join('cabor as c', 'cktp.cabor_id', '=', 'c.id')
+                    ->whereNull('cktp.deleted_at')
+                    ->whereIn('cktp.tenaga_pendukung_id', $tpIds)
+                    ->select('c.id', 'c.nama', DB::raw('COUNT(DISTINCT cktp.tenaga_pendukung_id) as jumlah'))
+                    ->groupBy('c.id', 'c.nama')
+                    ->orderBy('c.nama')
+                    ->get();
+
+                $indikatorData = [];
+                foreach ($rows as $row) {
+                    $jumlah          = (int) $row->jumlah;
+                    $persentase      = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
+                    $indikatorData[] = [
+                        'nama_indikator' => $row->nama ?? '-',
+                        'jumlah'         => $jumlah,
+                        'persentase'     => $persentase,
+                    ];
+                }
+
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => $indikatorData,
+                ];
+            } else {
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => [],
+                ];
+            }
+        } catch (\Exception $e) {
+            $result[] = [
+                'key'  => 'cabor',
+                'name' => 'Cabor',
+                'data' => [],
+            ];
+        }
 
         return $result;
     }

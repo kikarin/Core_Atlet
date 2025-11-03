@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -136,18 +136,6 @@ const resetFilters = () => {
 
 const getTitle = () => {
     switch (props.moduleType) {
-        case 'cabor-kategori':
-            return 'Filter Cabor Kategori';
-        case 'program-latihan':
-            return 'Filter Program Latihan';
-        case 'pemeriksaan':
-            return 'Filter Pemeriksaan';
-        case 'atlet':
-            return 'Filter Atlet';
-        case 'pelatih':
-            return 'Filter Pelatih';
-        case 'tenaga-pendukung':
-            return 'Filter Tenaga Pendukung';
         default:
             return 'Filter Data';
     }
@@ -229,7 +217,6 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
         <DialogContent class="sm:max-w-[600px]">
             <DialogHeader>
                 <DialogTitle>{{ getTitle() }}</DialogTitle>
-                <DialogDescription> Pilih filter untuk mempersempit hasil pencarian </DialogDescription>
             </DialogHeader>
 
             <div class="grid gap-4 py-4">
@@ -321,6 +308,72 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                                 </SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <!-- Filter Cabor & Kategori (2 kolom) -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Cabor -->
+                        <div class="space-y-2">
+                            <Label for="cabor_id">Cabor</Label>
+                            <Select v-model="filters.cabor_id">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Pilih Cabor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <!-- Search input -->
+                                    <div class="p-2">
+                                        <input
+                                            v-model="selectSearchQuery.cabor_id"
+                                            type="text"
+                                            placeholder="Cari cabor..."
+                                            class="w-full rounded border px-2 py-1 text-sm"
+                                            @click.stop
+                                            @keydown.stop
+                                        />
+                                    </div>
+                                    <!-- Filtered options -->
+                                    <SelectItem value="all">Semua Cabor</SelectItem>
+                                    <SelectItem v-for="cabor in getFilteredOptions(cabors, 'cabor_id')" :key="cabor.id" :value="cabor.id.toString()">
+                                        {{ cabor.nama }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <!-- Kategori -->
+                        <div class="space-y-2">
+                            <Label for="cabor_kategori_id">Kategori</Label>
+                            <Select
+                                v-model="filters.cabor_kategori_id"
+                                :disabled="!filters.cabor_id || filters.cabor_id === 'all' || loadingCaborKategoris"
+                            >
+                                <SelectTrigger class="w-full">
+                                    <SelectValue :placeholder="loadingCaborKategoris ? 'Loading...' : 'Pilih Kategori'" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <!-- Search input -->
+                                    <div class="p-2">
+                                        <input
+                                            v-model="selectSearchQuery.cabor_kategori_id"
+                                            type="text"
+                                            placeholder="Cari kategori..."
+                                            class="w-full rounded border px-2 py-1 text-sm"
+                                            @click.stop
+                                            @keydown.stop
+                                        />
+                                    </div>
+                                    <!-- Filtered options -->
+                                    <SelectItem value="all">Semua Kategori</SelectItem>
+                                    <SelectItem
+                                        v-for="kategori in getFilteredOptions(caborKategoris, 'cabor_kategori_id')"
+                                        :key="kategori.id"
+                                        :value="kategori.id.toString()"
+                                    >
+                                        {{ kategori.nama }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </template>
 

@@ -181,7 +181,6 @@ const fields = computed(() => {
         {
             label: 'Jenis Kelamin',
             value: props.item?.jenis_kelamin === 'L' ? 'Laki-laki' : props.item?.jenis_kelamin === 'P' ? 'Perempuan' : '-',
-            className: props.item?.jenis_kelamin === 'L' ? 'text-indigo-300' : props.item?.jenis_kelamin === 'P' ? 'text-pink-600' : '',
         },
         { label: 'Tempat Lahir', value: props.item?.tempat_lahir || '-' },
         {

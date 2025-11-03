@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { ref } from 'vue';
+import { Calendar } from 'lucide-vue-next';
+import { onMounted, ref } from 'vue';
 import BadgeGroup from '../components/BadgeGroup.vue';
 
 const breadcrumbs = [{ title: 'Turnamen', href: '/turnamen' }];
@@ -113,6 +119,56 @@ const deleteRow = async (row: any) => {
         },
     });
 };
+
+// =====================
+// Filter State & Options
+// =====================
+const showFilterModal = ref(false);
+const currentFilters = ref<any>({});
+const caborKategoriList = ref<Array<{ id: number; nama: string }>>([]);
+const tingkatList = ref<Array<{ id: number; nama: string }>>([]);
+const juaraList = ref<Array<{ id: number; nama: string }>>([]);
+
+onMounted(async () => {
+    try {
+        const [kategoriRes, tingkatRes, juaraRes] = await Promise.all([
+            // Ambil kategori beserta cabor_nama via API index (per_page=-1)
+            axios.get('/api/cabor-kategori', { params: { per_page: -1 } }),
+            axios.get('/api/tingkat-list'),
+            axios.get('/api/juara-list'),
+        ]);
+        // Response kategori: { data: [...], meta: {...} }
+        const kategoriData = kategoriRes.data && kategoriRes.data.data ? kategoriRes.data.data : [];
+        // Normalisasikan agar memiliki {id, nama, cabor_nama}
+        caborKategoriList.value = kategoriData.map((k: any) => ({ id: k.id, nama: k.nama, cabor_nama: k.cabor_nama }));
+        tingkatList.value = tingkatRes.data || [];
+        juaraList.value = juaraRes.data || [];
+    } catch (e) {
+        // silently fail; user still can filter by tanggal tanpa options
+    }
+});
+
+const bukaFilterModal = () => {
+    showFilterModal.value = true;
+};
+
+const handleFilter = (filters: any) => {
+    currentFilters.value = filters;
+    pageIndex.value.handleFilterFromParent(filters);
+    toast({ title: 'Filter berhasil diterapkan', variant: 'success' });
+    showFilterModal.value = false;
+};
+
+const resetFilters = () => {
+    currentFilters.value = {};
+};
+
+const triggerDatePicker = (fieldId: string) => {
+    const dateInput = document.getElementById(fieldId) as HTMLInputElement | null;
+    if (dateInput && (dateInput as any).showPicker) {
+        (dateInput as any).showPicker();
+    }
+};
 </script>
 
 <template>
@@ -132,6 +188,8 @@ const deleteRow = async (row: any) => {
             :on-toast="toast"
             :on-delete-row="deleteRow"
             :show-import="false"
+            :showFilter="true"
+            @filter="bukaFilterModal"
         >
             <template #cell-peserta="{ row }">
                 <BadgeGroup
@@ -158,5 +216,100 @@ const deleteRow = async (row: any) => {
                 />
             </template>
         </PageIndex>
+
+        <!-- Filter Modal -->
+        <Dialog v-model:open="showFilterModal">
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Filter Data Turnamen</DialogTitle>
+                    <DialogDescription> Terapkan filter untuk menyaring data turnamen. </DialogDescription>
+                </DialogHeader>
+
+                <div class="grid gap-4 py-2">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <Label for="filter_start_date">Tanggal Mulai</Label>
+                            <div class="relative">
+                                <Input
+                                    id="filter_start_date"
+                                    v-model="currentFilters.filter_start_date"
+                                    type="date"
+                                    class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
+                                />
+                                <div
+                                    class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
+                                    @click="() => triggerDatePicker('filter_start_date')"
+                                >
+                                    <Calendar class="text-muted-foreground h-4 w-4" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <Label for="filter_end_date">Tanggal Selesai</Label>
+                            <div class="relative">
+                                <Input
+                                    id="filter_end_date"
+                                    v-model="currentFilters.filter_end_date"
+                                    type="date"
+                                    class="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
+                                />
+                                <div
+                                    class="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
+                                    @click="() => triggerDatePicker('filter_end_date')"
+                                >
+                                    <Calendar class="text-muted-foreground h-4 w-4" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <Label for="cabor_kategori_id">Cabor Kategori</Label>
+                            <Select v-model="currentFilters.cabor_kategori_id">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Pilih Cabor Kategori" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem :value="undefined">Semua</SelectItem>
+                                    <SelectItem v-for="opt in caborKategoriList" :key="opt.id" :value="opt.id.toString()">
+                                        {{ (opt.cabor_nama ? opt.cabor_nama + ' - ' : '') + (opt.nama || '-') }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div class="space-y-2">
+                            <Label for="tingkat_id">Tingkat</Label>
+                            <Select v-model="currentFilters.tingkat_id">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Pilih Tingkat" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem :value="undefined">Semua</SelectItem>
+                                    <SelectItem v-for="opt in tingkatList" :key="opt.id" :value="opt.id.toString()">{{ opt.nama }}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div class="space-y-2">
+                            <Label for="juara_id">Juara</Label>
+                            <Select v-model="currentFilters.juara_id">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Pilih Juara" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem :value="undefined">Semua</SelectItem>
+                                    <SelectItem v-for="opt in juaraList" :key="opt.id" :value="opt.id.toString()">{{ opt.nama }}</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button variant="outline" @click="resetFilters"> Reset </Button>
+                    <Button @click="handleFilter(currentFilters)"> Terapkan Filter </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
 </template>

@@ -121,7 +121,7 @@ const actions = (row: any) => [
         permission: 'Atlet Detail',
     },
     {
-        label: 'Lihat',
+        label: 'Edit',
         onClick: () => router.visit(`/atlet/${row.id}/edit`),
         permission: 'Atlet Edit',
     },

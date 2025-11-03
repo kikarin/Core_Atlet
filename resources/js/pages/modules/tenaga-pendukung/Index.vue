@@ -110,7 +110,7 @@ const actions = (row: any) => [
         permission: 'Tenaga Pendukung Detail',
     },
     {
-        label: 'Lihat',
+        label: 'Edit',
         onClick: () => router.visit(`/tenaga-pendukung/${row.id}/edit`),
         permission: 'Tenaga Pendukung Edit',
     },

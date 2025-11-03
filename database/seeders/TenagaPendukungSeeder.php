@@ -14,72 +14,37 @@ class TenagaPendukungSeeder extends Seeder
         TenagaPendukung::truncate();
         Schema::enableForeignKeyConstraints();
 
-        $tenagaPendukungs = [
-            [
-                'nik'               => '1111222233334444',
-                'nama'              => 'Slamet Raharjo',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Jakarta',
-                'tanggal_lahir'     => '1990-01-01',
-                'tanggal_bergabung' => '2015-01-01',
-                'alamat'            => 'Jl. Melati 10',
-                'no_hp'             => '081111111111',
-                'email'             => 'slamet@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1111222233334445',
-                'nama'              => 'Dewi Sartika',
-                'jenis_kelamin'     => 'P',
-                'tempat_lahir'      => 'Bandung',
-                'tanggal_lahir'     => '1992-02-02',
-                'tanggal_bergabung' => '2016-02-02',
-                'alamat'            => 'Jl. Mawar 20',
-                'no_hp'             => '082222222222',
-                'email'             => 'dewi@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1111222233334446',
-                'nama'              => 'Bambang Sutrisno',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Surabaya',
-                'tanggal_lahir'     => '1988-03-03',
-                'tanggal_bergabung' => '2017-03-03',
-                'alamat'            => 'Jl. Kenanga 30',
-                'no_hp'             => '083333333333',
-                'email'             => 'bambang@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1111222233334447',
-                'nama'              => 'Siti Nurhaliza',
-                'jenis_kelamin'     => 'P',
-                'tempat_lahir'      => 'Semarang',
-                'tanggal_lahir'     => '1995-04-04',
-                'tanggal_bergabung' => '2018-04-04',
-                'alamat'            => 'Jl. Anggrek 40',
-                'no_hp'             => '084444444444',
-                'email'             => 'siti@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1111222233334448',
-                'nama'              => 'Rudi Hartono',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Yogyakarta',
-                'tanggal_lahir'     => '1993-05-05',
-                'tanggal_bergabung' => '2019-05-05',
-                'alamat'            => 'Jl. Dahlia 50',
-                'no_hp'             => '085555555555',
-                'email'             => 'rudi@example.com',
-                'is_active'         => 1,
-            ],
-        ];
+        $firstNamesL = ['Slamet', 'Bambang', 'Rudi', 'Tono', 'Bayu'];
+        $firstNamesP = ['Dewi', 'Siti', 'Maya', 'Lia', 'Nina'];
+        $lastNames   = ['Raharjo', 'Sartika', 'Sutrisno', 'Hartono', 'Permata', 'Putra'];
+        $cities      = ['Jakarta', 'Bandung', 'Surabaya', 'Semarang', 'Yogyakarta', 'Medan'];
 
+        $records = [];
+        for ($i = 0; $i < 10; $i++) {
+            $isFemale  = ($i % 2) === 1;
+            $first     = $isFemale ? $firstNamesP[$i % count($firstNamesP)] : $firstNamesL[$i % count($firstNamesL)];
+            $last      = $lastNames[$i % count($lastNames)];
+            $name      = $first.' '.$last;
+            $nik       = str_pad((string) (1111222233334000 + $i), 16, '0', STR_PAD_LEFT);
+            $email     = strtolower(str_replace(' ', '.', $name)).$i.'@example.com';
+            $lahir     = sprintf('199%u-%02u-%02u', ($i % 10), (($i % 12) + 1), (($i % 28) + 1));
+            $gabung    = sprintf('201%u-%02u-%02u', ($i % 10), ((($i + 1) % 12) + 1), ((($i + 2) % 28) + 1));
+            $records[] = [
+                'nik'               => $nik,
+                'nama'              => $name,
+                'jenis_kelamin'     => $isFemale ? 'P' : 'L',
+                'tempat_lahir'      => $cities[$i % count($cities)],
+                'tanggal_lahir'     => $lahir,
+                'tanggal_bergabung' => $gabung,
+                'alamat'            => 'Jl. Tenaga No. '.($i + 1),
+                'no_hp'             => '08'.str_pad((string) (1111111111 + $i), 10, '0', STR_PAD_LEFT),
+                'email'             => $email,
+                'is_active'         => 1,
+            ];
+        }
 
-        foreach ($tenagaPendukungs as $tp) {
-            TenagaPendukung::create($tp);
+        foreach ($records as $row) {
+            TenagaPendukung::create($row);
         }
     }
 }

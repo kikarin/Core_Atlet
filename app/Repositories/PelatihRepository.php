@@ -136,6 +136,30 @@ class PelatihRepository
      */
     protected function applyFilters($query)
     {
+        // Filter by cabor_id
+        if (request('cabor_id') && request('cabor_id') !== 'all') {
+            $caborId = request('cabor_id');
+            $query->whereExists(function ($sub) use ($caborId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_pelatih as ckp')
+                    ->whereColumn('ckp.pelatih_id', 'pelatihs.id')
+                    ->where('ckp.cabor_id', $caborId)
+                    ->whereNull('ckp.deleted_at');
+            });
+        }
+
+        // Filter by cabor_kategori_id
+        if (request('cabor_kategori_id') && request('cabor_kategori_id') !== 'all') {
+            $caborKategoriId = request('cabor_kategori_id');
+            $query->whereExists(function ($sub) use ($caborKategoriId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_pelatih as ckp')
+                    ->whereColumn('ckp.pelatih_id', 'pelatihs.id')
+                    ->where('ckp.cabor_kategori_id', $caborKategoriId)
+                    ->whereNull('ckp.deleted_at');
+            });
+        }
+
         // Filter by jenis kelamin
         if (request('jenis_kelamin') && request('jenis_kelamin') !== 'all') {
             $query->where('jenis_kelamin', request('jenis_kelamin'));
@@ -561,6 +585,50 @@ class PelatihRepository
             'name' => 'Lama Bergabung',
             'data' => $indikatorData,
         ];
+
+        // Cabor (agregasi berdasarkan relasi cabor kategori -> cabor)
+        try {
+            $pelatihIds = collect($getData)->pluck('id')->filter()->values()->all();
+            if (!empty($pelatihIds)) {
+                $rows = DB::table('cabor_kategori_pelatih as ckp')
+                    ->join('cabor as c', 'ckp.cabor_id', '=', 'c.id')
+                    ->whereNull('ckp.deleted_at')
+                    ->whereIn('ckp.pelatih_id', $pelatihIds)
+                    ->select('c.id', 'c.nama', DB::raw('COUNT(DISTINCT ckp.pelatih_id) as jumlah'))
+                    ->groupBy('c.id', 'c.nama')
+                    ->orderBy('c.nama')
+                    ->get();
+
+                $indikatorData = [];
+                foreach ($rows as $row) {
+                    $jumlah          = (int) $row->jumlah;
+                    $persentase      = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
+                    $indikatorData[] = [
+                        'nama_indikator' => $row->nama ?? '-',
+                        'jumlah'         => $jumlah,
+                        'persentase'     => $persentase,
+                    ];
+                }
+
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => $indikatorData,
+                ];
+            } else {
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => [],
+                ];
+            }
+        } catch (\Exception $e) {
+            $result[] = [
+                'key'  => 'cabor',
+                'name' => 'Cabor',
+                'data' => [],
+            ];
+        }
 
         return $result;
     }

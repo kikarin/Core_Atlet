@@ -232,7 +232,7 @@ const getPesertaLabel = computed(() => {
         :showImport="false"
         :showKelola="true"
         :kelolaUrl="`/pemeriksaan/${pemeriksaan.id}/peserta-parameter/kelola?jenis_peserta=${jenisPeserta}`"
-        kelola-label="Pemetaan Peserta"
+        kelola-label="Pemetaan Nilai Peserta"
     >
         <template #header-extra>
             <div class="bg-card mb-4 rounded-lg border p-4">

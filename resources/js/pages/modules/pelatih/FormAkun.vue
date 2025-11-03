@@ -100,10 +100,7 @@ const handleSave = async (dataFromFormInput: any, setFormErrors: (errors: Record
                 </div>
                 <div class="ml-3">
                     <h3 class="text-sm font-medium text-green-800">Akun sudah dibuat</h3>
-                    <div class="mt-2 text-sm text-green-700">
-                        <p>
-                            Pelatih ini sudah memiliki akun dengan email: <strong>{{ initialData?.user?.email }}</strong>
-                        </p>
+                    <div class="text-sm text-green-700">
                         <p>Anda dapat mengubah email atau password di bawah ini.</p>
                     </div>
                 </div>

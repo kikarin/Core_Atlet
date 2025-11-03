@@ -154,6 +154,30 @@ class AtletRepository
      */
     protected function applyFilters($query)
     {
+        // Filter by cabor_id
+        if (request('cabor_id') && request('cabor_id') !== 'all') {
+            $caborId = request('cabor_id');
+            $query->whereExists(function ($sub) use ($caborId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_atlet as cka')
+                    ->whereColumn('cka.atlet_id', 'atlets.id')
+                    ->where('cka.cabor_id', $caborId)
+                    ->whereNull('cka.deleted_at');
+            });
+        }
+
+        // Filter by cabor_kategori_id
+        if (request('cabor_kategori_id') && request('cabor_kategori_id') !== 'all') {
+            $caborKategoriId = request('cabor_kategori_id');
+            $query->whereExists(function ($sub) use ($caborKategoriId) {
+                $sub->select(DB::raw(1))
+                    ->from('cabor_kategori_atlet as cka')
+                    ->whereColumn('cka.atlet_id', 'atlets.id')
+                    ->where('cka.cabor_kategori_id', $caborKategoriId)
+                    ->whereNull('cka.deleted_at');
+            });
+        }
+
         // Filter by jenis kelamin
         if (request('jenis_kelamin') && request('jenis_kelamin') !== 'all') {
             $query->where('jenis_kelamin', request('jenis_kelamin'));
@@ -613,6 +637,51 @@ class AtletRepository
             'name' => 'Lama Bergabung',
             'data' => $indikatorData,
         ];
+
+        // Cabor (agregasi berdasarkan relasi cabor kategori -> cabor)
+        try {
+            $atletIds = collect($getData)->pluck('id')->filter()->values()->all();
+            if (!empty($atletIds)) {
+                $rows = DB::table('cabor_kategori_atlet as cka')
+                    ->join('cabor as c', 'cka.cabor_id', '=', 'c.id')
+                    ->whereNull('cka.deleted_at')
+                    ->whereIn('cka.atlet_id', $atletIds)
+                    ->select('c.id', 'c.nama', DB::raw('COUNT(DISTINCT cka.atlet_id) as jumlah'))
+                    ->groupBy('c.id', 'c.nama')
+                    ->orderBy('c.nama')
+                    ->get();
+
+                $indikatorData = [];
+                foreach ($rows as $row) {
+                    $jumlah          = (int) $row->jumlah;
+                    $persentase      = $totalData > 0 ? round(($jumlah / $totalData) * 100, 2) : 0;
+                    $indikatorData[] = [
+                        'nama_indikator' => $row->nama ?? '-',
+                        'jumlah'         => $jumlah,
+                        'persentase'     => $persentase,
+                    ];
+                }
+
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => $indikatorData,
+                ];
+            } else {
+                $result[] = [
+                    'key'  => 'cabor',
+                    'name' => 'Cabor',
+                    'data' => [],
+                ];
+            }
+        } catch (\Exception $e) {
+            // Jika terjadi error agregasi, tetap kembalikan blok kosong agar UI tidak rusak
+            $result[] = [
+                'key'  => 'cabor',
+                'name' => 'Cabor',
+                'data' => [],
+            ];
+        }
 
         return $result;
     }

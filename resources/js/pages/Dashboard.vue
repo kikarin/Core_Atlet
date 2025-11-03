@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Tabs from '@/components/ui/tabs/Tabs.vue';
@@ -10,20 +9,7 @@ import ApexChart from '@/components/ApexChart.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import {
-    // ArrowDownRight,
-    // ArrowUpRight,
-    Bell,
-    ClipboardCheck,
-    Flag,
-    HandHeart,
-    HeartHandshake,
-    Search,
-    Settings,
-    Stethoscope,
-    Ungroup,
-    UserCircle2,
-} from 'lucide-vue-next';
+import { ClipboardCheck, Flag, HandHeart, HeartHandshake, Stethoscope, Ungroup, UserCircle2 } from 'lucide-vue-next';
 
 const props = defineProps<{
     stats?: any[];
@@ -249,28 +235,6 @@ const chartOptions = {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
-            <!-- Header Actions -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring h-10 w-[300px] rounded-md border pr-4 pl-9 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                        />
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Button variant="outline" size="icon">
-                        <Bell class="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                        <Settings class="h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4">
                 <Card
@@ -349,15 +313,13 @@ const chartOptions = {
             <Card>
                 <CardHeader>
                     <CardTitle>Grafik Peserta Tahunan</CardTitle>
+                    <p class="text-muted-foreground text-sm">Berdasarkan tanggal bergabung Peserta</p>
                 </CardHeader>
                 <CardContent>
                     <Tabs default-value="chart" class="w-full">
                         <TabsList class="grid w-full grid-cols-1"> </TabsList>
-                        <TabsContent value="chart" class="mt-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <p class="text-muted-foreground text-sm">Berdasarkan tanggal bergabung Peserta</p>
-                                </div>
+                        <TabsContent value="chart">
+                            <div class="space-y-1">
                                 <div class="rounded-lg border p-4">
                                     <ApexChart :options="chartOptions" :series="chartData.series" />
                                 </div>
@@ -370,14 +332,10 @@ const chartOptions = {
             <!-- Rekap Section -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Rekapitulasi per Cabor Kategori</CardTitle>
+                    <CardTitle>Rekapitulasi Jumlah Peserta berdasarkan Cabor Kategori</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold">Jumlah Peserta</h3>
-                            <p class="text-muted-foreground text-sm">Berdasarkan kategori cabor yang aktif</p>
-                        </div>
                         <div class="overflow-hidden rounded-lg border">
                             <Table>
                                 <TableHeader>

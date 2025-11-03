@@ -14,71 +14,40 @@ class AtletSeeder extends Seeder
         Atlet::truncate();
         Schema::enableForeignKeyConstraints();
 
-        $atlets = [
-            [
-                'nik'               => '1234567890123456',
-                'nama'              => 'Budi Santoso',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Jakarta',
-                'tanggal_lahir'     => '2000-01-01',
-                'tanggal_bergabung' => '2020-01-01',
-                'alamat'            => 'Jl. Merdeka 1',
-                'no_hp'             => '081234567890',
-                'email'             => 'budi@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1234567890123457',
-                'nama'              => 'Siti Aminah',
-                'jenis_kelamin'     => 'P',
-                'tempat_lahir'      => 'Bandung',
-                'tanggal_lahir'     => '2001-02-02',
-                'tanggal_bergabung' => '2021-02-02',
-                'alamat'            => 'Jl. Melati 2',
-                'no_hp'             => '081234567891',
-                'email'             => 'siti@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1234567890123458',
-                'nama'              => 'Andi Wijaya',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Surabaya',
-                'tanggal_lahir'     => '2002-03-03',
-                'tanggal_bergabung' => '2022-03-03',
-                'alamat'            => 'Jl. Kenanga 3',
-                'no_hp'             => '081234567892',
-                'email'             => 'andi@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1234567890123459',
-                'nama'              => 'Dewi Lestari',
-                'jenis_kelamin'     => 'P',
-                'tempat_lahir'      => 'Semarang',
-                'tanggal_lahir'     => '2003-04-04',
-                'tanggal_bergabung' => '2023-04-04',
-                'alamat'            => 'Jl. Mawar 4',
-                'no_hp'             => '081234567893',
-                'email'             => 'dewi@example.com',
-                'is_active'         => 1,
-            ],
-            [
-                'nik'               => '1234567890123460',
-                'nama'              => 'Rizky Pratama',
-                'jenis_kelamin'     => 'L',
-                'tempat_lahir'      => 'Yogyakarta',
-                'tanggal_lahir'     => '2004-05-05',
-                'tanggal_bergabung' => '2024-05-05',
-                'alamat'            => 'Jl. Anggrek 5',
-                'no_hp'             => '081234567894',
-                'email'             => 'rizky@example.com',
-                'is_active'         => 1,
-            ],
-        ];
+        $firstNamesL = ['Budi', 'Andi', 'Rizky', 'Agus', 'Joko', 'Dedi', 'Rudi', 'Hendra', 'Fajar', 'Yoga'];
+        $firstNamesP = ['Siti', 'Dewi', 'Maya', 'Rina', 'Nina', 'Ayu', 'Intan', 'Lia', 'Rani', 'Putri'];
+        $lastNames   = ['Santoso', 'Wijaya', 'Pratama', 'Saputra', 'Lestari', 'Sari', 'Hartono', 'Setiawan', 'Permata', 'Mahardika'];
 
-        foreach ($atlets as $atlet) {
-            Atlet::create($atlet);
+        $cities = ['Jakarta', 'Bandung', 'Surabaya', 'Semarang', 'Yogyakarta', 'Medan', 'Bogor', 'Malang', 'Solo', 'Makassar'];
+
+        $records = [];
+        $idx     = 0;
+        while (count($records) < 20) {
+            $isFemale  = ($idx % 2) === 1;
+            $first     = $isFemale ? $firstNamesP[$idx % count($firstNamesP)] : $firstNamesL[$idx % count($firstNamesL)];
+            $last      = $lastNames[$idx % count($lastNames)];
+            $name      = $first.' '.$last;
+            $nik       = str_pad((string) (1234567890123000 + $idx), 16, '0', STR_PAD_LEFT);
+            $email     = strtolower(str_replace(' ', '.', $name)).$idx.'@example.com';
+            $lahir     = sprintf('200%u-%02u-%02u', ($idx % 5), (($idx % 12) + 1), (($idx % 28) + 1));
+            $gabung    = sprintf('202%u-%02u-%02u', ($idx % 5), ((($idx + 1) % 12) + 1), ((($idx + 2) % 28) + 1));
+            $records[] = [
+                'nik'               => $nik,
+                'nama'              => $name,
+                'jenis_kelamin'     => $isFemale ? 'P' : 'L',
+                'tempat_lahir'      => $cities[$idx % count($cities)],
+                'tanggal_lahir'     => $lahir,
+                'tanggal_bergabung' => $gabung,
+                'alamat'            => 'Jl. Contoh No. '.($idx + 1),
+                'no_hp'             => '08'.str_pad((string) (1234567890 + $idx), 10, '0', STR_PAD_LEFT),
+                'email'             => $email,
+                'is_active'         => 1,
+            ];
+            $idx++;
+        }
+
+        foreach ($records as $row) {
+            Atlet::create($row);
         }
     }
 }

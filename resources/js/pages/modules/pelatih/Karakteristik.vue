@@ -63,7 +63,7 @@ onMounted(() => {
     <Head title="Karakteristik Pelatih" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
+        <div class="min-h-screen w-full space-y-6 bg-gray-100 p-6 dark:bg-neutral-950">
             <!-- Filter Section -->
             <Card>
                 <div class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
@@ -165,8 +165,8 @@ onMounted(() => {
                                     </template>
 
                                     <!-- Separator row between different characteristics -->
-                                    <TableRow v-if="index < dataKarakteristik.length - 1" class="bg-muted/50">
-                                        <TableCell colspan="5" class="h-2"></TableCell>
+                                    <TableRow v-if="index < dataKarakteristik.length - 1" class="bg-gray-200 dark:bg-neutral-800">
+                                        <TableCell colspan="5" class="h-8"></TableCell>
                                     </TableRow>
                                 </template>
                             </TableBody>

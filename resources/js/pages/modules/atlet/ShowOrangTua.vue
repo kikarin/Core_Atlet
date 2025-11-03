@@ -49,7 +49,7 @@ const waliFields = computed(() => {
 <template>
     <div class="-mt-6 space-y-4">
         <div>
-            <h3 class="text-muted-foreground mb-4 text-base font-semibold tracking-wide uppercase">Data Ibu Kandung</h3>
+            <h3 class="mb-4 text-base font-semibold tracking-wide uppercase">Data Ibu Kandung</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div v-for="field in ibuFields" :key="field.label" :class="field.className">
                     <div class="text-muted-foreground text-xs">{{ field.label }}</div>
@@ -58,7 +58,7 @@ const waliFields = computed(() => {
             </div>
         </div>
         <div>
-            <h3 class="text-muted-foreground mb-4 text-base font-semibold tracking-wide uppercase">Data Ayah Kandung</h3>
+            <h3 class="mb-4 text-base font-semibold tracking-wide uppercase">Data Ayah Kandung</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div v-for="field in ayahFields" :key="field.label" :class="field.className">
                     <div class="text-muted-foreground text-xs">{{ field.label }}</div>
@@ -67,7 +67,7 @@ const waliFields = computed(() => {
             </div>
         </div>
         <div>
-            <h3 class="text-muted-foreground mb-4 text-base font-semibold tracking-wide uppercase">Data Wali</h3>
+            <h3 class="mb-4 text-base font-semibold tracking-wide uppercase">Data Wali</h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div v-for="field in waliFields" :key="field.label" :class="field.className">
                     <div class="text-muted-foreground text-xs">{{ field.label }}</div>

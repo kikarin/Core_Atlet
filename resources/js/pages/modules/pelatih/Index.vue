@@ -111,7 +111,7 @@ const actions = (row: any) => [
         permission: 'Pelatih Detail',
     },
     {
-        label: 'Lihat',
+        label: 'Edit',
         onClick: () => router.visit(`/pelatih/${row.id}/edit`),
         permission: 'Pelatih Edit',
     },

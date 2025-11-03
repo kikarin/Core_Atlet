@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import permissionService from '@/services/permissionService';
 import { Link } from '@inertiajs/vue3';
-import { BarChart3, SlidersHorizontal } from 'lucide-vue-next';
+import { BarChart3, Import, SlidersHorizontal, Trash } from 'lucide-vue-next';
 
 const props = defineProps<{
     title: string;
@@ -64,7 +64,10 @@ const canKelola = () => {
                 Filter
             </Button>
             <!-- Button Import -->
-            <Button v-if="props.showImport && canImport()" variant="secondary" size="sm" @click="$emit('import')"> Import Excel </Button>
+            <Button v-if="props.showImport && canImport()" variant="outline" size="sm" @click="$emit('import')">
+                <Import class="h-4 w-4" />
+                Import Excel
+            </Button>
 
             <!-- Button Tambah Multiple -->
             <Link v-if="props.showMultipleButton && props.createMultipleUrl && canCreate()" :href="props.createMultipleUrl">
@@ -110,6 +113,7 @@ const canKelola = () => {
                 :disabled="selected.length === 0"
                 @click="onDeleteSelected"
             >
+                <Trash class="h-4 w-4" />
                 Delete Selected ({{ selected.length }})
             </Button>
         </div>

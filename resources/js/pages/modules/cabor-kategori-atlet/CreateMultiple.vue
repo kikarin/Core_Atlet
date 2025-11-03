@@ -271,8 +271,7 @@ fetchAvailableAtlet();
             </div>
 
             <!-- Pilih Posisi Atlet (opsional) -->
-            <div class="flex items-center gap-4">
-                <span class="text-muted-foreground text-sm font-medium">Posisi Atlet (opsional):</span>
+            <div class="ml-120 flex items-center gap-4">
                 <Select v-model="selectedPosisiAtletId" class="w-64">
                     <SelectTrigger>
                         <SelectValue placeholder="Pilih Posisi Atlet" />

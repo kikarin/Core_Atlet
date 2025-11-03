@@ -40,6 +40,37 @@ class TurnamenRepository
             });
         }
 
+        // Apply filters
+        if (request('cabor_kategori_id')) {
+            $query->where('cabor_kategori_id', request('cabor_kategori_id'));
+        }
+        if (request('tingkat_id')) {
+            $query->where('tingkat_id', request('tingkat_id'));
+        }
+        if (request('juara_id')) {
+            $query->where('juara_id', request('juara_id'));
+        }
+        // Date range overlap logic (mengakomodasi periode yang overlap)
+        if (request('filter_start_date') && request('filter_end_date')) {
+            $start = request('filter_start_date');
+            $end   = request('filter_end_date');
+            $query->where(function ($q) use ($start, $end) {
+                $q->whereBetween('tanggal_mulai', [$start, $end])
+                  ->orWhereBetween('tanggal_selesai', [$start, $end])
+                  ->orWhere(function ($subQ) use ($start, $end) {
+                      $subQ->where('tanggal_mulai', '<=', $start)
+                           ->where('tanggal_selesai', '>=', $end);
+                  });
+            });
+        } else {
+            if (request('filter_start_date')) {
+                $query->where('tanggal_selesai', '>=', request('filter_start_date'));
+            }
+            if (request('filter_end_date')) {
+                $query->where('tanggal_mulai', '<=', request('filter_end_date'));
+            }
+        }
+
         if (request('sort')) {
             $order        = request('order', 'asc');
             $sortField    = request('sort');
