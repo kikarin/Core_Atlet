@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ApexChart from '@/components/ApexChart.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart } from '@/components/ui/chart-line';
@@ -15,6 +16,7 @@ interface Props {
     statistikData: any[];
     rencanaList: any[]; // Generic rencana list (bisa pemeriksaan atau latihan)
     dataType: 'pemeriksaan' | 'target-latihan'; // Type identifier
+    targetInfo?: any; // Info target latihan untuk menghitung persentase performa
 }
 
 const props = defineProps<Props>();
@@ -40,26 +42,36 @@ const chartData = computed(() => {
                 if (props.dataType === 'pemeriksaan') {
                     return item.peserta_id === props.participant!.id && item.tanggal_pemeriksaan === rencana.tanggal_pemeriksaan;
                 } else {
-                    return item.peserta_id === props.participant!.id && item.tanggal === rencana.tanggal;
+                    // Untuk target-latihan atau parameter khusus dengan pemeriksaan
+                    if (item.rencana_latihan_id) {
+                        return item.peserta_id === props.participant!.id && item.rencana_latihan_id === rencana.id;
+                    } else {
+                        // Parameter khusus dengan pemeriksaan
+                        return item.peserta_id === props.participant!.id && item.tanggal_pemeriksaan === rencana.tanggal_pemeriksaan;
+                    }
                 }
             });
 
             const nilai = statistik ? parseFloat(statistik.nilai) : null;
+            const persentasePerforma = statistik?.persentase_performa ?? null;
 
             const dataPoint: any = {
-                tanggal: new Date(props.dataType === 'pemeriksaan' ? rencana.tanggal_pemeriksaan : rencana.tanggal).toLocaleDateString('id-ID', {
+                tanggal: new Date(props.dataType === 'pemeriksaan' ? rencana.tanggal_pemeriksaan : (rencana.tanggal || rencana.tanggal_pemeriksaan)).toLocaleDateString('id-ID', {
                     day: '2-digit',
                     month: '2-digit',
                 }),
                 pemeriksaan:
                     props.dataType === 'pemeriksaan'
                         ? rencana.nama_pemeriksaan
-                        : rencana.materi || `Rencana ${new Date(rencana.tanggal).toLocaleDateString('id-ID')}`,
+                        : rencana.materi || rencana.nama_pemeriksaan || `Rencana ${new Date(rencana.tanggal || rencana.tanggal_pemeriksaan).toLocaleDateString('id-ID')}`,
                 rawNilai: statistik?.nilai || null,
+                persentasePerforma: persentasePerforma,
             };
 
-            // Add participant name as key (same format as Chart.vue)
-            if (nilai !== null && !isNaN(nilai)) {
+            // Untuk target-latihan atau parameter khusus dengan persentase performa, gunakan persentase performa
+            if (props.dataType === 'target-latihan' && persentasePerforma !== null && !isNaN(persentasePerforma)) {
+                dataPoint[props.participant!.nama] = persentasePerforma;
+            } else if (nilai !== null && !isNaN(nilai)) {
                 dataPoint[props.participant!.nama] = nilai;
             }
 
@@ -68,6 +80,117 @@ const chartData = computed(() => {
         .filter((item) => item[props.participant!.nama] !== undefined);
 
     return chartDataResult;
+});
+
+// Generate bar chart data untuk target-latihan
+const barChartOptions = computed(() => {
+    if (props.dataType !== 'target-latihan') return null;
+
+    const categories = chartData.value.map((item) => item.tanggal);
+
+    return {
+        chart: {
+            type: 'bar',
+            height: 400,
+            toolbar: {
+                show: true,
+            },
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '60%',
+                borderRadius: 5,
+                borderRadiusApplication: 'end',
+            },
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: (val: number) => `${val.toFixed(1)}%`,
+            style: {
+                fontSize: '12px',
+                fontWeight: 'bold',
+            },
+        },
+        xaxis: {
+            categories: categories,
+            labels: {
+                style: {
+                    fontSize: '12px',
+                },
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Persentase Performa (%)',
+            },
+            labels: {
+                formatter: (val: number) => `${val.toFixed(0)}%`,
+            },
+        },
+        tooltip: {
+            y: {
+                formatter: (val: number) => `${val.toFixed(2)}%`,
+            },
+        },
+        colors: ['#3b82f6'],
+        grid: {
+            borderColor: '#e5e7eb',
+        },
+        fill: {
+            type: 'solid',
+        },
+    };
+});
+
+const barChartSeries = computed(() => {
+    if (props.dataType !== 'target-latihan' || !props.participant) return [];
+
+    const data = chartData.value.map((item) => {
+        const persentase = item[props.participant!.nama] || 0;
+        return persentase;
+    });
+
+    return [
+        {
+            name: 'Persentase Performa',
+            data: data,
+        },
+    ];
+});
+
+// Get colors array untuk setiap bar
+const barChartColors = computed(() => {
+    if (props.dataType !== 'target-latihan' || !props.participant) return [];
+    
+    return chartData.value.map((item) => {
+        const persentase = item[props.participant!.nama] || 0;
+        return getBarColorByPerforma(persentase);
+    });
+});
+
+// Get bar color berdasarkan persentase performa
+const getBarColorByPerforma = (persentase: number) => {
+    if (persentase > 70) return '#ef4444'; // merah
+    if (persentase >= 40) return '#f59e0b'; // kuning
+    return '#10b981'; // hijau
+};
+
+// Update bar chart options untuk menggunakan warna dinamis
+const barChartOptionsWithColors = computed(() => {
+    if (!barChartOptions.value) return null;
+    
+    return {
+        ...barChartOptions.value,
+        plotOptions: {
+            ...barChartOptions.value.plotOptions,
+            bar: {
+                ...barChartOptions.value.plotOptions.bar,
+                distributed: true, // Enable different colors for each bar
+            },
+        },
+        colors: barChartColors.value.length > 0 ? barChartColors.value : ['#3b82f6'],
+    };
 });
 
 // Get categories for chart (participant names)
@@ -114,7 +237,15 @@ const handleClose = () => {
                     <!-- Chart -->
                     <Card>
                         <CardContent class="pt-6">
+                            <!-- Bar Chart untuk Target Latihan -->
+                            <ApexChart
+                                v-if="dataType === 'target-latihan' && barChartOptionsWithColors && barChartSeries.length > 0"
+                                :options="barChartOptionsWithColors"
+                                :series="barChartSeries"
+                            />
+                            <!-- Line Chart untuk Pemeriksaan -->
                             <LineChart
+                                v-else
                                 :data="chartData"
                                 :categories="chartCategories"
                                 :index="'tanggal'"
@@ -139,6 +270,7 @@ const handleClose = () => {
                                                 {{ dataType === 'pemeriksaan' ? 'Pemeriksaan' : 'Rencana Latihan' }}
                                             </th>
                                             <th class="p-3 text-right font-medium">Nilai</th>
+                                            <th v-if="dataType === 'target-latihan'" class="p-3 text-right font-medium">Persentase Performa</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -149,7 +281,12 @@ const handleClose = () => {
                                         >
                                             <td class="p-3">{{ item.tanggal }}</td>
                                             <td class="p-3">{{ item.pemeriksaan }}</td>
-                                            <td class="p-3 text-right font-medium">{{ item[participant?.nama || ''] }}</td>
+                                            <td class="p-3 text-right font-medium">
+                                                {{ dataType === 'target-latihan' ? item.rawNilai : item[participant?.nama || ''] }}
+                                            </td>
+                                            <td v-if="dataType === 'target-latihan'" class="p-3 text-right font-medium">
+                                                {{ item.persentasePerforma !== null ? `${item.persentasePerforma.toFixed(2)}%` : '-' }}
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

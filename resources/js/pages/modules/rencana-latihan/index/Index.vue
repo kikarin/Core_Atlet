@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast/useToast';
 import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
@@ -39,16 +39,16 @@ const columns = computed(() => {
             orderable: false,
         },
         {
-            key: 'foto',
-            label: 'Foto',
+            key: 'foto_kehadiran',
+            label: 'Foto Kehadiran',
             orderable: false,
             format: (row: any) => {
-                if (row.foto) {
-                    return `<div class='cursor-pointer' onclick="window.open('${row.foto}', '_blank')">
-          <img src='${row.foto}' alt='Foto ${row.nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' />
+                if (row.foto_kehadiran) {
+                    return `<div class='cursor-pointer' onclick="window.open('${row.foto_kehadiran}', '_blank')">
+          <img src='${row.foto_kehadiran}' alt='Foto Kehadiran ${row.nama}' class='w-12 h-12 object-cover rounded-full border hover:shadow-md transition-shadow' />
         </div>`;
                 }
-                return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">No</div>';
+                return '<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs">-</div>';
             },
         },
         {
@@ -116,6 +116,11 @@ const showConfirmKehadiran = ref(false);
 const kehadiranToSet = ref('');
 
 const actions = (row: any) => [
+    {
+        label: 'Set Kehadiran',
+        onClick: () => router.visit(`/program-latihan/${programId}/rencana-latihan/${rencanaId}/set-kehadiran/${jenisPeserta}/${row.id}`),
+        permission: `Rencana Latihan Set Kehadiran`,
+    },
     {
         label: 'Delete',
         onClick: () => pageIndex.value.handleDeleteRow(row),

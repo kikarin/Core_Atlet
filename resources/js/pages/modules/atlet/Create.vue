@@ -37,6 +37,12 @@ const tabsConfig = computed(() => [
         props: { mode: 'create', initialData: {} },
     },
     {
+        value: 'parameter-umum-data',
+        label: 'Parameter Umum',
+        // Akan aktif setelah data atlet dibuat (butuh atlet_id)
+        disabled: true,
+    },
+    {
         value: 'orang-tua-data',
         label: 'Orang Tua/Wali',
         component: FormOrangTua,

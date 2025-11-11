@@ -57,8 +57,10 @@ onMounted(async () => {
             label: status.nama,
         }));
 
-        // Fetch parameter pemeriksaan
-        const paramRes = await axios.get(`/api/pemeriksaan/${props.pemeriksaan.id}/pemeriksaan-parameter`);
+        // Fetch parameter pemeriksaan (pass jenis_peserta for filtering)
+        const paramRes = await axios.get(`/api/pemeriksaan/${props.pemeriksaan.id}/pemeriksaan-parameter`, {
+            params: { jenis_peserta: props.jenis_peserta },
+        });
         parameterList.value = paramRes.data?.data || [];
 
         // Fetch peserta berdasarkan jenis

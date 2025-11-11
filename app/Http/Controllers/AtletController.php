@@ -13,6 +13,7 @@ use App\Traits\BaseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -402,6 +403,230 @@ class AtletController extends Controller implements HasMiddleware
                 'message' => 'Terjadi kesalahan saat mengambil data karakteristik atlet',
                 'error'   => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * API untuk mendapatkan rekap latihan atlet
+     */
+    public function apiRekapLatihan($id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+
+            if (!$atlet) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Atlet tidak ditemukan',
+                ], 404);
+            }
+
+            // Ambil semua target latihan yang diikuti atlet ini
+            $rekapData = DB::table('rencana_latihan_peserta_target')
+                ->join('target_latihan', 'rencana_latihan_peserta_target.target_latihan_id', '=', 'target_latihan.id')
+                ->join('rencana_latihan', 'rencana_latihan_peserta_target.rencana_latihan_id', '=', 'rencana_latihan.id')
+                ->join('program_latihan', 'rencana_latihan.program_latihan_id', '=', 'program_latihan.id')
+                ->where('rencana_latihan_peserta_target.peserta_id', $id)
+                ->where('rencana_latihan_peserta_target.peserta_type', 'App\\Models\\Atlet')
+                ->select(
+                    'target_latihan.id as target_id',
+                    'target_latihan.deskripsi',
+                    'target_latihan.nilai_target',
+                    'target_latihan.satuan',
+                    'target_latihan.performa_arah',
+                    'program_latihan.id as program_id',
+                    'program_latihan.nama_program',
+                    'rencana_latihan.id as rencana_id',
+                    'rencana_latihan.tanggal',
+                    'rencana_latihan.materi',
+                    'rencana_latihan_peserta_target.nilai',
+                    'rencana_latihan_peserta_target.trend'
+                )
+                ->orderBy('target_latihan.id')
+                ->orderBy('rencana_latihan.tanggal')
+                ->get();
+
+            // Group by target_id untuk mendapatkan semua rencana latihan per target
+            $groupedData = $rekapData->groupBy('target_id')->map(function ($items, $targetId) {
+                $firstItem = $items->first();
+                $nilaiTarget = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
+                $performaArah = $firstItem->performa_arah ?? 'max';
+
+                // Hitung persentase performa untuk setiap rencana
+                $rencanaList = $items->map(function ($item) use ($nilaiTarget, $performaArah) {
+                    $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
+                    $persentasePerforma = null;
+
+                    if ($nilaiAktual !== null && $nilaiTarget !== null && $nilaiTarget > 0) {
+                        if ($performaArah === 'min') {
+                            $persentasePerforma = ($nilaiTarget / $nilaiAktual) * 100;
+                        } else {
+                            $persentasePerforma = ($nilaiAktual / $nilaiTarget) * 100;
+                        }
+                    }
+
+                    return [
+                        'rencana_id' => $item->rencana_id,
+                        'tanggal' => $item->tanggal,
+                        'materi' => $item->materi,
+                        'nilai' => $item->nilai,
+                        'trend' => $item->trend,
+                        'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
+                    ];
+                })->values();
+
+                return [
+                    'target_id' => (int) $targetId,
+                    'deskripsi' => $firstItem->deskripsi,
+                    'nilai_target' => $firstItem->nilai_target,
+                    'satuan' => $firstItem->satuan,
+                    'performa_arah' => $performaArah,
+                    'program_id' => $firstItem->program_id,
+                    'nama_program' => $firstItem->nama_program,
+                    'rencana_list' => $rencanaList,
+                ];
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $groupedData,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching rekap latihan atlet: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data rekap latihan',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function apiParameterUmum($id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+            if (!$atlet) {
+                return response()->json(['success' => false, 'message' => 'Atlet tidak ditemukan'], 404);
+            }
+
+            // Ambil SEMUA parameter umum dari master, lalu left join nilai atlet jika ada
+            $parameterUmum = DB::table('mst_parameter')
+                ->leftJoin('atlet_parameter_umum', function ($join) use ($id) {
+                    $join->on('mst_parameter.id', '=', 'atlet_parameter_umum.mst_parameter_id')
+                        ->where('atlet_parameter_umum.atlet_id', '=', $id)
+                        ->whereNull('atlet_parameter_umum.deleted_at');
+                })
+                ->whereNull('mst_parameter.deleted_at')
+                ->where('mst_parameter.kategori', 'umum')
+                ->select(
+                    'mst_parameter.id',
+                    'mst_parameter.nama',
+                    'mst_parameter.satuan',
+                    'mst_parameter.nilai_target',
+                    'mst_parameter.performa_arah',
+                    'atlet_parameter_umum.nilai'
+                )
+                ->orderBy('mst_parameter.nama')
+                ->get();
+
+            return response()->json(['success' => true, 'data' => $parameterUmum]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching parameter umum atlet: '.$e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengambil data parameter umum', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function apiRekapParameterKhusus($id)
+    {
+        try {
+            $atlet = $this->repository->getDetailWithRelations($id);
+            if (!$atlet) {
+                return response()->json(['success' => false, 'message' => 'Atlet tidak ditemukan'], 404);
+            }
+
+            $rekapData = DB::table('pemeriksaan_peserta_parameter')
+                ->join('pemeriksaan_peserta', 'pemeriksaan_peserta_parameter.pemeriksaan_peserta_id', '=', 'pemeriksaan_peserta.id')
+                ->join('pemeriksaan_parameter', 'pemeriksaan_peserta_parameter.pemeriksaan_parameter_id', '=', 'pemeriksaan_parameter.id')
+                ->join('mst_parameter', 'pemeriksaan_parameter.mst_parameter_id', '=', 'mst_parameter.id')
+                ->join('pemeriksaan', 'pemeriksaan_parameter.pemeriksaan_id', '=', 'pemeriksaan.id')
+                ->where('pemeriksaan_peserta.peserta_id', $id)
+                ->where('pemeriksaan_peserta.peserta_type', 'App\\Models\\Atlet')
+                ->where('mst_parameter.kategori', 'khusus')
+                ->select(
+                    'mst_parameter.id as parameter_id',
+                    'mst_parameter.nama as nama_parameter',
+                    'mst_parameter.satuan',
+                    'mst_parameter.nilai_target',
+                    'mst_parameter.performa_arah',
+                    'pemeriksaan.id as pemeriksaan_id',
+                    'pemeriksaan.nama_pemeriksaan',
+                    'pemeriksaan.tanggal_pemeriksaan',
+                    'pemeriksaan_peserta_parameter.nilai',
+                    'pemeriksaan_peserta_parameter.trend'
+                )
+                ->orderBy('mst_parameter.id')
+                ->orderBy('pemeriksaan.tanggal_pemeriksaan')
+                ->get();
+
+            $groupedData = $rekapData->groupBy('parameter_id')->map(function ($items, $parameterId) {
+                $firstItem = $items->first();
+                $nilaiTarget = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
+                $performaArah = $firstItem->performa_arah ?? 'max';
+
+                $pemeriksaanList = $items->map(function ($item) use ($nilaiTarget, $performaArah) {
+                    $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
+                    $persentasePerforma = null;
+                    if ($nilaiAktual !== null && $nilaiTarget !== null && $nilaiTarget > 0) {
+                        if ($performaArah === 'min') {
+                            $persentasePerforma = ($nilaiTarget / $nilaiAktual) * 100;
+                        } else {
+                            $persentasePerforma = ($nilaiAktual / $nilaiTarget) * 100;
+                        }
+                    }
+                    return [
+                        'pemeriksaan_id' => $item->pemeriksaan_id,
+                        'tanggal' => $item->tanggal_pemeriksaan,
+                        'nama_pemeriksaan' => $item->nama_pemeriksaan,
+                        'nilai' => $item->nilai,
+                        'trend' => $item->trend,
+                        'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
+                    ];
+                })->values();
+
+                return [
+                    'parameter_id' => (int) $parameterId,
+                    'nama_parameter' => $firstItem->nama_parameter,
+                    'nilai_target' => $firstItem->nilai_target,
+                    'satuan' => $firstItem->satuan,
+                    'performa_arah' => $performaArah,
+                    'pemeriksaan_list' => $pemeriksaanList,
+                ];
+            })->values();
+
+            return response()->json(['success' => true, 'data' => $groupedData]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching rekap parameter khusus atlet: '.$e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat mengambil data rekap parameter khusus', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Tambahan: update parameter umum via API
+    public function apiUpdateParameterUmum(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'parameter_umum' => 'required|array',
+                'parameter_umum.*.mst_parameter_id' => 'required|exists:mst_parameter,id',
+                'parameter_umum.*.nilai' => 'nullable|string|max:255',
+            ]);
+
+            $this->repository->upsertParameterUmum((int) $id, $request->input('parameter_umum', []));
+
+            return response()->json(['success' => true, 'message' => 'Parameter umum berhasil diperbarui']);
+        } catch (\Exception $e) {
+            Log::error('Error updating parameter umum atlet: '.$e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memperbarui parameter umum', 'error' => $e->getMessage()], 500);
         }
     }
 }

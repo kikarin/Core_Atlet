@@ -13,6 +13,7 @@ const breadcrumbs = [
 const columns = [
     { key: 'nama', label: 'Nama Parameter' },
     { key: 'satuan', label: 'Satuan' },
+    { key: 'kategori', label: 'Kategori' },
 ];
 
 const selected = ref<number[]>([]);

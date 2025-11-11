@@ -18,10 +18,13 @@ class AtletRepository
 
     protected $atletOrangTuaRepository;
 
-    public function __construct(Atlet $model, AtletOrangTuaRepository $atletOrangTuaRepository)
+    protected $atletParameterUmumRepository;
+
+    public function __construct(Atlet $model, AtletOrangTuaRepository $atletOrangTuaRepository, AtletParameterUmumRepository $atletParameterUmumRepository)
     {
-        $this->model                   = $model;
-        $this->atletOrangTuaRepository = $atletOrangTuaRepository;
+        $this->model                        = $model;
+        $this->atletOrangTuaRepository      = $atletOrangTuaRepository;
+        $this->atletParameterUmumRepository = $atletParameterUmumRepository;
         $this->with                    = [
             'media',
             'created_by_user',
@@ -207,6 +210,11 @@ class AtletRepository
             $this->applyLamaBergabungFilter($query, request('lama_bergabung'));
         }
 
+        // Filter by kategori_atlet_id
+        if (request('kategori_atlet_id') && request('kategori_atlet_id') !== 'all') {
+            $query->where('kategori_atlet_id', request('kategori_atlet_id'));
+        }
+
         // Filter by date range
         if (request('filter_start_date') && request('filter_end_date')) {
             $query->whereBetween('created_at', [
@@ -274,6 +282,25 @@ class AtletRepository
     {
         // Tambahkan relasi untuk nanti kecamatan/kelurahan
         $data['item'] = $item;
+
+        // Load parameter umum untuk form
+        $parameterUmum = \App\Models\MstParameter::where('kategori', 'umum')
+            ->whereNull('deleted_at')
+            ->select('id', 'nama', 'satuan', 'nilai_target', 'performa_arah')
+            ->orderBy('nama')
+            ->get();
+
+        $data['parameter_umum_master'] = $parameterUmum;
+
+        // Jika edit, load nilai parameter umum yang sudah ada
+        if ($item && isset($item->id)) {
+            $parameterUmumValues = $this->atletParameterUmumRepository->getByAtletId($item->id);
+            $data['parameter_umum_values'] = $parameterUmumValues->mapWithKeys(function ($param) {
+                return [$param->mst_parameter_id => $param->nilai];
+            })->toArray();
+        } else {
+            $data['parameter_umum_values'] = [];
+        }
 
         return $data;
     }
@@ -362,6 +389,12 @@ class AtletRepository
                     $this->atletOrangTuaRepository->create($atletOrangTuaData);
                     Log::info('AtletRepository: Created new AtletOrangTua for atlet_id', ['atlet_id' => $model->id]);
                 }
+            }
+
+            // Handle Atlet Parameter Umum data
+            if (isset($data['parameter_umum']) && is_array($data['parameter_umum'])) {
+                $this->atletParameterUmumRepository->upsertByAtletId($model->id, $data['parameter_umum']);
+                Log::info('AtletRepository: Updated AtletParameterUmum', ['atlet_id' => $model->id]);
             }
 
             // Handle Atlet Akun data
@@ -692,5 +725,10 @@ class AtletRepository
         }
 
         return $result;
+    }
+
+    public function upsertParameterUmum(int $atletId, array $parameterData): void
+    {
+        $this->atletParameterUmumRepository->upsertByAtletId($atletId, $parameterData);
     }
 }

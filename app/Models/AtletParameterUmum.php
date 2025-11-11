@@ -8,36 +8,34 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class MstParameter extends Model
+class AtletParameterUmum extends Model
 {
     use Blameable;
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
 
-    protected $table = 'mst_parameter';
+    protected $table = 'atlet_parameter_umum';
 
     protected $guarded = [];
 
     protected $fillable = [
-        'nama',
-        'satuan',
-        'kategori',
-        'nilai_target',
-        'performa_arah',
+        'atlet_id',
+        'mst_parameter_id',
+        'nilai',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
-    public function pemeriksaanParameters()
+    public function atlet()
     {
-        return $this->hasMany(PemeriksaanParameter::class, 'mst_parameter_id');
+        return $this->belongsTo(Atlet::class, 'atlet_id');
     }
 
-    public function atletParameterUmum()
+    public function mstParameter()
     {
-        return $this->hasMany(AtletParameterUmum::class, 'mst_parameter_id');
+        return $this->belongsTo(MstParameter::class, 'mst_parameter_id');
     }
 
     public function getActivitylogOptions(): LogOptions
@@ -45,6 +43,7 @@ class MstParameter extends Model
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => 'Master Parameter');
+            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Parameter Umum');
     }
 }
+

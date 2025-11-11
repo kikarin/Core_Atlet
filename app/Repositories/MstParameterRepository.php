@@ -25,7 +25,11 @@ class MstParameterRepository
 
     public function customIndex($data)
     {
-        $query = $this->model->select('id', 'nama', 'satuan');
+        $query = $this->model->select('id', 'nama', 'satuan', 'kategori', 'nilai_target', 'performa_arah');
+
+        if (request('kategori')) {
+            $query->where('kategori', request('kategori'));
+        }
 
         if (request('search')) {
             $search = request('search');
@@ -54,9 +58,12 @@ class MstParameterRepository
             $allData         = $query->get();
             $transformedData = $allData->map(function ($item) {
                 return [
-                    'id'     => $item->id,
-                    'nama'   => $item->nama,
-                    'satuan' => $item->satuan,
+                    'id'            => $item->id,
+                    'nama'          => $item->nama,
+                    'satuan'        => $item->satuan,
+                    'kategori'      => $item->kategori ?? 'kesehatan',
+                    'nilai_target'  => $item->nilai_target,
+                    'performa_arah' => $item->performa_arah ?? 'max',
                 ];
             });
             $data += [
@@ -77,9 +84,12 @@ class MstParameterRepository
 
         $transformedData = collect($items->items())->map(function ($item) {
             return [
-                'id'     => $item->id,
-                'nama'   => $item->nama,
-                'satuan' => $item->satuan,
+                'id'            => $item->id,
+                'nama'          => $item->nama,
+                'satuan'        => $item->satuan,
+                'kategori'      => $item->kategori ?? 'kesehatan',
+                'nilai_target'  => $item->nilai_target,
+                'performa_arah' => $item->performa_arah ?? 'max',
             ];
         });
 

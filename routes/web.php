@@ -377,6 +377,10 @@ Route::get('/api/atlet/{atlet_id}/sertifikat', [AtletSertifikatController::class
 Route::get('/api/atlet/{atlet_id}/prestasi', [AtletPrestasiController::class, 'apiIndex']);
 Route::get('/api/atlet/{atlet_id}/dokumen', [AtletDokumenController::class, 'apiIndex']);
 Route::get('/api/atlet/{atlet_id}/riwayat-pemeriksaan', [AtletController::class, 'apiRiwayatPemeriksaan']);
+Route::get('/api/atlet/{id}/rekap-latihan', [AtletController::class, 'apiRekapLatihan']);
+Route::get('/api/atlet/{id}/parameter-umum', [AtletController::class, 'apiParameterUmum']);
+Route::get('/api/atlet/{id}/rekap-parameter-khusus', [AtletController::class, 'apiRekapParameterKhusus']);
+Route::post('/api/atlet/{id}/parameter-umum', [AtletController::class, 'apiUpdateParameterUmum']);
 Route::get('/api/pelatih/{pelatih_id}/sertifikat', [PelatihSertifikatController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/prestasi', [PelatihPrestasiController::class, 'apiIndex']);
 Route::get('/api/pelatih/{pelatih_id}/dokumen', [PelatihDokumenController::class, 'apiIndex']);
@@ -464,6 +468,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 
 Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/index/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'indexPage'])->middleware(['auth', 'verified']);
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/set-kehadiran/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'setKehadiranPage'])->middleware(['auth', 'verified']);
 
 // =====================
 // API: Daftar Peserta Rencana Latihan (Atlet, Pelatih, Tenaga Pendukung)
@@ -472,6 +477,7 @@ Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [Rencana
 Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified']);
 Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified']);
 Route::post('/rencana-latihan/{rencana}/peserta/{jenis}/set-kehadiran', [RencanaLatihanPesertaController::class, 'setKehadiran'])->middleware(['auth', 'verified']);
+Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}/update-kehadiran', [RencanaLatihanPesertaController::class, 'updateKehadiran'])->middleware(['auth', 'verified']);
 
 // Kelola Pemetaan Rencana Latihan
 Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}', [RencanaLatihanKelolaController::class, 'index'])->middleware(['auth', 'verified']);

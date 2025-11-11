@@ -16,6 +16,9 @@ interface Parameter {
     id: number;
     nama: string;
     satuan: string;
+    kategori?: string;
+    nilai_target?: string;
+    performa_arah?: string;
 }
 
 interface StatistikData {
@@ -54,6 +57,7 @@ const breadcrumbs = [
 const statistikData = ref<StatistikData[]>([]);
 const pesertaList = ref<Peserta[]>([]);
 const rencanaPemeriksaanList = ref<RencanaPemeriksaan[]>([]);
+const parameterInfo = ref<Parameter | null>(null);
 const loading = ref(false);
 
 // Modal state
@@ -69,6 +73,7 @@ const loadStatistikData = async () => {
         statistikData.value = response.data.data || [];
         pesertaList.value = response.data.peserta || [];
         rencanaPemeriksaanList.value = response.data.rencana_pemeriksaan || [];
+        parameterInfo.value = response.data.parameter_info || null;
     } catch (error) {
         console.error('Error loading statistik data:', error);
         toast({ title: 'Gagal memuat data statistik', variant: 'destructive' });
@@ -125,6 +130,17 @@ const getJenisPesertaLabel = (jenisPeserta: string) => {
             return jenisPeserta;
     }
 };
+
+// Get performa color
+const getPerformaColor = (persentase: number | null) => {
+    if (persentase === null) return 'text-gray-400';
+    if (persentase > 70) return 'text-red-600';
+    if (persentase >= 40) return 'text-yellow-600';
+    return 'text-green-600';
+};
+
+// Check if parameter is khusus
+const isParameterKhusus = computed(() => parameterInfo.value?.kategori === 'khusus');
 
 // Handler untuk membuka modal chart peserta
 const openParticipantChart = (peserta: Peserta) => {
@@ -224,23 +240,35 @@ onMounted(async () => {
                                 <td v-for="rencana in sortedRencanaPemeriksaan" :key="rencana.id" class="p-4 text-center">
                                     <div
                                         v-if="getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)"
-                                        class="flex items-center justify-center gap-2"
+                                        class="flex flex-col items-center justify-center gap-1"
                                     >
-                                        <span class="text-sm font-medium">
-                                            {{ getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.nilai }}
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-medium">
+                                                {{ getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.nilai }}
+                                            </span>
+                                            <component
+                                                :is="
+                                                    getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
+                                                        .component
+                                                "
+                                                :class="
+                                                    getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
+                                                        .colorClass
+                                                "
+                                                class="h-4 w-4"
+                                                :title="getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil'"
+                                            />
+                                        </div>
+                                        <span
+                                            v-if="isParameterKhusus && getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa !== null"
+                                            class="text-xs font-semibold"
+                                            :class="getPerformaColor(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa)"
+                                        >
+                                            {{
+                                                getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)
+                                                    ?.persentase_performa?.toFixed(1) || '-'
+                                            }}%
                                         </span>
-                                        <component
-                                            :is="
-                                                getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
-                                                    .component
-                                            "
-                                            :class="
-                                                getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
-                                                    .colorClass
-                                            "
-                                            class="h-4 w-4"
-                                            :title="getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil'"
-                                        />
                                     </div>
                                     <span v-else class="text-gray-400">-</span>
                                 </td>
@@ -257,7 +285,8 @@ onMounted(async () => {
             :participant="selectedParticipant"
             :statistik-data="statistikData"
             :rencana-list="rencanaPemeriksaanList"
-            data-type="pemeriksaan"
+            :data-type="isParameterKhusus ? 'target-latihan' : 'pemeriksaan'"
+            :target-info="isParameterKhusus ? parameterInfo : undefined"
             @close="closeModal"
         />
     </AppLayout>

@@ -76,6 +76,7 @@ class TargetLatihanController extends Controller implements HasMiddleware
             'deskripsi'          => $target->deskripsi,
             'satuan'             => $target->satuan,
             'nilai_target'       => $target->nilai_target,
+            'performa_arah'      => $target->performa_arah ?? 'max',
         ]);
     }
 
@@ -439,8 +440,41 @@ class TargetLatihanController extends Controller implements HasMiddleware
         // Ambil info target latihan
         $targetInfo = TargetLatihan::find($targetId);
 
+        // Hitung persentase performa untuk setiap data statistik
+        $statistikDataWithPerforma = $statistikData->map(function ($item) use ($targetInfo) {
+            $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
+            $nilaiTarget = $targetInfo && $targetInfo->nilai_target ? (float) $targetInfo->nilai_target : null;
+            $performaArah = $targetInfo && $targetInfo->performa_arah ? $targetInfo->performa_arah : 'max';
+
+            $persentasePerforma = null;
+            if ($nilaiAktual !== null && $nilaiTarget !== null && $nilaiTarget > 0) {
+                if ($performaArah === 'min') {
+                    // Semakin kecil nilai semakin baik
+                    // Contoh: target 12 detik, aktual 14 detik = 85.7% (12/14 * 100)
+                    // Aktual 12 detik = 100% (12/12 * 100)
+                    // Aktual 11 detik = 109% (12/11 * 100)
+                    $persentasePerforma = ($nilaiTarget / $nilaiAktual) * 100;
+                } else {
+                    // Semakin besar nilai semakin baik (default)
+                    // Contoh: target 80, aktual 70 = 87.5% (70/80 * 100)
+                    // Aktual 80 = 100% (80/80 * 100)
+                    // Aktual 90 = 112.5% (90/80 * 100)
+                    $persentasePerforma = ($nilaiAktual / $nilaiTarget) * 100;
+                }
+            }
+
+            return [
+                'peserta_id'         => $item->peserta_id,
+                'rencana_latihan_id' => $item->rencana_latihan_id,
+                'nilai'              => $item->nilai,
+                'trend'              => $item->trend,
+                'tanggal'            => $item->tanggal,
+                'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
+            ];
+        });
+
         return response()->json([
-            'data'            => $statistikData,
+            'data'            => $statistikDataWithPerforma,
             'rencana_latihan' => $rencanaLatihan,
             'peserta'         => $uniquePeserta,
             'target_info'     => $targetInfo,

@@ -8,10 +8,21 @@ use App\Models\Pelatih;
 use App\Models\RencanaLatihan;
 use App\Models\TenagaPendukung;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
-class RencanaLatihanPesertaController extends Controller
+class RencanaLatihanPesertaController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            // Hanya izinkan pengguna dengan permission khusus melakukan set kehadiran
+            new Middleware('can:Rencana Latihan Set Kehadiran', only: ['setKehadiranPage', 'updateKehadiran', 'setKehadiran']),
+        ];
+    }
     public function index(Request $request, $rencana_id, $jenis_peserta)
     {
         $rencana = RencanaLatihan::find($rencana_id);
@@ -52,7 +63,8 @@ class RencanaLatihanPesertaController extends Controller
                     'cabor_kategori_atlet.is_active as kategori_is_active',
                     'cabor_kategori_atlet.posisi_atlet_id',
                     'rencana_latihan_atlet.kehadiran as kehadiran',
-                    'rencana_latihan_atlet.keterangan as keterangan'
+                    'rencana_latihan_atlet.keterangan as keterangan',
+                    'rencana_latihan_atlet.foto as foto_kehadiran'
                 );
         } elseif ($jenis_peserta === 'pelatih') {
             $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
@@ -78,7 +90,8 @@ class RencanaLatihanPesertaController extends Controller
                     'cabor_kategori_pelatih.is_active as kategori_is_active',
                     'mst_jenis_pelatih.nama as jenis_pelatih_nama',
                     'rencana_latihan_pelatih.kehadiran as kehadiran',
-                    'rencana_latihan_pelatih.keterangan as keterangan'
+                    'rencana_latihan_pelatih.keterangan as keterangan',
+                    'rencana_latihan_pelatih.foto as foto_kehadiran'
                 );
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
             $caborKategoriId = $rencana->programLatihan->cabor_kategori_id;
@@ -104,7 +117,8 @@ class RencanaLatihanPesertaController extends Controller
                     'cabor_kategori_tenaga_pendukung.is_active as kategori_is_active',
                     'mst_jenis_tenaga_pendukung.nama as jenis_tenaga_pendukung_nama',
                     'rencana_latihan_tenaga_pendukung.kehadiran as kehadiran',
-                    'rencana_latihan_tenaga_pendukung.keterangan as keterangan'
+                    'rencana_latihan_tenaga_pendukung.keterangan as keterangan',
+                    'rencana_latihan_tenaga_pendukung.foto as foto_kehadiran'
                 );
         } else {
             return response()->json([
@@ -123,18 +137,26 @@ class RencanaLatihanPesertaController extends Controller
 
         $result = $query->paginate($perPage)->appends($request->all());
 
-        // Mapping posisi atlet untuk response
-        if ($jenis_peserta === 'atlet') {
-            $data = $result->items();
-            foreach ($data as &$row) {
+        // Mapping posisi atlet dan foto kehadiran untuk response
+        $data = $result->items();
+        foreach ($data as &$row) {
+            // Mapping posisi atlet
+            if ($jenis_peserta === 'atlet') {
                 $row->posisi_atlet_nama = '-';
                 if (! empty($row->posisi_atlet_id)) {
                     $posisi                 = MstPosisiAtlet::find($row->posisi_atlet_id);
                     $row->posisi_atlet_nama = $posisi ? $posisi->nama : '-';
                 }
             }
-            $result->setCollection(collect($data));
+
+            // Mapping foto kehadiran dengan URL lengkap
+            if (! empty($row->foto_kehadiran)) {
+                $row->foto_kehadiran = url('storage/' . $row->foto_kehadiran);
+            } else {
+                $row->foto_kehadiran = null;
+            }
         }
+        $result->setCollection(collect($data));
 
         return response()->json([
             'data' => $result->items(),
@@ -252,5 +274,160 @@ class RencanaLatihanPesertaController extends Controller
         }
 
         return response()->json(['message' => 'Kehadiran berhasil diupdate']);
+    }
+
+    /**
+     * Halaman set kehadiran individu
+     */
+    public function setKehadiranPage($program_id, $rencana_id, $jenis_peserta, $peserta_id)
+    {
+        $rencana = RencanaLatihan::with(['programLatihan.cabor', 'programLatihan.caborKategori'])->findOrFail($rencana_id);
+        $program = $rencana->programLatihan;
+
+        // Get peserta data
+        $peserta = null;
+        $kehadiranData = null;
+
+        if ($jenis_peserta === 'atlet') {
+            $peserta = Atlet::findOrFail($peserta_id);
+            $kehadiranData = DB::table('rencana_latihan_atlet')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('atlet_id', $peserta_id)
+                ->first();
+        } elseif ($jenis_peserta === 'pelatih') {
+            $peserta = Pelatih::findOrFail($peserta_id);
+            $kehadiranData = DB::table('rencana_latihan_pelatih')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('pelatih_id', $peserta_id)
+                ->first();
+        } elseif ($jenis_peserta === 'tenaga-pendukung') {
+            $peserta = TenagaPendukung::findOrFail($peserta_id);
+            $kehadiranData = DB::table('rencana_latihan_tenaga_pendukung')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('tenaga_pendukung_id', $peserta_id)
+                ->first();
+        }
+
+        $infoHeader = [
+            'program_latihan_id'  => $program->id,
+            'nama_program'        => $program->nama_program,
+            'cabor_nama'          => $program->cabor?->nama,
+            'cabor_kategori_nama' => $program->caborKategori?->nama,
+        ];
+
+        $infoRencana = [
+            'tanggal'        => $rencana->tanggal,
+            'materi'         => $rencana->materi,
+            'lokasi_latihan' => $rencana->lokasi_latihan,
+        ];
+
+        return Inertia::render('modules/rencana-latihan/index/SetKehadiran', [
+            'program_id'     => $program_id,
+            'rencana_id'     => $rencana_id,
+            'jenis_peserta'  => $jenis_peserta,
+            'peserta_id'     => $peserta_id,
+            'peserta'        => $peserta,
+            'kehadiran'      => $kehadiranData?->kehadiran,
+            'keterangan'     => $kehadiranData?->keterangan,
+            'foto_kehadiran' => $kehadiranData?->foto ? url('storage/' . $kehadiranData->foto) : null,
+            'infoHeader'     => $infoHeader,
+            'infoRencana'    => $infoRencana,
+        ]);
+    }
+
+    /**
+     * Update kehadiran individu dengan foto
+     */
+    public function updateKehadiran(Request $request, $rencana_id, $jenis_peserta, $peserta_id)
+    {
+        // Get existing foto untuk validasi
+        $existingFoto = null;
+        if ($jenis_peserta === 'atlet') {
+            $existing = DB::table('rencana_latihan_atlet')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('atlet_id', $peserta_id)
+                ->first();
+            $existingFoto = $existing?->foto;
+        } elseif ($jenis_peserta === 'pelatih') {
+            $existing = DB::table('rencana_latihan_pelatih')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('pelatih_id', $peserta_id)
+                ->first();
+            $existingFoto = $existing?->foto;
+        } elseif ($jenis_peserta === 'tenaga-pendukung') {
+            $existing = DB::table('rencana_latihan_tenaga_pendukung')
+                ->where('rencana_latihan_id', $rencana_id)
+                ->where('tenaga_pendukung_id', $peserta_id)
+                ->first();
+            $existingFoto = $existing?->foto;
+        }
+
+        $rules = [
+            'kehadiran'  => 'required|in:Hadir,Tidak Hadir,Izin,Sakit',
+            'keterangan' => 'nullable|string|max:1000',
+            'foto'       => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ];
+
+        // Jika kehadiran adalah "Hadir" dan belum ada foto, foto wajib diisi
+        if ($request->kehadiran === 'Hadir' && !$existingFoto) {
+            $rules['foto'] = 'required|image|mimes:jpeg,png,jpg|max:5120';
+        }
+
+        $request->validate($rules, [
+            'foto.required' => 'Foto kehadiran wajib diupload jika status Hadir.',
+            'foto.image'     => 'File harus berupa gambar.',
+            'foto.mimes'     => 'Format foto harus JPG, JPEG, atau PNG.',
+            'foto.max'       => 'Ukuran foto maksimal 5MB.',
+        ]);
+
+        $rencana = RencanaLatihan::findOrFail($rencana_id);
+        $kehadiran = $request->input('kehadiran');
+        $keterangan = $request->input('keterangan');
+        $fotoPath = null;
+
+        // Handle foto upload jika hadir
+        if ($request->hasFile('foto') && $request->kehadiran === 'Hadir') {
+            $file = $request->file('foto');
+            $path = 'kehadiran/' . $rencana_id . '/' . $jenis_peserta . '/' . $peserta_id;
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs($path, $fileName, 'public');
+            $fotoPath = $path . '/' . $fileName;
+        }
+
+        // Update pivot table
+        $updateData = [
+            'kehadiran'  => $kehadiran,
+            'keterangan' => $keterangan ?? null,
+        ];
+
+        if ($fotoPath) {
+            $updateData['foto'] = $fotoPath;
+            // Hapus foto lama jika ada
+            if ($existingFoto && Storage::disk('public')->exists($existingFoto)) {
+                Storage::disk('public')->delete($existingFoto);
+            }
+        } elseif ($kehadiran === 'Hadir' && $existingFoto) {
+            // Jika status Hadir dan tidak ada foto baru, tetap pakai foto lama
+            $updateData['foto'] = $existingFoto;
+        } elseif ($kehadiran !== 'Hadir' && $existingFoto) {
+            // Jika status bukan Hadir, hapus foto
+            $updateData['foto'] = null;
+            if (Storage::disk('public')->exists($existingFoto)) {
+                Storage::disk('public')->delete($existingFoto);
+            }
+        }
+
+        if ($jenis_peserta === 'atlet') {
+            $rencana->atlets()->updateExistingPivot($peserta_id, $updateData);
+        } elseif ($jenis_peserta === 'pelatih') {
+            $rencana->pelatihs()->updateExistingPivot($peserta_id, $updateData);
+        } elseif ($jenis_peserta === 'tenaga-pendukung') {
+            $rencana->tenagaPendukung()->updateExistingPivot($peserta_id, $updateData);
+        }
+
+        return response()->json([
+            'message' => 'Kehadiran berhasil diupdate',
+            'foto_url' => $fotoPath ? url('storage/' . $fotoPath) : null,
+        ]);
     }
 }

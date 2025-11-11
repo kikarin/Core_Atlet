@@ -104,6 +104,14 @@ const getTrendIcon = (trend: string) => {
     }
 };
 
+// Get performa color
+const getPerformaColor = (persentase: number | null) => {
+    if (persentase === null) return 'text-gray-400';
+    if (persentase > 70) return 'text-red-600';
+    if (persentase >= 40) return 'text-yellow-600';
+    return 'text-green-600';
+};
+
 // Modal functions
 const openParticipantChart = (peserta: any) => {
     selectedParticipant.value = peserta;
@@ -183,29 +191,41 @@ const closeModal = () => {
                                 <td v-for="rencana in sortedRencanaLatihan" :key="`${peserta.id}-${rencana.id}`" class="p-4 text-center">
                                     <div
                                         v-if="statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)"
-                                        class="flex items-center justify-center gap-2"
+                                        class="flex flex-col items-center justify-center gap-1"
                                     >
-                                        <span class="text-sm font-medium">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <span class="text-sm font-medium">
+                                                {{
+                                                    statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                        ?.nilai || '-'
+                                                }}
+                                            </span>
+                                            <component
+                                                :is="
+                                                    getTrendIcon(
+                                                        statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                            ?.trend || 'stabil',
+                                                    ).icon
+                                                "
+                                                :class="
+                                                    getTrendIcon(
+                                                        statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                            ?.trend || 'stabil',
+                                                    ).color
+                                                "
+                                                class="h-4 w-4"
+                                            />
+                                        </div>
+                                        <span
+                                            v-if="statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)?.persentase_performa !== null"
+                                            class="text-xs font-semibold"
+                                            :class="getPerformaColor(statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)?.persentase_performa)"
+                                        >
                                             {{
                                                 statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
-                                                    ?.nilai || '-'
-                                            }}
+                                                    ?.persentase_performa?.toFixed(1) || '-'
+                                            }}%
                                         </span>
-                                        <component
-                                            :is="
-                                                getTrendIcon(
-                                                    statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
-                                                        ?.trend || 'stabil',
-                                                ).icon
-                                            "
-                                            :class="
-                                                getTrendIcon(
-                                                    statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
-                                                        ?.trend || 'stabil',
-                                                ).color
-                                            "
-                                            class="h-4 w-4"
-                                        />
                                     </div>
                                     <span v-else class="text-gray-400">-</span>
                                 </td>
@@ -229,6 +249,7 @@ const closeModal = () => {
                 :statistik-data="statistikData"
                 :rencana-list="rencanaLatihanList"
                 data-type="target-latihan"
+                :target-info="targetInfo"
                 @close="closeModal"
             />
         </div>

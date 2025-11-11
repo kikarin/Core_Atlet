@@ -16,6 +16,7 @@ const formData = computed(() => ({
     satuan: props.initialData?.satuan || '',
     nilai_target: props.initialData?.nilai_target || '',
     peruntukan: props.initialData?.peruntukan || (props.infoHeader?.jenis_target === 'individu' ? 'atlet' : null),
+    performa_arah: props.initialData?.performa_arah || 'max',
     id: props.initialData?.id || undefined,
 }));
 
@@ -41,6 +42,18 @@ const formInputs = computed(() => {
             type: 'text',
             placeholder: 'Masukkan nilai target (opsional)',
             required: false,
+        },
+        {
+            name: 'performa_arah',
+            label: 'Arah Performa',
+            type: 'select',
+            options: [
+                { value: 'min', label: 'Semakin Kecil Semakin Baik (contoh: waktu lari)' },
+                { value: 'max', label: 'Semakin Besar Semakin Baik (contoh: berat angkat)' },
+            ],
+            placeholder: 'Pilih arah performa',
+            required: false,
+            helpText: 'Pilih apakah nilai yang lebih kecil atau lebih besar yang menunjukkan performa lebih baik',
         },
     ];
 
@@ -69,6 +82,7 @@ const handleSave = (form: any) => {
         satuan: form.satuan,
         nilai_target: form.nilai_target,
         peruntukan: form.peruntukan,
+        performa_arah: form.performa_arah || 'max',
         program_latihan_id: props.infoHeader?.program_latihan_id,
         jenis_target: props.infoHeader?.jenis_target,
     };

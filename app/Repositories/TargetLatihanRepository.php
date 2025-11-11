@@ -92,6 +92,7 @@ class TargetLatihanRepository
                 'deskripsi'            => $item->deskripsi,
                 'satuan'               => $item->satuan,
                 'nilai_target'         => $item->nilai_target,
+                'performa_arah'        => $item->performa_arah ?? 'max',
             ];
         });
         $data += [

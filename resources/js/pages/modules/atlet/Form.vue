@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
+const page = usePage();
 
 const props = defineProps<{
     mode: 'create' | 'edit';
@@ -41,6 +45,10 @@ const formData = ref({
 const kecamatanOptions = ref<{ value: number; label: string }[]>([]);
 const kelurahanOptions = ref<{ value: number; label: string }[]>([]);
 const kategoriAtletOptions = ref<{ value: number; label: string }[]>([]);
+
+// Parameter Umum
+const parameterUmumMaster = computed(() => (page.props as any).parameter_umum_master || []);
+const parameterUmumValues = ref<Record<number, string>>((page.props as any).parameter_umum_values || {});
 
 onMounted(async () => {
     try {
@@ -178,7 +186,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 </script>
 
 <template>
-    <div>
+    <div class="space-y-6">
         <FormInput
             :form-inputs="formInputs"
             :initial-data="formData"

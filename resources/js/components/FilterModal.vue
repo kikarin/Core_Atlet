@@ -16,6 +16,7 @@ interface FilterData {
     jenis_kelamin?: string;
     kategori_usia?: string;
     lama_bergabung?: string;
+    kategori_atlet_id?: string;
     [key: string]: any;
 }
 
@@ -41,22 +42,34 @@ const filters = ref<FilterData>({
     jenis_kelamin: 'all',
     kategori_usia: 'all',
     lama_bergabung: 'all',
+    kategori_atlet_id: 'all',
 });
 
 const cabors = ref<Array<{ id: number; nama: string }>>([]);
 const caborKategoris = ref<Array<{ id: number; nama: string }>>([]);
 const loadingCaborKategoris = ref(false);
+const kategoriAtlets = ref<Array<{ id: number; nama: string }>>([]);
 
 // State untuk search query per select field
 const selectSearchQuery = ref<Record<string, string>>({});
 
-// Load cabors on mount
+// Load cabors and kategori atlets on mount
 onMounted(async () => {
     try {
         const response = await axios.get('/api/cabor-list');
         cabors.value = response.data;
     } catch (error) {
         console.error('Gagal load cabor:', error);
+    }
+
+    // Load kategori atlets for atlet module
+    if (props.moduleType === 'atlet') {
+        try {
+            const kategoriAtletResponse = await axios.get('/api/kategori-atlet-list');
+            kategoriAtlets.value = kategoriAtletResponse.data;
+        } catch (error) {
+            console.error('Gagal load kategori atlet:', error);
+        }
     }
 });
 
@@ -99,6 +112,7 @@ watch(
                     jenis_kelamin: 'all',
                     kategori_usia: 'all',
                     lama_bergabung: 'all',
+                    kategori_atlet_id: 'all',
                 };
             }
         }
@@ -131,6 +145,7 @@ const resetFilters = () => {
         jenis_kelamin: 'all',
         kategori_usia: 'all',
         lama_bergabung: 'all',
+        kategori_atlet_id: 'all',
     };
 };
 
@@ -305,6 +320,38 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                                 <SelectItem value="all">Semua Lama Bergabung</SelectItem>
                                 <SelectItem v-for="option in getLamaBergabungOptions()" :key="option.value" :value="option.value">
                                     {{ option.label }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <!-- Filter Kategori Atlet -->
+                    <div class="space-y-2">
+                        <Label for="kategori_atlet_id">Kategori Atlet</Label>
+                        <Select v-model="filters.kategori_atlet_id">
+                            <SelectTrigger class="w-full">
+                                <SelectValue placeholder="Pilih Kategori Atlet" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <!-- Search input -->
+                                <div class="p-2">
+                                    <input
+                                        v-model="selectSearchQuery.kategori_atlet_id"
+                                        type="text"
+                                        placeholder="Cari kategori atlet..."
+                                        class="w-full rounded border px-2 py-1 text-sm"
+                                        @click.stop
+                                        @keydown.stop
+                                    />
+                                </div>
+                                <!-- Filtered options -->
+                                <SelectItem value="all">Semua Kategori Atlet</SelectItem>
+                                <SelectItem
+                                    v-for="kategori in getFilteredOptions(kategoriAtlets, 'kategori_atlet_id')"
+                                    :key="kategori.id"
+                                    :value="kategori.id.toString()"
+                                >
+                                    {{ kategori.nama }}
                                 </SelectItem>
                             </SelectContent>
                         </Select>

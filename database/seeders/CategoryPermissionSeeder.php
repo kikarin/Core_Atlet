@@ -198,6 +198,11 @@ class CategoryPermissionSeeder extends Seeder
                 'permission_common' => ['Rencana Latihan Kelola'],
             ],
             [
+                'name'              => 'Rencana Latihan Peserta',
+                'permission'        => 'CRUD',
+                'permission_common' => ['Rencana Latihan Set Kehadiran'],
+            ],
+            [
                 'name'       => 'Pemeriksaan',
                 'permission' => 'CRUD',
             ],

@@ -27,6 +27,7 @@ class TargetLatihan extends Model
         'deskripsi',
         'satuan',
         'nilai_target',
+        'performa_arah',
         'created_by',
         'updated_by',
         'deleted_by',

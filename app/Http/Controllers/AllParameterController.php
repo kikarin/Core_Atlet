@@ -140,11 +140,16 @@ class AllParameterController extends Controller implements HasMiddleware
             )
             ->get();
 
-        // Get peserta list
+        // Get peserta list - untuk parameter khusus hanya atlet
         $pesertaList = collect();
         foreach ($statistikData as $data) {
             $pesertaType = $data->peserta_type;
             $pesertaId   = $data->peserta_id;
+
+            // Parameter khusus hanya untuk atlet
+            if ($parameter->kategori === 'khusus' && $pesertaType !== 'App\\Models\\Atlet') {
+                continue;
+            }
 
             switch ($pesertaType) {
                 case 'App\\Models\\Atlet':
@@ -163,41 +168,52 @@ class AllParameterController extends Controller implements HasMiddleware
                     break;
 
                 case 'App\\Models\\Pelatih':
-                    $pelatih = DB::table('pelatihs')
-                        ->where('id', $pesertaId)
-                        ->select('id', 'nama', 'jenis_kelamin')
-                        ->first();
-                    if ($pelatih) {
-                        $pesertaList->push([
-                            'id'            => $pelatih->id,
-                            'nama'          => $pelatih->nama,
-                            'jenis_peserta' => 'pelatih',
-                            'jenis_kelamin' => $pelatih->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                        ]);
+                    // Hanya untuk parameter kesehatan
+                    if ($parameter->kategori === 'kesehatan') {
+                        $pelatih = DB::table('pelatihs')
+                            ->where('id', $pesertaId)
+                            ->select('id', 'nama', 'jenis_kelamin')
+                            ->first();
+                        if ($pelatih) {
+                            $pesertaList->push([
+                                'id'            => $pelatih->id,
+                                'nama'          => $pelatih->nama,
+                                'jenis_peserta' => 'pelatih',
+                                'jenis_kelamin' => $pelatih->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                            ]);
+                        }
                     }
                     break;
 
                 case 'App\\Models\\TenagaPendukung':
-                    $tenaga = DB::table('tenaga_pendukungs')
-                        ->where('id', $pesertaId)
-                        ->select('id', 'nama', 'jenis_kelamin')
-                        ->first();
-                    if ($tenaga) {
-                        $pesertaList->push([
-                            'id'            => $tenaga->id,
-                            'nama'          => $tenaga->nama,
-                            'jenis_peserta' => 'tenaga-pendukung',
-                            'jenis_kelamin' => $tenaga->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                        ]);
+                    // Hanya untuk parameter kesehatan
+                    if ($parameter->kategori === 'kesehatan') {
+                        $tenaga = DB::table('tenaga_pendukungs')
+                            ->where('id', $pesertaId)
+                            ->select('id', 'nama', 'jenis_kelamin')
+                            ->first();
+                        if ($tenaga) {
+                            $pesertaList->push([
+                                'id'            => $tenaga->id,
+                                'nama'          => $tenaga->nama,
+                                'jenis_peserta' => 'tenaga-pendukung',
+                                'jenis_kelamin' => $tenaga->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                            ]);
+                        }
                     }
                     break;
             }
         }
 
-        // Transform data untuk menambahkan tanggal pemeriksaan
-        $transformedData = $statistikData->map(function ($item) use ($pemeriksaanList) {
+        // Hitung persentase performa untuk parameter khusus
+        $nilaiTarget = $parameter->nilai_target ? (float) $parameter->nilai_target : null;
+        $performaArah = $parameter->performa_arah ?? 'max';
+
+        // Transform data untuk menambahkan tanggal pemeriksaan dan persentase performa
+        $transformedData = $statistikData->map(function ($item) use ($pemeriksaanList, $parameter, $nilaiTarget, $performaArah) {
             $pemeriksaan = $pemeriksaanList->firstWhere('id', $item->pemeriksaan_id);
-            return [
+            
+            $data = [
                 'peserta_id'             => $item->peserta_id,
                 'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
                 'nilai'                  => $item->nilai,
@@ -205,12 +221,38 @@ class AllParameterController extends Controller implements HasMiddleware
                 'tanggal_pemeriksaan'    => $pemeriksaan->tanggal_pemeriksaan ?? null,
                 'pemeriksaan_id'         => $item->pemeriksaan_id,
             ];
+
+            // Hitung persentase performa untuk parameter khusus
+            if ($parameter->kategori === 'khusus' && $nilaiTarget !== null && $item->nilai !== null) {
+                $nilaiAktual = (float) $item->nilai;
+                $persentasePerforma = null;
+                
+                if ($nilaiTarget > 0) {
+                    if ($performaArah === 'min') {
+                        $persentasePerforma = ($nilaiTarget / $nilaiAktual) * 100;
+                    } else {
+                        $persentasePerforma = ($nilaiAktual / $nilaiTarget) * 100;
+                    }
+                }
+                
+                $data['persentase_performa'] = $persentasePerforma !== null ? round($persentasePerforma, 2) : null;
+            }
+
+            return $data;
         });
 
         return response()->json([
             'data'                => $transformedData,
             'rencana_pemeriksaan' => $pemeriksaanList->toArray(),
             'peserta'             => $pesertaList->unique('id')->values()->toArray(),
+            'parameter_info'      => [
+                'id'            => $parameter->id,
+                'nama'          => $parameter->nama,
+                'satuan'        => $parameter->satuan,
+                'kategori'      => $parameter->kategori ?? 'kesehatan',
+                'nilai_target'  => $parameter->nilai_target,
+                'performa_arah' => $parameter->performa_arah ?? 'max',
+            ],
         ]);
     }
 }

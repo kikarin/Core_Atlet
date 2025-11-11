@@ -62,7 +62,10 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function create(Pemeriksaan $pemeriksaan)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
-        $mstParameters = MstParameter::where('deleted_at', null)->get(['id', 'nama', 'satuan']);
+        // Exclude kategori 'umum' dari opsi parameter pemeriksaan
+        $mstParameters = MstParameter::whereNull('deleted_at')
+            ->where('kategori', '!=', 'umum')
+            ->get(['id', 'nama', 'satuan']);
         $this->repository->customProperty(__FUNCTION__);
         $data = $this->commonData + ['item' => null, 'pemeriksaan' => $pemeriksaan, 'mstParameters' => $mstParameters];
         if ($this->check_permission == true) {
@@ -93,7 +96,10 @@ class PemeriksaanParameterController extends Controller implements HasMiddleware
     public function edit(Pemeriksaan $pemeriksaan, $id)
     {
         $pemeriksaan->load(['cabor', 'caborKategori', 'tenagaPendukung']);
-        $mstParameters = MstParameter::where('deleted_at', null)->get(['id', 'nama', 'satuan']);
+        // Exclude kategori 'umum' dari opsi parameter pemeriksaan
+        $mstParameters = MstParameter::whereNull('deleted_at')
+            ->where('kategori', '!=', 'umum')
+            ->get(['id', 'nama', 'satuan']);
         $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
         $item = $this->repository->getById($id);
         $data = $this->commonData + ['item' => $item, 'pemeriksaan' => $pemeriksaan, 'mstParameters' => $mstParameters];

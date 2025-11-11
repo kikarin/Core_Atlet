@@ -7,6 +7,7 @@ import Form from './Form.vue';
 import FormAkun from './FormAkun.vue';
 import FormKesehatan from './FormKesehatan.vue';
 import FormOrangTua from './FormOrangTua.vue';
+import FormParameterUmum from './FormParameterUmum.vue';
 
 const props = defineProps<{ item: Record<string, any> }>();
 
@@ -55,6 +56,8 @@ const dynamicTitle = computed(() => {
         return `Kesehatan : ${props.item.nama || '-'}`;
     } else if (activeTab.value === 'akun-data') {
         return `Akun : ${props.item.nama || '-'}`;
+    } else if (activeTab.value === 'parameter-umum-data') {
+        return `Parameter Umum : ${props.item.nama || '-'}`;
     }
     return 'Edit Atlet';
 });
@@ -71,6 +74,12 @@ const tabsConfig = computed(() => [
         label: 'Atlet',
         component: Form,
         props: { mode: 'edit', initialData: props.item },
+    },
+    {
+        value: 'parameter-umum-data',
+        label: 'Parameter Umum',
+        component: FormParameterUmum,
+        props: { mode: 'edit', atletId: atletId.value },
     },
     {
         value: 'orang-tua-data',

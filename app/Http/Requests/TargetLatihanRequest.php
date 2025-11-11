@@ -19,6 +19,7 @@ class TargetLatihanRequest extends FormRequest
             'deskripsi'          => 'required|string|max:255',
             'satuan'             => 'nullable|string|max:100',
             'nilai_target'       => 'nullable|string|max:100',
+            'performa_arah'     => 'nullable|in:min,max',
         ];
 
         // Peruntukan hanya required untuk target individu
@@ -45,6 +46,7 @@ class TargetLatihanRequest extends FormRequest
             'deskripsi.max'               => 'Deskripsi target tidak boleh lebih dari 255 karakter.',
             'satuan.max'                  => 'Satuan tidak boleh lebih dari 100 karakter.',
             'nilai_target.max'            => 'Nilai target tidak boleh lebih dari 100 karakter.',
+            'performa_arah.in'            => 'Arah performa harus min atau max.',
         ];
     }
 }
