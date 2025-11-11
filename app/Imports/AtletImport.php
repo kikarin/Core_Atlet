@@ -60,30 +60,66 @@ class AtletImport implements ToCollection, WithBatchInserts, WithChunkReading, W
             DB::beginTransaction();
 
             try {
-                $atlet = Atlet::withTrashed()->where('nik', $row['nik'])->first();
+                // Jika nik kosong, gunakan nisn untuk mencari atlet yang sudah ada
+                $nik = !empty($row['nik']) ? $row['nik'] : null;
+                $nisn = !empty($row['nisn']) ? $row['nisn'] : null;
+                
+                // Cari atlet berdasarkan nik atau nisn
+                $atlet = null;
+                if ($nik) {
+                    $atlet = Atlet::withTrashed()->where('nik', $nik)->first();
+                }
+                
+                // Jika tidak ditemukan berdasarkan nik dan ada nisn, cari berdasarkan nisn
+                if (!$atlet && $nisn) {
+                    $atlet = Atlet::withTrashed()->where('nisn', $nisn)->first();
+                }
+
+                // Jika nik kosong, tetap biarkan kosong (tidak diisi dengan nisn)
+                // Untuk atlet baru: nik akan null jika kosong
+                // Untuk atlet yang sudah ada: jika nik dari Excel kosong, jangan update field nik
 
                 $data = [
-                    'nik'           => $row['nik']           ?? null,
-                    'nama'          => $row['nama']          ?? null,
-                    'jenis_kelamin' => $row['jenis_kelamin'] ?? null,
-                    'tempat_lahir'  => $row['tempat_lahir']  ?? null,
-                    'tanggal_lahir' => $this->convertExcelDate($row['tanggal_lahir'] ?? null),
-                    'alamat'        => $row['alamat']       ?? null,
-                    'kecamatan_id'  => $row['kecamatan_id'] ?? null,
-                    'kelurahan_id'  => $row['kelurahan_id'] ?? null,
-                    'no_hp'         => $row['no_hp']        ?? null,
-                    'email'         => $row['email']        ?? null,
-                    'is_active'     => $row['is_active']    ?? 1,
+                    'nisn'             => $nisn,
+                    'nama'             => $row['nama']          ?? null,
+                    'jenis_kelamin'    => $row['jenis_kelamin'] ?? null,
+                    'tempat_lahir'     => $row['tempat_lahir']  ?? null,
+                    'tanggal_lahir'    => $this->convertExcelDate($row['tanggal_lahir'] ?? null),
+                    'agama'            => $row['agama']         ?? null,
+                    'alamat'           => $row['alamat']       ?? null,
+                    'sekolah'          => $row['sekolah']      ?? null,
+                    'kelas_sekolah'    => $row['kelas_sekolah'] ?? null,
+                    'ukuran_baju'      => $row['ukuran_baju']   ?? null,
+                    'ukuran_celana'    => $row['ukuran_celana'] ?? null,
+                    'ukuran_sepatu'    => $row['ukuran_sepatu'] ?? null,
+                    'kecamatan_id'     => $row['kecamatan_id'] ?? null,
+                    'kelurahan_id'     => $row['kelurahan_id'] ?? null,
+                    'kategori_atlet_id' => $row['kategori_atlet_id'] ?? null,
+                    'no_hp'            => $row['no_hp']        ?? null,
+                    'email'            => $row['email']        ?? null,
+                    'is_active'        => $row['is_active']    ?? 1,
                 ];
 
                 if ($atlet) {
+                    // Jika atlet sudah ada
                     if ($atlet->trashed()) {
                         $atlet->restore();
                     }
+                    
+                    // Jika nik dari Excel ada, update nik
+                    // Jika nik dari Excel kosong, jangan update field nik (biarkan seperti yang sudah ada)
+                    if ($nik) {
+                        $data['nik'] = $nik;
+                    }
+                    // Jika nik kosong, tidak masukkan ke $data, sehingga nik di database tidak berubah
+                    
                     unset($data['id']);
                     $atlet->update($data);
                     $atletId = $atlet->id;
                 } else {
+                    // Jika atlet baru
+                    // Jika nik kosong, set null (tidak diisi dengan nisn)
+                    $data['nik'] = $nik; // akan null jika kosong
                     $atlet = new Atlet($data);
                     $atlet->save();
                     $atletId = $atlet->id;

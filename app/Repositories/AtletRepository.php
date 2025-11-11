@@ -44,6 +44,7 @@ class AtletRepository
             'kesehatan.updated_by_user',
             'caborKategoriAtlet.cabor',
             'caborKategoriAtlet.caborKategori',
+            'kategoriAtlet',
         ];
     }
 
@@ -285,7 +286,7 @@ class AtletRepository
         }
         $data['updated_by'] = $userId;
 
-        $nullableFields = ['kecamatan_id', 'kelurahan_id', 'tanggal_bergabung'];
+        $nullableFields = ['kecamatan_id', 'kelurahan_id', 'kategori_atlet_id', 'tanggal_bergabung'];
         foreach ($nullableFields as $field) {
             if (isset($data[$field]) && $data[$field] === '') {
                 $data[$field] = null;
@@ -453,12 +454,19 @@ class AtletRepository
         $rules    = method_exists($request, 'rules') ? $request->rules() : [];
         $messages = method_exists($request, 'messages') ? $request->messages() : [];
 
+        // override pesan global (fallback)
+        $messages = array_merge([
+            'nik.max' => 'NIK tidak boleh lebih dari 16 karakter.',
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+        ], $messages);
+
         return $request->validate($rules, $messages);
     }
 
     public function getDetailWithRelations($id)
     {
-        $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
+        $with = array_merge($this->with, ['kecamatan', 'kelurahan', 'kategoriAtlet']);
 
         return $this->model->with($with)->findOrFail($id);
     }

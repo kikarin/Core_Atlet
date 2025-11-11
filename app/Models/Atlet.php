@@ -25,12 +25,19 @@ class Atlet extends Model implements HasMedia
 
     protected $fillable = [
         'nik',
+        'nisn',
         'nama',
         'jenis_kelamin',
         'tempat_lahir',
         'tanggal_lahir',
+        'agama',
         'tanggal_bergabung',
         'alamat',
+        'sekolah',
+        'kelas_sekolah',
+        'ukuran_baju',
+        'ukuran_celana',
+        'ukuran_sepatu',
         'kecamatan_id',
         'kelurahan_id',
         'no_hp',
@@ -38,6 +45,7 @@ class Atlet extends Model implements HasMedia
         'is_active',
         'foto',
         'users_id',
+        'kategori_atlet_id',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -150,6 +158,11 @@ class Atlet extends Model implements HasMedia
     public function caborKategoriAtlet()
     {
         return $this->hasMany(CaborKategoriAtlet::class, 'atlet_id');
+    }
+
+    public function kategoriAtlet()
+    {
+        return $this->belongsTo(MstKategoriAtlet::class, 'kategori_atlet_id')->select(['id', 'nama']);
     }
 
     /**

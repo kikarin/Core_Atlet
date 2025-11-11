@@ -67,14 +67,13 @@ class PemeriksaanSeeder extends Seeder
         }
 
         // Helper untuk membuat peserta+parameter
-        // Pastikan ref status tersedia
-        $statusMap = [];
-        foreach (['belum', 'sebagian', 'selesai'] as $nama) {
-            $status           = \App\Models\RefStatusPemeriksaan::firstOrCreate(['nama' => $nama]);
-            $statusMap[$nama] = $status->id;
+        // Gunakan status yang sudah ada dari RefStatusPemeriksaanSeeder
+        $statusIds = \App\Models\RefStatusPemeriksaan::pluck('id')->toArray();
+        
+        // Jika tidak ada status, gunakan status pertama yang tersedia atau null
+        if (empty($statusIds)) {
+            $statusIds = [null];
         }
-
-        $statusIds = array_values($statusMap);
 
         $makePeserta = function (string $typeClass, int $pesertaId) use ($pemeriksaan, $pemeriksaanParameterIds, $trendVals, $statusIds) {
             $peserta = PemeriksaanPeserta::create([

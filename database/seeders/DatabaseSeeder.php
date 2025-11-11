@@ -26,12 +26,12 @@ class DatabaseSeeder extends Seeder
         $this->call(ImportSqlSeeder::class);
         $this->call(MstJenisDokumenSeeder::class);
         $this->call(MstTingkatSeeder::class);
-        $this->call(AtletSeeder::class);
-        $this->call(AtletOrangTuaSeeder::class);
-        $this->call(AtletSertifikatSeeder::class);
-        $this->call(AtletPrestasiSeeder::class);
-        $this->call(AtletDokumenSeeder::class);
-        $this->call(AtletKesehatanSeeder::class);
+        // $this->call(AtletSeeder::class);
+        // $this->call(AtletOrangTuaSeeder::class);
+        // $this->call(AtletSertifikatSeeder::class);
+        // $this->call(AtletPrestasiSeeder::class);
+        // $this->call(AtletDokumenSeeder::class);
+        // $this->call(AtletKesehatanSeeder::class);
         $this->call(PelatihSeeder::class);
         $this->call(PelatihSertifikatSeeder::class);
         $this->call(PelatihPrestasiSeeder::class);

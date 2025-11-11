@@ -71,13 +71,20 @@ const props = defineProps<{
     item: {
         id: number;
         nik: string;
+        nisn: string;
         nama: string;
         jenis_kelamin: string;
         tempat_lahir: string;
         tanggal_lahir: string;
         alamat: string;
+        sekolah: string;
+        kelas_sekolah: string;
+        ukuran_baju: string;
+        ukuran_celana: string;
+        ukuran_sepatu: string;
         kecamatan_id: number | null;
         kelurahan_id: number | null;
+        kategori_atlet_id: number | null;
         no_hp: string;
         email: string;
         is_active: number;
@@ -156,6 +163,7 @@ const breadcrumbs = [
 const fields = computed(() => {
     return [
         { label: 'NIK', value: props.item?.nik || '-' },
+        { label: 'NISN', value: props.item?.nisn || '-' },
         { label: 'Nama', value: props.item?.nama || '-' },
         {
             label: 'Jenis Kelamin',
@@ -173,6 +181,10 @@ const fields = computed(() => {
                 : '-',
         },
         {
+            label: 'Agama',
+            value: props.item?.agama || '-',
+        },
+        {
             label: 'Tanggal Bergabung',
             value: props.item?.tanggal_bergabung
                 ? new Date(props.item.tanggal_bergabung).toLocaleDateString('id-ID', {
@@ -184,8 +196,14 @@ const fields = computed(() => {
         },
         { label: 'Lama Bergabung', value: props.item?.tanggal_bergabung ? getLamaBergabung(props.item.tanggal_bergabung) : '-' },
         { label: 'Alamat', value: props.item?.alamat || '-', className: 'sm:col-span-2' },
+        { label: 'Sekolah', value: props.item?.sekolah || '-' },
+        { label: 'Kelas Sekolah', value: props.item?.kelas_sekolah || '-' },
+        { label: 'Ukuran Baju', value: props.item?.ukuran_baju || '-' },
+        { label: 'Ukuran Celana', value: props.item?.ukuran_celana || '-' },
+        { label: 'Ukuran Sepatu', value: props.item?.ukuran_sepatu || '-' },
         { label: 'Kecamatan', value: props.item?.kecamatan?.nama || '-' },
         { label: 'Kelurahan', value: props.item?.kelurahan?.nama || '-' },
+        { label: 'Kategori Atlet', value: props.item?.kategori_atlet?.nama || '-' },
         { label: 'No HP', value: props.item?.no_hp || '-' },
         { label: 'Email', value: props.item?.email || '-' },
         {

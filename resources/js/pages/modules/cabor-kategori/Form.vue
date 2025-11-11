@@ -24,6 +24,7 @@ const formData = computed(() => {
     const base = {
         cabor_id: props.initialData?.cabor_id || '',
         nama: props.initialData?.nama || '',
+        jenis_kelamin: props.initialData?.jenis_kelamin || '',
         deskripsi: props.initialData?.deskripsi || '',
         id: props.initialData?.id || undefined,
     };
@@ -71,6 +72,7 @@ const handleSave = (form: any) => {
     const dataToSave: Record<string, any> = {
         cabor_id: form.cabor_id,
         nama: form.nama,
+        jenis_kelamin: form.jenis_kelamin,
         deskripsi: form.deskripsi,
     };
     if (props.mode === 'edit' && props.initialData?.id) {

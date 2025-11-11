@@ -8,41 +8,32 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class AtletKesehatan extends Model
+class MstKategoriAtlet extends Model
 {
     use Blameable;
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
 
-    protected $table = 'atlet_kesehatan';
+    protected $table = 'mst_kategori_atlet';
 
     protected $guarded = [];
 
+    // Kolom yang dapat diisi secara massal
     protected $fillable = [
-        'atlet_id',
-        'golongan_darah',
-        'tinggi_badan',
-        'berat_badan',
-        'penglihatan',
-        'pendengaran',
-        'riwayat_penyakit',
-        'alergi',
+        'nama',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
+    // Add getActivitylogOptions for Spatie Activitylog
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['*'])
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Kesehatan');
-    }
-
-    public function atlet()
-    {
-        return $this->belongsTo(Atlet::class, 'atlet_id');
+            ->setDescriptionForEvent(fn (string $eventName) => 'Master Kategori Atlet');
     }
 }
+

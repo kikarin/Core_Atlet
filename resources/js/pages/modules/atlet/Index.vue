@@ -43,19 +43,20 @@ const columns = [
         },
     },
     { key: 'tempat_lahir', label: 'Tempat Lahir' },
-    {
-        key: 'tanggal_lahir',
-        label: 'Tanggal Lahir',
-        format: (row: any) => {
-            return row.tanggal_lahir
-                ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'numeric',
-                      year: 'numeric',
-                  })
-                : '-';
-        },
-    },
+    { key: 'agama', label: 'Agama' },
+    // {
+    //     key: 'tanggal_lahir',
+    //     label: 'Tanggal Lahir',
+    //     format: (row: any) => {
+    //         return row.tanggal_lahir
+    //             ? new Date(row.tanggal_lahir).toLocaleDateString('id-ID', {
+    //                   day: 'numeric',
+    //                   month: 'numeric',
+    //                   year: 'numeric',
+    //               })
+    //             : '-';
+    //     },
+    // },
     {
         key: 'usia',
         label: 'Usia',
@@ -63,19 +64,19 @@ const columns = [
             return calculateAge(row.tanggal_lahir);
         },
     },
-    {
-        key: 'tanggal_bergabung',
-        label: 'Tanggal Bergabung',
-        format: (row: any) => {
-            return row.tanggal_bergabung
-                ? new Date(row.tanggal_bergabung).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'numeric',
-                      year: 'numeric',
-                  })
-                : '-';
-        },
-    },
+    // {
+    //     key: 'tanggal_bergabung',
+    //     label: 'Tanggal Bergabung',
+    //     format: (row: any) => {
+    //         return row.tanggal_bergabung
+    //             ? new Date(row.tanggal_bergabung).toLocaleDateString('id-ID', {
+    //                   day: 'numeric',
+    //                   month: 'numeric',
+    //                   year: 'numeric',
+    //               })
+    //             : '-';
+    //     },
+    // },
     {
         key: 'lama_bergabung',
         label: 'Lama Bergabung',
@@ -95,7 +96,7 @@ const columns = [
             return '-';
         },
     },
-    { key: 'no_hp', label: 'No HP' },
+    // { key: 'no_hp', label: 'No HP' },
     {
         key: 'is_active',
         label: 'Status',

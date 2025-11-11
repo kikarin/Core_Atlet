@@ -147,9 +147,9 @@ const handleSubmit = (e?: Event) => {
                     localErrors[input.name] = 'NIK hanya boleh berisi angka';
                 }
                 // Cek panjang tepat 16 digit
-                else if (nikValue.length !== 16) {
+                else if (nikValue.length > 16) {
                     isValid = false;
-                    localErrors[input.name] = 'NIK harus tepat 16 digit';
+                    localErrors[input.name] = 'NIK tidak boleh lebih dari 16 digit';
                 }
             }
         }

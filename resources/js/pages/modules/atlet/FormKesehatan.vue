@@ -25,6 +25,7 @@ const props = defineProps<{
 const formData = ref<Record<string, any>>({
     id: props.initialData?.id || undefined,
     atlet_id: props.atletId,
+    golongan_darah: props.initialData?.golongan_darah || '',
     tinggi_badan: props.initialData?.tinggi_badan || '',
     berat_badan: props.initialData?.berat_badan || '',
     penglihatan: props.initialData?.penglihatan || '',
@@ -77,6 +78,22 @@ onMounted(async () => {
 });
 
 const formInputs = computed(() => [
+    {
+        name: 'golongan_darah',
+        label: 'Golongan Darah',
+        type: 'select' as const,
+        placeholder: 'Pilih golongan darah',
+        options: [
+            { value: 'A', label: 'A' },
+            { value: 'A+', label: 'A' },
+            { value: 'B', label: 'B' },
+            { value: 'B+', label: 'B' },
+            { value: 'AB', label: 'AB' },
+            { value: 'AB+', label: 'AB' },
+            { value: 'O', label: 'O' },
+            { value: 'O+', label: 'O' },
+        ],
+    },
     { name: 'tinggi_badan', label: 'Tinggi Badan (cm)', type: 'number' as const, placeholder: 'Masukkan tinggi badan', min: 0 },
     { name: 'berat_badan', label: 'Berat Badan (kg)', type: 'number' as const, placeholder: 'Masukkan berat badan', min: 0 },
     {

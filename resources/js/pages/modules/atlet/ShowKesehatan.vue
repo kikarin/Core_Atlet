@@ -5,6 +5,7 @@ const props = defineProps<{ kesehatan: any }>();
 const fields = computed(() => {
     const o = props.kesehatan || {};
     return [
+        { label: 'Golongan Darah', value: o.golongan_darah || '-' },
         { label: 'Tinggi Badan (cm)', value: o.tinggi_badan ? `${o.tinggi_badan} cm` : '-' },
         { label: 'Berat Badan (kg)', value: o.berat_badan ? `${o.berat_badan} kg` : '-' },
         { label: 'Penglihatan', value: o.penglihatan || '-' },

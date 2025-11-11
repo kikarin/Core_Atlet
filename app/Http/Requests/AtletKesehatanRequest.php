@@ -15,6 +15,7 @@ class AtletKesehatanRequest extends FormRequest
     {
         $rules = [
             'atlet_id'         => 'required|exists:atlets,id',
+            'golongan_darah'  => 'nullable|string|max:10',
             'tinggi_badan'     => 'nullable|numeric',
             'berat_badan'      => 'nullable|numeric',
             'penglihatan'      => 'nullable|string|max:255',

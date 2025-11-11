@@ -22,6 +22,7 @@ use App\Http\Controllers\MstJenisPelatihController;
 use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\MstPosisiAtletController;
 use App\Http\Controllers\MstTingkatController;
+use App\Http\Controllers\MstKategoriAtletController;
 use App\Http\Controllers\MstJuaraController;
 use App\Http\Controllers\PelatihController;
 use App\Http\Controllers\PelatihDokumenController;
@@ -60,6 +61,7 @@ use App\Models\MstJenisTenagaPendukung;
 use App\Models\MstKecamatan;
 use App\Models\MstPosisiAtlet;
 use App\Models\MstTingkat;
+use App\Models\MstKategoriAtlet;
 use App\Models\MstJenisUnitPendukung;
 use App\Models\MstJuara;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +81,7 @@ Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['aut
 // =====================
 // datatable
 Route::get('/api/tingkat', [MstTingkatController::class, 'apiIndex']);
+Route::get('/api/kategori-atlet', [MstKategoriAtletController::class, 'apiIndex']);
 Route::get('/api/jenis-dokumen', [MstJenisDokumenController::class, 'apiIndex']);
 Route::get('/api/kecamatan', [KecamatanController::class, 'apiIndex']);
 Route::get('/api/desa', [DesaController::class, 'apiIndex']);
@@ -92,6 +95,9 @@ Route::get('/api/parameter', [MstParameterController::class, 'apiIndex']);
 // select
 Route::get('/api/tingkat-list', function () {
     return MstTingkat::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/kategori-atlet-list', function () {
+    return MstKategoriAtlet::select('id', 'nama')->orderBy('nama')->get();
 });
 Route::get('/api/jenis-dokumen-list', function () {
     return MstJenisDokumen::select('id', 'nama')->orderBy('nama')->get();
@@ -430,8 +436,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/target-latihan', [TargetLatihanController::class, 'apiIndex']);
+    // Route spesifik harus diletakkan sebelum route umum untuk menghindari konflik
     Route::get('/api/target-latihan/statistik', [TargetLatihanController::class, 'apiStatistik'])->name('api.target-latihan.statistik');
-    Route::get('/api/target-latihan/{id}', [TargetLatihanController::class, 'apiShow']);
+    // Constraint {id} hanya menerima angka, sehingga "statistik" tidak akan cocok
+    Route::get('/api/target-latihan/{id}', [TargetLatihanController::class, 'apiShow'])->where('id', '[0-9]+');
 });
 
 
@@ -477,6 +485,9 @@ Route::prefix('data-master')->group(function () {
     // Master Tingkat
     Route::resource('/tingkat', MstTingkatController::class)->names('tingkat');
     Route::post('/tingkat/destroy-selected', [MstTingkatController::class, 'destroy_selected'])->name('tingkat.destroy_selected');
+    // Master Kategori Atlet
+    Route::resource('/kategori-atlet', MstKategoriAtletController::class)->names('kategori-atlet');
+    Route::post('/kategori-atlet/destroy-selected', [MstKategoriAtletController::class, 'destroy_selected'])->name('kategori-atlet.destroy_selected');
     // Master Jenis Dokumen
     Route::resource('/jenis-dokumen', MstJenisDokumenController::class)->names('jenis-dokumen');
     Route::post('/jenis-dokumen/destroy-selected', [MstJenisDokumenController::class, 'destroy_selected'])->name('jenis-dokumen.destroy_selected');

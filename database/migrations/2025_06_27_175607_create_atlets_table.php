@@ -12,16 +12,24 @@ return new class () extends Migration {
     {
         Schema::create('atlets', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 30)->unique();
+            $table->string('nik', 30)->nullable();
+            $table->string('nisn', 30)->nullable();
             $table->string('nama', 200);
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('tempat_lahir', 100)->nullable();
             $table->date('tanggal_lahir')->nullable();
+            $table->string('agama', 50)->nullable();
             $table->date('tanggal_bergabung')->nullable();
             $table->text('alamat')->nullable();
+            $table->text('sekolah')->nullable();
+            $table->text('kelas_sekolah')->nullable();
+            $table->text('ukuran_baju')->nullable();
+            $table->text('ukuran_celana')->nullable();            
+            $table->text('ukuran_sepatu')->nullable();
             $table->unsignedBigInteger('kecamatan_id')->nullable();
             $table->unsignedBigInteger('kelurahan_id')->nullable();
-            $table->string('no_hp', 20)->nullable();
+            $table->unsignedBigInteger('kategori_atlet_id')->nullable();
+            $table->string('no_hp', 40)->nullable();
             $table->string('email', 200)->nullable();
             $table->boolean('is_active')->default(1);
             $table->string('foto', 255)->nullable();
