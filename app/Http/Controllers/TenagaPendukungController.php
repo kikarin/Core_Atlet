@@ -99,7 +99,18 @@ class TenagaPendukungController extends Controller implements HasMiddleware
 
     public function store(TenagaPendukungRequest $request)
     {
-        $data  = $this->repository->validateRequest($request);
+        $data = $this->repository->validateRequest($request);
+
+        // Preserve kategori_pesertas from request (not in validation rules because it's pivot table)
+        if ($request->has('kategori_pesertas')) {
+            $data['kategori_pesertas'] = $request->input('kategori_pesertas');
+        }
+
+        // Handle file upload if exists
+        if ($request->hasFile('file')) {
+            $data['file'] = $request->file('file');
+        }
+
         $model = $this->repository->create($data);
 
         return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil ditambahkan!');
@@ -114,6 +125,12 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 'validated_data' => $request->validated(),
             ]);
             $data = $this->repository->validateRequest($request);
+
+            // Preserve kategori_pesertas from request (not in validation rules because it's pivot table)
+            if ($request->has('kategori_pesertas')) {
+                $data['kategori_pesertas'] = $request->input('kategori_pesertas');
+            }
+
             if ($request->hasFile('file')) {
                 $data['file'] = $request->file('file');
             }
@@ -121,6 +138,10 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 'data' => $data,
             ]);
             $model = $this->repository->update($id, $data);
+            
+            // Refresh model dengan kategoriPesertas untuk memastikan data terbaru
+            $model->refresh();
+            $model->load('kategoriPesertas');
 
             return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil diperbarui!');
         } catch (\Exception $e) {

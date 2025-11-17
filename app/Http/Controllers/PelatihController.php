@@ -100,7 +100,18 @@ class PelatihController extends Controller implements HasMiddleware
 
     public function store(PelatihRequest $request)
     {
-        $data  = $this->repository->validateRequest($request);
+        $data = $this->repository->validateRequest($request);
+
+        // Preserve kategori_pesertas from request (not in validation rules because it's pivot table)
+        if ($request->has('kategori_pesertas')) {
+            $data['kategori_pesertas'] = $request->input('kategori_pesertas');
+        }
+
+        // Handle file upload if exists
+        if ($request->hasFile('file')) {
+            $data['file'] = $request->file('file');
+        }
+
         $model = $this->repository->create($data);
 
         return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil ditambahkan!');
@@ -119,6 +130,11 @@ class PelatihController extends Controller implements HasMiddleware
             // Use the same validation as store method
             $data = $this->repository->validateRequest($request);
 
+            // Preserve kategori_pesertas from request (not in validation rules because it's pivot table)
+            if ($request->has('kategori_pesertas')) {
+                $data['kategori_pesertas'] = $request->input('kategori_pesertas');
+            }
+
             // Handle file upload if exists
             if ($request->hasFile('file')) {
                 $data['file'] = $request->file('file');
@@ -130,6 +146,10 @@ class PelatihController extends Controller implements HasMiddleware
 
             // Update the record
             $model = $this->repository->update($id, $data);
+            
+            // Refresh model dengan kategoriPesertas untuk memastikan data terbaru
+            $model->refresh();
+            $model->load('kategoriPesertas');
 
             return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil diperbarui!');
 

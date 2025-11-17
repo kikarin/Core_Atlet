@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import Recaptcha from '@/components/Recaptcha.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -9,21 +10,57 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, LoaderCircle, Lock, Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     status?: string;
+    recaptchaSiteKey?: string;
 }>();
 
 const form = useForm({
     email: '',
     password: '',
     remember: false,
+    recaptcha_token: '',
 });
 
 const showPassword = ref(false);
+const recaptchaRef = ref<InstanceType<typeof Recaptcha> | null>(null);
+const recaptchaVerified = ref(false);
+
+const handleRecaptchaVerified = (token: string) => {
+    form.recaptcha_token = token;
+    recaptchaVerified.value = true;
+};
+
+const handleRecaptchaExpired = () => {
+    form.recaptcha_token = '';
+    recaptchaVerified.value = false;
+};
+
+const handleRecaptchaError = () => {
+    form.recaptcha_token = '';
+    recaptchaVerified.value = false;
+};
 
 const submit = () => {
+    // Only require reCAPTCHA if site key is provided
+    if (props.recaptchaSiteKey && props.recaptchaSiteKey.trim() !== '') {
+        if (!recaptchaVerified.value || !form.recaptcha_token) {
+            form.setError('recaptcha_token', 'Harap verifikasi bahwa Anda bukan robot');
+            return;
+        }
+    }
+
     form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => {
+            form.reset('password', 'recaptcha_token');
+            recaptchaVerified.value = false;
+            recaptchaRef.value?.reset();
+        },
+        onError: () => {
+            recaptchaRef.value?.reset();
+            recaptchaVerified.value = false;
+            form.recaptcha_token = '';
+        },
     });
 };
 </script>
@@ -99,8 +136,22 @@ const submit = () => {
                 </Label>
             </div>
 
+            <!-- reCAPTCHA v2 (dengan checkbox dan challenge default) -->
+            <div v-if="recaptchaSiteKey && recaptchaSiteKey.trim() !== ''" class="flex justify-center">
+                <Recaptcha
+                    ref="recaptchaRef"
+                    :site-key="recaptchaSiteKey"
+                    version="v2"
+                    theme="light"
+                    @verified="handleRecaptchaVerified"
+                    @expired="handleRecaptchaExpired"
+                    @error="handleRecaptchaError"
+                />
+            </div>
+            <InputError :message="form.errors.recaptcha_token" />
+
             <!-- Submit -->
-            <Button type="submit" class="h-10 w-full rounded-lg font-medium" :tabindex="4" :disabled="form.processing">
+            <Button type="submit" class="h-10 w-full rounded-lg font-medium" :tabindex="4" :disabled="form.processing || (recaptchaSiteKey && recaptchaSiteKey.trim() !== '' && !recaptchaVerified)">
                 <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
                 {{ form.processing ? 'Memproses...' : 'Masuk ke Sistem' }}
             </Button>

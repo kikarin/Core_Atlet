@@ -17,6 +17,7 @@ interface FilterData {
     kategori_usia?: string;
     lama_bergabung?: string;
     kategori_atlet_id?: string;
+    kategori_peserta_id?: string;
     [key: string]: any;
 }
 
@@ -62,13 +63,13 @@ onMounted(async () => {
         console.error('Gagal load cabor:', error);
     }
 
-    // Load kategori atlets for atlet module
-    if (props.moduleType === 'atlet') {
+    // Load kategori peserta for all peserta modules (atlet, pelatih, tenaga-pendukung)
+    if (['atlet', 'pelatih', 'tenaga-pendukung'].includes(props.moduleType)) {
         try {
-            const kategoriAtletResponse = await axios.get('/api/kategori-atlet-list');
-            kategoriAtlets.value = kategoriAtletResponse.data;
+            const kategoriPesertaResponse = await axios.get('/api/kategori-peserta-list');
+            kategoriAtlets.value = kategoriPesertaResponse.data;
         } catch (error) {
-            console.error('Gagal load kategori atlet:', error);
+            console.error('Gagal load kategori peserta:', error);
         }
     }
 });
@@ -113,6 +114,7 @@ watch(
                     kategori_usia: 'all',
                     lama_bergabung: 'all',
                     kategori_atlet_id: 'all',
+                    kategori_peserta_id: 'all',
                 };
             }
         }
@@ -127,6 +129,11 @@ const handleFilter = () => {
             cleanFilters[key] = filters.value[key];
         }
     });
+
+    // Map kategori_peserta_id to kategori_atlet_id for backward compatibility
+    if (cleanFilters.kategori_peserta_id && !cleanFilters.kategori_atlet_id) {
+        cleanFilters.kategori_atlet_id = cleanFilters.kategori_peserta_id;
+    }
 
     // Debug logging untuk filter status
     console.log('Filter values before cleaning:', filters.value);
@@ -146,6 +153,7 @@ const resetFilters = () => {
         kategori_usia: 'all',
         lama_bergabung: 'all',
         kategori_atlet_id: 'all',
+        kategori_peserta_id: 'all',
     };
 };
 
@@ -325,29 +333,29 @@ const isCaborModule = computed(() => ['cabor-kategori', 'program-latihan', 'peme
                         </Select>
                     </div>
 
-                    <!-- Filter Kategori Atlet -->
+                    <!-- Filter Kategori Peserta -->
                     <div class="space-y-2">
-                        <Label for="kategori_atlet_id">Kategori Atlet</Label>
-                        <Select v-model="filters.kategori_atlet_id">
+                        <Label for="kategori_peserta_id">Kategori Peserta</Label>
+                        <Select v-model="filters.kategori_peserta_id">
                             <SelectTrigger class="w-full">
-                                <SelectValue placeholder="Pilih Kategori Atlet" />
+                                <SelectValue placeholder="Pilih Kategori Peserta" />
                             </SelectTrigger>
                             <SelectContent>
                                 <!-- Search input -->
                                 <div class="p-2">
                                     <input
-                                        v-model="selectSearchQuery.kategori_atlet_id"
+                                        v-model="selectSearchQuery.kategori_peserta_id"
                                         type="text"
-                                        placeholder="Cari kategori atlet..."
+                                        placeholder="Cari kategori peserta..."
                                         class="w-full rounded border px-2 py-1 text-sm"
                                         @click.stop
                                         @keydown.stop
                                     />
                                 </div>
                                 <!-- Filtered options -->
-                                <SelectItem value="all">Semua Kategori Atlet</SelectItem>
+                                <SelectItem value="all">Semua Kategori Peserta</SelectItem>
                                 <SelectItem
-                                    v-for="kategori in getFilteredOptions(kategoriAtlets, 'kategori_atlet_id')"
+                                    v-for="kategori in getFilteredOptions(kategoriAtlets, 'kategori_peserta_id')"
                                     :key="kategori.id"
                                     :value="kategori.id.toString()"
                                 >

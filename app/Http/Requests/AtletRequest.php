@@ -22,7 +22,7 @@ class AtletRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nik' => 'nullable|string|size:16|unique::atlets,nik,'.$this->id,
+            'nik' => 'nullable|string|size:16|unique:atlets,nik,'.$this->id,
             'nisn'              => 'nullable|string|max:30',
             'nama'              => 'required|string|max:200',
             'jenis_kelamin'     => 'required|in:L,P',

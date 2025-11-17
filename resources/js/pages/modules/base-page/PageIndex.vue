@@ -103,9 +103,11 @@ const props = defineProps<{
     showStatistik?: boolean;
     statistikUrl?: string;
     showFilter?: boolean;
+    showBulkApprove?: boolean;
+    showBulkReject?: boolean;
 }>();
 
-const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran', 'filter']);
+const emit = defineEmits(['search', 'update:selected', 'import', 'setKehadiran', 'filter', 'bulk-approve', 'bulk-reject']);
 
 const localSelected = ref<number[]>([]);
 
@@ -254,9 +256,13 @@ defineExpose({ fetchData, handleFilterFromParent });
                         :showStatistik="props.showStatistik"
                         :statistikUrl="props.statistikUrl"
                         :showFilter="props.showFilter"
+                        :showBulkApprove="props.showBulkApprove"
+                        :showBulkReject="props.showBulkReject"
                         @import="$emit('import')"
                         @setKehadiran="(status: boolean) => $emit('setKehadiran', status)"
                         @filter="$emit('filter')"
+                        @bulk-approve="$emit('bulk-approve')"
+                        @bulk-reject="$emit('bulk-reject')"
                     />
                 </div>
                 <div class="mx-4 rounded-xl bg-white pt-4 shadow dark:bg-neutral-900">

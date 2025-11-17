@@ -26,10 +26,17 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'email'    => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ];
+
+        // Add reCAPTCHA validation if configured
+        if (config('services.recaptcha.secret_key')) {
+            $rules['recaptcha_token'] = ['required', 'string'];
+        }
+
+        return $rules;
     }
 
     /**
@@ -40,6 +47,17 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        // Verify reCAPTCHA if configured
+        if (config('services.recaptcha.secret_key')) {
+            $recaptchaToken = $this->input('recaptcha_token');
+            if (!$recaptchaToken || !\App\Http\Helpers\RecaptchaHelper::verify($recaptchaToken, $this->ip())) {
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'recaptcha_token' => 'Verifikasi reCAPTCHA gagal. Silakan coba lagi.',
+                ]);
+            }
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

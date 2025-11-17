@@ -52,6 +52,8 @@ const iconMap: Record<string, any> = {
     Stethoscope: LucideIcons.Stethoscope,
     Wrench: LucideIcons.Wrench,
     Trophy: LucideIcons.Trophy,
+    CircleCheckBig: LucideIcons.CircleCheckBig,
+    UserRoundCheck: LucideIcons.UserRoundCheck,
 };
 
 const fetchMenus = async () => {

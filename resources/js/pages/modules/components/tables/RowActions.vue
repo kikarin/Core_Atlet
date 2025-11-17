@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import permissionService from '@/services/permissionService';
-import { Activity, Bolt, Edit, Eye, FileText, FolderKanban, MoreVertical, Trash2 } from 'lucide-vue-next';
+import { Activity, Bolt, CircleCheckBig, Edit, Eye, FileText, FolderKanban, MoreVertical, Trash2, X } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
@@ -104,7 +104,11 @@ const getAvailableActions = computed(() => {
                                       ? Trash2
                                       : action.label === 'Riwayat Pemeriksaan'
                                         ? Activity
-                                        : FileText,
+                                        : action.label === 'Setujui'
+                                        ? CircleCheckBig
+                                        : action.label === 'Tolak'
+                                        ? X
+                                            : FileText,
                 });
             }
         });

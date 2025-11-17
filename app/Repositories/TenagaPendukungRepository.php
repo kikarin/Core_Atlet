@@ -173,6 +173,14 @@ class TenagaPendukungRepository
             $this->applyLamaBergabungFilter($query, request('lama_bergabung'));
         }
 
+        // Filter by kategori_peserta_id (support both kategori_atlet_id for backward compatibility)
+        $kategoriPesertaId = request('kategori_peserta_id') ?: request('kategori_atlet_id');
+        if ($kategoriPesertaId && $kategoriPesertaId !== 'all') {
+            $query->whereHas('kategoriPesertas', function ($q) use ($kategoriPesertaId) {
+                $q->where('mst_kategori_peserta.id', $kategoriPesertaId);
+            });
+        }
+
         // Filter by date range
         if (request('filter_start_date') && request('filter_end_date')) {
             $query->whereBetween('created_at', [
@@ -241,6 +249,14 @@ class TenagaPendukungRepository
     {
         $data['item'] = $item;
 
+        // Load kategori peserta yang sudah ada (multiple)
+        if ($item && isset($item->id)) {
+            $item->load('kategoriPesertas');
+            $data['kategori_pesertas'] = $item->kategoriPesertas->pluck('id')->toArray();
+        } else {
+            $data['kategori_pesertas'] = [];
+        }
+
         return $data;
     }
 
@@ -261,13 +277,14 @@ class TenagaPendukungRepository
 
     public function callbackAfterStoreOrUpdate($model, $data, $method = 'store', $record_sebelumnya = null)
     {
+        // Note: Tidak perlu DB::beginTransaction() karena sudah dalam transaction dari RepositoryTrait
         try {
-            DB::beginTransaction();
             Log::info('TenagaPendukungRepository: Starting file upload process', [
                 'method'         => $method,
                 'has_file'       => isset($data['file']),
                 'file_data'      => $data['file'] ? 'File exists' : 'No file',
                 'is_delete_foto' => @$data['is_delete_foto'],
+                'kategori_pesertas' => $data['kategori_pesertas'] ?? 'not set',
             ]);
             if (@$data['is_delete_foto'] == 1) {
                 $model->clearMediaCollection('images');
@@ -289,12 +306,28 @@ class TenagaPendukungRepository
                     'path'      => $media->getPath(),
                 ]);
             }
-            DB::commit();
-            Log::info('TenagaPendukungRepository: Transaction committed successfully');
+
+            // Handle Multiple Kategori Peserta
+            // Selalu sync, bahkan jika array kosong (untuk menghapus relasi yang ada)
+            if (isset($data['kategori_pesertas'])) {
+                // Filter out empty values
+                $kategoriIds = [];
+                if (is_array($data['kategori_pesertas'])) {
+                    $kategoriIds = array_filter($data['kategori_pesertas'], function ($id) {
+                        return !empty($id) && $id !== null;
+                    });
+                }
+                // Sync dengan array kosong jika tidak ada kategori (untuk menghapus semua relasi)
+                $model->kategoriPesertas()->sync($kategoriIds);
+                Log::info('TenagaPendukungRepository: Updated KategoriPesertas', ['tenaga_pendukung_id' => $model->id, 'kategori_ids' => $kategoriIds]);
+            } else {
+                Log::warning('TenagaPendukungRepository: kategori_pesertas not set in data', ['data_keys' => array_keys($data)]);
+            }
+
+            Log::info('TenagaPendukungRepository: callbackAfterStoreOrUpdate completed successfully');
 
             return $model;
         } catch (\Exception $e) {
-            DB::rollback();
             Log::error('TenagaPendukungRepository: Error during file upload or other save operations', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -313,7 +346,7 @@ class TenagaPendukungRepository
 
     public function getDetailWithRelations($id)
     {
-        $with = array_merge($this->with, ['kecamatan', 'kelurahan']);
+        $with = array_merge($this->with, ['kecamatan', 'kelurahan', 'kategoriPesertas']);
 
         $tenagaPendukung = $this->model->with($with)->findOrFail($id);
 

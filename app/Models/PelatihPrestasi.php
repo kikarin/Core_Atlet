@@ -21,6 +21,8 @@ class PelatihPrestasi extends Model
 
     protected $fillable = [
         'pelatih_id',
+        'kategori_prestasi_pelatih_id',
+        'kategori_atlet_id',
         'nama_event',
         'tingkat_id',
         'tanggal',
@@ -47,5 +49,15 @@ class PelatihPrestasi extends Model
     public function tingkat()
     {
         return $this->belongsTo(MstTingkat::class, 'tingkat_id');
+    }
+
+    public function kategoriPrestasiPelatih()
+    {
+        return $this->belongsTo(MstKategoriPrestasiPelatih::class, 'kategori_prestasi_pelatih_id');
+    }
+
+    public function kategoriAtlet()
+    {
+        return $this->belongsTo(MstKategoriAtlet::class, 'kategori_atlet_id');
     }
 }

@@ -17,6 +17,8 @@ const props = defineProps<{
 
 const formData = ref({
     pelatih_id: props.pelatihId || null,
+    kategori_prestasi_pelatih_id: props.initialData?.kategori_prestasi_pelatih_id || null,
+    kategori_atlet_id: props.initialData?.kategori_atlet_id || null,
     nama_event: props.initialData?.nama_event || '',
     tingkat_id: props.initialData?.tingkat_id || null,
     tanggal: props.initialData?.tanggal || '',
@@ -26,6 +28,8 @@ const formData = ref({
 });
 
 const tingkatOptions = ref<{ value: number; label: string }[]>([]);
+const kategoriPrestasiPelatihOptions = ref<{ value: number; label: string }[]>([]);
+const kategoriAtletOptions = ref<{ value: number; label: string }[]>([]);
 
 onMounted(async () => {
     try {
@@ -36,9 +40,29 @@ onMounted(async () => {
         toast({ title: 'Gagal memuat daftar tingkat', variant: 'destructive' });
         tingkatOptions.value = [];
     }
+
+    try {
+        const res = await axios.get('/api/kategori-prestasi-pelatih-list');
+        kategoriPrestasiPelatihOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+    } catch (e) {
+        console.error('Gagal mengambil data kategori prestasi pelatih', e);
+        toast({ title: 'Gagal memuat daftar kategori prestasi pelatih', variant: 'destructive' });
+        kategoriPrestasiPelatihOptions.value = [];
+    }
+
+    try {
+        const res = await axios.get('/api/kategori-atlet-list');
+        kategoriAtletOptions.value = res.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+    } catch (e) {
+        console.error('Gagal mengambil data kategori atlet', e);
+        toast({ title: 'Gagal memuat daftar kategori atlet', variant: 'destructive' });
+        kategoriAtletOptions.value = [];
+    }
 });
 
 const formInputs = computed(() => [
+    { name: 'kategori_prestasi_pelatih_id', label: 'Kategori Prestasi Pelatih', type: 'select' as const, placeholder: 'Pilih Kategori Prestasi Pelatih', options: kategoriPrestasiPelatihOptions.value },
+    { name: 'kategori_atlet_id', label: 'Kategori Peserta Atlet', type: 'select' as const, placeholder: 'Pilih Kategori Peserta Atlet', options: kategoriAtletOptions.value },
     { name: 'nama_event', label: 'Nama Event', type: 'text' as const, placeholder: 'Masukkan nama event', required: true },
     { name: 'tingkat_id', label: 'Tingkat', type: 'select' as const, placeholder: 'Pilih Tingkat', options: tingkatOptions.value },
     { name: 'tanggal', label: 'Tanggal', type: 'date' as const, placeholder: 'Pilih tanggal', required: false },

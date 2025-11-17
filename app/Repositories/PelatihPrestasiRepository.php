@@ -21,6 +21,8 @@ class PelatihPrestasiRepository
             'created_by_user',
             'updated_by_user',
             'tingkat',
+            'kategoriPrestasiPelatih',
+            'kategoriAtlet',
         ];
     }
 

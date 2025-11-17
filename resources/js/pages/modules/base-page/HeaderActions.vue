@@ -28,6 +28,8 @@ const props = defineProps<{
     showStatistik?: boolean;
     statistikUrl?: string;
     showFilter?: boolean;
+    showBulkApprove?: boolean;
+    showBulkReject?: boolean;
 }>();
 
 const canCreate = () => {
@@ -62,6 +64,26 @@ const canKelola = () => {
             <Button v-if="props.showFilter" variant="outline" size="sm" class="flex items-center gap-2" @click="$emit('filter')">
                 <SlidersHorizontal class="h-4 w-4" />
                 Filter
+            </Button>
+            <Button
+                v-if="props.showBulkApprove"
+                variant="default"
+                size="sm"
+                class="flex items-center gap-2"
+                :disabled="selected.length === 0"
+                @click="$emit('bulk-approve')"
+            >
+                Setujui Terpilih ({{ selected.length }})
+            </Button>
+            <Button
+                v-if="props.showBulkReject"
+                variant="destructive"
+                size="sm"
+                class="flex items-center gap-2"
+                :disabled="selected.length === 0"
+                @click="$emit('bulk-reject')"
+            >
+                Tolak Terpilih ({{ selected.length }})
             </Button>
             <!-- Button Import -->
             <Button v-if="props.showImport && canImport()" variant="outline" size="sm" @click="$emit('import')">

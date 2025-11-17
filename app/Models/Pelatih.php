@@ -35,6 +35,7 @@ class Pelatih extends Model implements HasMedia
         'kelurahan_id',
         'no_hp',
         'email',
+        'pekerjaan_selain_melatih',
         'is_active',
         'foto',
         'users_id',
@@ -145,6 +146,13 @@ class Pelatih extends Model implements HasMedia
     public function caborKategoriPelatih()
     {
         return $this->hasMany(CaborKategoriPelatih::class, 'pelatih_id');
+    }
+
+    public function kategoriPesertas()
+    {
+        return $this->belongsToMany(MstKategoriPeserta::class, 'pelatih_kategori_peserta', 'pelatih_id', 'mst_kategori_peserta_id')
+            ->withTimestamps()
+            ->select(['mst_kategori_peserta.id', 'mst_kategori_peserta.nama']);
     }
 
     /**

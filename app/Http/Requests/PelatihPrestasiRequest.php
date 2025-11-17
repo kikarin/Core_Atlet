@@ -14,12 +14,14 @@ class PelatihPrestasiRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'pelatih_id' => 'required|exists:pelatihs,id',
-            'nama_event' => 'required|string|max:255',
-            'tingkat_id' => 'nullable|integer',
-            'tanggal'    => 'nullable|date',
-            'peringkat'  => 'nullable|string|max:255',
-            'keterangan' => 'nullable|string',
+            'pelatih_id'                    => 'required|exists:pelatihs,id',
+            'kategori_prestasi_pelatih_id'   => 'nullable|exists:mst_kategori_prestasi_pelatih,id',
+            'kategori_atlet_id'              => 'nullable|exists:mst_kategori_atlet,id',
+            'nama_event'                     => 'required|string|max:255',
+            'tingkat_id'                     => 'nullable|integer',
+            'tanggal'                        => 'nullable|date',
+            'peringkat'                      => 'nullable|string|max:255',
+            'keterangan'                     => 'nullable|string',
         ];
 
         if ($this->isMethod('patch') || $this->isMethod('put')) {

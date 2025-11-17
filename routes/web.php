@@ -23,6 +23,8 @@ use App\Http\Controllers\MstJenisTenagaPendukungController;
 use App\Http\Controllers\MstPosisiAtletController;
 use App\Http\Controllers\MstTingkatController;
 use App\Http\Controllers\MstKategoriAtletController;
+use App\Http\Controllers\MstKategoriPesertaController;
+use App\Http\Controllers\MstKategoriPrestasiPelatihController;
 use App\Http\Controllers\MstJuaraController;
 use App\Http\Controllers\PelatihController;
 use App\Http\Controllers\PelatihDokumenController;
@@ -53,6 +55,9 @@ use App\Http\Controllers\MstJenisUnitPendukungController;
 use App\Http\Controllers\MstParameterController;
 use App\Http\Controllers\UnitPendukungController;
 use App\Http\Controllers\TurnamenController;
+use App\Http\Controllers\Registration\RegistrationController;
+use App\Http\Controllers\Registration\RegistrationStepController;
+use App\Http\Controllers\Registration\RegistrationApprovalController;
 use App\Models\Cabor;
 use App\Models\MstDesa;
 use App\Models\MstJenisDokumen;
@@ -62,8 +67,10 @@ use App\Models\MstKecamatan;
 use App\Models\MstPosisiAtlet;
 use App\Models\MstTingkat;
 use App\Models\MstKategoriAtlet;
+use App\Models\MstKategoriPeserta;
 use App\Models\MstJenisUnitPendukung;
 use App\Models\MstJuara;
+use App\Models\MstKategoriPrestasiPelatih;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -77,11 +84,33 @@ Route::get('/', function () {
 Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // =====================
+// REGISTRATION (Multi-step)
+// =====================
+// Guest routes untuk registrasi awal
+Route::middleware('guest')->group(function () {
+    Route::get('/register/success', [RegistrationController::class, 'success'])->name('registration.success');
+});
+
+// Routes untuk registration steps (user yang sudah register tapi belum approved)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/register/steps', [RegistrationStepController::class, 'index'])->name('registration.steps');
+    Route::post('/register/steps/1', [RegistrationStepController::class, 'storeStep1'])->name('registration.steps.1');
+    Route::post('/register/steps/2', [RegistrationStepController::class, 'storeStep2'])->name('registration.steps.2');
+    Route::post('/register/steps/3', [RegistrationStepController::class, 'storeStep3'])->name('registration.steps.3');
+    Route::post('/register/steps/4', [RegistrationStepController::class, 'storeStep4'])->name('registration.steps.4');
+    Route::post('/register/steps/5', [RegistrationStepController::class, 'storeStep5'])->name('registration.steps.5');
+    Route::post('/register/steps/submit', [RegistrationStepController::class, 'submit'])->name('registration.steps.submit');
+    Route::post('/register/steps/{step}/draft', [RegistrationStepController::class, 'saveDraft'])->name('registration.steps.draft');
+});
+
+// =====================
 // API MASTER (untuk datatable & select)
 // =====================
 // datatable
 Route::get('/api/tingkat', [MstTingkatController::class, 'apiIndex']);
 Route::get('/api/kategori-atlet', [MstKategoriAtletController::class, 'apiIndex']);
+Route::get('/api/kategori-peserta', [MstKategoriPesertaController::class, 'apiIndex']);
+Route::get('/api/kategori-prestasi-pelatih', [MstKategoriPrestasiPelatihController::class, 'apiIndex']);
 Route::get('/api/jenis-dokumen', [MstJenisDokumenController::class, 'apiIndex']);
 Route::get('/api/kecamatan', [KecamatanController::class, 'apiIndex']);
 Route::get('/api/desa', [DesaController::class, 'apiIndex']);
@@ -97,7 +126,13 @@ Route::get('/api/tingkat-list', function () {
     return MstTingkat::select('id', 'nama')->orderBy('nama')->get();
 });
 Route::get('/api/kategori-atlet-list', function () {
-    return MstKategoriAtlet::select('id', 'nama')->orderBy('nama')->get();
+    return MstKategoriPeserta::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/kategori-peserta-list', function () {
+    return MstKategoriPeserta::select('id', 'nama')->orderBy('nama')->get();
+});
+Route::get('/api/kategori-prestasi-pelatih-list', function () {
+    return MstKategoriPrestasiPelatih::select('id', 'nama')->orderBy('nama')->get();
 });
 Route::get('/api/jenis-dokumen-list', function () {
     return MstJenisDokumen::select('id', 'nama')->orderBy('nama')->get();
@@ -125,6 +160,17 @@ Route::get('/api/juara-list', function () {
 });
 Route::get('/api/parameter-list', function () {
     return MstParameter::select('id', 'nama')->orderBy('nama')->get();
+});
+
+// =====================
+// REGISTRATION APPROVAL (Admin)
+// =====================
+Route::middleware(['auth', 'verified', 'can:Registration Approval Show'])->group(function () {
+    Route::get('/registration-approval', [RegistrationApprovalController::class, 'index'])->name('registration-approval.index');
+    Route::get('/registration-approval/{id}', [RegistrationApprovalController::class, 'show'])->name('registration-approval.show');
+    Route::post('/registration-approval/{id}/approve', [RegistrationApprovalController::class, 'approve'])->name('registration-approval.approve');
+    Route::post('/registration-approval/{id}/reject', [RegistrationApprovalController::class, 'reject'])->name('registration-approval.reject');
+    Route::get('/api/registration-approval', [RegistrationApprovalController::class, 'apiIndex'])->name('api.registration-approval');
 });
 
 // =====================
@@ -491,9 +537,15 @@ Route::prefix('data-master')->group(function () {
     // Master Tingkat
     Route::resource('/tingkat', MstTingkatController::class)->names('tingkat');
     Route::post('/tingkat/destroy-selected', [MstTingkatController::class, 'destroy_selected'])->name('tingkat.destroy_selected');
-    // Master Kategori Atlet
+    // Master Kategori Peserta (menggantikan Kategori Atlet)
+    Route::resource('/kategori-peserta', MstKategoriPesertaController::class)->names('kategori-peserta');
+    Route::post('/kategori-peserta/destroy-selected', [MstKategoriPesertaController::class, 'destroy_selected'])->name('kategori-peserta.destroy_selected');
+    // Master Kategori Atlet (backward compatibility - deprecated)
     Route::resource('/kategori-atlet', MstKategoriAtletController::class)->names('kategori-atlet');
     Route::post('/kategori-atlet/destroy-selected', [MstKategoriAtletController::class, 'destroy_selected'])->name('kategori-atlet.destroy_selected');
+    // Master Kategori Prestasi Pelatih
+    Route::resource('/kategori-prestasi-pelatih', MstKategoriPrestasiPelatihController::class)->names('kategori-prestasi-pelatih');
+    Route::post('/kategori-prestasi-pelatih/destroy-selected', [MstKategoriPrestasiPelatihController::class, 'destroy_selected'])->name('kategori-prestasi-pelatih.destroy_selected');
     // Master Jenis Dokumen
     Route::resource('/jenis-dokumen', MstJenisDokumenController::class)->names('jenis-dokumen');
     Route::post('/jenis-dokumen/destroy-selected', [MstJenisDokumenController::class, 'destroy_selected'])->name('jenis-dokumen.destroy_selected');

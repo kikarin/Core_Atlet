@@ -107,6 +107,7 @@ const props = defineProps<{
         kelurahan_id: number | null;
         no_hp: string;
         email: string;
+        pekerjaan_selain_melatih: string;
         is_active: number;
         foto: string;
         created_at: string;
@@ -121,6 +122,7 @@ const props = defineProps<{
         kecamatan?: { nama: string } | null;
         kelurahan?: { nama: string } | null;
         tanggal_bergabung?: string;
+        kategori_pesertas?: Array<{ id: number; nama: string }>;
     };
 }>();
 
@@ -207,6 +209,14 @@ const fields = computed(() => {
         { label: 'Alamat', value: props.item?.alamat || '-', className: 'sm:col-span-2' },
         { label: 'Kecamatan', value: props.item?.kecamatan?.nama || '-' },
         { label: 'Kelurahan', value: props.item?.kelurahan?.nama || '-' },
+        { label: 'Pekerjaan Selain Melatih', value: props.item?.pekerjaan_selain_melatih || '-' },
+        {
+            label: 'Kategori Peserta',
+            value:
+                props.item?.kategori_pesertas && props.item.kategori_pesertas.length > 0
+                    ? props.item.kategori_pesertas.map((k: { nama: string }) => k.nama).join(', ')
+                    : '-',
+        },
         { label: 'No HP', value: props.item?.no_hp || '-' },
         { label: 'Email', value: props.item?.email || '-' },
         {

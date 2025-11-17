@@ -69,7 +69,10 @@ class User extends Authenticatable implements HasMedia
         'is_verifikasi',
         'reset_password_token',
         'current_role_id',
-
+        'registration_status',
+        'registration_rejected_reason',
+        'peserta_type',
+        'peserta_id',
         'last_login',
     ];
 

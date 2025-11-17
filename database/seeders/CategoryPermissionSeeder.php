@@ -129,6 +129,18 @@ class CategoryPermissionSeeder extends Seeder
                 'permission' => 'CRUD',
             ],
             [
+                'name'       => 'Mst Kategori Peserta',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name'       => 'Mst Kategori Prestasi Pelatih',
+                'permission' => 'CRUD',
+            ],
+            [
+                'name'       => 'Registration Approval',
+                'permission' => 'CRUD',
+            ],
+            [
                 'name'       => 'Mst Jenis Dokumen',
                 'permission' => 'CRUD',
             ],

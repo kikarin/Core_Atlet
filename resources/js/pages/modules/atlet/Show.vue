@@ -110,6 +110,9 @@ const props = defineProps<{
         kesehatan?: Kesehatan | null;
         kecamatan?: { nama: string } | null;
         kelurahan?: { nama: string } | null;
+        kategori_atlet?: { id: number; nama: string } | null;
+        kategori_atlets?: Array<{ id: number; nama: string }>;
+        kategori_pesertas?: Array<{ id: number; nama: string }>;
     };
 }>();
 
@@ -212,7 +215,15 @@ const fields = computed(() => {
         { label: 'Ukuran Sepatu', value: props.item?.ukuran_sepatu || '-' },
         { label: 'Kecamatan', value: props.item?.kecamatan?.nama || '-' },
         { label: 'Kelurahan', value: props.item?.kelurahan?.nama || '-' },
-        { label: 'Kategori Atlet', value: props.item?.kategori_atlet?.nama || '-' },
+        {
+            label: 'Kategori Peserta',
+            value:
+                props.item?.kategori_pesertas && props.item.kategori_pesertas.length > 0
+                    ? props.item.kategori_pesertas.map((k: { nama: string }) => k.nama).join(', ')
+                    : props.item?.kategori_atlets && props.item.kategori_atlets.length > 0
+                      ? props.item.kategori_atlets.map((k: { nama: string }) => k.nama).join(', ')
+                      : props.item?.kategori_atlet?.nama || '-',
+        },
         { label: 'No HP', value: props.item?.no_hp || '-' },
         { label: 'Email', value: props.item?.email || '-' },
         {

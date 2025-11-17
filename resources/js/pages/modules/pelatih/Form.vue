@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
+import { Trash2, Plus } from 'lucide-vue-next';
 
 const { save } = useHandleFormSave();
+const page = usePage();
 
 const props = defineProps<{
     mode: 'create' | 'edit';
@@ -23,6 +29,7 @@ const formData = ref({
     kelurahan_id: props.initialData?.kelurahan_id || '',
     no_hp: props.initialData?.no_hp || '',
     email: props.initialData?.email || '',
+    pekerjaan_selain_melatih: props.initialData?.pekerjaan_selain_melatih || '',
     is_active: props.initialData?.is_active !== undefined ? props.initialData.is_active : 1,
     foto: props.initialData?.foto || '',
     id: props.initialData?.id || undefined,
@@ -32,6 +39,11 @@ const formData = ref({
 
 const kecamatanOptions = ref<{ value: number; label: string }[]>([]);
 const kelurahanOptions = ref<{ value: number; label: string }[]>([]);
+const kategoriPesertaOptions = ref<{ value: number; label: string }[]>([]);
+
+// Multiple Kategori Peserta
+const kategoriPesertas = ref<Array<{ id: number | null; tempId: number }>>([]);
+let kategoriPesertaTempIdCounter = 0;
 
 onMounted(async () => {
     try {
@@ -42,9 +54,30 @@ onMounted(async () => {
             const kelurahanRes = await axios.get(`/api/kelurahan-by-kecamatan/${formData.value.kecamatan_id}`);
             kelurahanOptions.value = kelurahanRes.data.map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
         }
+
+        const kategoriPesertaRes = await axios.get('/api/kategori-peserta-list');
+        kategoriPesertaOptions.value = (kategoriPesertaRes.data || []).map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+
+        // Load kategori peserta yang sudah ada (untuk edit mode)
+        if (props.mode === 'edit' && (page.props as any).kategori_pesertas) {
+            const existingKategori = (page.props as any).kategori_pesertas as number[];
+            if (existingKategori && existingKategori.length > 0) {
+                kategoriPesertas.value = existingKategori.map((id) => ({
+                    id,
+                    tempId: ++kategoriPesertaTempIdCounter,
+                }));
+            } else {
+                // Jika tidak ada, tambahkan satu field kosong
+                addKategoriPeserta();
+            }
+        } else {
+            // Untuk create mode, tambahkan satu field kosong
+            addKategoriPeserta();
+        }
     } catch (e) {
-        console.error('Gagal mengambil data kecamatan/kelurahan', e);
+        console.error('Gagal mengambil data kecamatan/kelurahan/kategori peserta', e);
         kecamatanOptions.value = [];
+        kategoriPesertaOptions.value = [];
     }
 });
 
@@ -93,6 +126,7 @@ const formInputs = computed(() => [
     { name: 'kelurahan_id', label: 'Kelurahan', type: 'select' as const, placeholder: 'Pilih Kelurahan', options: kelurahanOptions.value },
     { name: 'no_hp', label: 'No HP', type: 'text' as const, placeholder: 'Masukkan nomor HP' },
     { name: 'email', label: 'Email', type: 'email' as const, placeholder: 'Masukkan email' },
+    { name: 'pekerjaan_selain_melatih', label: 'Pekerjaan Selain Melatih', type: 'text' as const, placeholder: 'Masukkan pekerjaan selain melatih' },
     { name: 'tanggal_bergabung', label: 'Tanggal Bergabung', type: 'date' as const, placeholder: 'Pilih tanggal bergabung' },
     {
         name: 'is_active',
@@ -113,8 +147,36 @@ function handleFieldUpdate({ field, value }: { field: string; value: any }) {
     }
 }
 
+const addKategoriPeserta = () => {
+    kategoriPesertas.value.push({
+        id: null,
+        tempId: ++kategoriPesertaTempIdCounter,
+    });
+};
+
+const removeKategoriPeserta = (tempId: number) => {
+    const index = kategoriPesertas.value.findIndex((k) => k.tempId === tempId);
+    if (index > -1) {
+        kategoriPesertas.value.splice(index, 1);
+    }
+};
+
+const updateKategoriPeserta = (tempId: number, kategoriId: number | null) => {
+    const item = kategoriPesertas.value.find((k) => k.tempId === tempId);
+    if (item) {
+        item.id = kategoriId;
+    }
+};
+
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
-    const formFields = { ...formData.value, ...dataFromFormInput };
+    // Collect kategori peserta IDs (filter out null values)
+    const kategoriPesertaIds = kategoriPesertas.value.map((k) => k.id).filter((id) => id !== null) as number[];
+
+    const formFields = {
+        ...formData.value,
+        ...dataFromFormInput,
+        kategori_pesertas: kategoriPesertaIds,
+    };
 
     const url = '/pelatih';
 
@@ -131,18 +193,18 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
             setFormErrors(errors);
         },
         onSuccess: (page: any) => {
-            const id = page?.props?.item?.id || page?.props?.item?.data?.id;
+            const id = page?.props?.item?.id || page?.props?.item?.data?.id || props.initialData?.id;
             if (props.mode === 'create') {
                 if (id) {
-                    window.location.href = `/pelatih/${id}/edit`;
+                    router.visit(`/pelatih/${id}/edit`, { only: ['item', 'kategori_pesertas'] });
                 } else {
-                    window.location.href = '/pelatih';
+                    router.visit('/pelatih');
                 }
             } else if (props.mode === 'edit') {
                 if (id) {
-                    window.location.href = `/pelatih/${id}/edit`;
+                    router.visit(`/pelatih/${id}/edit`, { only: ['item', 'kategori_pesertas'] });
                 } else {
-                    window.location.href = '/pelatih';
+                    router.visit('/pelatih');
                 }
             }
         },
@@ -153,5 +215,55 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 <template>
     <div>
         <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" @field-updated="handleFieldUpdate" />
+
+        <!-- Multiple Kategori Peserta -->
+        <Card class="mt-4">
+            <CardHeader>
+                <div class="flex items-center justify-between">
+                    <CardTitle>Kategori Peserta</CardTitle>
+                    <Button type="button" variant="outline" size="sm" @click="addKategoriPeserta">
+                        <Plus class="mr-2 h-4 w-4" />
+                        Tambah Kategori
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent class="space-y-4">
+                <div v-for="(kategori, index) in kategoriPesertas" :key="kategori.tempId" class="flex items-end gap-2">
+                    <div class="flex-1">
+                        <label class="mb-2 block text-sm font-medium">Kategori Peserta {{ index + 1 }}</label>
+                        <Select
+                            :model-value="kategori.id"
+                            @update:model-value="(value) => updateKategoriPeserta(kategori.tempId, value as number | null)"
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Pilih Kategori Peserta" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem :value="null">Pilih Kategori Peserta</SelectItem>
+                                <SelectItem
+                                    v-for="option in kategoriPesertaOptions"
+                                    :key="option.value"
+                                    :value="option.value"
+                                >
+                                    {{ option.label }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        @click="removeKategoriPeserta(kategori.tempId)"
+                        :disabled="kategoriPesertas.length === 1"
+                    >
+                        <Trash2 class="h-4 w-4" />
+                    </Button>
+                </div>
+                <p v-if="kategoriPesertas.length === 0" class="text-muted-foreground text-sm">
+                    Belum ada kategori peserta. Klik "Tambah Kategori" untuk menambahkan.
+                </p>
+            </CardContent>
+        </Card>
     </div>
 </template>

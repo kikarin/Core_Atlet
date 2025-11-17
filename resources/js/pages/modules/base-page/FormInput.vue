@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/toast/useToast';
 import { router, useForm } from '@inertiajs/vue3';
 import * as LucideIcons from 'lucide-vue-next';
 import { AlertCircle, CalendarIcon, Eye, EyeOff, Upload, X, XIcon } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, defineExpose, nextTick, ref, watch } from 'vue';
 import { Alert, AlertDescription, AlertTitle } from '../../../components/ui/alert';
 import ButtonsForm from './ButtonsForm.vue';
 
@@ -39,6 +39,8 @@ const props = defineProps<{
     initialData?: Record<string, any>;
     modelValue?: Record<string, any>;
     disableAutoReset?: boolean;
+    hideButtons?: boolean;
+    id?: string;
 }>();
 
 const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
@@ -113,11 +115,36 @@ const formErrors = ref<Record<string, string>>({});
 
 const { toast } = useToast();
 
-const handleSubmit = (e?: Event) => {
+const handleSubmit = async (e?: Event) => {
     if (e && typeof e.preventDefault === 'function') {
         e.preventDefault();
     }
+    
+    // Tunggu semua perubahan DOM selesai
+    await nextTick();
+    
     formErrors.value = {}; // reset error sebelum submit
+
+    // Collect form data secara manual untuk memastikan semua data ter-update
+    // Gunakan form.data() sebagai base, lalu override dengan nilai langsung dari form[input.name]
+    const baseData = form.data();
+    const formData: Record<string, any> = { ...baseData };
+    
+    props.formInputs.forEach((input) => {
+        if (input.type !== 'title') {
+            // Ambil nilai langsung dari form[input.name] untuk memastikan data ter-update
+            const currentValue = form[input.name];
+            if (currentValue !== undefined && currentValue !== null) {
+                formData[input.name] = currentValue;
+            } else if (baseData[input.name] !== undefined) {
+                formData[input.name] = baseData[input.name];
+            }
+        }
+    });
+
+    console.log('FormInput: Collected form data manually:', formData);
+    console.log('FormInput: form.data() from useForm:', form.data());
+    console.log('FormInput: Direct form access:', Object.fromEntries(props.formInputs.map(i => [i.name, form[i.name]])));
 
     // Cek required field
     let isValid = true;
@@ -128,7 +155,7 @@ const handleSubmit = (e?: Event) => {
             return;
         }
         if (input.required) {
-            const value = form[input.name];
+            const value = formData[input.name];
             // Perbaikan: cek apakah nilai null, undefined, atau string kosong
             // Tapi jangan anggap 0 atau false sebagai kosong
             if (value === null || value === undefined || value === '') {
@@ -139,7 +166,7 @@ const handleSubmit = (e?: Event) => {
 
         // Validasi khusus untuk NIK
         if (input.name === 'nik') {
-            const nikValue = form[input.name];
+            const nikValue = formData[input.name];
             if (nikValue) {
                 // Cek apakah hanya berisi angka
                 if (!/^\d+$/.test(nikValue)) {
@@ -161,8 +188,9 @@ const handleSubmit = (e?: Event) => {
         return;
     }
 
-    emit('save', form.data(), setFormErrors);
-    console.log('FormInput: Form data being emitted (from useForm):', form.data());
+    // Gunakan formData yang sudah dikumpulkan secara manual
+    emit('save', formData, setFormErrors);
+    console.log('FormInput: Form data being emitted (manual collection):', formData);
 };
 
 function setFormErrors(errors: Record<string, string>) {
@@ -290,10 +318,15 @@ const handleCancel = () => {
         router.visit('/');
     }
 };
+
+// Expose method untuk trigger submit dari parent
+defineExpose({
+    submit: handleSubmit,
+});
 </script>
 
 <template>
-    <div class="w-full">
+    <div class="w-full" :id="props.id">
         <!-- ALERT ERROR -->
         <Alert v-if="Object.keys(formErrors).length" variant="destructive" class="mb-4 shadow-none hover:shadow-none">
             <AlertCircle class="h-4 w-4" />
@@ -305,7 +338,7 @@ const handleCancel = () => {
             </AlertDescription>
         </Alert>
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <div v-for="input in formInputs" :key="input.name" class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4">
+            <div v-for="input in formInputs" :key="`${input.name}-${input.options?.length || 0}`" class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4">
                 <!-- TITLE TYPE (FOR SECTION HEADINGS) -->
                 <template v-if="input.type === 'title'">
                     <h2 class="col-span-full mt-4 mb-2 border-b pb-2 text-lg font-bold">
@@ -421,28 +454,20 @@ const handleCancel = () => {
                             :model-value="form[input.name]"
                             @update:modelValue="
                                 (val: any) => {
+                                    console.log(`FormInput: Select ${input.name} updated to:`, val);
                                     form[input.name] = val;
+                                    form.defaults({ ...form.defaults(), [input.name]: val });
                                     emit('field-updated', { field: input.name, value: val });
+                                    console.log(`FormInput: Form data after select update:`, form.data());
                                 }
                             "
+                            :key="`select-${input.name}-${JSON.stringify(input.options || [])}`"
                         >
                             <SelectTrigger class="w-full">
                                 <SelectValue :placeholder="input.placeholder" />
                             </SelectTrigger>
                             <SelectContent>
-                                <!-- Search input -->
-                                <div class="p-2">
-                                    <input
-                                        v-model="selectSearchQuery[input.name]"
-                                        type="text"
-                                        placeholder="Cari..."
-                                        class="w-full rounded border px-2 py-1 text-sm"
-                                        @click.stop
-                                        @keydown.stop
-                                    />
-                                </div>
-                                <!-- Filtered options -->
-                                <SelectItem v-for="option in getFilteredOptions(input)" :key="option.value" :value="option.value">
+                                <SelectItem v-for="option in input.options" :key="`${input.name}-${option.value}`" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>
@@ -624,7 +649,7 @@ const handleCancel = () => {
             </div>
             <slot name="custom-fields"></slot>
             <!-- BUTTONS -->
-            <div class="grid grid-cols-1 items-center md:grid-cols-12">
+            <div v-if="!hideButtons" class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>
                 <div class="col-span-full md:col-span-9">
                     <ButtonsForm :showSave="true" :showCancel="true" @save="handleSubmit" @cancel="handleCancel" />

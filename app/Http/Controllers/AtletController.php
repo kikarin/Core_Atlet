@@ -81,6 +81,47 @@ class AtletController extends Controller implements HasMiddleware
         ]);
     }
 
+    public function edit($id = '')
+    {
+        $this->repository->customProperty(__FUNCTION__, ['id' => $id]);
+        $item = $this->repository->getById($id);
+        $data = $this->commonData + [
+            'item' => $item,
+        ];
+        if ($this->check_permission == true) {
+            $data = array_merge($data, $this->getPermission());
+        }
+        $data = $this->repository->customCreateEdit($data, $item);
+        if (! is_array($data)) {
+            return $data;
+        }
+
+        return inertia('modules/atlet/Edit', $data);
+    }
+
+    public function update()
+    {
+        $this->repository->customProperty(__FUNCTION__, ['id' => $this->request->id]);
+        $data   = $this->request->validate($this->request->rules());
+        $data   = $this->request->all();
+        $before = $this->repository->callbackBeforeStoreOrUpdate($data, 'update');
+        if ($before['error'] != 0) {
+            return redirect()->back()->with('error', $before['message'])->withInput();
+        } else {
+            $data = $before['data'];
+        }
+        $model = $this->repository->update($this->request->id, $data);
+        if (! ($model instanceof \Illuminate\Database\Eloquent\Model)) {
+            return $model;
+        }
+
+        // Refresh model dengan kategoriPesertas untuk memastikan data terbaru
+        $model->refresh();
+        $model->load('kategoriPesertas');
+
+        return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil diperbarui!');
+    }
+
     public function apiShow($id)
     {
         try {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Blameable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -34,6 +35,12 @@ class MstKategoriAtlet extends Model
             ->logOnly(['*'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn (string $eventName) => 'Master Kategori Atlet');
+    }
+
+    public function atlets()
+    {
+        return $this->belongsToMany(Atlet::class, 'atlet_kategori_atlet', 'mst_kategori_atlet_id', 'atlet_id')
+            ->withTimestamps();
     }
 }
 

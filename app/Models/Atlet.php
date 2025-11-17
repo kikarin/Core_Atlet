@@ -162,7 +162,20 @@ class Atlet extends Model implements HasMedia
 
     public function kategoriAtlet()
     {
-        return $this->belongsTo(MstKategoriAtlet::class, 'kategori_atlet_id')->select(['id', 'nama']);
+        return $this->belongsTo(MstKategoriPeserta::class, 'kategori_atlet_id')->select(['id', 'nama']);
+    }
+
+    public function kategoriPesertas()
+    {
+        return $this->belongsToMany(MstKategoriPeserta::class, 'atlet_kategori_peserta', 'atlet_id', 'mst_kategori_peserta_id')
+            ->withTimestamps()
+            ->select(['mst_kategori_peserta.id', 'mst_kategori_peserta.nama']);
+    }
+
+    // Backward compatibility
+    public function kategoriAtlets()
+    {
+        return $this->kategoriPesertas();
     }
 
     /**

@@ -48,6 +48,7 @@ class AtletRepository
             'caborKategoriAtlet.cabor',
             'caborKategoriAtlet.caborKategori',
             'kategoriAtlet',
+            'kategoriPesertas',
         ];
     }
 
@@ -210,9 +211,12 @@ class AtletRepository
             $this->applyLamaBergabungFilter($query, request('lama_bergabung'));
         }
 
-        // Filter by kategori_atlet_id
-        if (request('kategori_atlet_id') && request('kategori_atlet_id') !== 'all') {
-            $query->where('kategori_atlet_id', request('kategori_atlet_id'));
+        // Filter by kategori_peserta_id (support both kategori_atlet_id for backward compatibility)
+        $kategoriPesertaId = request('kategori_peserta_id') ?: request('kategori_atlet_id');
+        if ($kategoriPesertaId && $kategoriPesertaId !== 'all') {
+            $query->whereHas('kategoriPesertas', function ($q) use ($kategoriPesertaId) {
+                $q->where('mst_kategori_peserta.id', $kategoriPesertaId);
+            });
         }
 
         // Filter by date range
@@ -298,8 +302,16 @@ class AtletRepository
             $data['parameter_umum_values'] = $parameterUmumValues->mapWithKeys(function ($param) {
                 return [$param->mst_parameter_id => $param->nilai];
             })->toArray();
+
+            // Load kategori peserta yang sudah ada (multiple)
+            $item->load('kategoriPesertas');
+            $data['kategori_pesertas'] = $item->kategoriPesertas->pluck('id')->toArray();
+            // Backward compatibility
+            $data['kategori_atlets'] = $data['kategori_pesertas'];
         } else {
             $data['parameter_umum_values'] = [];
+            $data['kategori_pesertas'] = [];
+            $data['kategori_atlets'] = [];
         }
 
         return $data;
@@ -395,6 +407,23 @@ class AtletRepository
             if (isset($data['parameter_umum']) && is_array($data['parameter_umum'])) {
                 $this->atletParameterUmumRepository->upsertByAtletId($model->id, $data['parameter_umum']);
                 Log::info('AtletRepository: Updated AtletParameterUmum', ['atlet_id' => $model->id]);
+            }
+
+            // Handle Multiple Kategori Peserta
+            $kategoriIds = [];
+            if (isset($data['kategori_pesertas']) && is_array($data['kategori_pesertas'])) {
+                $kategoriIds = array_filter($data['kategori_pesertas'], function ($id) {
+                    return !empty($id);
+                });
+            } elseif (isset($data['kategori_atlets']) && is_array($data['kategori_atlets'])) {
+                // Backward compatibility
+                $kategoriIds = array_filter($data['kategori_atlets'], function ($id) {
+                    return !empty($id);
+                });
+            }
+            if (!empty($kategoriIds)) {
+                $model->kategoriPesertas()->sync($kategoriIds);
+                Log::info('AtletRepository: Updated KategoriPesertas', ['atlet_id' => $model->id, 'kategori_ids' => $kategoriIds]);
             }
 
             // Handle Atlet Akun data
@@ -499,7 +528,7 @@ class AtletRepository
 
     public function getDetailWithRelations($id)
     {
-        $with = array_merge($this->with, ['kecamatan', 'kelurahan', 'kategoriAtlet']);
+        $with = array_merge($this->with, ['kecamatan', 'kelurahan', 'kategoriAtlet', 'kategoriPesertas']);
 
         return $this->model->with($with)->findOrFail($id);
     }
