@@ -206,13 +206,13 @@ class AllParameterController extends Controller implements HasMiddleware
         }
 
         // Hitung persentase performa untuk parameter khusus
-        $nilaiTarget = $parameter->nilai_target ? (float) $parameter->nilai_target : null;
+        $nilaiTarget  = $parameter->nilai_target ? (float) $parameter->nilai_target : null;
         $performaArah = $parameter->performa_arah ?? 'max';
 
         // Transform data untuk menambahkan tanggal pemeriksaan dan persentase performa
         $transformedData = $statistikData->map(function ($item) use ($pemeriksaanList, $parameter, $nilaiTarget, $performaArah) {
             $pemeriksaan = $pemeriksaanList->firstWhere('id', $item->pemeriksaan_id);
-            
+
             $data = [
                 'peserta_id'             => $item->peserta_id,
                 'pemeriksaan_peserta_id' => $item->pemeriksaan_peserta_id,
@@ -224,9 +224,9 @@ class AllParameterController extends Controller implements HasMiddleware
 
             // Hitung persentase performa untuk parameter khusus
             if ($parameter->kategori === 'khusus' && $nilaiTarget !== null && $item->nilai !== null) {
-                $nilaiAktual = (float) $item->nilai;
+                $nilaiAktual        = (float) $item->nilai;
                 $persentasePerforma = null;
-                
+
                 if ($nilaiTarget > 0) {
                     if ($performaArah === 'min') {
                         $persentasePerforma = ($nilaiTarget / $nilaiAktual) * 100;
@@ -234,7 +234,7 @@ class AllParameterController extends Controller implements HasMiddleware
                         $persentasePerforma = ($nilaiAktual / $nilaiTarget) * 100;
                     }
                 }
-                
+
                 $data['persentase_performa'] = $persentasePerforma !== null ? round($persentasePerforma, 2) : null;
             }
 

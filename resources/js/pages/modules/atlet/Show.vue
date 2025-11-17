@@ -10,9 +10,9 @@ import ShowPrestasi from './prestasi/ShowPrestasi.vue';
 import ShowSertifikat from './sertifikat/ShowSertifikat.vue';
 import ShowKesehatan from './ShowKesehatan.vue';
 import ShowOrangTua from './ShowOrangTua.vue';
-import ShowRekapLatihan from './ShowRekapLatihan.vue';
-import ShowParameterUmum from './ShowParameterUmum.vue';
 import ShowParameterKhusus from './ShowParameterKhusus.vue';
+import ShowParameterUmum from './ShowParameterUmum.vue';
+import ShowRekapLatihan from './ShowRekapLatihan.vue';
 
 const { toast } = useToast();
 
@@ -448,7 +448,12 @@ function getLamaBergabung(tanggalBergabung: string) {
         :breadcrumbs="breadcrumbs"
         :fields="activeTab === 'atlet-data' ? fields : []"
         :actionFields="
-            activeTab === 'sertifikat-data' || activeTab === 'prestasi-data' || activeTab === 'dokumen-data' || activeTab === 'rekap-latihan-data' || activeTab === 'parameter-umum-data' || activeTab === 'parameter-khusus-data'
+            activeTab === 'sertifikat-data' ||
+            activeTab === 'prestasi-data' ||
+            activeTab === 'dokumen-data' ||
+            activeTab === 'rekap-latihan-data' ||
+            activeTab === 'parameter-umum-data' ||
+            activeTab === 'parameter-khusus-data'
                 ? []
                 : activeTab === 'atlet-data'
                   ? actionFields

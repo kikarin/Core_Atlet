@@ -58,7 +58,7 @@ class MstKategoriPrestasiPelatihRepository
                 ];
             });
             $data += [
-                'kategori_prestasi_pelatihs' => $transformedData,
+                'kategori_prestasi_pelatihs'  => $transformedData,
                 'total'                       => $transformedData->count(),
                 'currentPage'                 => 1,
                 'perPage'                     => -1,
@@ -82,12 +82,12 @@ class MstKategoriPrestasiPelatihRepository
 
         $data += [
             'kategori_prestasi_pelatihs' => $transformedData,
-            'total'                     => $items->total(),
-            'currentPage'               => $items->currentPage(),
-            'perPage'                   => $items->perPage(),
-            'search'                    => request('search', ''),
-            'sort'                      => request('sort', ''),
-            'order'                     => request('order', 'asc'),
+            'total'                      => $items->total(),
+            'currentPage'                => $items->currentPage(),
+            'perPage'                    => $items->perPage(),
+            'search'                     => request('search', ''),
+            'sort'                       => request('sort', ''),
+            'order'                      => request('order', 'asc'),
         ];
 
         return $data;
@@ -141,4 +141,3 @@ class MstKategoriPrestasiPelatihRepository
         return $request->validate($rules, $messages);
     }
 }
-

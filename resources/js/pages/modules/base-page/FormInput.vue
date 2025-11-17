@@ -119,17 +119,17 @@ const handleSubmit = async (e?: Event) => {
     if (e && typeof e.preventDefault === 'function') {
         e.preventDefault();
     }
-    
+
     // Tunggu semua perubahan DOM selesai
     await nextTick();
-    
+
     formErrors.value = {}; // reset error sebelum submit
 
     // Collect form data secara manual untuk memastikan semua data ter-update
     // Gunakan form.data() sebagai base, lalu override dengan nilai langsung dari form[input.name]
     const baseData = form.data();
     const formData: Record<string, any> = { ...baseData };
-    
+
     props.formInputs.forEach((input) => {
         if (input.type !== 'title') {
             // Ambil nilai langsung dari form[input.name] untuk memastikan data ter-update
@@ -144,7 +144,7 @@ const handleSubmit = async (e?: Event) => {
 
     console.log('FormInput: Collected form data manually:', formData);
     console.log('FormInput: form.data() from useForm:', form.data());
-    console.log('FormInput: Direct form access:', Object.fromEntries(props.formInputs.map(i => [i.name, form[i.name]])));
+    console.log('FormInput: Direct form access:', Object.fromEntries(props.formInputs.map((i) => [i.name, form[i.name]])));
 
     // Cek required field
     let isValid = true;
@@ -292,15 +292,8 @@ const handleNIKInput = (event: Event) => {
     target.value = formattedValue;
 };
 
-// State untuk search query per select field
-const selectSearchQuery = ref<Record<string, string>>({});
 
-// Method untuk filter options berdasarkan search query
-const getFilteredOptions = (input: any) => {
-    const query = selectSearchQuery.value[input.name] || '';
-    if (!query) return input.options;
-    return (input.options || []).filter((opt: any) => (opt.label || '').toLowerCase().includes(query.toLowerCase()));
-};
+
 
 // Helper untuk deteksi tipe file dari url
 function getFileType(url: string | null): 'image' | 'pdf' | 'other' {
@@ -338,7 +331,11 @@ defineExpose({
             </AlertDescription>
         </Alert>
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <div v-for="input in formInputs" :key="`${input.name}-${input.options?.length || 0}`" class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4">
+            <div
+                v-for="input in formInputs"
+                :key="`${input.name}-${input.options?.length || 0}`"
+                class="grid grid-cols-1 items-start gap-2 md:grid-cols-12 md:gap-4"
+            >
                 <!-- TITLE TYPE (FOR SECTION HEADINGS) -->
                 <template v-if="input.type === 'title'">
                     <h2 class="col-span-full mt-4 mb-2 border-b pb-2 text-lg font-bold">

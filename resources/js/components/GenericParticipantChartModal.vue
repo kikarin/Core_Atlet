@@ -56,14 +56,18 @@ const chartData = computed(() => {
             const persentasePerforma = statistik?.persentase_performa ?? null;
 
             const dataPoint: any = {
-                tanggal: new Date(props.dataType === 'pemeriksaan' ? rencana.tanggal_pemeriksaan : (rencana.tanggal || rencana.tanggal_pemeriksaan)).toLocaleDateString('id-ID', {
+                tanggal: new Date(
+                    props.dataType === 'pemeriksaan' ? rencana.tanggal_pemeriksaan : rencana.tanggal || rencana.tanggal_pemeriksaan,
+                ).toLocaleDateString('id-ID', {
                     day: '2-digit',
                     month: '2-digit',
                 }),
                 pemeriksaan:
                     props.dataType === 'pemeriksaan'
                         ? rencana.nama_pemeriksaan
-                        : rencana.materi || rencana.nama_pemeriksaan || `Rencana ${new Date(rencana.tanggal || rencana.tanggal_pemeriksaan).toLocaleDateString('id-ID')}`,
+                        : rencana.materi ||
+                          rencana.nama_pemeriksaan ||
+                          `Rencana ${new Date(rencana.tanggal || rencana.tanggal_pemeriksaan).toLocaleDateString('id-ID')}`,
                 rawNilai: statistik?.nilai || null,
                 persentasePerforma: persentasePerforma,
             };
@@ -162,7 +166,7 @@ const barChartSeries = computed(() => {
 // Get colors array untuk setiap bar
 const barChartColors = computed(() => {
     if (props.dataType !== 'target-latihan' || !props.participant) return [];
-    
+
     return chartData.value.map((item) => {
         const persentase = item[props.participant!.nama] || 0;
         return getBarColorByPerforma(persentase);
@@ -179,7 +183,7 @@ const getBarColorByPerforma = (persentase: number) => {
 // Update bar chart options untuk menggunakan warna dinamis
 const barChartOptionsWithColors = computed(() => {
     if (!barChartOptions.value) return null;
-    
+
     return {
         ...barChartOptions.value,
         plotOptions: {

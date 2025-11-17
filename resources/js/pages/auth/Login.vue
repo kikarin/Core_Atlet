@@ -151,7 +151,12 @@ const submit = () => {
             <InputError :message="form.errors.recaptcha_token" />
 
             <!-- Submit -->
-            <Button type="submit" class="h-10 w-full rounded-lg font-medium" :tabindex="4" :disabled="form.processing || (recaptchaSiteKey && recaptchaSiteKey.trim() !== '' && !recaptchaVerified)">
+            <Button
+                type="submit"
+                class="h-10 w-full rounded-lg font-medium"
+                :tabindex="4"
+                :disabled="form.processing || (recaptchaSiteKey && recaptchaSiteKey.trim() !== '' && !recaptchaVerified)"
+            >
                 <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
                 {{ form.processing ? 'Memproses...' : 'Masuk ke Sistem' }}
             </Button>

@@ -19,7 +19,7 @@ class TargetLatihanRequest extends FormRequest
             'deskripsi'          => 'required|string|max:255',
             'satuan'             => 'nullable|string|max:100',
             'nilai_target'       => 'nullable|string|max:100',
-            'performa_arah'     => 'nullable|in:min,max',
+            'performa_arah'      => 'nullable|in:min,max',
         ];
 
         // Peruntukan hanya required untuk target individu

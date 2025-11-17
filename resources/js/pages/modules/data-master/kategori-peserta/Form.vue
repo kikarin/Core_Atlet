@@ -51,4 +51,3 @@ const handleSave = (form: any) => {
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
 </template>
-

@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast/useToast';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import PageEdit from '@/pages/modules/base-page/PageEdit.vue';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
 
 const page = usePage();
 const props = page.props as any;
@@ -17,7 +15,6 @@ const rencanaId = props.rencana_id as string;
 const jenisPeserta = props.jenis_peserta as string;
 const pesertaId = props.peserta_id as string;
 const peserta = props.peserta as any;
-const infoHeader = props.infoHeader as any;
 const infoRencana = props.infoRencana as any;
 
 const jenisLabel: Record<string, string> = {
@@ -29,7 +26,10 @@ const jenisLabel: Record<string, string> = {
 const breadcrumbs = [
     { title: 'Program Latihan', href: `/program-latihan` },
     { title: 'Rencana Latihan', href: `/program-latihan/${programId}/rencana-latihan` },
-    { title: `Peserta (${jenisLabel[jenisPeserta] || jenisPeserta})`, href: `/program-latihan/${programId}/rencana-latihan/${rencanaId}/index/${jenisPeserta}` },
+    {
+        title: `Peserta (${jenisLabel[jenisPeserta] || jenisPeserta})`,
+        href: `/program-latihan/${programId}/rencana-latihan/${rencanaId}/index/${jenisPeserta}`,
+    },
     { title: 'Set Kehadiran', href: '#' },
 ];
 
@@ -96,7 +96,7 @@ watch(
                 fotoPreview.value = props.foto_kehadiran;
             }
         }
-    }
+    },
 );
 
 const handleFieldUpdate = (payload: { field: string; value: any }) => {
@@ -125,15 +125,11 @@ const handleSave = async (data: any, setFormErrors: (errors: Record<string, stri
             formDataToSend.append('foto', data.foto);
         }
 
-        const response = await axios.post(
-            `/api/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}/${pesertaId}/update-kehadiran`,
-            formDataToSend,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            }
-        );
+        const response = await axios.post(`/api/rencana-latihan/${rencanaId}/peserta/${jenisPeserta}/${pesertaId}/update-kehadiran`, formDataToSend, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 
         toast({ title: response.data.message || 'Kehadiran berhasil diupdate', variant: 'success' });
         router.visit(`/program-latihan/${programId}/rencana-latihan/${rencanaId}/index/${jenisPeserta}`);
@@ -214,10 +210,10 @@ const handleSave = async (data: any, setFormErrors: (errors: Record<string, stri
                 <CardContent class="pt-6">
                     <h3 class="mb-4 text-lg font-semibold">Foto Kehadiran Saat Ini</h3>
                     <div class="flex items-center gap-4">
-                        <img :src="fotoPreview" alt="Foto Kehadiran" class="h-48 w-48 rounded-lg object-cover border" />
+                        <img :src="fotoPreview" alt="Foto Kehadiran" class="h-48 w-48 rounded-lg border object-cover" />
                         <div>
                             <p class="text-muted-foreground text-sm">Foto kehadiran yang sudah diupload sebelumnya.</p>
-                            <p class="text-muted-foreground text-xs mt-2">Upload foto baru untuk mengganti foto ini.</p>
+                            <p class="text-muted-foreground mt-2 text-xs">Upload foto baru untuk mengganti foto ini.</p>
                         </div>
                     </div>
                 </CardContent>
@@ -225,4 +221,3 @@ const handleSave = async (data: any, setFormErrors: (errors: Record<string, stri
         </div>
     </PageEdit>
 </template>
-

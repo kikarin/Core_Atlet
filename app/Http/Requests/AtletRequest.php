@@ -22,7 +22,7 @@ class AtletRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'nik' => 'nullable|string|size:16|unique:atlets,nik,'.$this->id,
+            'nik'               => 'nullable|string|size:16|unique:atlets,nik,'.$this->id,
             'nisn'              => 'nullable|string|max:30',
             'nama'              => 'required|string|max:200',
             'jenis_kelamin'     => 'required|in:L,P',
@@ -88,8 +88,8 @@ class AtletRequest extends FormRequest
     {
         return [
             'nik.required' => 'NIK wajib diisi.',
-            'nik.max' => 'NIK tidak boleh lebih dari 16 karakter.',
-            'nik.unique' => 'NIK sudah terdaftar.',
+            'nik.max'      => 'NIK tidak boleh lebih dari 16 karakter.',
+            'nik.unique'   => 'NIK sudah terdaftar.',
         ];
     }
 
@@ -100,10 +100,10 @@ class AtletRequest extends FormRequest
     {
         // Convert empty strings to null for optional fields
         $this->merge([
-            'kecamatan_id'     => $this->kecamatan_id && $this->kecamatan_id !== '' ? (int) $this->kecamatan_id : null,
-            'kelurahan_id'     => $this->kelurahan_id && $this->kelurahan_id !== '' ? (int) $this->kelurahan_id : null,
+            'kecamatan_id'      => $this->kecamatan_id      && $this->kecamatan_id      !== '' ? (int) $this->kecamatan_id : null,
+            'kelurahan_id'      => $this->kelurahan_id      && $this->kelurahan_id      !== '' ? (int) $this->kelurahan_id : null,
             'kategori_atlet_id' => $this->kategori_atlet_id && $this->kategori_atlet_id !== '' ? (int) $this->kategori_atlet_id : null,
-            'is_active'        => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
+            'is_active'         => $this->is_active === '1' || $this->is_active === 1 || $this->is_active === true ? 1 : 0,
 
             // Prepare AtletOrangTua fields - convert empty strings to null
             'nama_ibu_kandung'  => $this->nama_ibu_kandung ?: null,

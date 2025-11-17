@@ -15,11 +15,11 @@ class RegistrationStep4Request extends FormRequest
     {
         // Step 4: Prestasi (opsional)
         return [
-            'prestasi' => 'nullable|array',
+            'prestasi'              => 'nullable|array',
             'prestasi.*.nama_event' => 'required_with:prestasi|string|max:255',
             'prestasi.*.tingkat_id' => 'nullable|integer|exists:mst_tingkat,id',
-            'prestasi.*.tanggal' => 'nullable|date',
-            'prestasi.*.peringkat' => 'nullable|string|max:255',
+            'prestasi.*.tanggal'    => 'nullable|date',
+            'prestasi.*.peringkat'  => 'nullable|string|max:255',
             'prestasi.*.keterangan' => 'nullable|string',
         ];
     }

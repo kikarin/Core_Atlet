@@ -143,7 +143,7 @@ onMounted(async () => {
         caborKategoriList.value = kategoriData.map((k: any) => ({ id: k.id, nama: k.nama, cabor_nama: k.cabor_nama }));
         tingkatList.value = tingkatRes.data || [];
         juaraList.value = juaraRes.data || [];
-    } catch (e) {
+    } catch  {
         // silently fail; user still can filter by tanggal tanpa options
     }
 });

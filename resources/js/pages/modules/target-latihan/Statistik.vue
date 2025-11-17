@@ -203,26 +203,37 @@ const closeModal = () => {
                                             <component
                                                 :is="
                                                     getTrendIcon(
-                                                        statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
-                                                            ?.trend || 'stabil',
+                                                        statistikData.find(
+                                                            (s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id,
+                                                        )?.trend || 'stabil',
                                                     ).icon
                                                 "
                                                 :class="
                                                     getTrendIcon(
-                                                        statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
-                                                            ?.trend || 'stabil',
+                                                        statistikData.find(
+                                                            (s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id,
+                                                        )?.trend || 'stabil',
                                                     ).color
                                                 "
                                                 class="h-4 w-4"
                                             />
                                         </div>
                                         <span
-                                            v-if="statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)?.persentase_performa !== null"
+                                            v-if="
+                                                statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                    ?.persentase_performa !== null
+                                            "
                                             class="text-xs font-semibold"
-                                            :class="getPerformaColor(statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)?.persentase_performa)"
+                                            :class="
+                                                getPerformaColor(
+                                                    statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                        ?.persentase_performa,
+                                                )
+                                            "
                                         >
                                             {{
-                                                statistikData.find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
+                                                statistikData
+                                                    .find((s: any) => s.peserta_id === peserta.id && s.rencana_latihan_id === rencana.id)
                                                     ?.persentase_performa?.toFixed(1) || '-'
                                             }}%
                                         </span>

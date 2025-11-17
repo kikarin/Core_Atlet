@@ -69,7 +69,7 @@ class PemeriksaanSeeder extends Seeder
         // Helper untuk membuat peserta+parameter
         // Gunakan status yang sudah ada dari RefStatusPemeriksaanSeeder
         $statusIds = \App\Models\RefStatusPemeriksaan::pluck('id')->toArray();
-        
+
         // Jika tidak ada status, gunakan status pertama yang tersedia atau null
         if (empty($statusIds)) {
             $statusIds = [null];

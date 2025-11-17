@@ -49,4 +49,3 @@ class MstKategoriAtletRequest extends FormRequest
         ];
     }
 }
-

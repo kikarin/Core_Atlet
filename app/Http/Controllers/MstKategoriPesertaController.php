@@ -154,4 +154,3 @@ class MstKategoriPesertaController extends Controller implements HasMiddleware
         return inertia('modules/data-master/kategori-peserta/Edit', $data);
     }
 }
-

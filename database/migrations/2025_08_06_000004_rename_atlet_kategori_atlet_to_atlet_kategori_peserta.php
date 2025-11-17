@@ -15,7 +15,7 @@ return new class () extends Migration {
         if (Schema::hasTable('atlet_kategori_atlet') && !Schema::hasTable('atlet_kategori_peserta')) {
             Schema::rename('atlet_kategori_atlet', 'atlet_kategori_peserta');
         }
-        
+
         // Check if column needs to be renamed
         if (Schema::hasTable('atlet_kategori_peserta') && Schema::hasColumn('atlet_kategori_peserta', 'mst_kategori_atlet_id')) {
             // Drop foreign key if exists
@@ -27,17 +27,17 @@ return new class () extends Migration {
                 AND COLUMN_NAME = 'mst_kategori_atlet_id'
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
-            
+
             if (!empty($foreignKeys)) {
                 $fkName = $foreignKeys[0]->CONSTRAINT_NAME;
                 DB::statement("ALTER TABLE `atlet_kategori_peserta` DROP FOREIGN KEY `{$fkName}`");
             }
-            
+
             Schema::table('atlet_kategori_peserta', function (Blueprint $table) {
                 $table->renameColumn('mst_kategori_atlet_id', 'mst_kategori_peserta_id');
             });
         }
-        
+
         // Add foreign key if not exists
         if (Schema::hasTable('atlet_kategori_peserta') && Schema::hasColumn('atlet_kategori_peserta', 'mst_kategori_peserta_id')) {
             $foreignKeys = DB::select("
@@ -48,7 +48,7 @@ return new class () extends Migration {
                 AND COLUMN_NAME = 'mst_kategori_peserta_id'
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
-            
+
             if (empty($foreignKeys)) {
                 Schema::table('atlet_kategori_peserta', function (Blueprint $table) {
                     $table->foreign('mst_kategori_peserta_id')->references('id')->on('mst_kategori_peserta')->onDelete('cascade');
@@ -71,21 +71,20 @@ return new class () extends Migration {
             AND COLUMN_NAME = 'mst_kategori_peserta_id'
             AND REFERENCED_TABLE_NAME IS NOT NULL
         ");
-        
+
         if (!empty($foreignKeys)) {
             $fkName = $foreignKeys[0]->CONSTRAINT_NAME;
             DB::statement("ALTER TABLE `atlet_kategori_peserta` DROP FOREIGN KEY `{$fkName}`");
         }
-        
+
         Schema::table('atlet_kategori_peserta', function (Blueprint $table) {
             $table->renameColumn('mst_kategori_peserta_id', 'mst_kategori_atlet_id');
         });
-        
+
         Schema::table('atlet_kategori_peserta', function (Blueprint $table) {
             $table->foreign('mst_kategori_atlet_id')->references('id')->on('mst_kategori_atlet')->onDelete('cascade');
         });
-        
+
         Schema::rename('atlet_kategori_peserta', 'atlet_kategori_atlet');
     }
 };
-

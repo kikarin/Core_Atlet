@@ -285,23 +285,23 @@ class RencanaLatihanPesertaController extends Controller implements HasMiddlewar
         $program = $rencana->programLatihan;
 
         // Get peserta data
-        $peserta = null;
+        $peserta       = null;
         $kehadiranData = null;
 
         if ($jenis_peserta === 'atlet') {
-            $peserta = Atlet::findOrFail($peserta_id);
+            $peserta       = Atlet::findOrFail($peserta_id);
             $kehadiranData = DB::table('rencana_latihan_atlet')
                 ->where('rencana_latihan_id', $rencana_id)
                 ->where('atlet_id', $peserta_id)
                 ->first();
         } elseif ($jenis_peserta === 'pelatih') {
-            $peserta = Pelatih::findOrFail($peserta_id);
+            $peserta       = Pelatih::findOrFail($peserta_id);
             $kehadiranData = DB::table('rencana_latihan_pelatih')
                 ->where('rencana_latihan_id', $rencana_id)
                 ->where('pelatih_id', $peserta_id)
                 ->first();
         } elseif ($jenis_peserta === 'tenaga-pendukung') {
-            $peserta = TenagaPendukung::findOrFail($peserta_id);
+            $peserta       = TenagaPendukung::findOrFail($peserta_id);
             $kehadiranData = DB::table('rencana_latihan_tenaga_pendukung')
                 ->where('rencana_latihan_id', $rencana_id)
                 ->where('tenaga_pendukung_id', $peserta_id)
@@ -374,21 +374,21 @@ class RencanaLatihanPesertaController extends Controller implements HasMiddlewar
         }
 
         $request->validate($rules, [
-            'foto.required' => 'Foto kehadiran wajib diupload jika status Hadir.',
+            'foto.required'  => 'Foto kehadiran wajib diupload jika status Hadir.',
             'foto.image'     => 'File harus berupa gambar.',
             'foto.mimes'     => 'Format foto harus JPG, JPEG, atau PNG.',
             'foto.max'       => 'Ukuran foto maksimal 5MB.',
         ]);
 
-        $rencana = RencanaLatihan::findOrFail($rencana_id);
-        $kehadiran = $request->input('kehadiran');
+        $rencana    = RencanaLatihan::findOrFail($rencana_id);
+        $kehadiran  = $request->input('kehadiran');
         $keterangan = $request->input('keterangan');
-        $fotoPath = null;
+        $fotoPath   = null;
 
         // Handle foto upload jika hadir
         if ($request->hasFile('foto') && $request->kehadiran === 'Hadir') {
-            $file = $request->file('foto');
-            $path = 'kehadiran/' . $rencana_id . '/' . $jenis_peserta . '/' . $peserta_id;
+            $file     = $request->file('foto');
+            $path     = 'kehadiran/' . $rencana_id . '/' . $jenis_peserta . '/' . $peserta_id;
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->storeAs($path, $fileName, 'public');
             $fotoPath = $path . '/' . $fileName;
@@ -426,7 +426,7 @@ class RencanaLatihanPesertaController extends Controller implements HasMiddlewar
         }
 
         return response()->json([
-            'message' => 'Kehadiran berhasil diupdate',
+            'message'  => 'Kehadiran berhasil diupdate',
             'foto_url' => $fotoPath ? url('storage/' . $fotoPath) : null,
         ]);
     }

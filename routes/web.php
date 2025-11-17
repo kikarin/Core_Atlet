@@ -66,12 +66,12 @@ use App\Models\MstJenisTenagaPendukung;
 use App\Models\MstKecamatan;
 use App\Models\MstPosisiAtlet;
 use App\Models\MstTingkat;
-use App\Models\MstKategoriAtlet;
 use App\Models\MstKategoriPeserta;
 use App\Models\MstJenisUnitPendukung;
 use App\Models\MstJuara;
 use App\Models\MstKategoriPrestasiPelatih;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use Inertia\Inertia;
 
 // =====================
@@ -679,6 +679,36 @@ Route::post('/api/turnamen/{turnamen_id}/peserta/{jenis_peserta}/destroy-selecte
 // Halaman peserta turnamen
 Route::get('/turnamen/{turnamen_id}/peserta', [TurnamenController::class, 'pesertaIndex'])->name('turnamen.peserta.index');
 
+// =====================
+// DEVELOPMENT/UTILITY ROUTES
+// =====================
+// Route untuk migrate fresh dengan seed (HANYA UNTUK DEVELOPMENT!)
+Route::get('/dev/migrate-fresh-seed', function () {
+    // Hanya bisa diakses di local/development environment
+    if (app()->environment('production')) {
+        abort(403, 'Route ini tidak tersedia di production environment.');
+    }
+
+    try {
+        // Jalankan migrate:fresh --seed
+        Artisan::call('migrate:fresh', ['--seed' => true]);
+        
+        $output = Artisan::output();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Migrate fresh dengan seed berhasil dijalankan.',
+            'output' => $output,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan saat menjalankan migrate fresh seed.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('dev.migrate-fresh-seed');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+

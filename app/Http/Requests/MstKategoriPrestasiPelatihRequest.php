@@ -49,4 +49,3 @@ class MstKategoriPrestasiPelatihRequest extends FormRequest
         ];
     }
 }
-

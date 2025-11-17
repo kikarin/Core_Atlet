@@ -489,13 +489,13 @@ class AtletController extends Controller implements HasMiddleware
 
             // Group by target_id untuk mendapatkan semua rencana latihan per target
             $groupedData = $rekapData->groupBy('target_id')->map(function ($items, $targetId) {
-                $firstItem = $items->first();
-                $nilaiTarget = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
+                $firstItem    = $items->first();
+                $nilaiTarget  = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
                 $performaArah = $firstItem->performa_arah ?? 'max';
 
                 // Hitung persentase performa untuk setiap rencana
                 $rencanaList = $items->map(function ($item) use ($nilaiTarget, $performaArah) {
-                    $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
+                    $nilaiAktual        = $item->nilai ? (float) $item->nilai : null;
                     $persentasePerforma = null;
 
                     if ($nilaiAktual !== null && $nilaiTarget !== null && $nilaiTarget > 0) {
@@ -507,30 +507,30 @@ class AtletController extends Controller implements HasMiddleware
                     }
 
                     return [
-                        'rencana_id' => $item->rencana_id,
-                        'tanggal' => $item->tanggal,
-                        'materi' => $item->materi,
-                        'nilai' => $item->nilai,
-                        'trend' => $item->trend,
+                        'rencana_id'          => $item->rencana_id,
+                        'tanggal'             => $item->tanggal,
+                        'materi'              => $item->materi,
+                        'nilai'               => $item->nilai,
+                        'trend'               => $item->trend,
                         'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
                     ];
                 })->values();
 
                 return [
-                    'target_id' => (int) $targetId,
-                    'deskripsi' => $firstItem->deskripsi,
-                    'nilai_target' => $firstItem->nilai_target,
-                    'satuan' => $firstItem->satuan,
+                    'target_id'     => (int) $targetId,
+                    'deskripsi'     => $firstItem->deskripsi,
+                    'nilai_target'  => $firstItem->nilai_target,
+                    'satuan'        => $firstItem->satuan,
                     'performa_arah' => $performaArah,
-                    'program_id' => $firstItem->program_id,
-                    'nama_program' => $firstItem->nama_program,
-                    'rencana_list' => $rencanaList,
+                    'program_id'    => $firstItem->program_id,
+                    'nama_program'  => $firstItem->nama_program,
+                    'rencana_list'  => $rencanaList,
                 ];
             })->values();
 
             return response()->json([
                 'success' => true,
-                'data' => $groupedData,
+                'data'    => $groupedData,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching rekap latihan atlet: '.$e->getMessage());
@@ -538,7 +538,7 @@ class AtletController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data rekap latihan',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -611,12 +611,12 @@ class AtletController extends Controller implements HasMiddleware
                 ->get();
 
             $groupedData = $rekapData->groupBy('parameter_id')->map(function ($items, $parameterId) {
-                $firstItem = $items->first();
-                $nilaiTarget = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
+                $firstItem    = $items->first();
+                $nilaiTarget  = $firstItem->nilai_target ? (float) $firstItem->nilai_target : null;
                 $performaArah = $firstItem->performa_arah ?? 'max';
 
                 $pemeriksaanList = $items->map(function ($item) use ($nilaiTarget, $performaArah) {
-                    $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
+                    $nilaiAktual        = $item->nilai ? (float) $item->nilai : null;
                     $persentasePerforma = null;
                     if ($nilaiAktual !== null && $nilaiTarget !== null && $nilaiTarget > 0) {
                         if ($performaArah === 'min') {
@@ -626,21 +626,21 @@ class AtletController extends Controller implements HasMiddleware
                         }
                     }
                     return [
-                        'pemeriksaan_id' => $item->pemeriksaan_id,
-                        'tanggal' => $item->tanggal_pemeriksaan,
-                        'nama_pemeriksaan' => $item->nama_pemeriksaan,
-                        'nilai' => $item->nilai,
-                        'trend' => $item->trend,
+                        'pemeriksaan_id'      => $item->pemeriksaan_id,
+                        'tanggal'             => $item->tanggal_pemeriksaan,
+                        'nama_pemeriksaan'    => $item->nama_pemeriksaan,
+                        'nilai'               => $item->nilai,
+                        'trend'               => $item->trend,
                         'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
                     ];
                 })->values();
 
                 return [
-                    'parameter_id' => (int) $parameterId,
-                    'nama_parameter' => $firstItem->nama_parameter,
-                    'nilai_target' => $firstItem->nilai_target,
-                    'satuan' => $firstItem->satuan,
-                    'performa_arah' => $performaArah,
+                    'parameter_id'     => (int) $parameterId,
+                    'nama_parameter'   => $firstItem->nama_parameter,
+                    'nilai_target'     => $firstItem->nilai_target,
+                    'satuan'           => $firstItem->satuan,
+                    'performa_arah'    => $performaArah,
                     'pemeriksaan_list' => $pemeriksaanList,
                 ];
             })->values();
@@ -657,9 +657,9 @@ class AtletController extends Controller implements HasMiddleware
     {
         try {
             $request->validate([
-                'parameter_umum' => 'required|array',
+                'parameter_umum'                    => 'required|array',
                 'parameter_umum.*.mst_parameter_id' => 'required|exists:mst_parameter,id',
-                'parameter_umum.*.nilai' => 'nullable|string|max:255',
+                'parameter_umum.*.nilai'            => 'nullable|string|max:255',
             ]);
 
             $this->repository->upsertParameterUmum((int) $id, $request->input('parameter_umum', []));

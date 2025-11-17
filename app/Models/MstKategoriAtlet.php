@@ -43,4 +43,3 @@ class MstKategoriAtlet extends Model
             ->withTimestamps();
     }
 }
-

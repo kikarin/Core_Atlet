@@ -6,17 +6,23 @@ declare global {
     interface Window {
         grecaptcha: {
             ready: (callback: () => void) => void;
-            execute: (siteKey: string, options: {
-                action: string;
-            }) => Promise<string>;
-            render: (container: string | HTMLElement, options: {
-                sitekey: string;
-                theme?: 'light' | 'dark';
-                size?: 'normal' | 'compact';
-                callback?: (token: string) => void;
-                'expired-callback'?: () => void;
-                'error-callback'?: () => void;
-            }) => number;
+            execute: (
+                siteKey: string,
+                options: {
+                    action: string;
+                },
+            ) => Promise<string>;
+            render: (
+                container: string | HTMLElement,
+                options: {
+                    sitekey: string;
+                    theme?: 'light' | 'dark';
+                    size?: 'normal' | 'compact';
+                    callback?: (token: string) => void;
+                    'expired-callback'?: () => void;
+                    'error-callback'?: () => void;
+                },
+            ) => number;
             reset: (widgetId: number) => void;
             getResponse: (widgetId: number) => string | null;
         };
@@ -75,7 +81,7 @@ const loadRecaptcha = () => {
                 }
             }
         }, 100);
-        
+
         // Timeout after 5 seconds
         setTimeout(() => {
             clearInterval(checkInterval);
@@ -114,7 +120,7 @@ const loadRecaptcha = () => {
                 }
             }
         }, 100);
-        
+
         setTimeout(() => {
             clearInterval(checkInterval);
         }, 5000);
@@ -197,9 +203,9 @@ const renderRecaptcha = () => {
                 emit('error');
             },
         });
-        console.log('reCAPTCHA v2 rendered successfully', { 
+        console.log('reCAPTCHA v2 rendered successfully', {
             widgetId: widgetId.value,
-            siteKey: props.siteKey.substring(0, 10) + '...'
+            siteKey: props.siteKey.substring(0, 10) + '...',
         });
     } catch (error: any) {
         console.error('reCAPTCHA v2 render error:', error);
@@ -242,20 +248,20 @@ const getResponse = (): string | null => {
 
 onMounted(() => {
     recaptchaId.value = Math.floor(Math.random() * 1000000);
-    
+
     // Validate site key before proceeding
     if (!props.siteKey || props.siteKey.trim() === '') {
         console.error('reCAPTCHA Site Key tidak ditemukan! Pastikan RECAPTCHA_SITE_KEY sudah di-set di file .env');
         return;
     }
-    
+
     console.log('reCAPTCHA component mounted', {
         version: props.version || 'v2 (default)',
         siteKey: props.siteKey ? `${props.siteKey.substring(0, 10)}...` : 'not set',
         isV2: isV2.value,
         isV3: isV3.value,
     });
-    
+
     // Wait for DOM to be ready
     setTimeout(() => {
         loadRecaptcha();
@@ -263,17 +269,20 @@ onMounted(() => {
 });
 
 // Watch for action changes in v3
-watch(() => props.action, () => {
-    if (isV3.value && isLoaded.value && window.grecaptcha) {
-        executeV3();
-    }
-});
+watch(
+    () => props.action,
+    () => {
+        if (isV3.value && isLoaded.value && window.grecaptcha) {
+            executeV3();
+        }
+    },
+);
 
 onUnmounted(() => {
     if (!isV3.value && window.grecaptcha && widgetId.value !== null) {
         try {
             window.grecaptcha.reset(widgetId.value);
-        } catch (e) {
+        } catch {
             // Ignore errors
         }
     }
@@ -298,4 +307,3 @@ defineExpose({
     margin: 1rem 0;
 }
 </style>
-

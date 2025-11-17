@@ -70,4 +70,3 @@ console.log('Show data:', props.item);
         :on-delete="handleDelete"
     />
 </template>
-

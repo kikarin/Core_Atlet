@@ -41,7 +41,8 @@ const handleSave = (form: any) => {
         url: '/data-master/kategori-prestasi-pelatih',
         mode: props.mode,
         id: props.initialData?.id,
-        successMessage: props.mode === 'create' ? 'Data kategori prestasi pelatih berhasil ditambahkan' : 'Data kategori prestasi pelatih berhasil diperbarui',
+        successMessage:
+            props.mode === 'create' ? 'Data kategori prestasi pelatih berhasil ditambahkan' : 'Data kategori prestasi pelatih berhasil diperbarui',
         errorMessage: props.mode === 'create' ? 'Gagal menyimpan data kategori prestasi pelatih' : 'Gagal memperbarui data kategori prestasi pelatih',
         redirectUrl: '/data-master/kategori-prestasi-pelatih',
     });
@@ -51,4 +52,3 @@ const handleSave = (form: any) => {
 <template>
     <FormInput :form-inputs="formInputs" :initial-data="formData" @save="handleSave" />
 </template>
-

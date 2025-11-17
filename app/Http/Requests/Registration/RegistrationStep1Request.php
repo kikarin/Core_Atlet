@@ -30,7 +30,7 @@ class RegistrationStep1Request extends FormRequest
     {
         return [
             'peserta_type.required' => 'Jenis peserta wajib dipilih.',
-            'peserta_type.in' => 'Jenis peserta tidak valid.',
+            'peserta_type.in'       => 'Jenis peserta tidak valid.',
         ];
     }
 }

@@ -83,14 +83,6 @@ const getPerformaColor = (persentase: number | null) => {
     return 'text-green-600';
 };
 
-// Get bar color untuk chart
-const getBarColor = (persentase: number | null) => {
-    if (persentase === null) return '#9ca3af';
-    if (persentase > 70) return '#ef4444'; // red
-    if (persentase >= 40) return '#f59e0b'; // yellow
-    return '#10b981'; // green
-};
-
 const currentTarget = ref<any>(null);
 
 // Open modal untuk melihat grafik
@@ -113,7 +105,7 @@ const closeModal = () => {
 // Prepare data untuk chart modal
 const chartStatistikData = computed(() => {
     if (!currentTarget.value) return [];
-    
+
     return currentTarget.value.rencana_list.map((rencana: any) => ({
         peserta_id: props.atletId,
         rencana_latihan_id: rencana.rencana_id,
@@ -126,7 +118,7 @@ const chartStatistikData = computed(() => {
 
 const chartRencanaList = computed(() => {
     if (!currentTarget.value) return [];
-    
+
     return currentTarget.value.rencana_list.map((rencana: any) => ({
         id: rencana.rencana_id,
         tanggal: rencana.tanggal,
@@ -136,7 +128,7 @@ const chartRencanaList = computed(() => {
 
 const chartTargetInfo = computed(() => {
     if (!currentTarget.value) return null;
-    
+
     return {
         id: currentTarget.value.target_id,
         deskripsi: currentTarget.value.deskripsi,
@@ -224,4 +216,3 @@ const chartTargetInfo = computed(() => {
         />
     </div>
 </template>
-

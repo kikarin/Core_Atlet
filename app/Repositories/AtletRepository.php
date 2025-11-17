@@ -25,7 +25,7 @@ class AtletRepository
         $this->model                        = $model;
         $this->atletOrangTuaRepository      = $atletOrangTuaRepository;
         $this->atletParameterUmumRepository = $atletParameterUmumRepository;
-        $this->with                    = [
+        $this->with                         = [
             'media',
             'created_by_user',
             'updated_by_user',
@@ -298,7 +298,7 @@ class AtletRepository
 
         // Jika edit, load nilai parameter umum yang sudah ada
         if ($item && isset($item->id)) {
-            $parameterUmumValues = $this->atletParameterUmumRepository->getByAtletId($item->id);
+            $parameterUmumValues           = $this->atletParameterUmumRepository->getByAtletId($item->id);
             $data['parameter_umum_values'] = $parameterUmumValues->mapWithKeys(function ($param) {
                 return [$param->mst_parameter_id => $param->nilai];
             })->toArray();
@@ -310,8 +310,8 @@ class AtletRepository
             $data['kategori_atlets'] = $data['kategori_pesertas'];
         } else {
             $data['parameter_umum_values'] = [];
-            $data['kategori_pesertas'] = [];
-            $data['kategori_atlets'] = [];
+            $data['kategori_pesertas']     = [];
+            $data['kategori_atlets']       = [];
         }
 
         return $data;
@@ -518,9 +518,9 @@ class AtletRepository
 
         // override pesan global (fallback)
         $messages = array_merge([
-            'nik.max' => 'NIK tidak boleh lebih dari 16 karakter.',
+            'nik.max'      => 'NIK tidak boleh lebih dari 16 karakter.',
             'nik.required' => 'NIK wajib diisi.',
-            'nik.unique' => 'NIK sudah terdaftar.',
+            'nik.unique'   => 'NIK sudah terdaftar.',
         ], $messages);
 
         return $request->validate($rules, $messages);

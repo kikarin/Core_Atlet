@@ -19,12 +19,12 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request): Response
     {
         $recaptchaSiteKey = config('services.recaptcha.site_key');
-        
+
         // Debug: Log if key is missing
         if (empty($recaptchaSiteKey)) {
             \Log::warning('reCAPTCHA Site Key is not configured. Please check your .env file.');
         }
-        
+
         return Inertia::render('auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status'           => $request->session()->get('status'),

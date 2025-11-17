@@ -248,25 +248,35 @@ onMounted(async () => {
                                             </span>
                                             <component
                                                 :is="
-                                                    getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
-                                                        .component
+                                                    getTrendIcon(
+                                                        getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil',
+                                                    ).component
                                                 "
                                                 :class="
-                                                    getTrendIcon(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil')
-                                                        .colorClass
+                                                    getTrendIcon(
+                                                        getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil',
+                                                    ).colorClass
                                                 "
                                                 class="h-4 w-4"
                                                 :title="getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.trend || 'stabil'"
                                             />
                                         </div>
                                         <span
-                                            v-if="isParameterKhusus && getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa !== null"
+                                            v-if="
+                                                isParameterKhusus &&
+                                                getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa !== null
+                                            "
                                             class="text-xs font-semibold"
-                                            :class="getPerformaColor(getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa)"
+                                            :class="
+                                                getPerformaColor(
+                                                    getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa,
+                                                )
+                                            "
                                         >
                                             {{
-                                                getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)
-                                                    ?.persentase_performa?.toFixed(1) || '-'
+                                                getNilaiForPesertaAndTanggal(peserta.id, rencana.tanggal_pemeriksaan)?.persentase_performa?.toFixed(
+                                                    1,
+                                                ) || '-'
                                             }}%
                                         </span>
                                     </div>

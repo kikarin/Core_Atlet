@@ -138,7 +138,7 @@ class TenagaPendukungController extends Controller implements HasMiddleware
                 'data' => $data,
             ]);
             $model = $this->repository->update($id, $data);
-            
+
             // Refresh model dengan kategoriPesertas untuk memastikan data terbaru
             $model->refresh();
             $model->load('kategoriPesertas');

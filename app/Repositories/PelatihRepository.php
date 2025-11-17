@@ -298,10 +298,10 @@ class PelatihRepository
         // Note: Tidak perlu DB::beginTransaction() karena sudah dalam transaction dari RepositoryTrait
         try {
             Log::info('PelatihRepository: Starting file upload process', [
-                'method'         => $method,
-                'has_file'       => isset($data['file']),
-                'file_data'      => $data['file'] ? 'File exists' : 'No file',
-                'is_delete_foto' => @$data['is_delete_foto'],
+                'method'            => $method,
+                'has_file'          => isset($data['file']),
+                'file_data'         => $data['file'] ? 'File exists' : 'No file',
+                'is_delete_foto'    => @$data['is_delete_foto'],
                 'kategori_pesertas' => $data['kategori_pesertas'] ?? 'not set',
             ]);
 

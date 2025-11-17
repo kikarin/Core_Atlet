@@ -146,7 +146,7 @@ class PelatihController extends Controller implements HasMiddleware
 
             // Update the record
             $model = $this->repository->update($id, $data);
-            
+
             // Refresh model dengan kategoriPesertas untuk memastikan data terbaru
             $model->refresh();
             $model->load('kategoriPesertas');

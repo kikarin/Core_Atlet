@@ -29,4 +29,3 @@ return new class () extends Migration {
         Schema::dropIfExists('mst_kategori_prestasi_pelatih');
     }
 };
-

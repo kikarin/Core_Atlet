@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import PageShow from '@/pages/modules/base-page/PageShow.vue';
+import FilePreview from '@/components/FilePreview.vue';
+import ImagePreview from '@/components/ImagePreview.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/toast/useToast';
 import Tabs from '@/components/ui/tabs/Tabs.vue';
 import TabsContent from '@/components/ui/tabs/TabsContent.vue';
 import TabsList from '@/components/ui/tabs/TabsList.vue';
 import TabsTrigger from '@/components/ui/tabs/TabsTrigger.vue';
+import { useToast } from '@/components/ui/toast/useToast';
+import PageShow from '@/pages/modules/base-page/PageShow.vue';
+import { router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { CheckCircle2, XCircle, ArrowLeft, FileText } from 'lucide-vue-next';
-import ImagePreview from '@/components/ImagePreview.vue';
-import FilePreview from '@/components/FilePreview.vue';
+import { CheckCircle2, XCircle } from 'lucide-vue-next';
+import { computed, onBeforeUnmount, ref } from 'vue';
 
 const props = defineProps<{
     registration: {
@@ -95,7 +95,7 @@ const summaryFields = computed(() => {
 
     return fields;
 });
-    
+
 const actionFields = computed(() => [
     { label: 'Tanggal Pengajuan', value: new Date(props.registration.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) },
 ]);
@@ -161,9 +161,7 @@ const fieldConfigs: Record<string, Array<{ key: string; label: string }>> = {
     ],
 };
 
-const currentFieldConfig = computed(
-    () => fieldConfigs[props.registration.peserta_type] || fieldConfigs.atlet,
-);
+const currentFieldConfig = computed(() => fieldConfigs[props.registration.peserta_type] || fieldConfigs.atlet);
 
 const formatFieldValue = (key: string, value: any) => {
     if (value === null || value === undefined || value === '') return '-';
@@ -173,19 +171,11 @@ const formatFieldValue = (key: string, value: any) => {
     }
 
     if (key === 'kecamatan_id') {
-        return (
-            props.additionalData?.kecamatan?.nama ||
-            step2Data.value.kecamatan_nama ||
-            value
-        );
+        return props.additionalData?.kecamatan?.nama || step2Data.value.kecamatan_nama || value;
     }
 
     if (key === 'kelurahan_id') {
-        return (
-            props.additionalData?.kelurahan?.nama ||
-            step2Data.value.kelurahan_nama ||
-            value
-        );
+        return props.additionalData?.kelurahan?.nama || step2Data.value.kelurahan_nama || value;
     }
 
     return value;
@@ -269,9 +259,7 @@ onBeforeUnmount(() => {
     tempObjectUrls.forEach((url) => URL.revokeObjectURL(url));
 });
 
-const profilePhotoPreview = computed(() =>
-    getFilePreview(step2Data.value.file || step2Data.value.foto || step2Data.value.file_url),
-);
+const profilePhotoPreview = computed(() => getFilePreview(step2Data.value.file || step2Data.value.foto || step2Data.value.file_url));
 
 const sertifikatList = computed(() => {
     // Step 3 bisa memiliki struktur: { sertifikat: [...] } atau langsung array
@@ -283,7 +271,7 @@ const sertifikatList = computed(() => {
     } else if (step3Data.value.sertifikat_files && Array.isArray(step3Data.value.sertifikat_files)) {
         sertifikat = step3Data.value.sertifikat_files;
     }
-    
+
     return sertifikat.map((item: any, index: number) => ({
         ...item,
         idx: index + 1,
@@ -309,7 +297,7 @@ const dokumenList = computed(() => {
     } else if (step5Data.value.dokumen_files && Array.isArray(step5Data.value.dokumen_files)) {
         dokumen = step5Data.value.dokumen_files;
     }
-    
+
     return dokumen.map((item: any, index: number) => ({
         ...item,
         idx: index + 1,
@@ -317,17 +305,24 @@ const dokumenList = computed(() => {
     }));
 });
 
-const resolveJenisDokumen = (dokumen: any) =>
-    dokumen?.jenis_dokumen_label ||
-    dokumen?.jenis_dokumen?.nama ||
-    dokumen?.jenis_dokumen_nama ||
-    (dokumen?.jenis_dokumen_id ? `ID ${dokumen.jenis_dokumen_id}` : '-');
-
-const openPreview = (src?: string) => {
-    if (src) {
-        window.open(src, '_blank', 'noopener');
+const resolveJenisDokumen = (dokumen: any) => {
+    // Cek dari additionalData dulu (data dikirim sebagai object dengan key ID)
+    if (dokumen?.jenis_dokumen_id && props.additionalData?.jenis_dokumen) {
+        const jenisDokumen = props.additionalData.jenis_dokumen[dokumen.jenis_dokumen_id];
+        if (jenisDokumen && (jenisDokumen.nama || jenisDokumen.label)) {
+            return jenisDokumen.nama || jenisDokumen.label;
+        }
     }
+    
+    // Fallback ke data yang ada di dokumen object
+    return (
+        dokumen?.jenis_dokumen_label ||
+        dokumen?.jenis_dokumen?.nama ||
+        dokumen?.jenis_dokumen_nama ||
+        (dokumen?.jenis_dokumen_id ? `ID ${dokumen.jenis_dokumen_id}` : '-')
+    );
 };
+
 
 // Approve/Reject dialogs
 const showApproveDialog = ref(false);
@@ -385,20 +380,11 @@ const confirmReject = async () => {
         back-url="/registration-approval"
     >
         <template #custom-action>
-            <Button
-                v-if="registration.status === 'submitted'"
-                variant="default"
-                class="mr-2"
-                @click="handleApprove"
-            >
+            <Button v-if="registration.status === 'submitted'" variant="default" class="mr-2" @click="handleApprove">
                 <CheckCircle2 class="mr-2 h-4 w-4" />
                 Setujui
             </Button>
-            <Button
-                v-if="registration.status === 'submitted'"
-                variant="destructive"
-                @click="handleReject"
-            >
+            <Button v-if="registration.status === 'submitted'" variant="destructive" @click="handleReject">
                 <XCircle class="mr-2 h-4 w-4" />
                 Tolak
             </Button>
@@ -406,28 +392,28 @@ const confirmReject = async () => {
 
         <template #custom>
             <Tabs v-model="activeTab" class="w-full">
-                <TabsList class="flex flex-wrap gap-2 rounded-full bg-muted/30 p-1">
+                <TabsList class="bg-muted/30 flex flex-wrap gap-2 rounded-full p-1">
                     <TabsTrigger
                         value="data-diri"
-                        class="rounded-full px-4 py-2 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10"
+                        class="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 rounded-full px-4 py-2 text-sm font-medium transition-colors"
                     >
                         Data Diri
                     </TabsTrigger>
                     <TabsTrigger
                         value="sertifikat"
-                        class="rounded-full px-4 py-2 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10"
+                        class="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 rounded-full px-4 py-2 text-sm font-medium transition-colors"
                     >
                         Sertifikat
                     </TabsTrigger>
                     <TabsTrigger
                         value="prestasi"
-                        class="rounded-full px-4 py-2 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10"
+                        class="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 rounded-full px-4 py-2 text-sm font-medium transition-colors"
                     >
                         Prestasi
                     </TabsTrigger>
                     <TabsTrigger
                         value="dokumen"
-                        class="rounded-full px-4 py-2 text-sm font-medium transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10"
+                        class="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 rounded-full px-4 py-2 text-sm font-medium transition-colors"
                     >
                         Dokumen
                     </TabsTrigger>
@@ -441,41 +427,41 @@ const confirmReject = async () => {
                         <CardContent class="space-y-6">
                             <div class="grid gap-4 md:grid-cols-2">
                                 <div v-for="field in currentFieldConfig" :key="field.key">
-                                    <p class="text-sm text-muted-foreground">{{ field.label }}</p>
+                                    <p class="text-muted-foreground text-sm">{{ field.label }}</p>
                                     <p class="font-medium">{{ formatFieldValue(field.key, step2Data[field.key]) }}</p>
                                 </div>
                             </div>
 
                             <div v-if="kategoriPesertaLabels.length" class="space-y-2">
-                                <p class="text-sm text-muted-foreground">Kategori Peserta</p>
+                                <p class="text-muted-foreground text-sm">Kategori Peserta</p>
                                 <div class="flex flex-wrap gap-2">
                                     <span
                                         v-for="(label, index) in kategoriPesertaLabels"
                                         :key="`${label}-${index}`"
-                                        class="rounded-full bg-secondary px-3 py-1 text-sm"
+                                        class="bg-secondary rounded-full px-3 py-1 text-sm"
                                     >
                                         {{ label }}
                                     </span>
                                 </div>
                             </div>
 
-                    <div v-if="profilePhotoPreview" class="space-y-2">
-                        <p class="text-sm text-muted-foreground">Foto</p>
-                        <div class="inline-flex">
-                            <ImagePreview
-                                v-if="profilePhotoPreview.isImage && profilePhotoPreview.src"
-                                :image-url="profilePhotoPreview.src"
-                                :alt="profilePhotoPreview.name || 'Foto peserta'"
-                                size="lg"
-                            />
-                            <FilePreview
-                                v-else-if="profilePhotoPreview.src"
-                                :file-url="profilePhotoPreview.src"
-                                :file-name="profilePhotoPreview.name"
-                            />
-                            <div v-else class="text-sm text-muted-foreground">Tidak ada lampiran</div>
-                        </div>
-                    </div>
+                            <div v-if="profilePhotoPreview" class="space-y-2">
+                                <p class="text-muted-foreground text-sm">Foto</p>
+                                <div class="inline-flex">
+                                    <ImagePreview
+                                        v-if="profilePhotoPreview.isImage && profilePhotoPreview.src"
+                                        :image-url="profilePhotoPreview.src"
+                                        :alt="profilePhotoPreview.name || 'Foto peserta'"
+                                        size="lg"
+                                    />
+                                    <FilePreview
+                                        v-else-if="profilePhotoPreview.src"
+                                        :file-url="profilePhotoPreview.src"
+                                        :file-name="profilePhotoPreview.name"
+                                    />
+                                    <div v-else class="text-muted-foreground text-sm">Tidak ada lampiran</div>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -487,23 +473,27 @@ const confirmReject = async () => {
                         </CardHeader>
                         <CardContent>
                             <div v-if="sertifikatList.length" class="space-y-4">
-                                <div v-for="sertifikat in sertifikatList" :key="sertifikat.idx || sertifikat.tempId" class="space-y-3 rounded-md border p-4">
+                                <div
+                                    v-for="sertifikat in sertifikatList"
+                                    :key="sertifikat.idx || sertifikat.tempId"
+                                    class="space-y-3 rounded-md border p-4"
+                                >
                                     <div class="grid gap-4 md:grid-cols-2">
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Nama Sertifikat</p>
+                                            <p class="text-muted-foreground text-sm">Nama Sertifikat</p>
                                             <p class="font-medium">{{ sertifikat.nama_sertifikat || `Sertifikat ${sertifikat.idx}` }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Penyelenggara</p>
+                                            <p class="text-muted-foreground text-sm">Penyelenggara</p>
                                             <p class="font-medium">{{ sertifikat.penyelenggara || '-' }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Tanggal Terbit</p>
+                                            <p class="text-muted-foreground text-sm">Tanggal Terbit</p>
                                             <p class="font-medium">{{ sertifikat.tanggal_terbit || '-' }}</p>
                                         </div>
                                     </div>
                                     <div v-if="sertifikat.filePreview" class="space-y-2">
-                                        <p class="text-sm text-muted-foreground">Lampiran</p>
+                                        <p class="text-muted-foreground text-sm">Lampiran</p>
                                         <div class="inline-flex">
                                             <ImagePreview
                                                 v-if="sertifikat.filePreview.isImage && sertifikat.filePreview.src"
@@ -516,7 +506,7 @@ const confirmReject = async () => {
                                                 :file-url="sertifikat.filePreview.src"
                                                 :file-name="sertifikat.filePreview.name"
                                             />
-                                            <div v-else class="text-sm text-muted-foreground">Tidak ada lampiran</div>
+                                            <div v-else class="text-muted-foreground text-sm">Tidak ada lampiran</div>
                                         </div>
                                     </div>
                                 </div>
@@ -536,24 +526,32 @@ const confirmReject = async () => {
                                 <div v-for="(prestasi, index) in prestasiList" :key="index" class="space-y-2 rounded-md border p-4">
                                     <div class="grid gap-4 md:grid-cols-2">
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Nama Event</p>
+                                            <p class="text-muted-foreground text-sm">Nama Event</p>
                                             <p class="font-medium">{{ prestasi.nama_event || `Prestasi ${index + 1}` }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Tingkat</p>
-                                            <p class="font-medium">{{ prestasi.tingkat_label || prestasi.tingkat_id || '-' }}</p>
+                                            <p class="text-muted-foreground text-sm">Tingkat</p>
+                                            <p class="font-medium">
+                                                {{
+                                                    (prestasi.tingkat_id && props.additionalData?.tingkat?.[prestasi.tingkat_id] && 
+                                                     (props.additionalData.tingkat[prestasi.tingkat_id].nama || props.additionalData.tingkat[prestasi.tingkat_id].label)) ||
+                                                    prestasi.tingkat_label ||
+                                                    prestasi.tingkat_nama ||
+                                                    (prestasi.tingkat_id ? `ID ${prestasi.tingkat_id}` : '-')
+                                                }}
+                                            </p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Tanggal</p>
+                                            <p class="text-muted-foreground text-sm">Tanggal</p>
                                             <p class="font-medium">{{ prestasi.tanggal || '-' }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Peringkat</p>
+                                            <p class="text-muted-foreground text-sm">Peringkat</p>
                                             <p class="font-medium">{{ prestasi.peringkat || '-' }}</p>
                                         </div>
                                     </div>
                                     <div v-if="prestasi.keterangan">
-                                        <p class="text-sm text-muted-foreground">Keterangan</p>
+                                        <p class="text-muted-foreground text-sm">Keterangan</p>
                                         <p class="font-medium">{{ prestasi.keterangan }}</p>
                                     </div>
                                 </div>
@@ -573,17 +571,17 @@ const confirmReject = async () => {
                                 <div v-for="dokumen in dokumenList" :key="dokumen.idx || dokumen.tempId" class="space-y-3 rounded-md border p-4">
                                     <div class="grid gap-4 md:grid-cols-2">
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Jenis Dokumen</p>
+                                            <p class="text-muted-foreground text-sm">Jenis Dokumen</p>
                                             <p class="font-medium">{{ resolveJenisDokumen(dokumen) }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-sm text-muted-foreground">Nomor</p>
+                                            <p class="text-muted-foreground text-sm">Nomor</p>
                                             <p class="font-medium">{{ dokumen.nomor || '-' }}</p>
                                         </div>
                                     </div>
 
                                     <div v-if="dokumen.filePreview" class="space-y-2">
-                                        <p class="text-sm text-muted-foreground">Lampiran</p>
+                                        <p class="text-muted-foreground text-sm">Lampiran</p>
                                         <div class="inline-flex">
                                             <ImagePreview
                                                 v-if="dokumen.filePreview.isImage && dokumen.filePreview.src"
@@ -596,7 +594,7 @@ const confirmReject = async () => {
                                                 :file-url="dokumen.filePreview.src"
                                                 :file-name="dokumen.filePreview.name"
                                             />
-                                            <div v-else class="text-sm text-muted-foreground">Tidak ada lampiran</div>
+                                            <div v-else class="text-muted-foreground text-sm">Tidak ada lampiran</div>
                                         </div>
                                     </div>
                                 </div>
@@ -614,9 +612,7 @@ const confirmReject = async () => {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Setujui Pengajuan Registrasi</DialogTitle>
-                <DialogDescription>
-                    Apakah Anda yakin ingin menyetujui pengajuan ini?
-                </DialogDescription>
+                <DialogDescription> Apakah Anda yakin ingin menyetujui pengajuan ini? </DialogDescription>
             </DialogHeader>
             <DialogFooter>
                 <Button variant="outline" @click="showApproveDialog = false">Batal</Button>
@@ -630,19 +626,12 @@ const confirmReject = async () => {
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Tolak Pengajuan Registrasi</DialogTitle>
-                <DialogDescription>
-                    Masukkan alasan penolakan untuk pengajuan ini.
-                </DialogDescription>
+                <DialogDescription> Masukkan alasan penolakan untuk pengajuan ini. </DialogDescription>
             </DialogHeader>
             <div class="space-y-4 py-4">
                 <div>
                     <Label for="reject_reason">Alasan Penolakan *</Label>
-                    <Input
-                        id="reject_reason"
-                        v-model="rejectReason"
-                        placeholder="Masukkan alasan penolakan"
-                        class="mt-2"
-                    />
+                    <Input id="reject_reason" v-model="rejectReason" placeholder="Masukkan alasan penolakan" class="mt-2" />
                 </div>
             </div>
             <DialogFooter>
@@ -652,4 +641,3 @@ const confirmReject = async () => {
         </DialogContent>
     </Dialog>
 </template>
-

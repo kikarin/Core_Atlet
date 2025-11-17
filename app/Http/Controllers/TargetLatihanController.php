@@ -442,8 +442,8 @@ class TargetLatihanController extends Controller implements HasMiddleware
 
         // Hitung persentase performa untuk setiap data statistik
         $statistikDataWithPerforma = $statistikData->map(function ($item) use ($targetInfo) {
-            $nilaiAktual = $item->nilai ? (float) $item->nilai : null;
-            $nilaiTarget = $targetInfo && $targetInfo->nilai_target ? (float) $targetInfo->nilai_target : null;
+            $nilaiAktual  = $item->nilai ? (float) $item->nilai : null;
+            $nilaiTarget  = $targetInfo && $targetInfo->nilai_target ? (float) $targetInfo->nilai_target : null;
             $performaArah = $targetInfo && $targetInfo->performa_arah ? $targetInfo->performa_arah : 'max';
 
             $persentasePerforma = null;
@@ -464,11 +464,11 @@ class TargetLatihanController extends Controller implements HasMiddleware
             }
 
             return [
-                'peserta_id'         => $item->peserta_id,
-                'rencana_latihan_id' => $item->rencana_latihan_id,
-                'nilai'              => $item->nilai,
-                'trend'              => $item->trend,
-                'tanggal'            => $item->tanggal,
+                'peserta_id'          => $item->peserta_id,
+                'rencana_latihan_id'  => $item->rencana_latihan_id,
+                'nilai'               => $item->nilai,
+                'trend'               => $item->trend,
+                'tanggal'             => $item->tanggal,
                 'persentase_performa' => $persentasePerforma !== null ? round($persentasePerforma, 2) : null,
             ];
         });

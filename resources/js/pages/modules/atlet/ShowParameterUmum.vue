@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast/useToast';
 import axios from 'axios';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
     atletId: number;
@@ -47,12 +47,12 @@ const getPerformaColor = (persentase: number | null) => {
 // Calculate persentase performa
 const calculatePerforma = (nilai: string | null, nilaiTarget: string | null, performaArah: string) => {
     if (!nilai || !nilaiTarget) return null;
-    
+
     const nilaiAktual = parseFloat(nilai);
     const target = parseFloat(nilaiTarget);
-    
+
     if (isNaN(nilaiAktual) || isNaN(target) || target <= 0) return null;
-    
+
     if (performaArah === 'min') {
         return (target / nilaiAktual) * 100;
     } else {
@@ -105,4 +105,3 @@ const calculatePerforma = (nilai: string | null, nilaiTarget: string | null, per
         </div>
     </div>
 </template>
-

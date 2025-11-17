@@ -11,7 +11,9 @@ const { toast } = useToast();
 
 const loading = ref(false);
 const saving = ref(false);
-const parameters = ref<Array<{ id: number; nama: string; satuan: string | null; nilai_target: string | null; performa_arah: string | null; nilai: string | null }>>([]);
+const parameters = ref<
+    Array<{ id: number; nama: string; satuan: string | null; nilai_target: string | null; performa_arah: string | null; nilai: string | null }>
+>([]);
 
 const loadData = async () => {
     if (!props.atletId) return;
@@ -69,9 +71,7 @@ onMounted(loadData);
             <CardContent>
                 <div v-if="loading" class="text-muted-foreground py-8 text-center">Memuat data...</div>
                 <div v-else>
-                    <div v-if="parameters.length === 0" class="text-muted-foreground py-8 text-center">
-                        Tidak ada parameter umum di master data.
-                    </div>
+                    <div v-if="parameters.length === 0" class="text-muted-foreground py-8 text-center">Tidak ada parameter umum di master data.</div>
                     <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div v-for="p in parameters" :key="p.id" class="space-y-2">
                             <label class="text-sm font-medium">

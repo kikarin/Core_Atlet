@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Check } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const props = defineProps<{
     currentStep: number;
@@ -10,14 +10,8 @@ const props = defineProps<{
 const totalSteps = props.totalSteps ?? 5;
 
 const steps = computed(() => {
-    const stepLabels = [
-        'Pilih Jenis Peserta',
-        'Data Diri',
-        'Sertifikat',
-        'Prestasi',
-        'Dokumen',
-    ];
-    
+    const stepLabels = ['Pilih Jenis Peserta', 'Data Diri', 'Sertifikat', 'Prestasi', 'Dokumen'];
+
     return Array.from({ length: totalSteps }, (_, i) => ({
         number: i + 1,
         label: stepLabels[i] || `Step ${i + 1}`,
@@ -33,11 +27,7 @@ const steps = computed(() => {
             <!-- Progress Bar -->
             <div class="mb-8">
                 <div class="flex items-center justify-between">
-                    <div
-                        v-for="(step, index) in steps"
-                        :key="step.number"
-                        class="flex flex-1 items-center"
-                    >
+                    <div v-for="(step, index) in steps" :key="step.number" class="flex flex-1 items-center">
                         <div class="flex flex-col items-center">
                             <div
                                 class="flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors"
@@ -52,18 +42,11 @@ const steps = computed(() => {
                                 <Check v-if="step.completed" class="h-5 w-5" />
                                 <span v-else class="text-sm font-semibold">{{ step.number }}</span>
                             </div>
-                            <span
-                                class="mt-2 text-xs font-medium"
-                                :class="step.current ? 'text-primary' : 'text-muted-foreground'"
-                            >
+                            <span class="mt-2 text-xs font-medium" :class="step.current ? 'text-primary' : 'text-muted-foreground'">
                                 {{ step.label }}
                             </span>
                         </div>
-                        <div
-                            v-if="index < steps.length - 1"
-                            class="mx-2 h-0.5 flex-1"
-                            :class="step.completed ? 'bg-primary' : 'bg-muted'"
-                        />
+                        <div v-if="index < steps.length - 1" class="mx-2 h-0.5 flex-1" :class="step.completed ? 'bg-primary' : 'bg-muted'" />
                     </div>
                 </div>
             </div>
@@ -75,4 +58,3 @@ const steps = computed(() => {
         </div>
     </div>
 </template>
-

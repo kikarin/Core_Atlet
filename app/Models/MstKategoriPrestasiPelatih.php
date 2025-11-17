@@ -50,4 +50,3 @@ class MstKategoriPrestasiPelatih extends Model
         return $this->belongsTo(User::class, 'updated_by')->select(['id', 'name']);
     }
 }
-

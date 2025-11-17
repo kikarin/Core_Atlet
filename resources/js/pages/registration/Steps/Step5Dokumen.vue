@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, ArrowRight } from 'lucide-vue-next';
 import axios from 'axios';
+import { ArrowRight, Plus, Trash2 } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
     pesertaType?: string;
@@ -19,12 +19,14 @@ const emit = defineEmits<{
 }>();
 
 const step5Data = computed(() => props.registrationData?.step_5 || {});
-const dokumenList = ref<Array<{
-    tempId: number;
-    jenis_dokumen_id: number | null;
-    nomor: string;
-    file: File | null;
-}>>(step5Data.value.dokumen || []);
+const dokumenList = ref<
+    Array<{
+        tempId: number;
+        jenis_dokumen_id: number | null;
+        nomor: string;
+        file: File | null;
+    }>
+>(step5Data.value.dokumen || []);
 
 const jenisDokumenOptions = ref<{ value: number; label: string }[]>([]);
 
@@ -82,13 +84,7 @@ if (dokumenList.value.length === 0) {
             <CardHeader>
                 <div class="flex items-center justify-between">
                     <CardTitle>Dokumen {{ index + 1 }}</CardTitle>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        @click="removeDokumen(dokumen.tempId)"
-                        :disabled="dokumenList.length === 1"
-                    >
+                    <Button type="button" variant="ghost" size="icon" @click="removeDokumen(dokumen.tempId)" :disabled="dokumenList.length === 1">
                         <Trash2 class="h-4 w-4" />
                     </Button>
                 </div>
@@ -115,11 +111,7 @@ if (dokumenList.value.length === 0) {
                     </div>
                     <div>
                         <Label>File Dokumen</Label>
-                        <Input
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png,.webp"
-                            @change="(e: any) => dokumen.file = e.target.files[0]"
-                        />
+                        <Input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" @change="(e: any) => (dokumen.file = e.target.files[0])" />
                     </div>
                 </div>
             </CardContent>
@@ -138,4 +130,3 @@ if (dokumenList.value.length === 0) {
         </div>
     </div>
 </template>
-

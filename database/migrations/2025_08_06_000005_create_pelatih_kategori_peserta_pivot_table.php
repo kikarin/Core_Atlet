@@ -13,7 +13,7 @@ return new class () extends Migration {
         if (Schema::hasTable('pelatih_kategori_peserta')) {
             return;
         }
-        
+
         Schema::create('pelatih_kategori_peserta', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pelatih_id');
@@ -39,4 +39,3 @@ return new class () extends Migration {
         Schema::dropIfExists('pelatih_kategori_peserta');
     }
 };
-

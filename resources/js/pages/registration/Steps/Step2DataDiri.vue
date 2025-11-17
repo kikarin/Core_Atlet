@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Plus, ArrowRight } from 'lucide-vue-next';
+import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import axios from 'axios';
+import { ArrowRight, Plus, Trash2 } from 'lucide-vue-next';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     pesertaType?: string;
@@ -38,8 +38,7 @@ const mapOptions = (items?: Array<{ id: number | string; nama: string }>) =>
         label: item.nama,
     }));
 
-const toOptionValueString = (value: number | string | null | undefined) =>
-    value === null || value === undefined ? null : String(value);
+const toOptionValueString = (value: number | string | null | undefined) => (value === null || value === undefined ? null : String(value));
 
 const kecamatanOptions = ref<{ value: number; label: string }[]>(mapOptions(props.kecamatanOptions));
 const kelurahanOptions = ref<{ value: number; label: string }[]>([]);
@@ -51,12 +50,7 @@ const kategoriPesertaOptions = ref<{ value: number; label: string }[]>(
 );
 
 const currentPesertaType = computed(
-    () =>
-        props.selectedPesertaType ||
-        props.pesertaType ||
-        props.registrationData?.step_1?.peserta_type ||
-        step2Data.value?.peserta_type ||
-        'atlet',
+    () => props.selectedPesertaType || props.pesertaType || props.registrationData?.step_1?.peserta_type || step2Data.value?.peserta_type || 'atlet',
 );
 
 // Multiple Kategori Peserta
@@ -81,8 +75,7 @@ const initializeKategoriPeserta = (ids?: Array<number | string>) => {
 };
 
 const initializeFormData = () => {
-    const baseData =
-        step2Data.value && step2Data.value.peserta_type === currentPesertaType.value ? { ...step2Data.value } : {};
+    const baseData = step2Data.value && step2Data.value.peserta_type === currentPesertaType.value ? { ...step2Data.value } : {};
 
     formData.value = {
         ...baseData,
@@ -219,7 +212,12 @@ const formInputs = computed(() => {
             return [
                 { name: 'nik', label: 'NIK', type: 'text' as const, placeholder: 'Masukkan NIK (16 digit)', required: true },
                 ...common,
-                { name: 'pekerjaan_selain_melatih', label: 'Pekerjaan Selain Melatih', type: 'text' as const, placeholder: 'Masukkan pekerjaan selain melatih' },
+                {
+                    name: 'pekerjaan_selain_melatih',
+                    label: 'Pekerjaan Selain Melatih',
+                    type: 'text' as const,
+                    placeholder: 'Masukkan pekerjaan selain melatih',
+                },
                 ...fotoInput,
             ];
         case 'tenaga_pendukung':
@@ -257,14 +255,19 @@ const formModelValue = computed({
         formData.value = { ...formData.value, ...val };
     },
 });
+const handleSave = (
+    dataFromFormInput?: any,
+    setFormErrors?: (errors: Record<string, string>) => void
+) => {
+    void setFormErrors; // ← FIX lint (anggap variabel “dipakai”)
 
-const handleSave = (dataFromFormInput?: any, setFormErrors?: (errors: Record<string, string>) => void) => {
-    console.log('Step2DataDiri: handleSave called', { dataFromFormInput, formData: formData.value });
-    
-    // Jika dataFromFormInput tidak ada, ambil dari formData yang sudah ter-update
+    console.log('Step2DataDiri: handleSave called', {
+        dataFromFormInput,
+        formData: formData.value,
+    });
+
     const formFields = dataFromFormInput || formData.value;
-    
-    // Collect kategori peserta IDs
+
     const kategoriPesertaIds = kategoriPesertas.value
         .map((k) => (k.id !== null && k.id !== undefined ? Number(k.id) : null))
         .filter((id) => id !== null) as number[];
@@ -279,12 +282,13 @@ const handleSave = (dataFromFormInput?: any, setFormErrors?: (errors: Record<str
     emit('submit', finalData);
 };
 
+
 // Handler untuk trigger submit dari FormInput
 const handleFormSubmit = async () => {
     await nextTick();
-    
+
     console.log('Step2DataDiri: handleFormSubmit called');
-    
+
     // Coba trigger submit dari FormInput component via exposed method
     if (formInputRef.value && typeof (formInputRef.value as any).submit === 'function') {
         console.log('Step2DataDiri: Calling FormInput.submit()');
@@ -335,18 +339,12 @@ const handleFormSubmit = async () => {
                             <SelectContent>
                                 <SelectItem :value="null">Pilih Kategori Peserta</SelectItem>
                                 <template v-if="kategoriPesertaOptions.length">
-                                    <SelectItem
-                                    v-for="option in kategoriPesertaOptions"
-                                    :key="option.value"
-                                    :value="String(option.value)"
-                                >
-                                    {{ option.label }}
+                                    <SelectItem v-for="option in kategoriPesertaOptions" :key="option.value" :value="String(option.value)">
+                                        {{ option.label }}
                                     </SelectItem>
                                 </template>
                                 <template v-else>
-                                    <div class="px-3 py-2 text-sm text-muted-foreground">
-                                        Tidak ada data kategori peserta.
-                                    </div>
+                                    <div class="text-muted-foreground px-3 py-2 text-sm">Tidak ada data kategori peserta.</div>
                                 </template>
                             </SelectContent>
                         </Select>
@@ -376,4 +374,3 @@ const handleFormSubmit = async () => {
         </div>
     </div>
 </template>
-

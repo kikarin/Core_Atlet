@@ -31,9 +31,27 @@ class RegistrationStepController extends Controller
     public function index(Request $request): Response
     {
         $user = Auth::user();
-        
-        if (!$user || $user->registration_status !== 'pending') {
+
+        if (!$user) {
             return redirect()->route('register');
+        }
+
+        // Check if user is in registration process (pending atau belum approved)
+        // User yang baru register akan memiliki registration_status = 'pending' atau null
+        // User yang sudah submit akan memiliki registration dengan status != 'approved'
+        $hasPendingRegistration = PesertaRegistration::where('user_id', $user->id)
+            ->where('status', '!=', 'approved')
+            ->exists();
+
+        // Jika user sudah approved atau tidak ada registration pending, redirect ke register
+        if (!$hasPendingRegistration && $user->registration_status !== 'pending' && $user->is_active === 1) {
+            // User sudah approved dan aktif, redirect ke dashboard
+            return redirect()->route('dashboard');
+        }
+
+        // Jika user belum punya registration_status = 'pending', set it
+        if ($user->registration_status !== 'pending' && !$hasPendingRegistration) {
+            $user->update(['registration_status' => 'pending']);
         }
 
         $step = (int) $request->get('step', 1);
@@ -50,17 +68,17 @@ class RegistrationStepController extends Controller
         }
 
         $data = [
-            'step' => $step,
-            'registration' => $registration,
+            'step'             => $step,
+            'registration'     => $registration,
             'registrationData' => $registration?->data_json ?? [],
         ];
 
         // Load data tambahan berdasarkan step
         if ($step === 2 && $registration) {
             // Load master data untuk form (kecamatan, kelurahan, kategori peserta, dll)
-            $data['kecamatanOptions'] = \App\Models\MstKecamatan::select('id', 'nama')->orderBy('nama')->get();
+            $data['kecamatanOptions']       = \App\Models\MstKecamatan::select('id', 'nama')->orderBy('nama')->get();
             $data['kategoriPesertaOptions'] = \App\Models\MstKategoriPeserta::select('id', 'nama')->orderBy('nama')->get();
-            
+
             if ($registration->peserta_type === 'atlet') {
                 // Load parameter umum master untuk atlet
                 $data['parameterUmumMaster'] = \App\Models\MstParameter::where('kategori', 'umum')->get();
@@ -76,19 +94,19 @@ class RegistrationStepController extends Controller
     public function storeStep1(RegistrationStep1Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
 
         try {
             $pesertaType = $request->validated()['peserta_type'];
-            
+
             $registration = $this->repository->getOrCreateRegistration($user, $pesertaType);
             $this->repository->saveStepData($registration, 1, ['peserta_type' => $pesertaType]);
 
             Log::info('RegistrationStepController: Step 1 completed', [
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'peserta_type' => $pesertaType,
             ]);
 
@@ -111,7 +129,7 @@ class RegistrationStepController extends Controller
     public function storeStep2(RegistrationStep2Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
@@ -122,7 +140,7 @@ class RegistrationStepController extends Controller
                 ->firstOrFail();
 
             $data = $request->validated();
-            
+
             // Handle file upload jika ada
             if ($request->hasFile('file')) {
                 $data['file'] = $request->file('file');
@@ -131,7 +149,7 @@ class RegistrationStepController extends Controller
             $this->repository->saveStepData($registration, 2, $data);
 
             Log::info('RegistrationStepController: Step 2 completed', [
-                'user_id' => $user->id,
+                'user_id'         => $user->id,
                 'registration_id' => $registration->id,
             ]);
 
@@ -154,7 +172,7 @@ class RegistrationStepController extends Controller
     public function storeStep3(RegistrationStep3Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
@@ -165,7 +183,7 @@ class RegistrationStepController extends Controller
                 ->firstOrFail();
 
             $data = $request->validated();
-            
+
             // Handle multiple file uploads untuk sertifikat
             // Data dari frontend bisa berupa: sertifikat[0][nama_sertifikat], sertifikat[0][file], dll
             $sertifikatFiles = [];
@@ -178,25 +196,25 @@ class RegistrationStepController extends Controller
                     } elseif ($request->hasFile("sertifikat.{$index}.file")) {
                         $file = $request->file("sertifikat.{$index}.file");
                     }
-                    
+
                     if ($file) {
                         $sertifikatFiles[] = [
-                            'file' => $file,
+                            'file'            => $file,
                             'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                            'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                            'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
+                            'penyelenggara'   => $sertifikat['penyelenggara']   ?? null,
+                            'tanggal_terbit'  => $sertifikat['tanggal_terbit']  ?? null,
                         ];
                     } elseif (isset($sertifikat['nama_sertifikat']) && !empty($sertifikat['nama_sertifikat'])) {
                         // Include sertifikat without file (for existing data)
                         $sertifikatFiles[] = [
                             'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                            'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                            'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
+                            'penyelenggara'   => $sertifikat['penyelenggara']   ?? null,
+                            'tanggal_terbit'  => $sertifikat['tanggal_terbit']  ?? null,
                         ];
                     }
                 }
             }
-            
+
             if (!empty($sertifikatFiles)) {
                 $data['sertifikat_files'] = $sertifikatFiles;
             }
@@ -222,7 +240,7 @@ class RegistrationStepController extends Controller
     public function storeStep4(RegistrationStep4Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
@@ -254,7 +272,7 @@ class RegistrationStepController extends Controller
     public function storeStep5(RegistrationStep5Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
@@ -265,7 +283,7 @@ class RegistrationStepController extends Controller
                 ->firstOrFail();
 
             $data = $request->validated();
-            
+
             // Handle multiple file uploads untuk dokumen
             // Data dari frontend bisa berupa: dokumen[0][jenis_dokumen_id], dokumen[0][file], dll
             $dokumenFiles = [];
@@ -278,23 +296,23 @@ class RegistrationStepController extends Controller
                     } elseif ($request->hasFile("dokumen.{$index}.file")) {
                         $file = $request->file("dokumen.{$index}.file");
                     }
-                    
+
                     if ($file) {
                         $dokumenFiles[] = [
-                            'file' => $file,
+                            'file'             => $file,
                             'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                            'nomor' => $dokumen['nomor'] ?? null,
+                            'nomor'            => $dokumen['nomor']            ?? null,
                         ];
                     } elseif (isset($dokumen['jenis_dokumen_id']) || isset($dokumen['nomor'])) {
                         // Include dokumen without file (for existing data)
                         $dokumenFiles[] = [
                             'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                            'nomor' => $dokumen['nomor'] ?? null,
+                            'nomor'            => $dokumen['nomor']            ?? null,
                         ];
                     }
                 }
             }
-            
+
             if (!empty($dokumenFiles)) {
                 $data['dokumen_files'] = $dokumenFiles;
             }
@@ -320,7 +338,7 @@ class RegistrationStepController extends Controller
     public function submit(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return redirect()->route('register');
         }
@@ -345,7 +363,7 @@ class RegistrationStepController extends Controller
             $request->session()->regenerateToken();
 
             Log::info('RegistrationStepController: Registration submitted', [
-                'user_id' => $user->id,
+                'user_id'         => $user->id,
                 'registration_id' => $registration->id,
             ]);
 
@@ -367,7 +385,7 @@ class RegistrationStepController extends Controller
     public function saveDraft(Request $request, int $step)
     {
         $user = Auth::user();
-        
+
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }

@@ -10,14 +10,17 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PesertaRegistration extends Model implements HasMedia
 {
-    use HasFactory, Blameable, SoftDeletes, LogsActivity, InteractsWithMedia;
-    
+    use HasFactory;
+    use Blameable;
+    use SoftDeletes;
+    use LogsActivity;
+    use InteractsWithMedia;
+
     protected $guarded = [];
-    protected $table = 'peserta_registrations';
+    protected $table   = 'peserta_registrations';
 
     protected $fillable = [
         'user_id',
@@ -29,7 +32,7 @@ class PesertaRegistration extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'data_json' => 'array',
+        'data_json'    => 'array',
         'step_current' => 'integer',
     ];
 

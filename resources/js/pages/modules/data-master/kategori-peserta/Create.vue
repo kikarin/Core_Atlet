@@ -14,4 +14,3 @@ const breadcrumbs = [
         <Form mode="create" />
     </PageCreate>
 </template>
-

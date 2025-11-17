@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, ArrowRight } from 'lucide-vue-next';
+import { ArrowRight, Plus, Trash2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     pesertaType?: string;
@@ -17,13 +17,15 @@ const emit = defineEmits<{
 }>();
 
 const step3Data = computed(() => props.registrationData?.step_3 || {});
-const sertifikatList = ref<Array<{
-    tempId: number;
-    nama_sertifikat: string;
-    penyelenggara: string;
-    tanggal_terbit: string;
-    file: File | null;
-}>>(step3Data.value.sertifikat || []);
+const sertifikatList = ref<
+    Array<{
+        tempId: number;
+        nama_sertifikat: string;
+        penyelenggara: string;
+        tanggal_terbit: string;
+        file: File | null;
+    }>
+>(step3Data.value.sertifikat || []);
 
 let tempIdCounter = 0;
 
@@ -99,11 +101,7 @@ if (sertifikatList.value.length === 0) {
                     </div>
                     <div>
                         <Label>File Sertifikat</Label>
-                        <Input
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png,.webp"
-                            @change="(e: any) => sertifikat.file = e.target.files[0]"
-                        />
+                        <Input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" @change="(e: any) => (sertifikat.file = e.target.files[0])" />
                     </div>
                 </div>
             </CardContent>
@@ -122,4 +120,3 @@ if (sertifikatList.value.length === 0) {
         </div>
     </div>
 </template>
-

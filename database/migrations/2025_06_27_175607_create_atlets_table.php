@@ -24,7 +24,7 @@ return new class () extends Migration {
             $table->text('sekolah')->nullable();
             $table->text('kelas_sekolah')->nullable();
             $table->text('ukuran_baju')->nullable();
-            $table->text('ukuran_celana')->nullable();            
+            $table->text('ukuran_celana')->nullable();
             $table->text('ukuran_sepatu')->nullable();
             $table->unsignedBigInteger('kecamatan_id')->nullable();
             $table->unsignedBigInteger('kelurahan_id')->nullable();

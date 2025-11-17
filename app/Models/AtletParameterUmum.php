@@ -46,4 +46,3 @@ class AtletParameterUmum extends Model
             ->setDescriptionForEvent(fn (string $eventName) => 'Atlet Parameter Umum');
     }
 }
-

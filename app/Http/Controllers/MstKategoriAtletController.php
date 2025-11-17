@@ -154,4 +154,3 @@ class MstKategoriAtletController extends Controller implements HasMiddleware
         return inertia('modules/data-master/kategori-atlet/Edit', $data);
     }
 }
-

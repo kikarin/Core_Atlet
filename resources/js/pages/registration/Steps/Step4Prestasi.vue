@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, ArrowRight } from 'lucide-vue-next';
 import axios from 'axios';
+import { ArrowRight, Plus, Trash2 } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
     pesertaType?: string;
@@ -19,15 +19,17 @@ const emit = defineEmits<{
 }>();
 
 const step4Data = computed(() => props.registrationData?.step_4 || {});
-const prestasiList = ref<Array<{
-    tempId: number;
-    nama_event: string;
-    tingkat_id: number | null;
-    tanggal: string;
-    peringkat: string;
-    keterangan: string;
-    kategori_prestasi_pelatih_id?: number | null;
-}>>(step4Data.value.prestasi || []);
+const prestasiList = ref<
+    Array<{
+        tempId: number;
+        nama_event: string;
+        tingkat_id: number | null;
+        tanggal: string;
+        peringkat: string;
+        keterangan: string;
+        kategori_prestasi_pelatih_id?: number | null;
+    }>
+>(step4Data.value.prestasi || []);
 
 const tingkatOptions = ref<{ value: number; label: string }[]>([]);
 const kategoriPrestasiOptions = ref<{ value: number; label: string }[]>([]);
@@ -77,9 +79,7 @@ const handleSubmit = () => {
             tanggal: p.tanggal,
             peringkat: p.peringkat,
             keterangan: p.keterangan,
-            ...(props.pesertaType === 'pelatih'
-                ? { kategori_prestasi_pelatih_id: p.kategori_prestasi_pelatih_id }
-                : {}),
+            ...(props.pesertaType === 'pelatih' ? { kategori_prestasi_pelatih_id: p.kategori_prestasi_pelatih_id } : {}),
         })),
     };
     emit('submit', data);
@@ -101,13 +101,7 @@ if (prestasiList.value.length === 0) {
             <CardHeader>
                 <div class="flex items-center justify-between">
                     <CardTitle>Prestasi {{ index + 1 }}</CardTitle>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        @click="removePrestasi(prestasi.tempId)"
-                        :disabled="prestasiList.length === 1"
-                    >
+                    <Button type="button" variant="ghost" size="icon" @click="removePrestasi(prestasi.tempId)" :disabled="prestasiList.length === 1">
                         <Trash2 class="h-4 w-4" />
                     </Button>
                 </div>
@@ -152,11 +146,7 @@ if (prestasiList.value.length === 0) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem :value="null">Pilih Kategori Prestasi</SelectItem>
-                                <SelectItem
-                                    v-for="option in kategoriPrestasiOptions"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
+                                <SelectItem v-for="option in kategoriPrestasiOptions" :key="option.value" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>
@@ -179,4 +169,3 @@ if (prestasiList.value.length === 0) {
         </div>
     </div>
 </template>
-

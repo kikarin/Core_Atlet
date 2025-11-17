@@ -97,4 +97,3 @@ const deleteRow = async (row: any) => {
         />
     </div>
 </template>
-

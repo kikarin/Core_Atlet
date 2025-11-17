@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/toast/useToast';
 import { router, useForm } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
+import { computed, onMounted, ref, watch } from 'vue';
 import RegistrationLayout from '../RegistrationLayout.vue';
 import Step1SelectPeserta from './Step1SelectPeserta.vue';
 import Step2DataDiri from './Step2DataDiri.vue';
 import Step3Sertifikat from './Step3Sertifikat.vue';
 import Step4Prestasi from './Step4Prestasi.vue';
 import Step5Dokumen from './Step5Dokumen.vue';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, LoaderCircle } from 'lucide-vue-next';
-import { useToast } from '@/components/ui/toast/useToast';
 
 const { toast } = useToast();
+
+const showConfirmDialog = ref(false);
 
 const props = defineProps<{
     step: number;
@@ -48,11 +51,7 @@ const kecamatanMap = computed<Record<number, string>>(() => {
     return map;
 });
 
-const selectedPesertaType = ref<string | null>(
-    props.registration?.peserta_type ||
-        registrationData.value?.step_1?.peserta_type ||
-        null,
-);
+const selectedPesertaType = ref<string | null>(props.registration?.peserta_type || registrationData.value?.step_1?.peserta_type || null);
 
 watch(
     () => registrationData.value?.step_1?.peserta_type,
@@ -117,7 +116,7 @@ const finalizeRegistration = () => {
 
 const handleStepSubmit = async (step: number, data: StepPayload) => {
     console.log(`Steps/Index: handleStepSubmit called for step ${step}`, data);
-    
+
     // Save draft to localStorage (without files)
     const draftData = { ...data };
     if (step === 3 && draftData.sertifikat) {
@@ -138,9 +137,9 @@ const handleStepSubmit = async (step: number, data: StepPayload) => {
     // Inertia will automatically convert to FormData when files are present
     const form = useForm(data);
     const routeName = `registration.steps.${step}` as any;
-    
+
     console.log(`Steps/Index: Submitting to route ${routeName}`, form.data());
-    
+
     form.post(route(routeName), {
         preserveState: true,
         preserveScroll: true,
@@ -148,11 +147,12 @@ const handleStepSubmit = async (step: number, data: StepPayload) => {
             console.log(`Steps/Index: Step ${step} submitted successfully`);
             // Clear draft after successful submit
             localStorage.removeItem(`registration_draft_step_${step}`);
-            
+
             if (step < 5) {
                 goToStep(step + 1);
             } else {
-                finalizeRegistration();
+                // Show confirmation dialog before finalizing registration
+                showConfirmDialog.value = true;
             }
         },
         onError: (errors: Record<string, string>) => {
@@ -165,11 +165,17 @@ const handleStepSubmit = async (step: number, data: StepPayload) => {
     });
 };
 
+const confirmFinalize = () => {
+    showConfirmDialog.value = false;
+    finalizeRegistration();
+};
+
 const handleSkip = (step: number) => {
     // Save empty data untuk step yang di-skip
     saveDraftToLocalStorage(step, {});
     if (step >= 5) {
-        finalizeRegistration();
+        // Show confirmation dialog before finalizing registration
+        showConfirmDialog.value = true;
     } else {
         goToStep(step + 1);
     }
@@ -181,10 +187,6 @@ const handleBack = () => {
     }
 };
 
-const handleNext = () => {
-    // Trigger submit dari child component
-    // Child component akan emit event untuk submit
-};
 
 const handleStep1Submit = (data: { peserta_type: string }) => {
     selectedPesertaType.value = data.peserta_type;
@@ -228,11 +230,14 @@ onMounted(() => {
 });
 
 // Clear draft setelah submit final
-watch(() => props.registration?.status, (newStatus) => {
-    if (newStatus === 'submitted') {
-        clearDraftFromLocalStorage();
-    }
-});
+watch(
+    () => props.registration?.status,
+    (newStatus) => {
+        if (newStatus === 'submitted') {
+            clearDraftFromLocalStorage();
+        }
+    },
+);
 </script>
 
 <template>
@@ -240,12 +245,8 @@ watch(() => props.registration?.status, (newStatus) => {
         <div class="space-y-6">
             <!-- Step Content -->
             <div>
-                <Step1SelectPeserta
-                    v-if="currentStep === 1"
-                    :registration-data="resolvedRegistrationData"
-                    @submit="handleStep1Submit"
-                />
-                
+                <Step1SelectPeserta v-if="currentStep === 1" :registration-data="resolvedRegistrationData" @submit="handleStep1Submit" />
+
                 <Step2DataDiri
                     v-else-if="currentStep === 2"
                     :peserta-type="registration?.peserta_type"
@@ -256,7 +257,7 @@ watch(() => props.registration?.status, (newStatus) => {
                     :parameter-umum-master="parameterUmumMaster"
                     @submit="handleStep2Submit"
                 />
-                
+
                 <Step3Sertifikat
                     v-else-if="currentStep === 3"
                     :peserta-type="registration?.peserta_type"
@@ -264,7 +265,7 @@ watch(() => props.registration?.status, (newStatus) => {
                     @submit="handleStep3Submit"
                     @skip="() => handleSkip(3)"
                 />
-                
+
                 <Step4Prestasi
                     v-else-if="currentStep === 4"
                     :peserta-type="registration?.peserta_type"
@@ -272,7 +273,7 @@ watch(() => props.registration?.status, (newStatus) => {
                     @submit="handleStep4Submit"
                     @skip="() => handleSkip(4)"
                 />
-                
+
                 <Step5Dokumen
                     v-else-if="currentStep === 5"
                     :peserta-type="registration?.peserta_type"
@@ -280,34 +281,46 @@ watch(() => props.registration?.status, (newStatus) => {
                     @submit="handleStep5Submit"
                     @skip="() => handleSkip(5)"
                 />
-                
             </div>
 
             <!-- Navigation Buttons -->
             <div class="flex items-center justify-between border-t pt-6">
-                <Button
-                    v-if="currentStep > 1"
-                    type="button"
-                    variant="outline"
-                    @click="handleBack"
-                >
+                <Button v-if="currentStep > 1" type="button" variant="outline" @click="handleBack">
                     <ArrowLeft class="mr-2 h-4 w-4" />
                     Kembali
                 </Button>
                 <div v-else></div>
-                
+
                 <div class="flex gap-2">
-                    <Button
-                        v-if="currentStep >= 3 && currentStep <= 5"
-                        type="button"
-                        variant="ghost"
-                        @click="handleSkip(currentStep)"
-                    >
+                    <Button v-if="currentStep >= 3 && currentStep <= 5" type="button" variant="ghost" @click="handleSkip(currentStep)">
                         Lewati
                     </Button>
                 </div>
             </div>
         </div>
+
+        <!-- Konfirmasi Pengajuan Dialog -->
+        <Dialog v-model:open="showConfirmDialog">
+            <DialogContent class="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Konfirmasi Pengajuan Registrasi</DialogTitle>
+                    <DialogDescription class="space-y-3 pt-2">
+                        <p>Apakah Anda yakin ingin mengajukan registrasi ini?</p>
+                        <div class="bg-muted rounded-lg p-3 text-sm">
+                            <p class="mb-2 font-medium">Dengan mengajukan registrasi, Anda menyetujui bahwa:</p>
+                            <ul class="text-muted-foreground list-inside list-disc space-y-1">
+                                <li>Semua data yang diberikan adalah benar dan dapat dipertanggungjawabkan</li>
+                                <li>Data yang salah atau tidak valid dapat menyebabkan pengajuan ditolak</li>
+                                <li>Data ini akan digunakan untuk keperluan administrasi dan verifikasi peserta</li>
+                            </ul>
+                        </div>
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant="outline" @click="showConfirmDialog = false"> Batal </Button>
+                    <Button @click="confirmFinalize"> Ya, Ajukan Pendaftaran </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </RegistrationLayout>
 </template>
-

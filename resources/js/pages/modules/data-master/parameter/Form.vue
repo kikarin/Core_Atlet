@@ -89,9 +89,12 @@ const formInputs = computed(() => {
 });
 
 // Watch kategori untuk update form inputs
-watch(() => formData.value.kategori, (newVal) => {
-    kategori.value = newVal;
-});
+watch(
+    () => formData.value.kategori,
+    (newVal) => {
+        kategori.value = newVal;
+    },
+);
 
 // Handle field update dari FormInput
 const handleFieldUpdate = ({ field, value }: { field: string; value: any }) => {
@@ -129,11 +132,11 @@ const handleSave = (form: any) => {
 </script>
 
 <template>
-    <FormInput 
+    <FormInput
         :key="`parameter-form-${kategori}`"
-        :form-inputs="formInputs" 
-        :initial-data="formData" 
-        @save="handleSave" 
-        @field-updated="handleFieldUpdate" 
+        :form-inputs="formInputs"
+        :initial-data="formData"
+        @save="handleSave"
+        @field-updated="handleFieldUpdate"
     />
 </template>

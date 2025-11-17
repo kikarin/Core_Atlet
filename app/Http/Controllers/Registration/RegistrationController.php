@@ -7,9 +7,7 @@ use App\Http\Helpers\RecaptchaHelper;
 use App\Models\User;
 use App\Repositories\RegistrationRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
@@ -29,12 +27,12 @@ class RegistrationController extends Controller
     public function create(): Response
     {
         $recaptchaSiteKey = config('services.recaptcha.site_key');
-        
+
         // Debug: Log if key is missing
         if (empty($recaptchaSiteKey)) {
             \Log::warning('reCAPTCHA Site Key is not configured. Please check your .env file.');
         }
-        
+
         return Inertia::render('registration/Register', [
             'recaptchaSiteKey' => $recaptchaSiteKey ?: null,
         ]);
@@ -47,7 +45,7 @@ class RegistrationController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email'    => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
 
@@ -70,19 +68,22 @@ class RegistrationController extends Controller
 
         try {
             $user = $this->repository->createRegistrationUser([
-                'email' => $request->email,
+                'email'    => $request->email,
                 'password' => $request->password,
-                'name' => $request->email, // Temporary, akan diupdate di step 2
+                'name'     => $request->email, // Temporary, akan diupdate di step 2
             ]);
 
             // Login user untuk session (tapi is_active = 0, jadi tidak bisa akses dashboard)
             auth()->login($user);
 
+            // Clear any intended URL to prevent redirect to dashboard
+            session()->forget('url.intended');
+
             Log::info('RegistrationController: User registered, redirecting to steps', [
                 'user_id' => $user->id,
             ]);
 
-            return redirect()->route('registration.steps', ['step' => 1]);
+            return redirect()->route('registration.steps', ['step' => 1])->with('success', 'Registrasi berhasil! Silakan lengkapi data Anda.');
         } catch (\Exception $e) {
             Log::error('RegistrationController: Error creating registration user', [
                 'error' => $e->getMessage(),

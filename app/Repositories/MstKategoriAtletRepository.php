@@ -141,4 +141,3 @@ class MstKategoriAtletRepository
         return $request->validate($rules, $messages);
     }
 }
-

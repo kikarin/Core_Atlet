@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import FilterModal from '@/components/FilterModal.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import PageIndex from '@/pages/modules/base-page/PageIndex.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { ref } from 'vue';
-import { CheckCircle2, XCircle, Eye } from 'lucide-vue-next';
 
 const breadcrumbs = [{ title: 'Persetujuan Registrasi', href: '/registration-approval' }];
 
@@ -27,8 +25,8 @@ const columns = [
         format: (row: any) => {
             const statusColors: Record<string, string> = {
                 'Menunggu Persetujuan': 'bg-yellow-100 text-yellow-800',
-                'Disetujui': 'bg-green-100 text-green-800',
-                'Ditolak': 'bg-red-100 text-red-800',
+                Disetujui: 'bg-green-100 text-green-800',
+                Ditolak: 'bg-red-100 text-red-800',
             };
             const color = statusColors[row.status_label] || 'bg-gray-100 text-gray-800';
             return `<span class="px-2 py-1 text-xs font-semibold rounded-full ${color}">${row.status_label}</span>`;
@@ -122,7 +120,7 @@ const confirmReject = async () => {
         toast({ title: 'Pilih data yang akan ditolak', variant: 'destructive' });
         return;
     }
-    
+
     if (!rejectReason.value.trim()) {
         toast({ title: 'Alasan penolakan wajib diisi', variant: 'destructive' });
         return;
@@ -308,12 +306,7 @@ const resetFilters = () => {
             <div class="space-y-4 py-4">
                 <div>
                     <Label for="reject_reason">Alasan Penolakan *</Label>
-                    <Input
-                        id="reject_reason"
-                        v-model="rejectReason"
-                        placeholder="Masukkan alasan penolakan"
-                        class="mt-2"
-                    />
+                    <Input id="reject_reason" v-model="rejectReason" placeholder="Masukkan alasan penolakan" class="mt-2" />
                 </div>
             </div>
             <DialogFooter>
@@ -323,4 +316,3 @@ const resetFilters = () => {
         </DialogContent>
     </Dialog>
 </template>
-

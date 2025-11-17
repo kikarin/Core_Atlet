@@ -154,4 +154,3 @@ class MstKategoriPrestasiPelatihController extends Controller implements HasMidd
         return inertia('modules/data-master/kategori-prestasi-pelatih/Edit', $data);
     }
 }
-

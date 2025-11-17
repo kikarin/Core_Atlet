@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\PesertaRegistration;
 use App\Models\User;
 use App\Traits\RepositoryTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +18,7 @@ class RegistrationRepository
     public function __construct(PesertaRegistration $model)
     {
         $this->model = $model;
-        $this->with = ['user'];
+        $this->with  = ['user'];
     }
 
     /**
@@ -29,17 +28,17 @@ class RegistrationRepository
     {
         return DB::transaction(function () use ($data) {
             $user = User::create([
-                'name' => $data['name'] ?? $data['email'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'is_active' => 0, // Belum bisa login sampai approved
+                'name'                => $data['name'] ?? $data['email'],
+                'email'               => $data['email'],
+                'password'            => Hash::make($data['password']),
+                'is_active'           => 0, // Belum bisa login sampai approved
                 'registration_status' => 'pending',
-                'current_role_id' => null,
+                'current_role_id'     => null,
             ]);
 
             Log::info('RegistrationRepository: User created for registration', [
                 'user_id' => $user->id,
-                'email' => $user->email,
+                'email'   => $user->email,
             ]);
 
             return $user;
@@ -57,11 +56,11 @@ class RegistrationRepository
 
         if (!$registration) {
             $registration = PesertaRegistration::create([
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'peserta_type' => $pesertaType,
                 'step_current' => 1,
-                'status' => 'draft',
-                'data_json' => [],
+                'status'       => 'draft',
+                'data_json'    => [],
             ]);
         }
 
@@ -74,7 +73,7 @@ class RegistrationRepository
     public function saveStepData(PesertaRegistration $registration, int $step, array $data): PesertaRegistration
     {
         $currentData = $registration->data_json ?? [];
-        
+
         // Handle file uploads untuk step 2 (profile photo)
         if ($step === 2 && isset($data['file']) && $data['file'] instanceof \Illuminate\Http\UploadedFile) {
             $registration->clearMediaCollection('profile_photo');
@@ -93,13 +92,13 @@ class RegistrationRepository
                     $media = $registration->addMedia($sertifikat['file'])
                         ->usingName($sertifikat['nama_sertifikat'] ?? "Sertifikat {$index}")
                         ->toMediaCollection('sertifikat_files');
-                    
+
                     $sertifikatData[] = [
                         'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                        'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                        'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
-                        'file_url' => $media->getUrl(),
-                        'media_id' => $media->id,
+                        'penyelenggara'   => $sertifikat['penyelenggara']   ?? null,
+                        'tanggal_terbit'  => $sertifikat['tanggal_terbit']  ?? null,
+                        'file_url'        => $media->getUrl(),
+                        'media_id'        => $media->id,
                     ];
                 }
             }
@@ -115,12 +114,12 @@ class RegistrationRepository
                     $media = $registration->addMedia($dokumen['file'])
                         ->usingName($dokumen['nomor'] ?? "Dokumen {$index}")
                         ->toMediaCollection('dokumen_files');
-                    
+
                     $dokumenData[] = [
                         'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                        'nomor' => $dokumen['nomor'] ?? null,
-                        'file_url' => $media->getUrl(),
-                        'media_id' => $media->id,
+                        'nomor'            => $dokumen['nomor']            ?? null,
+                        'file_url'         => $media->getUrl(),
+                        'media_id'         => $media->id,
                     ];
                 }
             }
@@ -129,10 +128,10 @@ class RegistrationRepository
         }
 
         $currentData["step_{$step}"] = $data;
-        
+
         $registration->update([
             'step_current' => $step,
-            'data_json' => $currentData,
+            'data_json'    => $currentData,
         ]);
 
         return $registration->fresh();
@@ -155,7 +154,7 @@ class RegistrationRepository
 
             Log::info('RegistrationRepository: Registration submitted', [
                 'registration_id' => $registration->id,
-                'user_id' => $registration->user_id,
+                'user_id'         => $registration->user_id,
             ]);
 
             return $registration->fresh();
@@ -168,36 +167,36 @@ class RegistrationRepository
     public function approveRegistration(PesertaRegistration $registration, int $approvedBy): array
     {
         return DB::transaction(function () use ($registration, $approvedBy) {
-            $data = $registration->data_json;
+            $data        = $registration->data_json;
             $pesertaType = $registration->peserta_type;
-            $user = $registration->user;
+            $user        = $registration->user;
 
             // Create peserta record berdasarkan type
             $pesertaId = null;
-            $roleId = null;
+            $roleId    = null;
 
-                switch ($pesertaType) {
-                    case 'atlet':
-                        $pesertaId = $this->createAtlet($data, $user->id, $approvedBy, $registration);
-                        $roleId = 35; // Role ID Atlet
-                        break;
-                    case 'pelatih':
-                        $pesertaId = $this->createPelatih($data, $user->id, $approvedBy, $registration);
-                        $roleId = 36; // Role ID Pelatih
-                        break;
-                    case 'tenaga_pendukung':
-                        $pesertaId = $this->createTenagaPendukung($data, $user->id, $approvedBy, $registration);
-                        $roleId = 37; // Role ID Tenaga Pendukung
-                        break;
-                }
+            switch ($pesertaType) {
+                case 'atlet':
+                    $pesertaId = $this->createAtlet($data, $user->id, $approvedBy, $registration);
+                    $roleId    = 35; // Role ID Atlet
+                    break;
+                case 'pelatih':
+                    $pesertaId = $this->createPelatih($data, $user->id, $approvedBy, $registration);
+                    $roleId    = 36; // Role ID Pelatih
+                    break;
+                case 'tenaga_pendukung':
+                    $pesertaId = $this->createTenagaPendukung($data, $user->id, $approvedBy, $registration);
+                    $roleId    = 37; // Role ID Tenaga Pendukung
+                    break;
+            }
 
             // Update user
             $user->update([
                 'registration_status' => 'approved',
-                'is_active' => 1,
-                'current_role_id' => $roleId,
-                'peserta_type' => $pesertaType,
-                'peserta_id' => $pesertaId,
+                'is_active'           => 1,
+                'current_role_id'     => $roleId,
+                'peserta_type'        => $pesertaType,
+                'peserta_id'          => $pesertaId,
             ]);
 
             // Update registration
@@ -207,14 +206,14 @@ class RegistrationRepository
 
             Log::info('RegistrationRepository: Registration approved', [
                 'registration_id' => $registration->id,
-                'user_id' => $user->id,
-                'peserta_id' => $pesertaId,
-                'peserta_type' => $pesertaType,
+                'user_id'         => $user->id,
+                'peserta_id'      => $pesertaId,
+                'peserta_type'    => $pesertaType,
             ]);
 
             return [
-                'user' => $user,
-                'peserta_id' => $pesertaId,
+                'user'         => $user,
+                'peserta_id'   => $pesertaId,
                 'peserta_type' => $pesertaType,
             ];
         });
@@ -227,19 +226,19 @@ class RegistrationRepository
     {
         DB::transaction(function () use ($registration, $reason, $rejectedBy) {
             $registration->update([
-                'status' => 'rejected',
+                'status'          => 'rejected',
                 'rejected_reason' => $reason,
             ]);
 
             $registration->user->update([
-                'registration_status' => 'rejected',
+                'registration_status'          => 'rejected',
                 'registration_rejected_reason' => $reason,
             ]);
 
             Log::info('RegistrationRepository: Registration rejected', [
                 'registration_id' => $registration->id,
-                'user_id' => $registration->user_id,
-                'reason' => $reason,
+                'user_id'         => $registration->user_id,
+                'reason'          => $reason,
             ]);
         });
     }
@@ -250,20 +249,20 @@ class RegistrationRepository
     private function createAtlet(array $data, int $userId, int $createdBy, PesertaRegistration $registration): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         // Handle profile photo dari media library registration
         $profileMedia = $registration->getFirstMedia('profile_photo');
-        
+
         $atletData = array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]);
-        
+
         // Remove file_url from data karena akan diproses via media library
         unset($atletData['file_url'], $atletData['file']);
-        
+
         $atlet = \App\Models\Atlet::create($atletData);
 
         // Handle profile photo upload - selalu gunakan path file dari media library
@@ -286,12 +285,12 @@ class RegistrationRepository
             $sertifikatMedia = $registration->getMedia('sertifikat_files');
             foreach ($data['step_3']['sertifikat'] as $index => $sertifikat) {
                 $sertifikatRecord = \App\Models\AtletSertifikat::create([
-                    'atlet_id' => $atlet->id,
+                    'atlet_id'        => $atlet->id,
                     'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                    'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                    'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'penyelenggara'   => $sertifikat['penyelenggara']   ?? null,
+                    'tanggal_terbit'  => $sertifikat['tanggal_terbit']  ?? null,
+                    'created_by'      => $createdBy,
+                    'updated_by'      => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke sertifikat media
@@ -299,12 +298,12 @@ class RegistrationRepository
                 if (isset($sertifikat['media_id'])) {
                     $sourceMedia = $sertifikatMedia->where('id', $sertifikat['media_id'])->first();
                 }
-                
+
                 // Jika tidak ada media_id, coba ambil berdasarkan index
                 if (!$sourceMedia && $sertifikatMedia->count() > $index) {
                     $sourceMedia = $sertifikatMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $sertifikatRecord->addMedia($sourceMedia->getPath())
                         ->usingName($sertifikat['nama_sertifikat'] ?? "Sertifikat {$index}")
@@ -321,14 +320,14 @@ class RegistrationRepository
             // Jika step_4 adalah array langsung
             $prestasiData = $data['step_4'];
         }
-        
+
         foreach ($prestasiData as $prestasi) {
             \App\Models\AtletPrestasi::create([
-                'atlet_id' => $atlet->id,
+                'atlet_id'   => $atlet->id,
                 'nama_event' => $prestasi['nama_event'] ?? null,
                 'tingkat_id' => $prestasi['tingkat_id'] ?? null,
-                'tanggal' => $prestasi['tanggal'] ?? null,
-                'peringkat' => $prestasi['peringkat'] ?? null,
+                'tanggal'    => $prestasi['tanggal']    ?? null,
+                'peringkat'  => $prestasi['peringkat']  ?? null,
                 'keterangan' => $prestasi['keterangan'] ?? null,
                 'created_by' => $createdBy,
                 'updated_by' => $createdBy,
@@ -340,11 +339,11 @@ class RegistrationRepository
             $dokumenMedia = $registration->getMedia('dokumen_files');
             foreach ($data['step_5']['dokumen'] as $index => $dokumen) {
                 $dokumenRecord = \App\Models\AtletDokumen::create([
-                    'atlet_id' => $atlet->id,
+                    'atlet_id'         => $atlet->id,
                     'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                    'nomor' => $dokumen['nomor'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'nomor'            => $dokumen['nomor']            ?? null,
+                    'created_by'       => $createdBy,
+                    'updated_by'       => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke dokumen media
@@ -352,12 +351,12 @@ class RegistrationRepository
                 if (isset($dokumen['media_id'])) {
                     $sourceMedia = $dokumenMedia->where('id', $dokumen['media_id'])->first();
                 }
-                
+
                 // Jika tidak ada media_id, coba ambil berdasarkan index
                 if (!$sourceMedia && $dokumenMedia->count() > $index) {
                     $sourceMedia = $dokumenMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $dokumenRecord->addMedia($sourceMedia->getPath())
                         ->usingName($dokumen['nomor'] ?? "Dokumen {$index}")
@@ -375,20 +374,20 @@ class RegistrationRepository
     private function createPelatih(array $data, int $userId, int $createdBy, PesertaRegistration $registration): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         // Handle profile photo dari media library registration
         $profileMedia = $registration->getFirstMedia('profile_photo');
-        
+
         $pelatihData = array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]);
-        
+
         // Remove file_url from data karena akan diproses via media library
         unset($pelatihData['file_url'], $pelatihData['file']);
-        
+
         $pelatih = \App\Models\Pelatih::create($pelatihData);
 
         // Handle profile photo upload - selalu gunakan path file dari media library
@@ -411,12 +410,12 @@ class RegistrationRepository
             $sertifikatMedia = $registration->getMedia('sertifikat_files');
             foreach ($data['step_3']['sertifikat'] as $index => $sertifikat) {
                 $sertifikatRecord = \App\Models\PelatihSertifikat::create([
-                    'pelatih_id' => $pelatih->id,
+                    'pelatih_id'      => $pelatih->id,
                     'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                    'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                    'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'penyelenggara'   => $sertifikat['penyelenggara']   ?? null,
+                    'tanggal_terbit'  => $sertifikat['tanggal_terbit']  ?? null,
+                    'created_by'      => $createdBy,
+                    'updated_by'      => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke sertifikat media
@@ -424,11 +423,11 @@ class RegistrationRepository
                 if (isset($sertifikat['media_id'])) {
                     $sourceMedia = $sertifikatMedia->where('id', $sertifikat['media_id'])->first();
                 }
-                
+
                 if (!$sourceMedia && $sertifikatMedia->count() > $index) {
                     $sourceMedia = $sertifikatMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $sertifikatRecord->addMedia($sourceMedia->getPath())
                         ->usingName($sertifikat['nama_sertifikat'] ?? "Sertifikat {$index}")
@@ -444,18 +443,18 @@ class RegistrationRepository
         } elseif (isset($data['step_4']) && is_array($data['step_4']) && isset($data['step_4'][0])) {
             $prestasiData = $data['step_4'];
         }
-        
+
         foreach ($prestasiData as $prestasi) {
             \App\Models\PelatihPrestasi::create([
-                'pelatih_id' => $pelatih->id,
-                'nama_event' => $prestasi['nama_event'] ?? null,
-                'tingkat_id' => $prestasi['tingkat_id'] ?? null,
-                'tanggal' => $prestasi['tanggal'] ?? null,
-                'peringkat' => $prestasi['peringkat'] ?? null,
-                'keterangan' => $prestasi['keterangan'] ?? null,
+                'pelatih_id'                   => $pelatih->id,
+                'nama_event'                   => $prestasi['nama_event']                   ?? null,
+                'tingkat_id'                   => $prestasi['tingkat_id']                   ?? null,
+                'tanggal'                      => $prestasi['tanggal']                      ?? null,
+                'peringkat'                    => $prestasi['peringkat']                    ?? null,
+                'keterangan'                   => $prestasi['keterangan']                   ?? null,
                 'kategori_prestasi_pelatih_id' => $prestasi['kategori_prestasi_pelatih_id'] ?? null,
-                'created_by' => $createdBy,
-                'updated_by' => $createdBy,
+                'created_by'                   => $createdBy,
+                'updated_by'                   => $createdBy,
             ]);
         }
 
@@ -464,11 +463,11 @@ class RegistrationRepository
             $dokumenMedia = $registration->getMedia('dokumen_files');
             foreach ($data['step_5']['dokumen'] as $index => $dokumen) {
                 $dokumenRecord = \App\Models\PelatihDokumen::create([
-                    'pelatih_id' => $pelatih->id,
+                    'pelatih_id'       => $pelatih->id,
                     'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                    'nomor' => $dokumen['nomor'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'nomor'            => $dokumen['nomor']            ?? null,
+                    'created_by'       => $createdBy,
+                    'updated_by'       => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke dokumen media
@@ -476,11 +475,11 @@ class RegistrationRepository
                 if (isset($dokumen['media_id'])) {
                     $sourceMedia = $dokumenMedia->where('id', $dokumen['media_id'])->first();
                 }
-                
+
                 if (!$sourceMedia && $dokumenMedia->count() > $index) {
                     $sourceMedia = $dokumenMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $dokumenRecord->addMedia($sourceMedia->getPath())
                         ->usingName($dokumen['nomor'] ?? "Dokumen {$index}")
@@ -498,20 +497,20 @@ class RegistrationRepository
     private function createTenagaPendukung(array $data, int $userId, int $createdBy, PesertaRegistration $registration): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         // Handle profile photo dari media library registration
         $profileMedia = $registration->getFirstMedia('profile_photo');
-        
+
         $tenagaPendukungData = array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]);
-        
+
         // Remove file_url from data karena akan diproses via media library
         unset($tenagaPendukungData['file_url'], $tenagaPendukungData['file']);
-        
+
         $tenagaPendukung = \App\Models\TenagaPendukung::create($tenagaPendukungData);
 
         // Handle profile photo upload - selalu gunakan path file dari media library
@@ -535,11 +534,11 @@ class RegistrationRepository
             foreach ($data['step_3']['sertifikat'] as $index => $sertifikat) {
                 $sertifikatRecord = \App\Models\TenagaPendukungSertifikat::create([
                     'tenaga_pendukung_id' => $tenagaPendukung->id,
-                    'nama_sertifikat' => $sertifikat['nama_sertifikat'] ?? null,
-                    'penyelenggara' => $sertifikat['penyelenggara'] ?? null,
-                    'tanggal_terbit' => $sertifikat['tanggal_terbit'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'nama_sertifikat'     => $sertifikat['nama_sertifikat'] ?? null,
+                    'penyelenggara'       => $sertifikat['penyelenggara']   ?? null,
+                    'tanggal_terbit'      => $sertifikat['tanggal_terbit']  ?? null,
+                    'created_by'          => $createdBy,
+                    'updated_by'          => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke sertifikat media
@@ -547,11 +546,11 @@ class RegistrationRepository
                 if (isset($sertifikat['media_id'])) {
                     $sourceMedia = $sertifikatMedia->where('id', $sertifikat['media_id'])->first();
                 }
-                
+
                 if (!$sourceMedia && $sertifikatMedia->count() > $index) {
                     $sourceMedia = $sertifikatMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $sertifikatRecord->addMedia($sourceMedia->getPath())
                         ->usingName($sertifikat['nama_sertifikat'] ?? "Sertifikat {$index}")
@@ -567,17 +566,17 @@ class RegistrationRepository
         } elseif (isset($data['step_4']) && is_array($data['step_4']) && isset($data['step_4'][0])) {
             $prestasiData = $data['step_4'];
         }
-        
+
         foreach ($prestasiData as $prestasi) {
             \App\Models\TenagaPendukungPrestasi::create([
                 'tenaga_pendukung_id' => $tenagaPendukung->id,
-                'nama_event' => $prestasi['nama_event'] ?? null,
-                'tingkat_id' => $prestasi['tingkat_id'] ?? null,
-                'tanggal' => $prestasi['tanggal'] ?? null,
-                'peringkat' => $prestasi['peringkat'] ?? null,
-                'keterangan' => $prestasi['keterangan'] ?? null,
-                'created_by' => $createdBy,
-                'updated_by' => $createdBy,
+                'nama_event'          => $prestasi['nama_event'] ?? null,
+                'tingkat_id'          => $prestasi['tingkat_id'] ?? null,
+                'tanggal'             => $prestasi['tanggal']    ?? null,
+                'peringkat'           => $prestasi['peringkat']  ?? null,
+                'keterangan'          => $prestasi['keterangan'] ?? null,
+                'created_by'          => $createdBy,
+                'updated_by'          => $createdBy,
             ]);
         }
 
@@ -587,10 +586,10 @@ class RegistrationRepository
             foreach ($data['step_5']['dokumen'] as $index => $dokumen) {
                 $dokumenRecord = \App\Models\TenagaPendukungDokumen::create([
                     'tenaga_pendukung_id' => $tenagaPendukung->id,
-                    'jenis_dokumen_id' => $dokumen['jenis_dokumen_id'] ?? null,
-                    'nomor' => $dokumen['nomor'] ?? null,
-                    'created_by' => $createdBy,
-                    'updated_by' => $createdBy,
+                    'jenis_dokumen_id'    => $dokumen['jenis_dokumen_id'] ?? null,
+                    'nomor'               => $dokumen['nomor']            ?? null,
+                    'created_by'          => $createdBy,
+                    'updated_by'          => $createdBy,
                 ]);
 
                 // Copy file dari registration media ke dokumen media
@@ -598,11 +597,11 @@ class RegistrationRepository
                 if (isset($dokumen['media_id'])) {
                     $sourceMedia = $dokumenMedia->where('id', $dokumen['media_id'])->first();
                 }
-                
+
                 if (!$sourceMedia && $dokumenMedia->count() > $index) {
                     $sourceMedia = $dokumenMedia->get($index);
                 }
-                
+
                 if ($sourceMedia && $sourceMedia->getPath() && file_exists($sourceMedia->getPath())) {
                     $dokumenRecord->addMedia($sourceMedia->getPath())
                         ->usingName($dokumen['nomor'] ?? "Dokumen {$index}")

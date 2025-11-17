@@ -14,7 +14,7 @@ class PelatihPrestasiRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'pelatih_id'                    => 'required|exists:pelatihs,id',
+            'pelatih_id'                     => 'required|exists:pelatihs,id',
             'kategori_prestasi_pelatih_id'   => 'nullable|exists:mst_kategori_prestasi_pelatih,id',
             'kategori_atlet_id'              => 'nullable|exists:mst_kategori_atlet,id',
             'nama_event'                     => 'required|string|max:255',

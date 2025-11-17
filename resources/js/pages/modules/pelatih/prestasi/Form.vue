@@ -61,8 +61,20 @@ onMounted(async () => {
 });
 
 const formInputs = computed(() => [
-    { name: 'kategori_prestasi_pelatih_id', label: 'Kategori Prestasi Pelatih', type: 'select' as const, placeholder: 'Pilih Kategori Prestasi Pelatih', options: kategoriPrestasiPelatihOptions.value },
-    { name: 'kategori_atlet_id', label: 'Kategori Peserta Atlet', type: 'select' as const, placeholder: 'Pilih Kategori Peserta Atlet', options: kategoriAtletOptions.value },
+    {
+        name: 'kategori_prestasi_pelatih_id',
+        label: 'Kategori Prestasi Pelatih',
+        type: 'select' as const,
+        placeholder: 'Pilih Kategori Prestasi Pelatih',
+        options: kategoriPrestasiPelatihOptions.value,
+    },
+    {
+        name: 'kategori_atlet_id',
+        label: 'Kategori Peserta Atlet',
+        type: 'select' as const,
+        placeholder: 'Pilih Kategori Peserta Atlet',
+        options: kategoriAtletOptions.value,
+    },
     { name: 'nama_event', label: 'Nama Event', type: 'text' as const, placeholder: 'Masukkan nama event', required: true },
     { name: 'tingkat_id', label: 'Tingkat', type: 'select' as const, placeholder: 'Pilih Tingkat', options: tingkatOptions.value },
     { name: 'tanggal', label: 'Tanggal', type: 'date' as const, placeholder: 'Pilih tanggal', required: false },

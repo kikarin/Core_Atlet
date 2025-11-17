@@ -109,7 +109,7 @@ const closeModal = () => {
 // Prepare data untuk chart modal
 const chartStatistikData = computed(() => {
     if (!currentParameter.value) return [];
-    
+
     return currentParameter.value.pemeriksaan_list.map((pemeriksaan: any) => ({
         peserta_id: props.atletId,
         pemeriksaan_peserta_id: pemeriksaan.pemeriksaan_id,
@@ -122,7 +122,7 @@ const chartStatistikData = computed(() => {
 
 const chartRencanaList = computed(() => {
     if (!currentParameter.value) return [];
-    
+
     return currentParameter.value.pemeriksaan_list.map((pemeriksaan: any) => ({
         id: pemeriksaan.pemeriksaan_id,
         tanggal_pemeriksaan: pemeriksaan.tanggal,
@@ -132,7 +132,7 @@ const chartRencanaList = computed(() => {
 
 const chartTargetInfo = computed(() => {
     if (!currentParameter.value) return null;
-    
+
     return {
         id: currentParameter.value.parameter_id,
         deskripsi: currentParameter.value.nama_parameter,
@@ -159,9 +159,7 @@ const chartTargetInfo = computed(() => {
                     <div class="flex items-center justify-between">
                         <div>
                             <CardTitle class="text-lg">{{ parameter.nama_parameter }}</CardTitle>
-                            <p class="text-muted-foreground mt-1 text-sm">
-                                Target: {{ parameter.nilai_target }} {{ parameter.satuan || '' }}
-                            </p>
+                            <p class="text-muted-foreground mt-1 text-sm">Target: {{ parameter.nilai_target }} {{ parameter.satuan || '' }}</p>
                         </div>
                         <button
                             class="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
@@ -220,4 +218,3 @@ const chartTargetInfo = computed(() => {
         />
     </div>
 </template>
-

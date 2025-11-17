@@ -105,9 +105,9 @@ const getAvailableActions = computed(() => {
                                       : action.label === 'Riwayat Pemeriksaan'
                                         ? Activity
                                         : action.label === 'Setujui'
-                                        ? CircleCheckBig
-                                        : action.label === 'Tolak'
-                                        ? X
+                                          ? CircleCheckBig
+                                          : action.label === 'Tolak'
+                                            ? X
                                             : FileText,
                 });
             }

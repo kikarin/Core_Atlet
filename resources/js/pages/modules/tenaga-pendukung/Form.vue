@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { usePage, router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { Plus, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import { Trash2, Plus } from 'lucide-vue-next';
 
 const { save } = useHandleFormSave();
 const page = usePage();
@@ -55,7 +55,10 @@ onMounted(async () => {
         }
 
         const kategoriPesertaRes = await axios.get('/api/kategori-peserta-list');
-        kategoriPesertaOptions.value = (kategoriPesertaRes.data || []).map((item: { id: number; nama: string }) => ({ value: item.id, label: item.nama }));
+        kategoriPesertaOptions.value = (kategoriPesertaRes.data || []).map((item: { id: number; nama: string }) => ({
+            value: item.id,
+            label: item.nama,
+        }));
 
         // Load kategori peserta yang sudah ada (untuk edit mode)
         if (props.mode === 'edit' && (page.props as any).kategori_pesertas) {
@@ -235,11 +238,7 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem :value="null">Pilih Kategori Peserta</SelectItem>
-                                <SelectItem
-                                    v-for="option in kategoriPesertaOptions"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
+                                <SelectItem v-for="option in kategoriPesertaOptions" :key="option.value" :value="option.value">
                                     {{ option.label }}
                                 </SelectItem>
                             </SelectContent>

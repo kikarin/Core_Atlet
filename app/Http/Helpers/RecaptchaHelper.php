@@ -13,7 +13,7 @@ class RecaptchaHelper
     public static function verify(string $response, string $remoteIp = null, float $minScore = 0.5): bool
     {
         $secretKey = config('services.recaptcha.secret_key');
-        
+
         if (!$secretKey) {
             Log::warning('RecaptchaHelper: RECAPTCHA_SECRET_KEY not configured');
             return false;
@@ -24,9 +24,9 @@ class RecaptchaHelper
         }
 
         try {
-            $url = 'https://www.google.com/recaptcha/api/siteverify';
+            $url  = 'https://www.google.com/recaptcha/api/siteverify';
             $data = [
-                'secret' => $secretKey,
+                'secret'   => $secretKey,
                 'response' => $response,
             ];
 
@@ -35,17 +35,17 @@ class RecaptchaHelper
             }
 
             $httpResponse = Http::asForm()->post($url, $data);
-            
+
             if (!$httpResponse->successful()) {
                 Log::error('RecaptchaHelper: Failed to verify reCAPTCHA', [
                     'status' => $httpResponse->status(),
-                    'body' => $httpResponse->body(),
+                    'body'   => $httpResponse->body(),
                 ]);
                 return false;
             }
 
             $result = $httpResponse->json();
-            
+
             if (!isset($result['success']) || $result['success'] !== true) {
                 Log::warning('RecaptchaHelper: reCAPTCHA verification failed', [
                     'result' => $result,
@@ -58,7 +58,7 @@ class RecaptchaHelper
                 $score = (float) $result['score'];
                 if ($score < $minScore) {
                     Log::warning('RecaptchaHelper: reCAPTCHA v3 score too low', [
-                        'score' => $score,
+                        'score'     => $score,
                         'min_score' => $minScore,
                     ]);
                     return false;
@@ -74,4 +74,3 @@ class RecaptchaHelper
         }
     }
 }
-

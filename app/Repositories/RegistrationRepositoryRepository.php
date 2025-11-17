@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\PesertaRegistration;
 use App\Models\User;
 use App\Traits\RepositoryTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +18,7 @@ class RegistrationRepository
     public function __construct(PesertaRegistration $model)
     {
         $this->model = $model;
-        $this->with = ['user'];
+        $this->with  = ['user'];
     }
 
     /**
@@ -29,17 +28,17 @@ class RegistrationRepository
     {
         return DB::transaction(function () use ($data) {
             $user = User::create([
-                'name' => $data['name'] ?? $data['email'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'is_active' => 0, // Belum bisa login sampai approved
+                'name'                => $data['name'] ?? $data['email'],
+                'email'               => $data['email'],
+                'password'            => Hash::make($data['password']),
+                'is_active'           => 0, // Belum bisa login sampai approved
                 'registration_status' => 'pending',
-                'current_role_id' => null,
+                'current_role_id'     => null,
             ]);
 
             Log::info('RegistrationRepository: User created for registration', [
                 'user_id' => $user->id,
-                'email' => $user->email,
+                'email'   => $user->email,
             ]);
 
             return $user;
@@ -57,11 +56,11 @@ class RegistrationRepository
 
         if (!$registration) {
             $registration = PesertaRegistration::create([
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'peserta_type' => $pesertaType,
                 'step_current' => 1,
-                'status' => 'draft',
-                'data_json' => [],
+                'status'       => 'draft',
+                'data_json'    => [],
             ]);
         }
 
@@ -73,12 +72,12 @@ class RegistrationRepository
      */
     public function saveStepData(PesertaRegistration $registration, int $step, array $data): PesertaRegistration
     {
-        $currentData = $registration->data_json ?? [];
+        $currentData                 = $registration->data_json ?? [];
         $currentData["step_{$step}"] = $data;
-        
+
         $registration->update([
             'step_current' => $step,
-            'data_json' => $currentData,
+            'data_json'    => $currentData,
         ]);
 
         return $registration->fresh();
@@ -101,7 +100,7 @@ class RegistrationRepository
 
             Log::info('RegistrationRepository: Registration submitted', [
                 'registration_id' => $registration->id,
-                'user_id' => $registration->user_id,
+                'user_id'         => $registration->user_id,
             ]);
 
             return $registration->fresh();
@@ -114,36 +113,36 @@ class RegistrationRepository
     public function approveRegistration(PesertaRegistration $registration, int $approvedBy): array
     {
         return DB::transaction(function () use ($registration, $approvedBy) {
-            $data = $registration->data_json;
+            $data        = $registration->data_json;
             $pesertaType = $registration->peserta_type;
-            $user = $registration->user;
+            $user        = $registration->user;
 
             // Create peserta record berdasarkan type
             $pesertaId = null;
-            $roleId = null;
+            $roleId    = null;
 
             switch ($pesertaType) {
                 case 'atlet':
                     $pesertaId = $this->createAtlet($data, $user->id, $approvedBy);
-                    $roleId = 35; // Role ID Atlet
+                    $roleId    = 35; // Role ID Atlet
                     break;
                 case 'pelatih':
                     $pesertaId = $this->createPelatih($data, $user->id, $approvedBy);
-                    $roleId = 36; // Role ID Pelatih
+                    $roleId    = 36; // Role ID Pelatih
                     break;
                 case 'tenaga_pendukung':
                     $pesertaId = $this->createTenagaPendukung($data, $user->id, $approvedBy);
-                    $roleId = 37; // Role ID Tenaga Pendukung
+                    $roleId    = 37; // Role ID Tenaga Pendukung
                     break;
             }
 
             // Update user
             $user->update([
                 'registration_status' => 'approved',
-                'is_active' => 1,
-                'current_role_id' => $roleId,
-                'peserta_type' => $pesertaType,
-                'peserta_id' => $pesertaId,
+                'is_active'           => 1,
+                'current_role_id'     => $roleId,
+                'peserta_type'        => $pesertaType,
+                'peserta_id'          => $pesertaId,
             ]);
 
             // Update registration
@@ -153,14 +152,14 @@ class RegistrationRepository
 
             Log::info('RegistrationRepository: Registration approved', [
                 'registration_id' => $registration->id,
-                'user_id' => $user->id,
-                'peserta_id' => $pesertaId,
-                'peserta_type' => $pesertaType,
+                'user_id'         => $user->id,
+                'peserta_id'      => $pesertaId,
+                'peserta_type'    => $pesertaType,
             ]);
 
             return [
-                'user' => $user,
-                'peserta_id' => $pesertaId,
+                'user'         => $user,
+                'peserta_id'   => $pesertaId,
                 'peserta_type' => $pesertaType,
             ];
         });
@@ -173,19 +172,19 @@ class RegistrationRepository
     {
         DB::transaction(function () use ($registration, $reason, $rejectedBy) {
             $registration->update([
-                'status' => 'rejected',
+                'status'          => 'rejected',
                 'rejected_reason' => $reason,
             ]);
 
             $registration->user->update([
-                'registration_status' => 'rejected',
+                'registration_status'          => 'rejected',
                 'registration_rejected_reason' => $reason,
             ]);
 
             Log::info('RegistrationRepository: Registration rejected', [
                 'registration_id' => $registration->id,
-                'user_id' => $registration->user_id,
-                'reason' => $reason,
+                'user_id'         => $registration->user_id,
+                'reason'          => $reason,
             ]);
         });
     }
@@ -196,12 +195,12 @@ class RegistrationRepository
     private function createAtlet(array $data, int $userId, int $createdBy): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         $atlet = \App\Models\Atlet::create(array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]));
 
         // Handle kategori peserta
@@ -213,7 +212,7 @@ class RegistrationRepository
         if (isset($data['step_3']) && is_array($data['step_3'])) {
             foreach ($data['step_3'] as $sertifikat) {
                 \App\Models\AtletSertifikat::create(array_merge($sertifikat, [
-                    'atlet_id' => $atlet->id,
+                    'atlet_id'   => $atlet->id,
                     'created_by' => $createdBy,
                     'updated_by' => $createdBy,
                 ]));
@@ -224,7 +223,7 @@ class RegistrationRepository
         if (isset($data['step_4']) && is_array($data['step_4'])) {
             foreach ($data['step_4'] as $prestasi) {
                 \App\Models\AtletPrestasi::create(array_merge($prestasi, [
-                    'atlet_id' => $atlet->id,
+                    'atlet_id'   => $atlet->id,
                     'created_by' => $createdBy,
                     'updated_by' => $createdBy,
                 ]));
@@ -235,7 +234,7 @@ class RegistrationRepository
         if (isset($data['step_5']) && is_array($data['step_5'])) {
             foreach ($data['step_5'] as $dokumen) {
                 \App\Models\AtletDokumen::create(array_merge($dokumen, [
-                    'atlet_id' => $atlet->id,
+                    'atlet_id'   => $atlet->id,
                     'created_by' => $createdBy,
                     'updated_by' => $createdBy,
                 ]));
@@ -251,12 +250,12 @@ class RegistrationRepository
     private function createPelatih(array $data, int $userId, int $createdBy): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         $pelatih = \App\Models\Pelatih::create(array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]));
 
         // Handle kategori peserta
@@ -276,12 +275,12 @@ class RegistrationRepository
     private function createTenagaPendukung(array $data, int $userId, int $createdBy): int
     {
         $step2Data = $data['step_2'] ?? [];
-        
+
         $tenagaPendukung = \App\Models\TenagaPendukung::create(array_merge($step2Data, [
-            'users_id' => $userId,
+            'users_id'   => $userId,
             'created_by' => $createdBy,
             'updated_by' => $createdBy,
-            'is_active' => 1,
+            'is_active'  => 1,
         ]));
 
         // Handle kategori peserta

@@ -141,4 +141,3 @@ class MstKategoriPesertaRepository
         return $request->validate($rules, $messages);
     }
 }
-

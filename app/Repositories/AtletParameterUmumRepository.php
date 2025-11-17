@@ -91,14 +91,13 @@ class AtletParameterUmumRepository
         foreach ($parameterData as $param) {
             if (isset($param['mst_parameter_id']) && isset($param['nilai']) && $param['nilai'] !== '') {
                 $this->model->create([
-                    'atlet_id' => $atletId,
+                    'atlet_id'         => $atletId,
                     'mst_parameter_id' => $param['mst_parameter_id'],
-                    'nilai' => $param['nilai'],
-                    'created_by' => $userId,
-                    'updated_by' => $userId,
+                    'nilai'            => $param['nilai'],
+                    'created_by'       => $userId,
+                    'updated_by'       => $userId,
                 ]);
             }
         }
     }
 }
-

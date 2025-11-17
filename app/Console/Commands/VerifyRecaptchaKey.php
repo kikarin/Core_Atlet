@@ -3,16 +3,15 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class VerifyRecaptchaKey extends Command
 {
-    protected $signature = 'recaptcha:verify-key';
+    protected $signature   = 'recaptcha:verify-key';
     protected $description = 'Verify reCAPTCHA Site Key dengan Google API';
 
     public function handle()
     {
-        $siteKey = config('services.recaptcha.site_key');
+        $siteKey   = config('services.recaptcha.site_key');
         $secretKey = config('services.recaptcha.secret_key');
 
         $this->info('=== Verifikasi reCAPTCHA Key ===');
@@ -35,7 +34,7 @@ class VerifyRecaptchaKey extends Command
         // Try to verify by making a test request
         // Note: We can't directly verify site key without a token,
         // but we can check if it's a valid format
-        
+
         // Check key format (v2 and v3 keys both start with 6L)
         if (!preg_match('/^6L[a-zA-Z0-9_-]{38}$/', $siteKey)) {
             $this->warn('⚠ Format Site Key tidak standar. Pastikan key benar.');
@@ -57,4 +56,3 @@ class VerifyRecaptchaKey extends Command
         return 0;
     }
 }
-
