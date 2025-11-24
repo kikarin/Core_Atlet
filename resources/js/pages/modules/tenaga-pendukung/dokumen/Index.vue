@@ -24,6 +24,11 @@ const resolvedTenagaPendukungId = getTenagaPendukungId();
 
 const { toast } = useToast();
 
+// Ambil user registration_status dari props
+const user = computed(() => (inertiaPage.props as any)?.auth?.user);
+const registrationStatus = computed(() => user.value?.registration_status);
+const isPendingRegistration = computed(() => registrationStatus.value === 'pending');
+
 const breadcrumbs = computed(() => [
     { title: 'Tenaga Pendukung', href: '/tenaga-pendukung' },
     { title: 'Dokumen', href: `/tenaga-pendukung/${resolvedTenagaPendukungId}/dokumen` },
@@ -167,44 +172,69 @@ const confirmDeleteSelected = async () => {
     idsToDelete.value = [];
 };
 
-// Tabs config
-const tabsConfig = [
-    {
-        value: 'tenaga-pendukung-data',
-        label: 'Tenaga Pendukung',
-        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=tenaga-pendukung-data`),
-    },
-    {
-        value: 'sertifikat-data',
-        label: 'Sertifikat',
-        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/sertifikat`),
-    },
-    {
-        value: 'prestasi-data',
-        label: 'Prestasi',
-        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/prestasi`),
-    },
-    {
-        value: 'kesehatan-data',
-        label: 'Kesehatan',
-        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=kesehatan-data`),
-    },
-    {
-        value: 'dokumen-data',
-        label: 'Dokumen',
-        // Aktif
-    },
-    {
-        value: 'akun-data',
-        label: 'Akun',
-        onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=akun-data`),
-    },
-];
+// Tabs config - FILTER berdasarkan registration_status
+const tabsConfig = computed(() => {
+    const resolvedTenagaPendukungId = props.tenagaPendukungId;
+    const allTabs = [
+        {
+            value: 'tenaga-pendukung-data',
+            label: 'Tenaga Pendukung',
+            onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=tenaga-pendukung-data`),
+            allowedForPending: true, // Data diri bisa diakses
+        },
+        {
+            value: 'sertifikat-data',
+            label: 'Sertifikat',
+            onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/sertifikat`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'prestasi-data',
+            label: 'Prestasi',
+            onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/prestasi`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'dokumen-data',
+            label: 'Dokumen',
+            // Aktif - tidak perlu onClick
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'kesehatan-data',
+            label: 'Kesehatan',
+            onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=kesehatan-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+        {
+            value: 'akun-data',
+            label: 'Akun',
+            onClick: () => router.visit(`/tenaga-pendukung/${resolvedTenagaPendukungId}/edit?tab=akun-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+    ];
+
+    // Filter tab berdasarkan registration_status
+    if (isPendingRegistration.value) {
+        return allTabs
+            .filter(tab => tab.allowedForPending === true)
+            .map(tab => ({
+                ...tab,
+                disabled: false,
+            }));
+    }
+
+    // Jika sudah approved, semua tab bisa diakses
+    return allTabs.map(tab => ({
+        ...tab,
+        disabled: false,
+    }));
+});
 const activeTab = ref('dokumen-data');
 
 function handleTabChange(val: string) {
     if (val === 'dokumen-data') return;
-    const tab = tabsConfig.find((t) => t.value === val);
+    const tab = tabsConfig.value.find((t) => t.value === val);
     if (tab && tab.onClick) tab.onClick();
 }
 

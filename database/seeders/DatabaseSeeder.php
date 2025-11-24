@@ -60,5 +60,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MstJuaraSeeder::class);
         $this->call(MstParameterSeeder::class);
         $this->call(TurnamenSeeder::class);
+        $this->call(MstKategoriPesertaSeeder::class);
     }
 }

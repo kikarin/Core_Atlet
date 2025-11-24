@@ -69,6 +69,7 @@ class RegistrationApprovalController extends Controller
                 'status'               => $registration->status,
                 'status_label'         => $this->getStatusLabel($registration->status),
                 'step_current'         => $registration->step_current,
+                'rejected_reason'      => $registration->rejected_reason ?? $registration->user->registration_rejected_reason ?? null,
                 'created_at'           => $registration->created_at->format('Y-m-d H:i:s'),
                 'created_at_formatted' => $registration->created_at->format('d/m/Y H:i'),
             ];
@@ -100,8 +101,101 @@ class RegistrationApprovalController extends Controller
         // Load additional data untuk preview
         $additionalData = [];
 
-        if (isset($data['step_2'])) {
-            $step2 = $data['step_2'];
+        // Cek apakah user sudah punya peserta_id (flow baru - data ada di model peserta)
+        $user = $registration->user;
+        $pesertaModel = null;
+        
+        if ($user && $user->peserta_id && $user->peserta_type) {
+            // Load data dari model peserta (flow baru)
+            switch ($user->peserta_type) {
+                case 'atlet':
+                    $pesertaModel = \App\Models\Atlet::with(['kategoriPesertas', 'sertifikat.media', 'prestasi.tingkat', 'dokumen.jenis_dokumen', 'media'])->find($user->peserta_id);
+                    break;
+                case 'pelatih':
+                    $pesertaModel = \App\Models\Pelatih::with(['kategoriPesertas', 'sertifikat.media', 'prestasi.tingkat', 'dokumen.jenis_dokumen', 'media'])->find($user->peserta_id);
+                    break;
+                case 'tenaga_pendukung':
+                    $pesertaModel = \App\Models\TenagaPendukung::with(['kategoriPesertas', 'sertifikat.media', 'prestasi.tingkat', 'dokumen.jenis_dokumen', 'media'])->find($user->peserta_id);
+                    break;
+            }
+        }
+
+        if (isset($data['step_2']) || $pesertaModel) {
+            $step2 = $data['step_2'] ?? [];
+            
+            // Jika ada model peserta, gunakan data dari model peserta
+            if ($pesertaModel) {
+                $step2 = array_merge($step2, $pesertaModel->toArray());
+                
+                // Load kategori peserta
+                if ($pesertaModel->kategoriPesertas) {
+                    $additionalData['kategori_pesertas'] = $pesertaModel->kategoriPesertas;
+                    $step2['kategori_pesertas'] = $pesertaModel->kategoriPesertas->pluck('id')->toArray();
+                }
+                
+                // Load foto dari model peserta
+                $profileMedia = $pesertaModel->getFirstMedia('images');
+                if ($profileMedia) {
+                    $step2['file_url'] = $profileMedia->getUrl();
+                }
+                
+                // Load sertifikat dari model peserta
+                if ($pesertaModel->sertifikat && $pesertaModel->sertifikat->count() > 0) {
+                    $sertifikatData = $pesertaModel->sertifikat->map(function ($sertifikat) {
+                        // Gunakan file_url dari model (sudah di-append) atau ambil dari media
+                        $fileUrl = $sertifikat->file_url ?? null;
+                        if (!$fileUrl) {
+                            $media = $sertifikat->getFirstMedia('sertifikat_file');
+                            $fileUrl = $media ? $media->getUrl() : null;
+                        }
+                        
+                        return [
+                            'nama_sertifikat' => $sertifikat->nama_sertifikat,
+                            'penyelenggara' => $sertifikat->penyelenggara,
+                            'tanggal_terbit' => $sertifikat->tanggal_terbit,
+                            'file_url' => $fileUrl,
+                            'file' => $fileUrl, // Tambahkan juga di 'file' untuk kompatibilitas frontend
+                        ];
+                    })->toArray();
+                    $data['step_3'] = ['sertifikat' => $sertifikatData];
+                }
+                
+                // Load prestasi dari model peserta
+                if ($pesertaModel->prestasi && $pesertaModel->prestasi->count() > 0) {
+                    $prestasiData = $pesertaModel->prestasi->map(function ($prestasi) {
+                        return [
+                            'nama_event' => $prestasi->nama_event,
+                            'tingkat_id' => $prestasi->tingkat_id,
+                            'tingkat_label' => $prestasi->tingkat->nama ?? null,
+                            'tanggal' => $prestasi->tanggal,
+                            'peringkat' => $prestasi->peringkat,
+                            'keterangan' => $prestasi->keterangan,
+                        ];
+                    })->toArray();
+                    $data['step_4'] = ['prestasi' => $prestasiData];
+                }
+                
+                // Load dokumen dari model peserta
+                if ($pesertaModel->dokumen && $pesertaModel->dokumen->count() > 0) {
+                    $dokumenData = $pesertaModel->dokumen->map(function ($dokumen) {
+                        // Gunakan file_url dari model (sudah di-append) atau ambil dari media
+                        $fileUrl = $dokumen->file_url ?? null;
+                        if (!$fileUrl) {
+                            $media = $dokumen->getFirstMedia('dokumen_file');
+                            $fileUrl = $media ? $media->getUrl() : null;
+                        }
+                        
+                        return [
+                            'jenis_dokumen_id' => $dokumen->jenis_dokumen_id,
+                            'jenis_dokumen_label' => $dokumen->jenis_dokumen->nama ?? null,
+                            'nomor' => $dokumen->nomor,
+                            'file_url' => $fileUrl,
+                            'file' => $fileUrl, // Tambahkan juga di 'file' untuk kompatibilitas frontend
+                        ];
+                    })->toArray();
+                    $data['step_5'] = ['dokumen' => $dokumenData];
+                }
+            }
 
             // Load kecamatan, kelurahan jika ada
             if (isset($step2['kecamatan_id'])) {
@@ -111,36 +205,74 @@ class RegistrationApprovalController extends Controller
                 $additionalData['kelurahan'] = \App\Models\MstDesa::find($step2['kelurahan_id']);
             }
 
-            // Load kategori peserta jika ada
-            if (isset($step2['kategori_pesertas']) && is_array($step2['kategori_pesertas'])) {
+            // Load kategori peserta jika belum di-load dari model
+            if (!isset($additionalData['kategori_pesertas']) && isset($step2['kategori_pesertas']) && is_array($step2['kategori_pesertas'])) {
                 $additionalData['kategori_pesertas'] = \App\Models\MstKategoriPeserta::whereIn('id', $step2['kategori_pesertas'])->get();
             }
 
-            // Load profile photo dari media library
-            $profileMedia = $registration->getFirstMedia('profile_photo');
-            if ($profileMedia) {
-                $data['step_2']['file_url'] = $profileMedia->getUrl();
-            }
-        }
-
-        // Load sertifikat files dari media library
-        if (isset($data['step_3']['sertifikat']) && is_array($data['step_3']['sertifikat'])) {
-            $sertifikatMedia = $registration->getMedia('sertifikat_files');
-            foreach ($data['step_3']['sertifikat'] as $index => &$sertifikat) {
-                if (isset($sertifikat['media_id'])) {
-                    $media = $sertifikatMedia->where('id', $sertifikat['media_id'])->first();
-                    if ($media) {
-                        $sertifikat['file_url'] = $media->getUrl();
-                    }
+            // Load profile photo dari PesertaRegistration media library jika belum ada dari model
+            if (!isset($step2['file_url'])) {
+                $profileMedia = $registration->getFirstMedia('profile_photo');
+                if ($profileMedia) {
+                    $step2['file_url'] = $profileMedia->getUrl();
                 }
             }
+            
+            $data['step_2'] = $step2;
         }
 
-        // Load dokumen files dari media library dan jenis dokumen
-        if (isset($data['step_5']['dokumen']) && is_array($data['step_5']['dokumen'])) {
-            $dokumenMedia = $registration->getMedia('dokumen_files');
-            
-            // Collect semua jenis_dokumen_id untuk load sekaligus
+        // Load sertifikat files dari PesertaRegistration media library (jika belum di-load dari model peserta)
+        if (!isset($data['step_3']) || !isset($data['step_3']['sertifikat'])) {
+            $originalData = $registration->data_json ?? [];
+            if (isset($originalData['step_3']['sertifikat']) && is_array($originalData['step_3']['sertifikat'])) {
+                $sertifikatMedia = $registration->getMedia('sertifikat_files');
+                foreach ($originalData['step_3']['sertifikat'] as $index => &$sertifikat) {
+                    if (isset($sertifikat['media_id'])) {
+                        $media = $sertifikatMedia->where('id', $sertifikat['media_id'])->first();
+                        if ($media) {
+                            $sertifikat['file_url'] = $media->getUrl();
+                        }
+                    }
+                }
+                $data['step_3'] = ['sertifikat' => $originalData['step_3']['sertifikat']];
+            }
+        }
+
+        // Load dokumen files dari PesertaRegistration media library (jika belum di-load dari model peserta)
+        if (!isset($data['step_5']) || !isset($data['step_5']['dokumen'])) {
+            $originalData = $registration->data_json ?? [];
+            if (isset($originalData['step_5']['dokumen']) && is_array($originalData['step_5']['dokumen'])) {
+                $dokumenMedia = $registration->getMedia('dokumen_files');
+                
+                // Collect semua jenis_dokumen_id untuk load sekaligus
+                $jenisDokumenIds = [];
+                foreach ($originalData['step_5']['dokumen'] as $dokumen) {
+                    if (isset($dokumen['jenis_dokumen_id'])) {
+                        $jenisDokumenIds[] = $dokumen['jenis_dokumen_id'];
+                    }
+                }
+                
+                // Load semua jenis dokumen sekaligus
+                if (!empty($jenisDokumenIds)) {
+                    $jenisDokumenCollection = \App\Models\MstJenisDokumen::whereIn('id', array_unique($jenisDokumenIds))->get();
+                    // Convert ke array dengan key ID untuk mudah diakses di frontend
+                    $additionalData['jenis_dokumen'] = $jenisDokumenCollection->keyBy('id')->map(function ($item) {
+                        return ['id' => $item->id, 'nama' => $item->nama];
+                    })->toArray();
+                }
+                
+                foreach ($originalData['step_5']['dokumen'] as $index => &$dokumen) {
+                    if (isset($dokumen['media_id'])) {
+                        $media = $dokumenMedia->where('id', $dokumen['media_id'])->first();
+                        if ($media) {
+                            $dokumen['file_url'] = $media->getUrl();
+                        }
+                    }
+                }
+                $data['step_5'] = ['dokumen' => $originalData['step_5']['dokumen']];
+            }
+        } else if (isset($data['step_5']['dokumen']) && is_array($data['step_5']['dokumen'])) {
+            // Load jenis dokumen untuk data yang sudah di-load dari model peserta
             $jenisDokumenIds = [];
             foreach ($data['step_5']['dokumen'] as $dokumen) {
                 if (isset($dokumen['jenis_dokumen_id'])) {
@@ -148,26 +280,23 @@ class RegistrationApprovalController extends Controller
                 }
             }
             
-            // Load semua jenis dokumen sekaligus
-            if (!empty($jenisDokumenIds)) {
+            if (!empty($jenisDokumenIds) && !isset($additionalData['jenis_dokumen'])) {
                 $jenisDokumenCollection = \App\Models\MstJenisDokumen::whereIn('id', array_unique($jenisDokumenIds))->get();
-                // Convert ke array dengan key ID untuk mudah diakses di frontend
                 $additionalData['jenis_dokumen'] = $jenisDokumenCollection->keyBy('id')->map(function ($item) {
                     return ['id' => $item->id, 'nama' => $item->nama];
                 })->toArray();
             }
-            
-            foreach ($data['step_5']['dokumen'] as $index => &$dokumen) {
-                if (isset($dokumen['media_id'])) {
-                    $media = $dokumenMedia->where('id', $dokumen['media_id'])->first();
-                    if ($media) {
-                        $dokumen['file_url'] = $media->getUrl();
-                    }
-                }
-            }
         }
 
-        // Load tingkat prestasi jika ada
+        // Load tingkat prestasi jika ada (jika belum di-load dari model peserta)
+        if (!isset($data['step_4']) || !isset($data['step_4']['prestasi'])) {
+            $originalData = $registration->data_json ?? [];
+            if (isset($originalData['step_4']['prestasi']) && is_array($originalData['step_4']['prestasi'])) {
+                $data['step_4'] = ['prestasi' => $originalData['step_4']['prestasi']];
+            }
+        }
+        
+        // Load tingkat prestasi untuk mapping label
         if (isset($data['step_4']['prestasi']) && is_array($data['step_4']['prestasi'])) {
             $tingkatIds = [];
             foreach ($data['step_4']['prestasi'] as $prestasi) {
@@ -176,8 +305,8 @@ class RegistrationApprovalController extends Controller
                 }
             }
             
-            // Load semua tingkat sekaligus
-            if (!empty($tingkatIds)) {
+            // Load semua tingkat sekaligus jika belum di-load
+            if (!empty($tingkatIds) && !isset($additionalData['tingkat'])) {
                 $tingkatCollection = \App\Models\MstTingkat::whereIn('id', array_unique($tingkatIds))->get();
                 // Convert ke array dengan key ID untuk mudah diakses di frontend
                 $additionalData['tingkat'] = $tingkatCollection->keyBy('id')->map(function ($item) {
@@ -214,6 +343,7 @@ class RegistrationApprovalController extends Controller
                 try {
                     $registration = PesertaRegistration::with('user')->findOrFail($registrationId);
 
+                    // Include status 'submitted' untuk user dengan flow baru
                     if (!in_array($registration->status, ['submitted', 'rejected'], true)) {
                         $errors[] = "Pengajuan #{$registrationId} tidak dapat disetujui (status: {$registration->status})";
                         continue;
@@ -386,6 +516,7 @@ class RegistrationApprovalController extends Controller
         return match($status) {
             'draft'     => 'Draft',
             'submitted' => 'Menunggu Persetujuan',
+            'pending'   => 'Menunggu Persetujuan', 
             'approved'  => 'Disetujui',
             'rejected'  => 'Ditolak',
             default     => ucfirst($status),

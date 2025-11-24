@@ -33,7 +33,7 @@ class TenagaPendukungRequest extends FormRequest
             'kelurahan_id'      => 'nullable|integer',
             'no_hp'             => 'nullable|string|max:20',
             'email'             => 'nullable|email|max:200',
-            'is_active'         => 'required|boolean',
+            'is_active'         => 'nullable|boolean',
             'is_delete_foto'    => 'nullable|boolean',
         ];
 

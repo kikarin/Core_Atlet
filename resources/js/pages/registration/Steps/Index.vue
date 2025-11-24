@@ -143,10 +143,17 @@ const handleStepSubmit = async (step: number, data: StepPayload) => {
     form.post(route(routeName), {
         preserveState: true,
         preserveScroll: true,
-        onSuccess: () => {
-            console.log(`Steps/Index: Step ${step} submitted successfully`);
+        onSuccess: (page: any) => {
+            console.log(`Steps/Index: Step ${step} submitted successfully`, page);
             // Clear draft after successful submit
             localStorage.removeItem(`registration_draft_step_${step}`);
+
+            // Step 1 sekarang langsung redirect ke edit page, tidak ke step 2
+            if (step === 1) {
+                // Backend akan handle redirect ke edit page
+                // Tidak perlu navigate manual karena backend sudah redirect
+                return;
+            }
 
             if (step < 5) {
                 goToStep(step + 1);
@@ -155,10 +162,30 @@ const handleStepSubmit = async (step: number, data: StepPayload) => {
                 showConfirmDialog.value = true;
             }
         },
-        onError: (errors: Record<string, string>) => {
+        onError: (errors: Record<string, string | string[]>) => {
             console.error('Steps/Index: Validation errors:', errors);
+            console.error('Steps/Index: Error keys:', Object.keys(errors));
+            console.error('Steps/Index: Error values:', Object.values(errors));
+            
+            // Extract error messages
+            const errorMessages: string[] = [];
+            Object.entries(errors).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    errorMessages.push(...value);
+                } else if (typeof value === 'string') {
+                    errorMessages.push(value);
+                } else {
+                    errorMessages.push(`${key}: ${JSON.stringify(value)}`);
+                }
+            });
+            
+            const errorMessage = errorMessages.length > 0 
+                ? errorMessages.join(', ') 
+                : 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.';
+            
             toast({
                 title: 'Terjadi kesalahan',
+                description: errorMessage,
                 variant: 'destructive',
             });
         },
@@ -241,14 +268,21 @@ watch(
 </script>
 
 <template>
-    <RegistrationLayout :current-step="currentStep" :total-steps="5">
+    <!-- Untuk step 1, gunakan layout sederhana tanpa step wizard -->
+    <div v-if="currentStep === 1" class="bg-background min-h-screen">
+        <div class="mx-auto max-w-4xl px-4 py-8">
+            <div class="bg-card border-border rounded-xl border p-6 shadow-sm">
+                <Step1SelectPeserta :registration-data="resolvedRegistrationData" @submit="handleStep1Submit" />
+            </div>
+        </div>
+    </div>
+    <!-- Untuk step lainnya, gunakan layout dengan step wizard -->
+    <RegistrationLayout v-else :current-step="currentStep" :total-steps="5">
         <div class="space-y-6">
             <!-- Step Content -->
             <div>
-                <Step1SelectPeserta v-if="currentStep === 1" :registration-data="resolvedRegistrationData" @submit="handleStep1Submit" />
-
                 <Step2DataDiri
-                    v-else-if="currentStep === 2"
+                    v-if="currentStep === 2"
                     :peserta-type="registration?.peserta_type"
                     :selected-peserta-type="selectedPesertaType"
                     :registration-data="resolvedRegistrationData"

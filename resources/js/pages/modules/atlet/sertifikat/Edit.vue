@@ -8,6 +8,10 @@ const props = defineProps<{
     item: Record<string, any>;
 }>();
 
+const user = computed(() => (page.props as any)?.auth?.user);
+const registrationStatus = computed(() => user.value?.registration_status);
+const isPendingRegistration = computed(() => registrationStatus.value === 'pending');
+
 const breadcrumbs = computed(() => [
     { title: 'Atlet', href: '/atlet' },
     { title: 'Sertifikat', href: `/atlet/${props.atletId}/sertifikat` },

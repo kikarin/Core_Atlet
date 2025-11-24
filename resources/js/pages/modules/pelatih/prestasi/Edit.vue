@@ -14,7 +14,7 @@ const breadcrumbs = computed(() => [
     { title: 'Edit', href: `/pelatih/${props.pelatihId}/prestasi/${props.item.id}/edit` },
 ]);
 
-const title = computed(() => `Edit Prestasi: ${props.item.nama_event || '-'}`);
+const title = computed(() => `Prestasi: ${props.item.nama_event || '-'}`);
 </script>
 
 <template>

@@ -81,7 +81,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'check.registration.status'])->name('dashboard');
 
 // =====================
 // REGISTRATION (Multi-step)
@@ -176,7 +176,7 @@ Route::middleware(['auth', 'verified', 'can:Registration Approval Show'])->group
 // =====================
 // USERS, MENU, ROLES, PERMISSIONS, LOGS
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::resource('/users', UsersController::class)->names('users');
     Route::get('/users/{id}/login-as', [UsersController::class, 'login_as'])->name('users.login-as');
     Route::post('/users/switch-role', [UsersController::class, 'switchRole'])->name('users.switch-role');
@@ -216,7 +216,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 // ATLET & PELATIH (beserta nested resource)
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     // ATLET
     Route::get('/atlet/karakteristik', [AtletController::class, 'karakteristik'])->name('atlet.karakteristik');
     Route::post('/atlet/api-karakteristik', [AtletController::class, 'apiKarakteristik'])->name('atlet.api-karakteristik');
@@ -445,7 +445,7 @@ Route::get('/api/tenaga-pendukung/{tenaga_pendukung_id}/riwayat-pemeriksaan', [T
 // =====================
 // PROGRAM LATIHAN
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::resource('/program-latihan', ProgramLatihanController::class)->names('program-latihan');
     Route::get('/api/program-latihan', [ProgramLatihanController::class, 'apiIndex']);
     Route::get('/api/rencana-latihan', [RencanaLatihanController::class, 'apiIndex']);
@@ -460,7 +460,7 @@ Route::get('/api/rencana-latihan/{rencana_id}/target-kelompok-mapping', [Rencana
 // =====================
 // TARGET LATIHAN (NESTED MODULAR)
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::prefix('program-latihan/{program_id}/target-latihan/{jenis_target}')->group(function () {
         Route::get('/', [TargetLatihanController::class, 'nestedIndex'])->name('program-latihan.target-latihan.index');
         Route::get('/create', [TargetLatihanController::class, 'nestedCreate'])->name('program-latihan.target-latihan.create');
@@ -478,13 +478,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 // TARGET LATIHAN
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::resource('/target-latihan', TargetLatihanController::class)->names('target-latihan');
     Route::post('/target-latihan/destroy-selected', [TargetLatihanController::class, 'destroy_selected'])->name('target-latihan.destroy_selected');
     // Route index by program & jenis target (opsional, bisa pakai query param di index)
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::get('/api/target-latihan', [TargetLatihanController::class, 'apiIndex']);
     // Route spesifik harus diletakkan sebelum route umum untuk menghindari konflik
     Route::get('/api/target-latihan/statistik', [TargetLatihanController::class, 'apiStatistik'])->name('api.target-latihan.statistik');
@@ -496,7 +496,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =====================
 // RENCANA LATIHAN (NESTED MODULAR)
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::prefix('program-latihan/{program_id}/rencana-latihan')->group(function () {
         Route::get('/', [RencanaLatihanController::class, 'nestedIndex'])->name('program-latihan.rencana-latihan.index');
         Route::get('/create', [RencanaLatihanController::class, 'nestedCreate'])->name('program-latihan.rencana-latihan.create');
@@ -513,27 +513,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // RENCANA LATIHAN - DAFTAR PESERTA (INERTIA PAGE)
 // =====================
 
-Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/index/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'indexPage'])->middleware(['auth', 'verified']);
-Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/set-kehadiran/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'setKehadiranPage'])->middleware(['auth', 'verified']);
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/index/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'indexPage'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/set-kehadiran/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'setKehadiranPage'])->middleware(['auth', 'verified', 'check.registration.status']);
 
 // =====================
 // API: Daftar Peserta Rencana Latihan (Atlet, Pelatih, Tenaga Pendukung)
 // =====================
-Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'index'])->middleware(['auth', 'verified']);
-Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified']);
-Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified']);
-Route::post('/rencana-latihan/{rencana}/peserta/{jenis}/set-kehadiran', [RencanaLatihanPesertaController::class, 'setKehadiran'])->middleware(['auth', 'verified']);
-Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}/update-kehadiran', [RencanaLatihanPesertaController::class, 'updateKehadiran'])->middleware(['auth', 'verified']);
+Route::get('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}', [RencanaLatihanPesertaController::class, 'index'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::delete('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}', [RencanaLatihanPesertaController::class, 'destroy'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/destroy-selected', [RencanaLatihanPesertaController::class, 'destroySelected'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::post('/rencana-latihan/{rencana}/peserta/{jenis}/set-kehadiran', [RencanaLatihanPesertaController::class, 'setKehadiran'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::post('/api/rencana-latihan/{rencana_id}/peserta/{jenis_peserta}/{peserta_id}/update-kehadiran', [RencanaLatihanPesertaController::class, 'updateKehadiran'])->middleware(['auth', 'verified', 'check.registration.status']);
 
 // Kelola Pemetaan Rencana Latihan
-Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}', [RencanaLatihanKelolaController::class, 'index'])->middleware(['auth', 'verified']);
-Route::post('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}/bulk-update', [RencanaLatihanKelolaController::class, 'bulkUpdate'])->middleware(['auth', 'verified']);
-Route::get('/api/rencana-latihan/{rencana_id}/target-mapping', [RencanaLatihanKelolaController::class, 'getTargetMapping'])->middleware(['auth', 'verified']);
+Route::get('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}', [RencanaLatihanKelolaController::class, 'index'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::post('/program-latihan/{program_id}/rencana-latihan/{rencana_id}/kelola/{jenis_peserta}/bulk-update', [RencanaLatihanKelolaController::class, 'bulkUpdate'])->middleware(['auth', 'verified', 'check.registration.status']);
+Route::get('/api/rencana-latihan/{rencana_id}/target-mapping', [RencanaLatihanKelolaController::class, 'getTargetMapping'])->middleware(['auth', 'verified', 'check.registration.status']);
 
 // =====================
 // DATA MASTER (CRUD)
 // =====================
-Route::prefix('data-master')->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->prefix('data-master')->group(function () {
     // Master Tingkat
     Route::resource('/tingkat', MstTingkatController::class)->names('tingkat');
     Route::post('/tingkat/destroy-selected', [MstTingkatController::class, 'destroy_selected'])->name('tingkat.destroy_selected');
@@ -579,7 +579,7 @@ Route::prefix('data-master')->group(function () {
 // =====================
 // PEMERIKSAAN
 // =====================
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     Route::resource('/pemeriksaan', PemeriksaanController::class)->names('pemeriksaan');
     Route::get('/api/pemeriksaan', [PemeriksaanController::class, 'apiIndex']);
     Route::post('/pemeriksaan/destroy-selected', [PemeriksaanController::class, 'destroy_selected'])->name('pemeriksaan.destroy_selected');
@@ -632,7 +632,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/pemeriksaan/{pemeriksaan}/peserta-parameter/bulk-update', [PemeriksaanPesertaParameterController::class, 'bulkUpdate'])->name('pemeriksaan.peserta.parameter.bulk-update');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.registration.status'])->group(function () {
     // API nested
     Route::get('/api/pemeriksaan/{pemeriksaan}/pemeriksaan-parameter', [PemeriksaanParameterController::class, 'apiIndex']);
     // API untuk All Parameter

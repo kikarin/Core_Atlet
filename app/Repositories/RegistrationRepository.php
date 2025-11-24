@@ -162,7 +162,7 @@ class RegistrationRepository
     }
 
     /**
-     * Approve registration - create peserta record
+     * Approve registration - create atau update peserta record
      */
     public function approveRegistration(PesertaRegistration $registration, int $approvedBy): array
     {
@@ -171,23 +171,45 @@ class RegistrationRepository
             $pesertaType = $registration->peserta_type;
             $user        = $registration->user;
 
-            // Create peserta record berdasarkan type
             $pesertaId = null;
             $roleId    = null;
 
-            switch ($pesertaType) {
-                case 'atlet':
-                    $pesertaId = $this->createAtlet($data, $user->id, $approvedBy, $registration);
-                    $roleId    = 35; // Role ID Atlet
-                    break;
-                case 'pelatih':
-                    $pesertaId = $this->createPelatih($data, $user->id, $approvedBy, $registration);
-                    $roleId    = 36; // Role ID Pelatih
-                    break;
-                case 'tenaga_pendukung':
-                    $pesertaId = $this->createTenagaPendukung($data, $user->id, $approvedBy, $registration);
-                    $roleId    = 37; // Role ID Tenaga Pendukung
-                    break;
+            // Cek apakah user sudah punya peserta_id (flow baru)
+            if ($user->peserta_id) {
+                // User sudah punya peserta record, hanya update is_active menjadi 1
+                $pesertaId = $user->peserta_id;
+                
+                // Update peserta record menjadi aktif
+                switch ($pesertaType) {
+                    case 'atlet':
+                        \App\Models\Atlet::where('id', $pesertaId)->update(['is_active' => 1]);
+                        $roleId = 35;
+                        break;
+                    case 'pelatih':
+                        \App\Models\Pelatih::where('id', $pesertaId)->update(['is_active' => 1]);
+                        $roleId = 36;
+                        break;
+                    case 'tenaga_pendukung':
+                        \App\Models\TenagaPendukung::where('id', $pesertaId)->update(['is_active' => 1]);
+                        $roleId = 37;
+                        break;
+                }
+            } else {
+                // User belum punya peserta record, create baru (flow lama)
+                switch ($pesertaType) {
+                    case 'atlet':
+                        $pesertaId = $this->createAtlet($data, $user->id, $approvedBy, $registration);
+                        $roleId    = 35; // Role ID Atlet
+                        break;
+                    case 'pelatih':
+                        $pesertaId = $this->createPelatih($data, $user->id, $approvedBy, $registration);
+                        $roleId    = 36; // Role ID Pelatih
+                        break;
+                    case 'tenaga_pendukung':
+                        $pesertaId = $this->createTenagaPendukung($data, $user->id, $approvedBy, $registration);
+                        $roleId    = 37; // Role ID Tenaga Pendukung
+                        break;
+                }
             }
 
             // Update user
@@ -209,6 +231,7 @@ class RegistrationRepository
                 'user_id'         => $user->id,
                 'peserta_id'      => $pesertaId,
                 'peserta_type'    => $pesertaType,
+                'existing_peserta' => $user->peserta_id ? true : false,
             ]);
 
             return [
@@ -618,6 +641,7 @@ class RegistrationRepository
      */
     public function getRegistrationsForAdmin(array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
+        // Include status 'submitted' untuk user yang baru register dengan flow baru
         $query = PesertaRegistration::with(['user'])
             ->whereIn('status', ['submitted', 'approved', 'rejected']);
 
@@ -650,5 +674,134 @@ class RegistrationRepository
 
         return $query->orderBy('created_at', 'desc')
             ->paginate($filters['per_page'] ?? 15);
+    }
+
+    /**
+     * Create draft peserta record dengan email auto-fill
+     */
+    public function createDraftPeserta(User $user, string $pesertaType): int
+    {
+        // Untuk Pelatih dan Tenaga Pendukung, nik harus unique dan tidak nullable
+        // Jadi kita buat temporary nik yang unik (maksimal 30 karakter sesuai migration)
+        $temporaryNik = null;
+        if (in_array($pesertaType, ['pelatih', 'tenaga_pendukung'])) {
+            // Gunakan kombinasi user_id dan timestamp untuk membuat nik temporary yang unik
+            // Format: DRAFT-{user_id}-{timestamp} (dipotong jika lebih dari 30 karakter)
+            $temporaryNik = 'DRAFT-' . $user->id . '-' . time();
+            if (strlen($temporaryNik) > 30) {
+                // Jika terlalu panjang, gunakan format yang lebih pendek
+                $temporaryNik = 'D-' . $user->id . '-' . substr(time(), -8); // Ambil 8 digit terakhir timestamp
+            }
+        }
+        
+        $baseData = [
+            'users_id' => $user->id,
+            'email' => $user->email, // Auto-fill email
+            'nama' => 'Pending', // Placeholder, akan diisi user di edit page
+            'jenis_kelamin' => 'L', // Default value untuk enum (required field)
+            'nik' => $temporaryNik, // Temporary nik untuk pelatih/tenaga pendukung, null untuk atlet
+            'is_active' => 0, // Belum approved
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+        ];
+        
+        $pesertaId = match($pesertaType) {
+            'atlet' => \App\Models\Atlet::create($baseData)->id,
+            'pelatih' => \App\Models\Pelatih::create($baseData)->id,
+            'tenaga_pendukung' => \App\Models\TenagaPendukung::create($baseData)->id,
+            default => throw new \Exception('Invalid peserta type')
+        };
+        
+        // Create atau update PesertaRegistration untuk muncul di halaman approval
+        // Gunakan 'submitted' karena status enum tidak memiliki 'pending'
+        $registration = PesertaRegistration::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'peserta_type' => $pesertaType,
+            ],
+            [
+                'peserta_type' => $pesertaType,
+                'step_current' => 2, // Step 1 adalah pilih type, step 2 adalah data diri
+                'status' => 'submitted', // Status submitted untuk muncul di approval page
+                'data_json' => [
+                    'step_1' => [
+                        'peserta_type' => $pesertaType,
+                    ],
+                ],
+            ]
+        );
+
+        Log::info('RegistrationRepository: PesertaRegistration created/updated', [
+            'user_id' => $user->id,
+            'peserta_id' => $pesertaId,
+            'registration_id' => $registration->id,
+            'status' => $registration->status,
+            'peserta_type' => $pesertaType,
+        ]);
+        
+        return $pesertaId;
+    }
+
+    /**
+     * Sync data peserta ke PesertaRegistration untuk update di halaman approval
+     */
+    public function syncPesertaToRegistration(User $user, $pesertaModel): void
+    {
+        // Cari PesertaRegistration untuk user ini dengan status submitted atau rejected
+        $registration = PesertaRegistration::where('user_id', $user->id)
+            ->whereIn('status', ['submitted', 'rejected'])
+            ->first();
+
+        if (!$registration) {
+            return;
+        }
+
+        // Ambil data peserta untuk di-sync ke data_json
+        $pesertaData = $pesertaModel->toArray();
+        
+        // Ambil kategori peserta jika ada
+        $kategoriPesertas = [];
+        if (method_exists($pesertaModel, 'kategoriPesertas')) {
+            $kategoriPesertas = $pesertaModel->kategoriPesertas()->pluck('id')->toArray();
+        }
+
+        // Update data_json di PesertaRegistration
+        $currentData = $registration->data_json ?? [];
+        $currentData['step_2'] = array_merge($currentData['step_2'] ?? [], [
+            'nama' => $pesertaData['nama'] ?? null,
+            'nik' => $pesertaData['nik'] ?? null,
+            'nisn' => $pesertaData['nisn'] ?? null,
+            'jenis_kelamin' => $pesertaData['jenis_kelamin'] ?? null,
+            'tempat_lahir' => $pesertaData['tempat_lahir'] ?? null,
+            'tanggal_lahir' => $pesertaData['tanggal_lahir'] ?? null,
+            'alamat' => $pesertaData['alamat'] ?? null,
+            'kecamatan_id' => $pesertaData['kecamatan_id'] ?? null,
+            'kelurahan_id' => $pesertaData['kelurahan_id'] ?? null,
+            'no_hp' => $pesertaData['no_hp'] ?? null,
+            'email' => $pesertaData['email'] ?? null,
+            'agama' => $pesertaData['agama'] ?? null,
+            'sekolah' => $pesertaData['sekolah'] ?? null,
+            'kelas_sekolah' => $pesertaData['kelas_sekolah'] ?? null,
+            'ukuran_baju' => $pesertaData['ukuran_baju'] ?? null,
+            'ukuran_celana' => $pesertaData['ukuran_celana'] ?? null,
+            'ukuran_sepatu' => $pesertaData['ukuran_sepatu'] ?? null,
+            'tanggal_bergabung' => $pesertaData['tanggal_bergabung'] ?? null,
+            'kategori_pesertas' => $kategoriPesertas,
+        ]);
+
+        // Untuk pelatih, tambahkan field khusus
+        if ($registration->peserta_type === 'pelatih') {
+            $currentData['step_2']['pekerjaan_selain_melatih'] = $pesertaData['pekerjaan_selain_melatih'] ?? null;
+        }
+
+        $registration->update([
+            'data_json' => $currentData,
+        ]);
+
+        Log::info('RegistrationRepository: Synced peserta data to registration', [
+            'user_id' => $user->id,
+            'peserta_id' => $pesertaModel->id,
+            'peserta_type' => $registration->peserta_type,
+        ]);
     }
 }

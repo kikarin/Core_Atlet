@@ -119,7 +119,9 @@ class AtletController extends Controller implements HasMiddleware
         $model->refresh();
         $model->load('kategoriPesertas');
 
-        return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil diperbarui!');
+        // Pertahankan tab parameter jika ada di request, atau gunakan 'atlet-data' sebagai default
+        $tab = $this->request->input('tab', 'atlet-data');
+        return redirect()->route('atlet.edit', $model->id)->with('success', 'Atlet berhasil diperbarui!')->with('tab', $tab);
     }
 
     public function apiShow($id)

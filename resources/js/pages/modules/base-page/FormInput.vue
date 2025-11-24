@@ -41,6 +41,7 @@ const props = defineProps<{
     disableAutoReset?: boolean;
     hideButtons?: boolean;
     id?: string;
+    saveText?: string;
 }>();
 
 const emit = defineEmits(['save', 'cancel', 'field-updated', 'update:modelValue']);
@@ -76,6 +77,23 @@ watch(
         if (!shouldResetForm.value) {
             console.log('FormInput.vue: Skipping auto reset due to shouldResetForm being false');
             return;
+        }
+
+        // Hanya reset jika initialData benar-benar berubah (bukan karena re-render)
+        // Cek apakah ini perubahan yang signifikan (bukan hanya update kecil)
+        if (newVal && oldVal) {
+            // Bandingkan apakah semua nilai penting sama
+            const significantKeys = Object.keys(newVal).filter(key => 
+                key !== 'updated_at' && key !== 'created_at' && key !== 'foto' && key !== 'file_url'
+            );
+            const hasSignificantChange = significantKeys.some(key => {
+                return JSON.stringify(newVal[key]) !== JSON.stringify(oldVal[key]);
+            });
+            
+            if (!hasSignificantChange) {
+                console.log('FormInput.vue: No significant change detected, skipping reset');
+                return;
+            }
         }
 
         if (newVal) {
@@ -292,6 +310,18 @@ const handleNIKInput = (event: Event) => {
     target.value = formattedValue;
 };
 
+// State untuk search query per select field
+const selectSearchQuery = ref<Record<string, string>>({});
+
+// Method untuk filter options berdasarkan search query
+const getFilteredOptions = (input: any) => {
+    const query = selectSearchQuery.value[input.name] || '';
+    if (!query) return input.options;
+    return (input.options || []).filter((opt: any) => 
+        (opt.label || '').toLowerCase().includes(query.toLowerCase())
+    );
+};
+
 
 
 
@@ -453,7 +483,6 @@ defineExpose({
                                 (val: any) => {
                                     console.log(`FormInput: Select ${input.name} updated to:`, val);
                                     form[input.name] = val;
-                                    form.defaults({ ...form.defaults(), [input.name]: val });
                                     emit('field-updated', { field: input.name, value: val });
                                     console.log(`FormInput: Form data after select update:`, form.data());
                                 }
@@ -464,9 +493,30 @@ defineExpose({
                                 <SelectValue :placeholder="input.placeholder" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="option in input.options" :key="`${input.name}-${option.value}`" :value="option.value">
-                                    {{ option.label }}
-                                </SelectItem>
+                                <!-- Search input -->
+                                <div class="p-2 border-b">
+                                    <Input
+                                        v-model="selectSearchQuery[input.name]"
+                                        type="text"
+                                        placeholder="Cari..."
+                                        class="w-full"
+                                        @click.stop
+                                        @keydown.stop
+                                    />
+                                </div>
+                                <!-- Filtered options -->
+                                <div class="max-h-[300px] overflow-auto">
+                                    <SelectItem 
+                                        v-for="option in getFilteredOptions(input)" 
+                                        :key="`${input.name}-${option.value}`" 
+                                        :value="option.value"
+                                    >
+                                        {{ option.label }}
+                                    </SelectItem>
+                                    <div v-if="getFilteredOptions(input).length === 0" class="p-2 text-sm text-muted-foreground text-center">
+                                        Tidak ada hasil ditemukan
+                                    </div>
+                                </div>
                             </SelectContent>
                         </Select>
 
@@ -649,7 +699,7 @@ defineExpose({
             <div v-if="!hideButtons" class="grid grid-cols-1 items-center md:grid-cols-12">
                 <div class="hidden md:col-span-3 md:block"></div>
                 <div class="col-span-full md:col-span-9">
-                    <ButtonsForm :showSave="true" :showCancel="true" @save="handleSubmit" @cancel="handleCancel" />
+                    <ButtonsForm :showSave="true" :showCancel="true" :saveText="saveText || 'Save'" @save="handleSubmit" @cancel="handleCancel" />
                 </div>
             </div>
         </form>

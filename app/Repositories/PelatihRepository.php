@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Role;
 
+
 class PelatihRepository
 {
     use RepositoryTrait;
@@ -264,18 +265,26 @@ class PelatihRepository
     public function customCreateEdit($data, $item = null)
     {
         // Tambahkan relasi untuk nanti kecamatan/kelurahan
-        $data['item'] = $item;
-
         // Load kategori peserta yang sudah ada (multiple)
         if ($item && isset($item->id)) {
             $item->load('kategoriPesertas');
-            $data['kategori_pesertas'] = $item->kategoriPesertas->pluck('id')->toArray();
+            $kategoriPesertasIds = $item->kategoriPesertas->pluck('id')->toArray();
+            $data['kategori_pesertas'] = $kategoriPesertasIds;
+            
+            // Convert item ke array dan tambahkan kategori_pesertas
+            $itemArray = $item->toArray();
+            $itemArray['kategori_pesertas'] = $kategoriPesertasIds;
+            $data['item'] = $itemArray;
         } else {
+            $data['item'] = $item;
             $data['kategori_pesertas'] = [];
         }
 
         return $data;
     }
+
+    // Property untuk menyimpan kategori_pesertas sebelum di-unset
+    private $kategoriPesertasForCallback = null;
 
     public function customDataCreateUpdate($data, $record = null)
     {
@@ -285,9 +294,33 @@ class PelatihRepository
         }
         $data['updated_by'] = $userId;
 
+        // Jika user masih pending, set is_active ke 0 jika tidak ada di request
+        if ($record && $userId) {
+            $user = User::find($userId);
+            if ($user && $user->registration_status === 'pending') {
+                // Jika is_active tidak ada di request, set ke 0 (nonaktif)
+                if (!isset($data['is_active'])) {
+                    $data['is_active'] = 0;
+                } else {
+                    // Jika ada di request, tetap set ke 0 untuk user pending
+                    $data['is_active'] = 0;
+                }
+            }
+        }
+
+        // Simpan kategori_pesertas sebelum di-unset untuk digunakan di callbackAfterStoreOrUpdate
+        // Hapus dari data karena ini relasi many-to-many, bukan kolom di tabel pelatihs
+        if (isset($data['kategori_pesertas'])) {
+            $this->kategoriPesertasForCallback = $data['kategori_pesertas'];
+            unset($data['kategori_pesertas']);
+        } else {
+            $this->kategoriPesertasForCallback = null;
+        }
+
         Log::info('PelatihRepository: customDataCreateUpdate', [
             'data'   => $data,
             'method' => is_null($record) ? 'create' : 'update',
+            'kategori_pesertas_saved' => $this->kategoriPesertasForCallback !== null,
         ]);
 
         return $data;
@@ -297,12 +330,18 @@ class PelatihRepository
     {
         // Note: Tidak perlu DB::beginTransaction() karena sudah dalam transaction dari RepositoryTrait
         try {
-            Log::info('PelatihRepository: Starting file upload process', [
+            // Ambil kategori_pesertas dari property yang disimpan di customDataCreateUpdate
+            // atau dari request sebagai fallback
+            $kategoriPesertas = $this->kategoriPesertasForCallback ?? request()->input('kategori_pesertas');
+            
+            Log::info('PelatihRepository: Starting callbackAfterStoreOrUpdate', [
                 'method'            => $method,
                 'has_file'          => isset($data['file']),
                 'file_data'         => $data['file'] ? 'File exists' : 'No file',
                 'is_delete_foto'    => @$data['is_delete_foto'],
-                'kategori_pesertas' => $data['kategori_pesertas'] ?? 'not set',
+                'kategori_pesertas' => $kategoriPesertas ?? 'not set',
+                'kategori_pesertas_type' => $kategoriPesertas ? gettype($kategoriPesertas) : 'null',
+                'kategori_pesertas_source' => $this->kategoriPesertasForCallback !== null ? 'property' : 'request',
             ]);
 
             // Handle file upload
@@ -332,19 +371,48 @@ class PelatihRepository
 
             // Handle Multiple Kategori Peserta
             // Selalu sync, bahkan jika array kosong (untuk menghapus relasi yang ada)
-            if (isset($data['kategori_pesertas'])) {
-                // Filter out empty values
+            // Gunakan kategori_pesertas dari request karena sudah di-unset dari $data di customDataCreateUpdate
+            $kategoriPesertasToSync = $kategoriPesertas ?? request()->input('kategori_pesertas');
+            
+            if ($kategoriPesertasToSync !== null) {
+                // Filter out empty values dan convert ke integer
                 $kategoriIds = [];
-                if (is_array($data['kategori_pesertas'])) {
-                    $kategoriIds = array_filter($data['kategori_pesertas'], function ($id) {
+                if (is_array($kategoriPesertasToSync)) {
+                    $kategoriIds = array_filter($kategoriPesertasToSync, function ($id) {
                         return !empty($id) && $id !== null;
                     });
+                    // Convert semua ID ke integer untuk memastikan tipe data benar
+                    $kategoriIds = array_map('intval', $kategoriIds);
+                    // Remove duplicates dan re-index array
+                    $kategoriIds = array_values(array_unique($kategoriIds));
                 }
+                
+                Log::info('PelatihRepository: Syncing KategoriPesertas', [
+                    'pelatih_id' => $model->id,
+                    'kategori_ids' => $kategoriIds,
+                    'kategori_ids_type' => array_map('gettype', $kategoriIds),
+                ]);
+                
                 // Sync dengan array kosong jika tidak ada kategori (untuk menghapus semua relasi)
                 $model->kategoriPesertas()->sync($kategoriIds);
+                // Refresh model untuk memastikan relasi ter-load
+                $model->refresh();
+                $model->load('kategoriPesertas');
                 Log::info('PelatihRepository: Updated KategoriPesertas', ['pelatih_id' => $model->id, 'kategori_ids' => $kategoriIds]);
             } else {
-                Log::warning('PelatihRepository: kategori_pesertas not set in data', ['data_keys' => array_keys($data)]);
+                Log::warning('PelatihRepository: kategori_pesertas not set in data or request', ['data_keys' => array_keys($data)]);
+            }
+
+            // Sync data ke PesertaRegistration SETELAH sync kategori peserta
+            // Ini penting agar kategori peserta yang baru ter-sync ke PesertaRegistration
+            if ($method === 'update' && $model->users_id) {
+                $user = User::find($model->users_id);
+                if ($user) {
+                    $registrationRepo = app(\App\Repositories\RegistrationRepository::class);
+                    // Pastikan model sudah di-refresh dengan kategori peserta sebelum sync
+                    $registrationRepo->syncPesertaToRegistration($user, $model);
+                    Log::info('PelatihRepository: Synced data to PesertaRegistration after update', ['pelatih_id' => $model->id, 'user_id' => $user->id]);
+                }
             }
 
             Log::info('PelatihRepository: callbackAfterStoreOrUpdate completed successfully');

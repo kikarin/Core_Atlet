@@ -143,7 +143,9 @@ class TenagaPendukungController extends Controller implements HasMiddleware
             $model->refresh();
             $model->load('kategoriPesertas');
 
-            return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil diperbarui!');
+            // Pertahankan tab parameter jika ada di request, atau gunakan 'tenaga-pendukung-data' sebagai default
+            $tab = $request->input('tab', 'tenaga-pendukung-data');
+            return redirect()->route('tenaga-pendukung.edit', $model->id)->with('success', 'Tenaga Pendukung berhasil diperbarui!')->with('tab', $tab);
         } catch (\Exception $e) {
             Log::error('Error updating tenaga pendukung: '.$e->getMessage());
 

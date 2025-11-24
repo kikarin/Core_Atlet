@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\MstParameter;
 
 class AtletRepository
 {
@@ -288,7 +289,7 @@ class AtletRepository
         $data['item'] = $item;
 
         // Load parameter umum untuk form
-        $parameterUmum = \App\Models\MstParameter::where('kategori', 'umum')
+        $parameterUmum = MstParameter::where('kategori', 'umum')
             ->whereNull('deleted_at')
             ->select('id', 'nama', 'satuan', 'nilai_target', 'performa_arah')
             ->orderBy('nama')
@@ -305,9 +306,16 @@ class AtletRepository
 
             // Load kategori peserta yang sudah ada (multiple)
             $item->load('kategoriPesertas');
-            $data['kategori_pesertas'] = $item->kategoriPesertas->pluck('id')->toArray();
+            $kategoriPesertasIds = $item->kategoriPesertas->pluck('id')->toArray();
+            $data['kategori_pesertas'] = $kategoriPesertasIds;
             // Backward compatibility
-            $data['kategori_atlets'] = $data['kategori_pesertas'];
+            $data['kategori_atlets'] = $kategoriPesertasIds;
+            
+            // Convert item ke array dan tambahkan kategori_pesertas
+            $itemArray = $item->toArray();
+            $itemArray['kategori_pesertas'] = $kategoriPesertasIds;
+            $itemArray['kategori_atlets'] = $kategoriPesertasIds; // Backward compatibility
+            $data['item'] = $itemArray;
         } else {
             $data['parameter_umum_values'] = [];
             $data['kategori_pesertas']     = [];
@@ -317,6 +325,9 @@ class AtletRepository
         return $data;
     }
 
+    // Property untuk menyimpan kategori_pesertas sebelum di-unset
+    private $kategoriPesertasForCallback = null;
+
     public function customDataCreateUpdate($data, $record = null)
     {
         $userId = Auth::check() ? Auth::id() : null;
@@ -325,7 +336,46 @@ class AtletRepository
         }
         $data['updated_by'] = $userId;
 
-        $nullableFields = ['kecamatan_id', 'kelurahan_id', 'kategori_atlet_id', 'tanggal_bergabung'];
+        // Jika user masih pending, set is_active ke 0 jika tidak ada di request
+        if ($record && $userId) {
+            $user = User::find($userId);
+            if ($user && $user->registration_status === 'pending') {
+                // Jika is_active tidak ada di request, set ke 0 (nonaktif)
+                if (!isset($data['is_active'])) {
+                    $data['is_active'] = 0;
+                } else {
+                    // Jika ada di request, tetap set ke 0 untuk user pending
+                    $data['is_active'] = 0;
+                }
+            }
+        }
+
+        // Simpan kategori_pesertas sebelum di-unset untuk digunakan di callbackAfterStoreOrUpdate
+        // Hapus dari data karena ini relasi many-to-many, bukan kolom di tabel atlets
+        if (isset($data['kategori_pesertas'])) {
+            $this->kategoriPesertasForCallback = $data['kategori_pesertas'];
+            unset($data['kategori_pesertas']);
+        } else {
+            $this->kategoriPesertasForCallback = null;
+        }
+        
+        // Juga handle kategori_atlets untuk backward compatibility
+        if (isset($data['kategori_atlets'])) {
+            if ($this->kategoriPesertasForCallback === null) {
+                $this->kategoriPesertasForCallback = $data['kategori_atlets'];
+            }
+            unset($data['kategori_atlets']);
+        }
+
+        // Convert empty strings to null for nullable fields
+        $nullableFields = [
+            'kecamatan_id', 'kelurahan_id', 'kategori_atlet_id', 
+            'tanggal_bergabung', 'tanggal_lahir',
+            'nik', 'nisn', 'tempat_lahir', 'agama', 'alamat',
+            'sekolah', 'kelas_sekolah', 'ukuran_baju', 'ukuran_celana', 'ukuran_sepatu',
+            'no_hp', 'email'
+        ];
+        
         foreach ($nullableFields as $field) {
             if (isset($data[$field]) && $data[$field] === '') {
                 $data[$field] = null;
@@ -344,6 +394,15 @@ class AtletRepository
     {
         try {
             DB::beginTransaction();
+
+            // Sync data ke PesertaRegistration jika user masih pending
+            if ($method === 'update' && $model->users_id) {
+                $user = User::find($model->users_id);
+                if ($user && $user->registration_status === 'pending') {
+                    $registrationRepo = app(\App\Repositories\RegistrationRepository::class);
+                    $registrationRepo->syncPesertaToRegistration($user, $model);
+                }
+            }
 
             Log::info('AtletRepository: Starting file upload process', [
                 'method'         => $method,
@@ -410,20 +469,36 @@ class AtletRepository
             }
 
             // Handle Multiple Kategori Peserta
-            $kategoriIds = [];
-            if (isset($data['kategori_pesertas']) && is_array($data['kategori_pesertas'])) {
-                $kategoriIds = array_filter($data['kategori_pesertas'], function ($id) {
-                    return !empty($id);
-                });
-            } elseif (isset($data['kategori_atlets']) && is_array($data['kategori_atlets'])) {
-                // Backward compatibility
-                $kategoriIds = array_filter($data['kategori_atlets'], function ($id) {
-                    return !empty($id);
-                });
-            }
-            if (!empty($kategoriIds)) {
+            // Gunakan kategori_pesertas dari property yang disimpan karena sudah di-unset dari $data di customDataCreateUpdate
+            $kategoriPesertasToSync = $this->kategoriPesertasForCallback ?? request()->input('kategori_pesertas') ?? request()->input('kategori_atlets');
+            
+            if ($kategoriPesertasToSync !== null) {
+                // Filter out empty values dan convert ke integer
+                $kategoriIds = [];
+                if (is_array($kategoriPesertasToSync)) {
+                    $kategoriIds = array_filter($kategoriPesertasToSync, function ($id) {
+                        return !empty($id) && $id !== null;
+                    });
+                    // Convert semua ID ke integer untuk memastikan tipe data benar
+                    $kategoriIds = array_map('intval', $kategoriIds);
+                    // Remove duplicates dan re-index array
+                    $kategoriIds = array_values(array_unique($kategoriIds));
+                }
+                
+                Log::info('AtletRepository: Syncing KategoriPesertas', [
+                    'atlet_id' => $model->id,
+                    'kategori_ids' => $kategoriIds,
+                    'kategori_ids_type' => array_map('gettype', $kategoriIds),
+                ]);
+                
+                // Sync dengan array kosong jika tidak ada kategori (untuk menghapus semua relasi)
                 $model->kategoriPesertas()->sync($kategoriIds);
+                // Refresh model untuk memastikan relasi ter-load
+                $model->refresh();
+                $model->load('kategoriPesertas');
                 Log::info('AtletRepository: Updated KategoriPesertas', ['atlet_id' => $model->id, 'kategori_ids' => $kategoriIds]);
+            } else {
+                Log::warning('AtletRepository: kategori_pesertas not set in data or request', ['data_keys' => array_keys($data)]);
             }
 
             // Handle Atlet Akun data

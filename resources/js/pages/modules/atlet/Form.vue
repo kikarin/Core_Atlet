@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useHandleFormSave } from '@/composables/useHandleFormSave';
 import FormInput from '@/pages/modules/base-page/FormInput.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Plus, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const { save } = useHandleFormSave();
@@ -16,6 +12,10 @@ const props = defineProps<{
     mode: 'create' | 'edit';
     initialData?: Record<string, any>;
 }>();
+
+// Ambil user dari page props untuk auto-fill email
+const user = computed(() => (page.props as any)?.auth?.user);
+const isPendingRegistration = computed(() => user.value?.registration_status === 'pending');
 
 const formData = ref({
     nik: props.initialData?.nik || '',
@@ -36,7 +36,12 @@ const formData = ref({
     kelurahan_id: props.initialData?.kelurahan_id || '',
     kategori_atlet_id: props.initialData?.kategori_atlet_id || '',
     no_hp: props.initialData?.no_hp || '',
-    email: props.initialData?.email || '',
+    email: props.initialData?.email || user.value?.email || '', // Auto-fill email dari user yang login
+    kategori_pesertas: Array.isArray(props.initialData?.kategori_pesertas) 
+        ? props.initialData.kategori_pesertas 
+        : Array.isArray(props.initialData?.kategori_atlets) 
+            ? props.initialData.kategori_atlets 
+            : [],
     is_active: props.initialData?.is_active !== undefined ? props.initialData.is_active : 1,
     foto: props.initialData?.foto || '',
     id: props.initialData?.id || undefined,
@@ -47,11 +52,6 @@ const formData = ref({
 const kecamatanOptions = ref<{ value: number; label: string }[]>([]);
 const kelurahanOptions = ref<{ value: number; label: string }[]>([]);
 const kategoriPesertaOptions = ref<{ value: number; label: string }[]>([]);
-
-
-// Multiple Kategori Peserta
-const kategoriPesertas = ref<Array<{ id: number | null; tempId: number }>>([]);
-let kategoriPesertaTempIdCounter = 0;
 
 onMounted(async () => {
     try {
@@ -70,20 +70,32 @@ onMounted(async () => {
         }));
 
         // Load kategori peserta yang sudah ada (untuk edit mode)
-        if (props.mode === 'edit' && ((page.props as any).kategori_pesertas || (page.props as any).kategori_atlets)) {
-            const existingKategori = ((page.props as any).kategori_pesertas || (page.props as any).kategori_atlets) as number[];
-            if (existingKategori && existingKategori.length > 0) {
-                kategoriPesertas.value = existingKategori.map((id) => ({
-                    id,
-                    tempId: ++kategoriPesertaTempIdCounter,
-                }));
-            } else {
-                // Jika tidak ada, tambahkan satu field kosong
-                addKategoriPeserta();
+        // Cek dari initialData terlebih dahulu, lalu dari page.props
+        if (props.mode === 'edit') {
+            const existingKategori = props.initialData?.kategori_pesertas 
+                || props.initialData?.kategori_atlets
+                || (page.props as any).kategori_pesertas 
+                || (page.props as any).kategori_atlets
+                || (page.props as any).item?.kategori_pesertas
+                || (page.props as any).item?.kategori_atlets;
+            
+            console.log('Atlet/Form.vue: Loading kategori peserta', {
+                from_initialData_kategori_pesertas: props.initialData?.kategori_pesertas,
+                from_initialData_kategori_atlets: props.initialData?.kategori_atlets,
+                from_page_props_kategori_pesertas: (page.props as any).kategori_pesertas,
+                from_page_props_kategori_atlets: (page.props as any).kategori_atlets,
+                from_item_kategori_pesertas: (page.props as any).item?.kategori_pesertas,
+                from_item_kategori_atlets: (page.props as any).item?.kategori_atlets,
+                existingKategori,
+            });
+            
+            if (existingKategori && Array.isArray(existingKategori) && existingKategori.length > 0) {
+                formData.value.kategori_pesertas = existingKategori;
+                console.log('Atlet/Form.vue: Set kategori_pesertas to formData', formData.value.kategori_pesertas);
+            } else if (existingKategori && Array.isArray(existingKategori)) {
+                // Jika array kosong, tetap set untuk memastikan formData ter-update
+                formData.value.kategori_pesertas = [];
             }
-        } else {
-            // Untuk create mode, tambahkan satu field kosong
-            addKategoriPeserta();
         }
     } catch (e) {
         console.error('Gagal mengambil data kecamatan/kelurahan/kategori peserta', e);
@@ -91,6 +103,18 @@ onMounted(async () => {
         kategoriPesertaOptions.value = [];
     }
 });
+
+// Watch untuk update kategori_pesertas saat initialData berubah
+watch(
+    () => props.initialData?.kategori_pesertas || props.initialData?.kategori_atlets,
+    (newKategori) => {
+        if (props.mode === 'edit' && Array.isArray(newKategori)) {
+            formData.value.kategori_pesertas = newKategori;
+            console.log('Atlet/Form.vue: Updated kategori_pesertas from watch', newKategori);
+        }
+    },
+    { immediate: true }
+);
 
 watch(
     () => formData.value.kecamatan_id,
@@ -152,6 +176,15 @@ const formInputs = computed(() => [
     { name: 'email', label: 'Email', type: 'email' as const, placeholder: 'Masukkan email' },
     { name: 'tanggal_bergabung', label: 'Tanggal Bergabung', type: 'date' as const, placeholder: 'Pilih tanggal bergabung' },
     {
+        name: 'kategori_pesertas',
+        label: 'Kategori Peserta',
+        type: 'multi-select' as const,
+        placeholder: 'Pilih Kategori Peserta (bisa lebih dari 1)',
+        required: true,
+        options: kategoriPesertaOptions.value,
+        help: 'Pilih satu atau lebih kategori peserta',
+    },
+    {
         name: 'is_active',
         label: 'Status',
         type: 'select' as const,
@@ -164,36 +197,25 @@ const formInputs = computed(() => [
     { name: 'file', label: 'Foto', type: 'file' as const, placeholder: 'Upload foto' },
 ]);
 
+// Filter formInputs untuk hide is_active jika user masih pending
+const filteredFormInputs = computed(() => {
+    if (isPendingRegistration.value) {
+        return formInputs.value.filter(input => input.name !== 'is_active');
+    }
+    return formInputs.value;
+});
+
 function handleFieldUpdate({ field, value }: { field: string; value: any }) {
     if (field === 'kecamatan_id') {
         formData.value.kecamatan_id = value;
     }
 }
 
-const addKategoriPeserta = () => {
-    kategoriPesertas.value.push({
-        id: null,
-        tempId: ++kategoriPesertaTempIdCounter,
-    });
-};
-
-const removeKategoriPeserta = (tempId: number) => {
-    const index = kategoriPesertas.value.findIndex((k) => k.tempId === tempId);
-    if (index > -1) {
-        kategoriPesertas.value.splice(index, 1);
-    }
-};
-
-const updateKategoriPeserta = (tempId: number, kategoriId: number | null) => {
-    const item = kategoriPesertas.value.find((k) => k.tempId === tempId);
-    if (item) {
-        item.id = kategoriId;
-    }
-};
-
 const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<string, string>) => void) => {
-    // Collect kategori peserta IDs (filter out null values)
-    const kategoriPesertaIds = kategoriPesertas.value.map((k) => k.id).filter((id) => id !== null) as number[];
+    // Ambil kategori_pesertas dari dataFromFormInput (sudah dalam bentuk array)
+    const kategoriPesertaIds = Array.isArray(dataFromFormInput.kategori_pesertas) 
+        ? dataFromFormInput.kategori_pesertas.filter((id: any) => id !== null && id !== undefined)
+        : [];
 
     const formFields = {
         ...formData.value,
@@ -202,6 +224,11 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         // Backward compatibility
         kategori_atlets: kategoriPesertaIds,
     };
+
+    // Jika user masih pending, jangan kirim is_active (biarkan tetap 0 sampai di-approve)
+    if (isPendingRegistration.value) {
+        delete formFields.is_active;
+    }
 
     const url = '/atlet';
 
@@ -219,15 +246,21 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
         },
         onSuccess: (page: any) => {
             const id = page?.props?.item?.id || page?.props?.item?.data?.id || props.initialData?.id;
+            // Ambil tab aktif dari URL saat ini untuk mempertahankan tab setelah save
+            const currentUrl = window.location.href;
+            const urlParams = new URLSearchParams(currentUrl.split('?')[1] || '');
+            const currentTab = urlParams.get('tab') || 'atlet-data';
+            
             if (props.mode === 'create') {
                 if (id) {
-                    router.visit(`/atlet/${id}/edit`, { only: ['item', 'kategori_pesertas', 'kategori_atlets'] });
+                    router.visit(`/atlet/${id}/edit?tab=${currentTab}`, { only: ['item', 'kategori_pesertas', 'kategori_atlets'] });
                 } else {
                     router.visit('/atlet');
                 }
             } else if (props.mode === 'edit') {
                 if (id) {
-                    router.visit(`/atlet/${id}/edit`, { only: ['item', 'kategori_pesertas', 'kategori_atlets'] });
+                    // Tetap di halaman edit dengan tab yang sama, tidak redirect ke index
+                    router.visit(`/atlet/${id}/edit?tab=${currentTab}`, { only: ['item', 'kategori_pesertas', 'kategori_atlets'] });
                 } else {
                     router.visit('/atlet');
                 }
@@ -238,59 +271,12 @@ const handleSave = (dataFromFormInput: any, setFormErrors: (errors: Record<strin
 </script>
 
 <template>
-    <div class="space-y-6">
-        <FormInput
-            :form-inputs="formInputs"
-            :initial-data="formData"
-            :disable-auto-reset="props.mode === 'create'"
-            @save="handleSave"
-            @field-updated="handleFieldUpdate"
-        />
-
-        <!-- Multiple Kategori Peserta -->
-        <Card>
-            <CardHeader>
-                <div class="flex items-center justify-between">
-                    <CardTitle>Kategori Peserta</CardTitle>
-                    <Button type="button" variant="outline" size="sm" @click="addKategoriPeserta">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Tambah Kategori
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardContent class="space-y-4">
-                <div v-for="(kategori, index) in kategoriPesertas" :key="kategori.tempId" class="flex items-end gap-2">
-                    <div class="flex-1">
-                        <label class="mb-2 block text-sm font-medium">Kategori Peserta {{ index + 1 }}</label>
-                        <Select
-                            :model-value="kategori.id"
-                            @update:model-value="(value) => updateKategoriPeserta(kategori.tempId, value as number | null)"
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Pilih Kategori Peserta" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem :value="null">Pilih Kategori Peserta</SelectItem>
-                                <SelectItem v-for="option in kategoriPesertaOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        @click="removeKategoriPeserta(kategori.tempId)"
-                        :disabled="kategoriPesertas.length === 1"
-                    >
-                        <Trash2 class="h-4 w-4" />
-                    </Button>
-                </div>
-                <p v-if="kategoriPesertas.length === 0" class="text-muted-foreground text-sm">
-                    Belum ada kategori peserta. Klik "Tambah Kategori" untuk menambahkan.
-                </p>
-            </CardContent>
-        </Card>
-    </div>
+    <FormInput
+        :form-inputs="filteredFormInputs"
+        :initial-data="formData"
+        :disable-auto-reset="props.mode === 'create'"
+        :saveText="props.mode === 'edit' ? 'Simpan Perubahan' : 'Simpan'"
+        @save="handleSave"
+        @field-updated="handleFieldUpdate"
+    />
 </template>

@@ -34,7 +34,7 @@ class PelatihRequest extends FormRequest
             'no_hp'                     => 'nullable|string|max:20',
             'email'                     => 'nullable|email|max:200',
             'pekerjaan_selain_melatih'  => 'nullable|string|max:200',
-            'is_active'                 => 'required|boolean',
+            'is_active'                 => 'nullable|boolean',
             'is_delete_foto'            => 'nullable|boolean',
 
             'users_id'      => 'nullable|integer|exists:users,id',

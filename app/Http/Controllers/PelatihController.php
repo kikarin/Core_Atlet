@@ -151,15 +151,28 @@ class PelatihController extends Controller implements HasMiddleware
             $model->refresh();
             $model->load('kategoriPesertas');
 
-            return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil diperbarui!');
+            // Pertahankan tab parameter jika ada di request, atau gunakan 'pelatih-data' sebagai default
+            $tab = $request->input('tab', 'pelatih-data');
+            return redirect()->route('pelatih.edit', $model->id)->with('success', 'Pelatih berhasil diperbarui!')->with('tab', $tab);
 
         } catch (\Exception $e) {
-            Log::error('Error updating pelatih: '.$e->getMessage());
+            Log::error('Error updating pelatih: '.$e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+                'kategori_pesertas' => $request->input('kategori_pesertas'),
+            ]);
+
+            // Tampilkan error message yang lebih informatif
+            $errorMessage = 'Terjadi kesalahan saat memperbarui data pelatih.';
+            if (config('app.debug')) {
+                $errorMessage .= ' Error: ' . $e->getMessage();
+            }
 
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data pelatih.');
+                ->with('error', $errorMessage);
         }
     }
 

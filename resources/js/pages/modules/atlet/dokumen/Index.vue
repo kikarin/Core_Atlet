@@ -6,13 +6,19 @@ import { useToast } from '@/components/ui/toast/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import HeaderActions from '@/pages/modules/base-page/HeaderActions.vue';
 import DataTable from '@/pages/modules/components/DataTable.vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{ atletId: number }>();
 const { toast } = useToast();
+const page = usePage();
+
+// Ambil user registration_status dari props
+const user = computed(() => (page.props as any)?.auth?.user);
+const registrationStatus = computed(() => user.value?.registration_status);
+const isPendingRegistration = computed(() => registrationStatus.value === 'pending');
 
 const breadcrumbs = computed(() => [
     { title: 'Atlet', href: '/atlet' },
@@ -37,7 +43,6 @@ const rows = ref<any[]>([]);
 const total = ref(0);
 const loading = ref(false);
 const search = ref('');
-const page = ref(1);
 const perPage = ref(10);
 const sort = ref<{ key: string; order: 'asc' | 'desc' }>({ key: '', order: 'asc' });
 const handleSearchDebounced = debounce((val: string) => {
@@ -153,49 +158,80 @@ const confirmDeleteSelected = async () => {
     idsToDelete.value = [];
 };
 
-// Tabs config
-const tabsConfig = [
-    {
-        value: 'atlet-data',
-        label: 'Atlet',
-        onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=atlet-data`),
-    },
-    {
-        value: 'orang-tua-data',
-        label: 'Orang Tua/Wali',
-        onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=orang-tua-data`),
-    },
-    {
-        value: 'sertifikat-data',
-        label: 'Sertifikat',
-        onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat`),
-    },
-    {
-        value: 'prestasi-data',
-        label: 'Prestasi',
-        onClick: () => router.visit(`/atlet/${props.atletId}/prestasi`),
-    },
-    {
-        value: 'dokumen-data',
-        label: 'Dokumen',
-        // Aktif
-    },
-    {
-        value: 'kesehatan-data',
-        label: 'Kesehatan',
-        onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=kesehatan-data`),
-    },
-    {
-        value: 'akun-data',
-        label: 'Akun',
-        onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=akun-data`),
-    },
-];
+// Tabs config - FILTER berdasarkan registration_status
+const tabsConfig = computed(() => {
+    const allTabs = [
+        {
+            value: 'atlet-data',
+            label: 'Atlet',
+            onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=atlet-data`),
+            allowedForPending: true, // Data diri bisa diakses
+        },
+        {
+            value: 'parameter-umum-data',
+            label: 'Parameter Umum',
+            onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=parameter-umum-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+        {
+            value: 'orang-tua-data',
+            label: 'Orang Tua/Wali',
+            onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=orang-tua-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+        {
+            value: 'sertifikat-data',
+            label: 'Sertifikat',
+            onClick: () => router.visit(`/atlet/${props.atletId}/sertifikat`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'prestasi-data',
+            label: 'Prestasi',
+            onClick: () => router.visit(`/atlet/${props.atletId}/prestasi`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'dokumen-data',
+            label: 'Dokumen',
+            // Aktif - tidak perlu onClick
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'kesehatan-data',
+            label: 'Kesehatan',
+            onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=kesehatan-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+        {
+            value: 'akun-data',
+            label: 'Akun',
+            onClick: () => router.visit(`/atlet/${props.atletId}/edit?tab=akun-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+    ];
+
+    // Filter tab berdasarkan registration_status
+    if (isPendingRegistration.value) {
+        return allTabs
+            .filter(tab => tab.allowedForPending === true)
+            .map(tab => ({
+                ...tab,
+                disabled: false,
+            }));
+    }
+
+    // Jika sudah approved, semua tab bisa diakses
+    return allTabs.map(tab => ({
+        ...tab,
+        disabled: false,
+    }));
+});
 const activeTab = ref('dokumen-data');
 
 function handleTabChange(val: string) {
     if (val === 'dokumen-data') return;
-    const tab = tabsConfig.find((t) => t.value === val);
+    const tab = tabsConfig.value.find((t) => t.value === val);
     if (tab && tab.onClick) tab.onClick();
 }
 

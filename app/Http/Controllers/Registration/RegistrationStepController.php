@@ -9,7 +9,9 @@ use App\Http\Requests\Registration\RegistrationStep3Request;
 use App\Http\Requests\Registration\RegistrationStep4Request;
 use App\Http\Requests\Registration\RegistrationStep5Request;
 use App\Models\PesertaRegistration;
+use App\Models\Role;
 use App\Repositories\RegistrationRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -28,12 +30,26 @@ class RegistrationStepController extends Controller
     /**
      * Show registration steps page
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
         $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('register');
+        }
+
+        // Jika user sudah punya peserta_id dan peserta_type, redirect ke edit page mereka
+        if ($user->peserta_id && $user->peserta_type) {
+            $editRoute = match($user->peserta_type) {
+                'atlet' => 'atlet.edit',
+                'pelatih' => 'pelatih.edit',
+                'tenaga_pendukung' => 'tenaga-pendukung.edit',
+                default => null
+            };
+            
+            if ($editRoute) {
+                return redirect()->route($editRoute, $user->peserta_id);
+            }
         }
 
         // Check if user is in registration process (pending atau belum approved)
@@ -90,6 +106,7 @@ class RegistrationStepController extends Controller
 
     /**
      * Handle Step 1: Pilih Jenis Peserta
+     * Assign role langsung dan create draft peserta, redirect ke edit page
      */
     public function storeStep1(RegistrationStep1Request $request)
     {
@@ -100,26 +117,79 @@ class RegistrationStepController extends Controller
         }
 
         try {
-            $pesertaType = $request->validated()['peserta_type'];
+            $validated = $request->validated();
+            $pesertaType = $validated['peserta_type'] ?? null;
 
-            $registration = $this->repository->getOrCreateRegistration($user, $pesertaType);
-            $this->repository->saveStepData($registration, 1, ['peserta_type' => $pesertaType]);
-
-            Log::info('RegistrationStepController: Step 1 completed', [
-                'user_id'      => $user->id,
+            if (!$pesertaType) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['peserta_type' => 'Jenis peserta wajib dipilih.']);
+            }
+            
+            // Assign role berdasarkan peserta type
+            $roleId = match($pesertaType) {
+                'atlet' => 35,
+                'pelatih' => 36,
+                'tenaga_pendukung' => 37,
+                default => null
+            };
+            
+            if (!$roleId) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['peserta_type' => 'Jenis peserta tidak valid.']);
+            }
+            
+            // Update user dengan role dan peserta_type
+            $user->update([
+                'current_role_id' => $roleId,
                 'peserta_type' => $pesertaType,
+                'registration_status' => 'pending',
+                'is_active' => 1, // Bisa login tapi stuck di edit page
             ]);
-
-            return redirect()->route('registration.steps', ['step' => 2])
-                ->with('success', 'Jenis peserta berhasil dipilih');
+            
+            // Assign role menggunakan Spatie Permission
+            if ($roleId) {
+                $role = Role::find($roleId);
+                if ($role) {
+                    $user->assignRole($role);
+                }
+            }
+            
+            // Create peserta record kosong (draft) dengan email auto-fill
+            $pesertaId = $this->repository->createDraftPeserta($user, $pesertaType);
+            
+            // Update user dengan peserta_id
+            $user->update(['peserta_id' => $pesertaId]);
+            
+            // Redirect ke edit page sesuai peserta type
+            $editRoute = match($pesertaType) {
+                'atlet' => 'atlet.edit',
+                'pelatih' => 'pelatih.edit',
+                'tenaga_pendukung' => 'tenaga-pendukung.edit',
+                default => 'dashboard'
+            };
+            
+            Log::info('RegistrationStepController: Step 1 completed, redirecting to edit', [
+                'user_id' => $user->id,
+                'peserta_type' => $pesertaType,
+                'peserta_id' => $pesertaId,
+            ]);
+            
+            return redirect()->route($editRoute, $pesertaId)
+                ->with('success', 'Silakan lengkapi data diri Anda. Data akan ditinjau oleh administrator.');
+            
         } catch (\Exception $e) {
             Log::error('RegistrationStepController: Error in step 1', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $user->id ?? null,
+                'peserta_type' => $pesertaType ?? null,
             ]);
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['peserta_type' => 'Terjadi kesalahan. Silakan coba lagi.']);
+                ->withErrors(['peserta_type' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 

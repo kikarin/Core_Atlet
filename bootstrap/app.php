@@ -7,6 +7,7 @@ use App\Http\Middleware\ApiResponseMiddleware;
 use App\Http\Middleware\CheckProgramLatihanPermission;
 use App\Http\Middleware\CheckPemeriksaanPermission;
 use App\Http\Middleware\CheckTurnamenPermission;
+use App\Http\Middleware\CheckRegistrationStatus;
 use Illuminate\Http\Middleware\HandleCors;
 use App\Http\Middleware\CheckTargetLatihanPermission;
 use Illuminate\Foundation\Application;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'pemeriksaan.permission'     => CheckPemeriksaanPermission::class,
             'target.latihan.permission'  => CheckTargetLatihanPermission::class,
             'turnamen.permission'        => CheckTurnamenPermission::class,
+            'check.registration.status'  => CheckRegistrationStatus::class,
         ]);
 
         // Sanctum middleware untuk stateful API (Remove)

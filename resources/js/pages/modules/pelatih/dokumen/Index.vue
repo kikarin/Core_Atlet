@@ -6,13 +6,19 @@ import { useToast } from '@/components/ui/toast/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import HeaderActions from '@/pages/modules/base-page/HeaderActions.vue';
 import DataTable from '@/pages/modules/components/DataTable.vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{ pelatihId: number }>();
 const { toast } = useToast();
+const inertiaPage = usePage();
+
+// Ambil user registration_status dari props
+const user = computed(() => (inertiaPage.props as any)?.auth?.user);
+const registrationStatus = computed(() => user.value?.registration_status);
+const isPendingRegistration = computed(() => registrationStatus.value === 'pending');
 
 const breadcrumbs = computed(() => [
     { title: 'Pelatih', href: '/pelatih' },
@@ -153,44 +159,68 @@ const confirmDeleteSelected = async () => {
     idsToDelete.value = [];
 };
 
-// Tabs config
-const tabsConfig = [
-    {
-        value: 'pelatih-data',
-        label: 'Pelatih',
-        onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=pelatih-data`),
-    },
-    {
-        value: 'sertifikat-data',
-        label: 'Sertifikat',
-        onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat`),
-    },
-    {
-        value: 'prestasi-data',
-        label: 'Prestasi',
-        onClick: () => router.visit(`/pelatih/${props.pelatihId}/prestasi`),
-    },
-    {
-        value: 'kesehatan-data',
-        label: 'Kesehatan',
-        onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=kesehatan-data`),
-    },
-    {
-        value: 'dokumen-data',
-        label: 'Dokumen',
-        // Aktif
-    },
-    {
-        value: 'akun-data',
-        label: 'Akun',
-        onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=akun-data`),
-    },
-];
+// Tabs config - FILTER berdasarkan registration_status
+const tabsConfig = computed(() => {
+    const allTabs = [
+        {
+            value: 'pelatih-data',
+            label: 'Pelatih',
+            onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=pelatih-data`),
+            allowedForPending: true, // Data diri bisa diakses
+        },
+        {
+            value: 'sertifikat-data',
+            label: 'Sertifikat',
+            onClick: () => router.visit(`/pelatih/${props.pelatihId}/sertifikat`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'prestasi-data',
+            label: 'Prestasi',
+            onClick: () => router.visit(`/pelatih/${props.pelatihId}/prestasi`),
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'dokumen-data',
+            label: 'Dokumen',
+            // Aktif - tidak perlu onClick
+            allowedForPending: true, // Bisa diakses untuk pending
+        },
+        {
+            value: 'kesehatan-data',
+            label: 'Kesehatan',
+            onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=kesehatan-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+        {
+            value: 'akun-data',
+            label: 'Akun',
+            onClick: () => router.visit(`/pelatih/${props.pelatihId}/edit?tab=akun-data`),
+            allowedForPending: false, // TIDAK bisa diakses untuk pending
+        },
+    ];
+
+    // Filter tab berdasarkan registration_status
+    if (isPendingRegistration.value) {
+        return allTabs
+            .filter(tab => tab.allowedForPending === true)
+            .map(tab => ({
+                ...tab,
+                disabled: false,
+            }));
+    }
+
+    // Jika sudah approved, semua tab bisa diakses
+    return allTabs.map(tab => ({
+        ...tab,
+        disabled: false,
+    }));
+});
 const activeTab = ref('dokumen-data');
 
 function handleTabChange(val: string) {
     if (val === 'dokumen-data') return;
-    const tab = tabsConfig.find((t) => t.value === val);
+    const tab = tabsConfig.value.find((t) => t.value === val);
     if (tab && tab.onClick) tab.onClick();
 }
 
