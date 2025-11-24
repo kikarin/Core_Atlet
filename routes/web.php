@@ -95,10 +95,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/register/steps', [RegistrationStepController::class, 'index'])->name('registration.steps');
     Route::post('/register/steps/1', [RegistrationStepController::class, 'storeStep1'])->name('registration.steps.1');
-    Route::post('/register/steps/2', [RegistrationStepController::class, 'storeStep2'])->name('registration.steps.2');
-    Route::post('/register/steps/3', [RegistrationStepController::class, 'storeStep3'])->name('registration.steps.3');
-    Route::post('/register/steps/4', [RegistrationStepController::class, 'storeStep4'])->name('registration.steps.4');
-    Route::post('/register/steps/5', [RegistrationStepController::class, 'storeStep5'])->name('registration.steps.5');
     Route::post('/register/steps/submit', [RegistrationStepController::class, 'submit'])->name('registration.steps.submit');
     Route::post('/register/steps/{step}/draft', [RegistrationStepController::class, 'saveDraft'])->name('registration.steps.draft');
 });

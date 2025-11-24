@@ -5,12 +5,7 @@ import { useToast } from '@/components/ui/toast/useToast';
 import { router, useForm } from '@inertiajs/vue3';
 import { ArrowLeft } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import RegistrationLayout from '../RegistrationLayout.vue';
 import Step1SelectPeserta from './Step1SelectPeserta.vue';
-import Step2DataDiri from './Step2DataDiri.vue';
-import Step3Sertifikat from './Step3Sertifikat.vue';
-import Step4Prestasi from './Step4Prestasi.vue';
-import Step5Dokumen from './Step5Dokumen.vue';
 
 const { toast } = useToast();
 

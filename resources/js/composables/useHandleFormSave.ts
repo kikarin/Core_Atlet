@@ -43,7 +43,6 @@ export function useHandleFormSave() {
             redirectUrl = url,
             mode,
             id,
-            successMessage = 'Data berhasil disimpan',
             errorMessage = 'Gagal menyimpan data',
             onSuccess,
             setFormErrors,
